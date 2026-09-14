@@ -1,0 +1,18 @@
+{
+  // Deploy Next.js na Cloudflare Workers przez @opennextjs/cloudflare
+  "name": "sekta-wyjazdowa",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  }
+  // Sekrety (NIE tutaj — ustawiasz per Worker):
+  //   npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+  //   npx wrangler secret put SMSAPI_TOKEN
+  // Zmienne NEXT_PUBLIC_* są wstrzykiwane przy buildzie (z .env / CI env).
+}
