@@ -19,6 +19,8 @@ export default function LoginPage() {
   const [etap, setEtap] = useState<"email" | "kod">("email");
   const [blad, setBlad] = useState<string | null>(null);
   const [czeka, setCzeka] = useState(false);
+  // Czy mail faktycznie poszedł. Do ekranu z kodem można wejść także bez tego.
+  const [wyslano, setWyslano] = useState(false);
 
   async function wyslijKod() {
     setBlad(null);
@@ -36,6 +38,7 @@ export default function LoginPage() {
     setCzeka(false);
 
     if (!error) {
+      setWyslano(true);
       setEtap("kod");
       return;
     }
@@ -98,6 +101,7 @@ export default function LoginPage() {
             variant="ghost"
             onClick={() => {
               setBlad(null);
+              setWyslano(false);
               setEtap("kod");
             }}
             disabled={czeka || !email}
@@ -108,7 +112,15 @@ export default function LoginPage() {
       ) : (
         <div className="grid gap-5">
           <p className="text-center text-sm text-smoke">
-            Kod poleciał na <span className="text-parchment">{email}</span>
+            {wyslano ? (
+              <>
+                Kod poleciał na <span className="text-parchment">{email}</span>
+              </>
+            ) : (
+              <>
+                Wpisz kod dla <span className="text-parchment">{email}</span>
+              </>
+            )}
           </p>
           <Field
             label="Kod"
