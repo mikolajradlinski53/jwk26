@@ -91,3 +91,10 @@ export async function ustawJakoZaakceptowany(
     .eq("id", user.id);
   if (error) throw error;
 }
+
+/** Klient bez sesji — tak bazę widzi ktoś niezalogowany. */
+export function anonimowy(): SupabaseClient {
+  return createClient(url!, anonKey!, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
