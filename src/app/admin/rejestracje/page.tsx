@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { RitualFrame } from "@/components/RitualFrame";
 import { PrzyciskiDecyzji } from "./PrzyciskiDecyzji";
@@ -86,6 +87,14 @@ export default async function KolejkaRejestracji() {
           </li>
         ))}
       </ul>
+
+      <Link
+        href="/admin"
+        className="mt-8 flex min-h-11 items-center px-4 font-display text-sm
+                   uppercase tracking-widest text-smoke hover:text-candle"
+      >
+        ← Sanktuarium
+      </Link>
     </RitualFrame>
   );
 }

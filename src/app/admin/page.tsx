@@ -13,6 +13,14 @@ export default function AdminPage() {
         >
           Zgłoszenia
         </Link>
+
+        <Link
+          href="/"
+          className="flex min-h-11 items-center px-4 font-display text-sm
+                     uppercase tracking-widest text-smoke hover:text-candle"
+        >
+          ← Ranking
+        </Link>
       </nav>
     </RitualFrame>
   );
