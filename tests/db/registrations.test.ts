@@ -309,4 +309,17 @@ describe("hartowanie bramy", () => {
 
     expect(error).not.toBeNull();
   });
+
+  it("odrzuca nadmiarowo długi tekst OCR", async () => {
+    // Tekst OCR pochodzi od niezaufanego klienta. Bez limitu jedno zgłoszenie
+    // mogłoby wepchnąć megabajt znaków do bazy na darmowym planie.
+    const user = await nowyUzytkownik("grafoman");
+    const client = await signIn(user);
+
+    const { error } = await client
+      .from("registrations")
+      .insert({ ...zgloszenieDla(user), ocr_text: "a".repeat(20_001) });
+
+    expect(error).not.toBeNull();
+  });
 });

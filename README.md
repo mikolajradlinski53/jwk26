@@ -43,8 +43,18 @@ npx supabase db push
 
 Każdą migrację stosuj w **obu** projektach: głównym i testowym.
 
-Nową migrację twórz przez `npx supabase migration new <nazwa>` — wersja musi być
-znacznikiem czasu, żeby kolejność się zgadzała.
+Nową migrację twórz przez `npx supabase migration new <nazwa>`, ale **sprawdź
+wygenerowaną nazwę, zanim cokolwiek w niej napiszesz**. CLI bierze bieżący czas
+UTC, a pierwsza migracja dostała znacznik wpisany z ręki (`20260915120000`),
+wyprzedzający czas realny — przez kilka godzin doby `migration new` produkuje więc
+nazwę *wcześniejszą* niż to, co już jest zastosowane. Przemianuj plik, jeśli tak
+wyjdzie; kolejność decyduje o tym, czy migracja zastanie typy i tabele, na których
+stoi.
+
+Jeśli `db push` odbije się od `must be owner of table objects`, znaczy to, że
+migracja zakłada polityki na `storage.objects`, do których rola migrująca nie ma
+praw. Załóż je wtedy ręcznie w panelu (Storage → Policies), **nie usuwając** ich
+z pliku — kolejny projekt odtwarzany od zera ma je dostać automatycznie.
 
 ## Wdrożenie
 
@@ -59,6 +69,42 @@ odbijają.
 
 `SUPABASE_SERVICE_ROLE_KEY` celowo nie jest jeszcze w Vercelu. Dochodzi w planie
 08 razem z SMS-ami; wcześniej byłby tam ostrym nożem bez zastosowania.
+
+### Pierwszy admin trzeba założyć ręcznie
+
+Nie ma ścieżki, którą ktokolwiek zostałby adminem sam z siebie — i to jest
+zamierzone. Zaraz po pierwszym wdrożeniu wykonaj w SQL Editorze:
+
+```sql
+update profiles
+set role = 'admin', status = 'approved'
+where email = 'twoj.adres@samorzad.ue.wroc.pl';
+```
+
+**Oba pola naraz.** Bramka sprawdza `status` przed `role`, więc admin ze statusem
+`pending` odbija się na `/rejestracja` dokładnie tak jak każdy inny — i nie ma jak
+zaakceptować ani siebie, ani nikogo innego.
+
+## Brama wejściowa
+
+Uczestnik ze statusem innym niż `approved` widzi wyłącznie `/rejestracja`:
+formularz z imieniem, telefonem, zgodą SMS, uwagami dietetycznymi i zdjęciem
+potwierdzenia przelewu. Zdjęcie jest kompresowane w przeglądarce przed wysyłką,
+a Tesseract.js wyciąga z niego tekst i liczy trafienia słów kluczowych.
+
+**OCR jest podpowiedzią, nie sędzią.** Jego awaria nie blokuje zgłoszenia —
+`przeczytajDowod` zwraca wtedy `null`, a kolejka admina pokazuje wprost, że
+rozpoznanie się nie powiodło. Kwota nie jest nigdzie weryfikowana; bramką jest
+człowiek patrzący na oryginał.
+
+Dowody przelewu leżą w prywatnym buckecie `proofs` i widzi je **wyłącznie admin**,
+przez podpisane URL-e ważne godzinę. Autor zgłoszenia też ich nie pobierze — to
+dane finansowe, a swoje zdjęcie widział przed wysłaniem.
+
+Akceptacja idzie przez funkcję `review_registration` (`SECURITY DEFINER`), bo
+granty kolumnowe blokują `profiles.status` i `profiles.team_id` nawet adminowi.
+Funkcja jest jedyną drogą zmiany tych pól i sama sprawdza uprawnienia, bo
+`SECURITY DEFINER` omija RLS.
 
 ## Logowanie
 
@@ -95,7 +141,7 @@ blokadą jest RLS — bramka to wygoda nawigacyjna, nie zabezpieczenie.
 
 ## Stack
 
-Next.js 16 · Supabase · Tailwind v4 · Vitest · Vercel
+Next.js 16 · Supabase · Tailwind v4 · Tesseract.js · Vitest · Vercel
 
 W Next 16 `middleware.ts` nazywa się `proxy.ts` i przy katalogu `src/` **musi**
 leżeć w `src/proxy.ts`. W korzeniu repo build przechodzi bez ostrzeżenia,
