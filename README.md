@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sekta Wyjazdowa (jwk26)
 
-## Getting Started
+Webapp (PWA) dla uczestników wyjazdu samorządu UEW: ranking drużyn, bingo ze
+zdjęciami, sklepik, kasyno i gossipy. Dostęp wyłącznie dla adresów
+`@samorzad.ue.wroc.pl` po potwierdzeniu wpłaty.
 
-First, run the development server:
+- Spec: [`docs/superpowers/specs/2026-09-14-sekta-wyjazdowa-design.md`](docs/superpowers/specs/2026-09-14-sekta-wyjazdowa-design.md)
+- Plany: [`docs/superpowers/plans/`](docs/superpowers/plans/)
+- Poprzedni szkielet: gałąź `archive/skeleton`
+
+## Uruchomienie
 
 ```bash
+npm install
+cp .env.example .env.local   # uzupełnij z Supabase → Project Settings → API
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Testy
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Chodzą przeciwko **osobnemu** projektowi Supabase (`jwk26-test`) — zakładają
+i kasują w nim użytkowników. Konfiguracja w `.env.test`, wzorzec w `.env.example`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test
+```
 
-## Learn More
+Projekt testowy musi mieć włączone logowanie hasłem (Authentication → Providers →
+Email, `Confirm email` wyłączone). Apka używa OTP, ale kodu z maila nie da się
+przepisać w teście automatycznym.
 
-To learn more about Next.js, take a look at the following resources:
+## Migracje
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Zawsze przez CLI — `db push` zapisuje w bazie, co zostało zastosowane, i nie
+wykona tego samego dwa razy. Wklejanie SQL-a do SQL Editora nie zostawia śladu
+i kończy się błędem `42710` przy drugim uruchomieniu.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npx supabase link --project-ref <REF>
+npx supabase db push
+```
 
-## Deploy on Vercel
+Każdą migrację stosuj w **obu** projektach: głównym i testowym.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Nową migrację twórz przez `npx supabase migration new <nazwa>` — wersja musi być
+znacznikiem czasu, żeby kolejność się zgadzała.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Architektura w trzech zdaniach
+
+Saldo punktów nigdy nie jest kolumną — to zawsze `SUM(delta)` z `points_ledger`,
+tabeli tylko do dopisywania, do której RLS wpuszcza `INSERT` wyłącznie adminowi.
+Pozostałe źródła punktów piszą przez funkcje `SECURITY DEFINER`, więc nie istnieje
+ścieżka pozwalająca uczestnikowi dosypać sobie punkty z konsoli przeglądarki.
+Dostęp bramkuje `src/proxy.ts` na podstawie `profiles.status`, ale prawdziwą
+blokadą jest RLS — bramka to wygoda nawigacyjna, nie zabezpieczenie.
+
+## Stack
+
+Next.js 16 · Supabase · Tailwind v4 · Vitest · Vercel
+
+W Next 16 `middleware.ts` nazywa się `proxy.ts` i przy katalogu `src/` **musi**
+leżeć w `src/proxy.ts`. W korzeniu repo build przechodzi bez ostrzeżenia,
+a bramka po prostu nie działa. Sygnał, że jest podpięta: linia
+`ƒ Proxy (Middleware)` w tabeli tras po `npm run build`.
