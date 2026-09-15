@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { RitualFrame } from "@/components/RitualFrame";
 import { Button } from "@/components/ui/Button";
@@ -10,12 +11,16 @@ export default async function RejestracjaPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Bramka w proxy.ts nie wpuści tu niezalogowanego, ale token może wygasnąć
+  // między jej sprawdzeniem a tym renderem. Lepsze przekierowanie niż 500.
+  if (!user) redirect("/login");
+
   // RLS i tak przepuszcza wyłącznie własne zgłoszenia, ale filtr po user_id
   // zostawia zapytaniu indeks do wykorzystania.
   const { data } = await supabase
     .from("registrations")
     .select("*")
-    .eq("user_id", user!.id)
+    .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
