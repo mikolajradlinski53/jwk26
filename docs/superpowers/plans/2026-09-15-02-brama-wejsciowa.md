@@ -2001,11 +2001,23 @@ git push origin main
 
 ## Stan po tym planie
 
-Działa: pełna droga od kodu OTP do rankingu — formularz ze zdjęciem przelewu,
-kompresja i OCR w przeglądarce, prywatny bucket widoczny wyłącznie dla admina,
-akceptacja przypisująca drużynę przez funkcję `SECURITY DEFINER`, kolejka
-zgłoszeń w panelu. 51 testów pilnujących RLS, funkcji rozpatrującej i polityk
-bucketu.
+**Napisane i przetestowane:** pełna droga od kodu OTP do rankingu — formularz ze
+zdjęciem przelewu, kompresja i OCR w przeglądarce, prywatny bucket widoczny
+wyłącznie dla admina, akceptacja przypisująca drużynę przez funkcję
+`SECURITY DEFINER`, kolejka zgłoszeń w panelu. 52 testy pilnujące RLS, funkcji
+rozpatrującej i polityk bucketu. Migracje zastosowane w obu projektach Supabase.
+
+**Niepotwierdzone empirycznie:** Task 9 nie został wykonany. Nikt nie przeszedł
+tej drogi palcem po szkle — ani lokalnie, ani na produkcji. W szczególności bez
+pokrycia pozostaje bramka (`gate.ts`, `proxy.ts`), której żaden test automatyczny
+nie dotyka, oraz OCR na realnym zdjęciu z telefonu. Dowodem na kryterium §12.2
+(„osoba bez zaakceptowanego przelewu widzi wyłącznie `/rejestracja`") jest na dziś
+wyłącznie lektura kodu.
+
+**Trzy kroki operacyjne dzielące repozytorium od działającej bramy:** wdrożenie na
+Vercela, ręczne nadanie sobie roli admina w SQL Editorze (`role` **i** `status`
+naraz — bramka sprawdza status przed rolą) oraz custom SMTP, bez którego kod OTP
+nie dotrze do nikogo poza właścicielem projektu Supabase.
 
 Nie działa jeszcze: ranking na żywo i pełny panel admina (plan 03), bingo (04),
 sklepik (05), kasyno (06), gossipy (07), powiadomienia (08).
