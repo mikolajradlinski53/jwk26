@@ -235,21 +235,23 @@ bo Safari udostępnia push wyłącznie zainstalowanym PWA.
   często jedną ręką. Cele dotykowe min. 44 px.
 - Estetyka poważna, nie memiarska
 
-## 9. Harmonogram
+## 9. Kolejność budowy
 
-| Dni | Zakres |
-|---|---|
-| 1–2 | Projekt Next.js, migracja `0001_init.sql`, auth, RLS, deploy na Vercel |
-| 3 | Bramka rejestracyjna z OCR + akceptacja w panelu admina |
-| 4–5 | Ranking realtime, panel admina, design system |
-| 6–8 | Bingo: upload, kolejka, bonusy, globalny feed |
-| 9 | Sklepik + perki |
-| 10–12 | Kasyno: sloty → blackjack → dino |
-| 13 | Gossipy + moderacja |
-| 14 | Push, SMS, PWA, test na żywych ludziach |
+Bez przypisania do dni — kolejność wynika z zależności, nie z kalendarza.
 
-Rdzeń stoi w produkcji po dniu 3. Ryzyko kumuluje się na końcu listy, nie
-w fundamencie.
+1. **Fundament** — projekt Next.js, migracja `0001_init.sql`, auth, RLS,
+   deploy na Vercel
+2. **Bramka wejściowa** — formularz rejestracyjny z OCR + akceptacja w panelu
+3. **Rdzeń** — ranking realtime, panel admina, design system
+4. **Bingo** — upload, kolejka akceptacji, bonusy, globalny feed
+5. **Sklepik** — zakupy drużynowe, perki, kolejka wydań
+6. **Kasyno** — sloty → blackjack → dino
+7. **Gossipy** — kategorie, głosowanie, moderacja
+8. **Powiadomienia** — push, SMS, PWA
+
+Kroki 1–3 dają apkę zdatną do użytku. Wszystko dalej jest przyrostowe: każdy
+kolejny krok da się wdrożyć osobno i nic nie psuje, jeśli zabraknie na niego
+czasu. Ryzyko kumuluje się na końcu listy, nie w fundamencie.
 
 ## 10. Ryzyka
 
