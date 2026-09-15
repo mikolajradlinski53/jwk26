@@ -78,14 +78,18 @@ export default function LoginPage() {
       ) : (
         <div className="grid gap-5">
           <p className="text-center text-sm text-smoke">
-            Sześć cyfr poleciało na{" "}
-            <span className="text-parchment">{email}</span>
+            Kod poleciał na <span className="text-parchment">{email}</span>
           </p>
           <Field
             label="Kod"
             inputMode="numeric"
             autoComplete="one-time-code"
-            maxLength={6}
+            // Długość kodu jest ustawieniem projektu Supabase (Authentication →
+            // Email OTP Length, 6–10 cyfr), nie stałą. Zaszyte na sztywno sześć
+            // znaczyło, że przy dłuższym kodzie nie dało się zalogować w ogóle:
+            // maxLength ucinał wpisywanie, a przycisk i tak pozostawał aktywny
+            // dla wartości, której serwer nie przyjmie.
+            maxLength={10}
             placeholder="123456"
             value={kod}
             onChange={(e) => setKod(e.target.value.replace(/\D/g, ""))}
