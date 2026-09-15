@@ -1,48 +1,21 @@
 import { describe, it, expect, afterEach } from "vitest";
 import {
   admin,
-  createUser,
   signIn,
-  deleteUser,
-  makeAdmin,
   ustawJakoZaakceptowany,
-  type TestUser,
+  sprzatanieUzytkownikow,
+  zgloszenieDla,
 } from "../helpers/supabase";
 
-const sprzatanie: TestUser[] = [];
-
-afterEach(async () => {
-  while (sprzatanie.length) {
-    const user = sprzatanie.pop()!;
-    // Redundantne wobec kaskady z profiles — zostawione jako polisa.
-    await admin.from("registrations").delete().eq("user_id", user.id);
-    await deleteUser(user);
-  }
-});
-
-async function nowyUzytkownik(tag: string) {
-  const user = await createUser(tag);
-  sprzatanie.push(user);
-  return user;
-}
-
-/** Minimalne poprawne zgłoszenie dla danego użytkownika. */
-function zgloszenie(user: TestUser) {
-  return {
-    user_id: user.id,
-    full_name: "Brat Testowy",
-    phone: "600100200",
-    sms_consent: true,
-    proof_path: `${user.id}/dowod.jpg`,
-  };
-}
+const { nowyUzytkownik, nowyAdmin, posprzataj } = sprzatanieUzytkownikow();
+afterEach(posprzataj);
 
 describe("zgłoszenia rejestracyjne", () => {
   it("pozwala złożyć własne zgłoszenie", async () => {
     const user = await nowyUzytkownik("zglasza");
     const client = await signIn(user);
 
-    const { error } = await client.from("registrations").insert(zgloszenie(user));
+    const { error } = await client.from("registrations").insert(zgloszenieDla(user));
 
     expect(error).toBeNull();
   });
@@ -53,7 +26,7 @@ describe("zgłoszenia rejestracyjne", () => {
     const client = await signIn(sprytny);
 
     const { error } = await client.from("registrations").insert({
-      ...zgloszenie(obcy),
+      ...zgloszenieDla(obcy),
       // Własna ścieżka, żeby jedynym naruszeniem był user_id. Inaczej test
       // przechodzi także po usunięciu warunku, który rzekomo pilnuje.
       proof_path: `${sprytny.id}/dowod.jpg`,
@@ -70,7 +43,7 @@ describe("zgłoszenia rejestracyjne", () => {
     const client = await signIn(sprytny);
 
     const { error } = await client.from("registrations").insert({
-      ...zgloszenie(sprytny),
+      ...zgloszenieDla(sprytny),
       proof_path: `${obcy.id}/dowod.jpg`,
     });
 
@@ -83,7 +56,7 @@ describe("zgłoszenia rejestracyjne", () => {
 
     const { error } = await client
       .from("registrations")
-      .insert({ ...zgloszenie(user), status: "approved" });
+      .insert({ ...zgloszenieDla(user), status: "approved" });
 
     expect(error).not.toBeNull();
   });
@@ -92,7 +65,7 @@ describe("zgłoszenia rejestracyjne", () => {
     const obcy = await nowyUzytkownik("skryty");
     const { error: bladZapisu } = await admin
       .from("registrations")
-      .insert(zgloszenie(obcy));
+      .insert(zgloszenieDla(obcy));
     // Bez tego test byłby zielony także wtedy, gdyby wiersz w ogóle nie powstał
     // — „nie widzę" nic nie znaczy, kiedy nie ma czego widzieć.
     expect(bladZapisu).toBeNull();
@@ -115,13 +88,12 @@ describe("zgłoszenia rejestracyjne", () => {
     const zglaszajacy = await nowyUzytkownik("petent");
     const { error: bladZapisu } = await admin
       .from("registrations")
-      .insert(zgloszenie(zglaszajacy));
+      .insert(zgloszenieDla(zglaszajacy));
     // Bez tego test byłby zielony także wtedy, gdyby wiersz w ogóle nie powstał
     // — „nie widzę" nic nie znaczy, kiedy nie ma czego widzieć.
     expect(bladZapisu).toBeNull();
 
-    const szef = await nowyUzytkownik("kaplan");
-    await makeAdmin(szef);
+    const szef = await nowyAdmin("kaplan");
     const client = await signIn(szef);
 
     const { data } = await client
@@ -136,7 +108,7 @@ describe("zgłoszenia rejestracyjne", () => {
     const user = await nowyUzytkownik("uparty");
     const { data: wiersz } = await admin
       .from("registrations")
-      .insert(zgloszenie(user))
+      .insert(zgloszenieDla(user))
       .select("id")
       .single();
 
@@ -161,13 +133,12 @@ describe("zgłoszenia rejestracyjne", () => {
     const petent = await nowyUzytkownik("podopieczny");
     const { data: wiersz, error: bladZapisu } = await admin
       .from("registrations")
-      .insert(zgloszenie(petent))
+      .insert(zgloszenieDla(petent))
       .select("id")
       .single();
     expect(bladZapisu).toBeNull();
 
-    const szef = await nowyUzytkownik("kaplan-update");
-    await makeAdmin(szef);
+    const szef = await nowyAdmin("kaplan-update");
     const client = await signIn(szef);
 
     // Kontrola: admin ten wiersz widzi. Bez tego puste [] przy UPDATE mogłoby
@@ -203,7 +174,7 @@ describe("zgłoszenia rejestracyjne", () => {
     const client = await signIn(user);
     const { data: wiersz, error: bladZapisu } = await client
       .from("registrations")
-      .insert(zgloszenie(user))
+      .insert(zgloszenieDla(user))
       .select("id")
       .single();
     expect(bladZapisu).toBeNull();
@@ -231,7 +202,7 @@ describe("zgłoszenia rejestracyjne", () => {
 
     const { error: bladZapisu } = await client
       .from("registrations")
-      .insert(zgloszenie(user));
+      .insert(zgloszenieDla(user));
     expect(bladZapisu).toBeNull();
 
     // Na tym odczycie stoi cały ekran /rejestracja: to on decyduje, czy pokazać
@@ -250,12 +221,12 @@ describe("hartowanie bramy", () => {
     const user = await nowyUzytkownik("zalewacz");
     const client = await signIn(user);
 
-    const pierwsze = await client.from("registrations").insert(zgloszenie(user));
+    const pierwsze = await client.from("registrations").insert(zgloszenieDla(user));
     expect(pierwsze.error).toBeNull();
 
     // Bez unikalnego indeksu częściowego pętla insertów z konsoli zasypałaby
     // kolejkę admina, gdzie każdy wiersz kosztuje osobne createSignedUrl.
-    const drugie = await client.from("registrations").insert(zgloszenie(user));
+    const drugie = await client.from("registrations").insert(zgloszenieDla(user));
     expect(drugie.error).not.toBeNull();
   });
 
@@ -267,7 +238,7 @@ describe("hartowanie bramy", () => {
     // `like 'uuid/%'` sam w sobie to przepuszcza, a klient Storage normalizuje
     // `..` przy budowaniu URL-a — czyli trafiłoby na cudzy plik.
     const { error } = await client.from("registrations").insert({
-      ...zgloszenie(sprytny),
+      ...zgloszenieDla(sprytny),
       proof_path: `${sprytny.id}/../${obcy.id}/dowod.jpg`,
     });
 
@@ -281,7 +252,7 @@ describe("hartowanie bramy", () => {
 
     // Inaczej odrzucenie takiego zgłoszenia zbiłoby jej status na 'rejected'
     // i wyrzuciło ją z aplikacji, mimo że była już w drużynie.
-    const { error } = await client.from("registrations").insert(zgloszenie(user));
+    const { error } = await client.from("registrations").insert(zgloszenieDla(user));
 
     expect(error).not.toBeNull();
   });
@@ -292,7 +263,7 @@ describe("hartowanie bramy", () => {
 
     const { error } = await client
       .from("registrations")
-      .insert({ ...zgloszenie(user), ocr_confidence: 5 });
+      .insert({ ...zgloszenieDla(user), ocr_confidence: 5 });
 
     expect(error).not.toBeNull();
   });
@@ -303,7 +274,7 @@ describe("hartowanie bramy", () => {
 
     const { data: pierwsze, error: bladZapisu } = await client
       .from("registrations")
-      .insert(zgloszenie(user))
+      .insert(zgloszenieDla(user))
       .select("id")
       .single();
     expect(bladZapisu).toBeNull();
@@ -317,7 +288,7 @@ describe("hartowanie bramy", () => {
     // Indeks jest częściowy (where status = 'pending'). Gdyby ktoś zapisał go
     // bez tego warunku, osoba odrzucona nigdy nie złożyłaby zgłoszenia ponownie,
     // a ekran „Ponowna próba" z Taska 7 byłby ślepą uliczką.
-    const { error } = await client.from("registrations").insert(zgloszenie(user));
+    const { error } = await client.from("registrations").insert(zgloszenieDla(user));
 
     expect(error).toBeNull();
 
@@ -334,7 +305,7 @@ describe("hartowanie bramy", () => {
 
     const { error } = await client
       .from("registrations")
-      .insert({ ...zgloszenie(user), ocr_keywords_hit: 99 });
+      .insert({ ...zgloszenieDla(user), ocr_keywords_hit: 99 });
 
     expect(error).not.toBeNull();
   });

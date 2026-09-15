@@ -98,3 +98,48 @@ export function anonimowy(): SupabaseClient {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
+
+/** Minimalne poprawne zgłoszenie dla danego użytkownika. */
+export function zgloszenieDla(user: TestUser) {
+  return {
+    user_id: user.id,
+    full_name: "Brat Testowy",
+    phone: "600100200",
+    sms_consent: true,
+    proof_path: `${user.id}/dowod.jpg`,
+  };
+}
+
+/**
+ * Rejestr użytkowników do posprzątania po teście. Każdy plik testowy trzymał
+ * dotąd własną kopię tej pętli — przy piątej kopii przestało to być zabawne.
+ */
+export function sprzatanieUzytkownikow() {
+  const kolejka: TestUser[] = [];
+
+  async function nowyUzytkownik(tag: string): Promise<TestUser> {
+    const user = await createUser(tag);
+    kolejka.push(user);
+    return user;
+  }
+
+  async function nowyAdmin(tag: string): Promise<TestUser> {
+    const user = await nowyUzytkownik(tag);
+    await makeAdmin(user);
+    return user;
+  }
+
+  async function posprzataj(): Promise<void> {
+    while (kolejka.length) {
+      // Zdejmujemy z kolejki dopiero po udanym skasowaniu — inaczej wyjątek
+      // w deleteUser zostawiłby osieroconego użytkownika w zdalnej bazie.
+      const user = kolejka[kolejka.length - 1];
+      // Redundantne wobec kaskady z profiles — zostawione jako polisa.
+      await admin.from("registrations").delete().eq("user_id", user.id);
+      await deleteUser(user);
+      kolejka.pop();
+    }
+  }
+
+  return { nowyUzytkownik, nowyAdmin, posprzataj };
+}
