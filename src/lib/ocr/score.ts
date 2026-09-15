@@ -26,8 +26,10 @@ export function bezOgonkow(tekst: string): string {
     .replace(/Ł/g, "L");
 }
 
+export type SlowoKluczowe = (typeof SLOWA_KLUCZOWE)[number];
+
 /** Które ze słów kluczowych wystąpiły w rozpoznanym tekście. */
-export function trafioneSlowa(tekst: string): string[] {
+export function trafioneSlowa(tekst: string): SlowoKluczowe[] {
   const znormalizowany = bezOgonkow(tekst).toLowerCase();
   return SLOWA_KLUCZOWE.filter((slowo) => znormalizowany.includes(slowo));
 }

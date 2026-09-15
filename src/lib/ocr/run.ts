@@ -1,10 +1,10 @@
-import { trafioneSlowa } from "./score";
+import { trafioneSlowa, type SlowoKluczowe } from "./score";
 
 export type WynikOcr = {
   tekst: string;
   /** Pewność Tesseracta sprowadzona do zakresu 0–1. */
   pewnosc: number;
-  trafienia: string[];
+  trafienia: SlowoKluczowe[];
 };
 
 /**
@@ -26,10 +26,18 @@ export async function przeczytajDowod(plik: File): Promise<WynikOcr | null> {
     const { data } = await worker.recognize(plik);
     return {
       tekst: data.text,
-      pewnosc: data.confidence / 100,
+      // Przycięcie do zakresu nie jest paranoją. Wartość spoza 0–1 nie trafiłaby
+      // do catch poniżej — poleciałaby dalej i odbiła się od `check` na kolumnie
+      // ocr_confidence, wywracając cały insert zgłoszenia. Czyli awaria OCR
+      // zablokowałaby rejestrację, dokładnie wbrew D4.
+      pewnosc: Math.max(0, Math.min(1, data.confidence / 100)),
       trafienia: trafioneSlowa(data.text),
     };
-  } catch {
+  } catch (e) {
+    // Zgłoszenie idzie dalej bez OCR, ale ślad musi zostać: bez tego panel
+    // admina pokazuje „0 słów kluczowych" identycznie dla awarii i dla zdjęcia,
+    // na którym po prostu nic nie znaleziono.
+    console.error("OCR dowodu przelewu nie powiódł się:", e);
     return null;
   } finally {
     await worker?.terminate();
