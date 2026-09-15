@@ -62,3 +62,8 @@ W Next 16 `middleware.ts` nazywa się `proxy.ts` i przy katalogu `src/` **musi**
 leżeć w `src/proxy.ts`. W korzeniu repo build przechodzi bez ostrzeżenia,
 a bramka po prostu nie działa. Sygnał, że jest podpięta: linia
 `ƒ Proxy (Middleware)` w tabeli tras po `npm run build`.
+
+## Lokalizacja
+
+Projekt mieszka w `D:\Projects\jwk26`. Został przeniesiony z `C:\Users\...\Downloads`,
+bo dysk C: zapełnił się do zera i build przestawał zapisywać cache.
