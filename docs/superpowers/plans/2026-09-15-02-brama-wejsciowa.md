@@ -2007,17 +2007,22 @@ wyłącznie dla admina, akceptacja przypisująca drużynę przez funkcję
 `SECURITY DEFINER`, kolejka zgłoszeń w panelu. 52 testy pilnujące RLS, funkcji
 rozpatrującej i polityk bucketu. Migracje zastosowane w obu projektach Supabase.
 
-**Niepotwierdzone empirycznie:** Task 9 nie został wykonany. Nikt nie przeszedł
-tej drogi palcem po szkle — ani lokalnie, ani na produkcji. W szczególności bez
-pokrycia pozostaje bramka (`gate.ts`, `proxy.ts`), której żaden test automatyczny
-nie dotyka, oraz OCR na realnym zdjęciu z telefonu. Dowodem na kryterium §12.2
-(„osoba bez zaakceptowanego przelewu widzi wyłącznie `/rejestracja`") jest na dziś
-wyłącznie lektura kodu.
+**Wdrożone:** produkcja serwuje ten plan. Wdrożenie poszło automatycznie z pusha
+na `main` (projekt na Vercelu jest podpięty do repozytorium, więc każdy push
+wdraża produkcję). Potwierdzone z zewnątrz: `/admin` i `/admin/rejestracje`
+odpowiadają przekierowaniem na `/login` zamiast 404 — tych tras przed tym planem
+nie było.
 
-**Trzy kroki operacyjne dzielące repozytorium od działającej bramy:** wdrożenie na
-Vercela, ręczne nadanie sobie roli admina w SQL Editorze (`role` **i** `status`
-naraz — bramka sprawdza status przed rolą) oraz custom SMTP, bez którego kod OTP
-nie dotrze do nikogo poza właścicielem projektu Supabase.
+**Niepotwierdzone empirycznie:** droga uczestnika nie została przejściem
+sprawdzona. Bramka (`gate.ts`, `proxy.ts`) nie ma testów automatycznych, a OCR
+nie zobaczył jeszcze prawdziwego zdjęcia z telefonu. Dla niezalogowanego
+kryterium §12.2 jest potwierdzone (wszystkie trasy odbijają na `/login`), ale dla
+zalogowanego ze statusem `pending` dowodem pozostaje lektura kodu.
+
+**Dwa kroki operacyjne, zanim brama komukolwiek posłuży:** ręczne nadanie sobie
+roli admina w SQL Editorze (`role` **i** `status` naraz — bramka sprawdza status
+przed rolą, więc admin z `pending` zablokuje sam siebie) oraz custom SMTP, bez
+którego kod OTP nie dotrze do nikogo poza właścicielem projektu Supabase.
 
 Nie działa jeszcze: ranking na żywo i pełny panel admina (plan 03), bingo (04),
 sklepik (05), kasyno (06), gossipy (07), powiadomienia (08).
