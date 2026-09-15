@@ -74,6 +74,16 @@ Poprawienie jednego sprawia, że błąd wraca za drugim razem.
 `Site URL` w Authentication → URL Configuration musi wskazywać na produkcję.
 Zostawiony na `http://localhost:3000` wysyła ludziom linki w pustkę.
 
+### Wbudowany mailer Supabase nie nadaje się do tej apki
+
+Dwa ograniczenia, z których drugie jest blokujące: **2 maile na godzinę** oraz
+**wysyłka wyłącznie na adresy członków zespołu projektu** — każdy inny odbiorca
+dostaje `Email address not authorized` i mail nie wychodzi wcale.
+
+Oznacza to, że logowanie działa tylko właścicielowi projektu. Zanim ktokolwiek
+poza tobą spróbuje wejść, musi stać custom SMTP (Authentication → SMTP Settings);
+limit rośnie wtedy do 30/h i jest regulowany w Authentication → Rate Limits.
+
 ## Architektura w trzech zdaniach
 
 Saldo punktów nigdy nie jest kolumną — to zawsze `SUM(delta)` z `points_ledger`,
