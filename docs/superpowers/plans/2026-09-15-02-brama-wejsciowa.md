@@ -27,6 +27,22 @@ zamiar; gdy różnią się od kodu, rację ma kod.
 | 1b | `43bd34a` | cała migracja 0003, po przeglądzie |
 | 2 | `5f1d144`, `4dde9c7`, `7bc3e77` | 9 testów ponad pierwotne 7 |
 | 3 | `731a28e`, `964972b` | test wywołania bez sesji, dwa testy gałęzi „zachowaj istniejącą wartość", wspólne rusztowanie testów w helperze |
+| 4 | `f7f6378` | testy podmiany pliku (`upsert`) i niedozwolonego typu MIME — 7 zamiast 5 |
+| 5 | `cb5c0c7`, `9fddad3` | — |
+| 6 | `bee9241`, `ad33c95` | przycięcie pewności OCR do 0–1 i ślad w konsoli po awarii |
+| 7 | `caa7777`, `64e3253` | rygiel przed podwójną wysyłką, tłumaczenie błędów, zgoda SMS domyślnie wyłączona |
+| 8 | `3e0b29e`, `642983e` | równoległe podpisywanie URL-i, rozróżnienie awarii OCR od braku trafień, leniwe zdjęcia |
+
+**Dwie rzeczy ustalone empirycznie w trakcie, warte zapamiętania:**
+
+Supabase Storage przy `remove()` bez polityki DELETE **nie zgłasza błędu** — zwraca
+pustą listę usuniętych plików i nic nie robi. Test asertujący na `error` byłby
+bezwartościowy; trzeba sprawdzać stan bucketu. Podmiana przez `upload({upsert:true})`
+odbija się natomiast normalnie, o `new row violates row-level security policy`.
+
+`npx supabase migration new` bierze bieżący czas UTC i **nie gwarantuje** znacznika
+późniejszego niż poprzednia migracja, bo `20260915120000_init.sql` dostał w planie 01
+godzinę wpisaną z ręki. Za każdym razem trzeba sprawdzić nazwę przed wpisaniem treści.
 
 ## Czego ten plan świadomie nie robi
 
@@ -1089,7 +1105,7 @@ describe("bucket z dowodami przelewu", () => {
 npm test -- tests/db/storage-proofs.test.ts
 ```
 
-Expected: `5 passed`
+Expected: `7 passed`
 
 Jeśli pierwszy przypadek pada z `new row violates row-level security policy`,
 polityki bucketu nie zostały założone w projekcie testowym — wróć do Taska 1
@@ -1101,7 +1117,7 @@ Step 3 i sprawdź, czy `db push` na `jwk26-test` faktycznie przeszedł.
 npm test
 ```
 
-Expected: `43 passed` w sześciu plikach (13 z planu 01 + 30 z tego planu)
+Expected: `45 passed` w sześciu plikach (13 z planu 01 + 32 z tego planu)
 
 - [ ] **Step 4: Commit**
 
@@ -1899,7 +1915,7 @@ git commit -m "Dodaj kolejkę zgłoszeń w panelu admina"
 npm test
 ```
 
-Expected: `49 passed` w siedmiu plikach
+Expected: `51 passed` w siedmiu plikach
 
 - [ ] **Step 2: Przejdź pełną ścieżkę lokalnie**
 
@@ -1988,7 +2004,7 @@ git push origin main
 Działa: pełna droga od kodu OTP do rankingu — formularz ze zdjęciem przelewu,
 kompresja i OCR w przeglądarce, prywatny bucket widoczny wyłącznie dla admina,
 akceptacja przypisująca drużynę przez funkcję `SECURITY DEFINER`, kolejka
-zgłoszeń w panelu. 49 testów pilnujących RLS, funkcji rozpatrującej i polityk
+zgłoszeń w panelu. 51 testów pilnujących RLS, funkcji rozpatrującej i polityk
 bucketu.
 
 Nie działa jeszcze: ranking na żywo i pełny panel admina (plan 03), bingo (04),
