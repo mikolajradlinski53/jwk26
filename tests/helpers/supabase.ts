@@ -65,3 +65,25 @@ export async function firstTeamId(): Promise<string> {
   if (error) throw error;
   return data.id as string;
 }
+
+/** Nadaje rolę admina — omija granty kolumnowe, bo idzie kluczem serwisowym. */
+export async function makeAdmin(user: TestUser): Promise<void> {
+  const { error } = await admin
+    .from("profiles")
+    .update({ role: "admin" })
+    .eq("id", user.id);
+  if (error) throw error;
+}
+
+/**
+ * Ustawia status 'approved' i drużynę, pomijając ścieżkę rejestracji.
+ * Klucz serwisowy omija granty kolumnowe, które blokują te pola roli
+ * `authenticated` — dlatego to działa tutaj, a nie zadziałałoby w aplikacji.
+ */
+export async function approve(user: TestUser, teamId: string): Promise<void> {
+  const { error } = await admin
+    .from("profiles")
+    .update({ status: "approved", team_id: teamId })
+    .eq("id", user.id);
+  if (error) throw error;
+}
