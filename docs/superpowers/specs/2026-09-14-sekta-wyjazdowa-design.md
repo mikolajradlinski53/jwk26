@@ -17,7 +17,9 @@ potwierdzonym zdjęciem przelewu i akceptacji admina.
 
 ## 2. Stack
 
-- **Next.js 15** (App Router, TypeScript) — `src/` layout
+- **Next.js 16** (App Router, TypeScript) — `src/` layout
+  (spec pisany pod 15; `create-next-app@latest` daje 16.3.5, gdzie `middleware.ts`
+  nazywa się `proxy.ts` — reszta bez zmian)
 - **Supabase** — Postgres, Auth (OTP e-mail), Storage (zdjęcia), Realtime
 - **Tailwind CSS v4**
 - **Vercel** — hosting (odrzucone: Cloudflare Workers, patrz §10)

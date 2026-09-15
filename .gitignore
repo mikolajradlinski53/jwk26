@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Wzorzec bez sekretów ma być śledzony mimo reguły .env* wyżej.
+!.env.example
