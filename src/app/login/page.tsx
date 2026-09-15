@@ -9,7 +9,7 @@ import { Field } from "@/components/ui/Field";
 
 const DOMENA = "@samorzad.ue.wroc.pl";
 
-// Kod OTP zamiast magic linka: na telefonie przepisanie sześciu cyfr jest
+// Kod OTP zamiast magic linka: na telefonie przepisanie kilku cyfr jest
 // wygodniejsze niż skakanie między aplikacją pocztową a przeglądarką.
 export default function LoginPage() {
   const router = useRouter();
@@ -34,8 +34,24 @@ export default function LoginPage() {
       options: { shouldCreateUser: true },
     });
     setCzeka(false);
-    if (error) setBlad(error.message);
-    else setEtap("kod");
+
+    if (!error) {
+      setEtap("kod");
+      return;
+    }
+
+    // Przy limicie wysyłki i tak przechodzimy do wpisywania kodu: wcześniejszy
+    // kod z maila może być nadal ważny, a zatrzymanie człowieka na tym ekranie
+    // znaczyłoby, że musi czekać godzinę mając w ręku działający kod.
+    if (/rate limit|too many|security purposes/i.test(error.message)) {
+      setBlad(
+        "Limit wysyłki wyczerpany. Jeśli masz wcześniejszy kod, wpisz go poniżej.",
+      );
+      setEtap("kod");
+      return;
+    }
+
+    setBlad(error.message);
   }
 
   async function potwierdz() {
@@ -74,6 +90,20 @@ export default function LoginPage() {
           <Button onClick={wyslijKod} disabled={czeka || !email}>
             {czeka ? "Wysyłam znak..." : "Wyślij kod"}
           </Button>
+
+          {/* Bez tego jedyna droga do pola z kodem prowadzi przez wysyłkę maila,
+              a wbudowany mailer Supabase przepuszcza dwa na godzinę. Kto ma już
+              kod, nie powinien palić limitu tylko po to, żeby go wpisać. */}
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setBlad(null);
+              setEtap("kod");
+            }}
+            disabled={czeka || !email}
+          >
+            Mam już kod
+          </Button>
         </div>
       ) : (
         <div className="grid gap-5">
@@ -90,7 +120,7 @@ export default function LoginPage() {
             // maxLength ucinał wpisywanie, a przycisk i tak pozostawał aktywny
             // dla wartości, której serwer nie przyjmie.
             maxLength={10}
-            placeholder="123456"
+            placeholder="kod z maila"
             value={kod}
             onChange={(e) => setKod(e.target.value.replace(/\D/g, ""))}
             error={blad}
