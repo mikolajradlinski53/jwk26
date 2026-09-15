@@ -132,7 +132,7 @@ describe("zgłoszenia rejestracyjne", () => {
     expect(data).toHaveLength(1);
   });
 
-  it("nie pozwala nikomu zmienić statusu zwykłym UPDATE-em", async () => {
+  it("nie pozwala uczestnikowi zmienić statusu zwykłym UPDATE-em", async () => {
     const user = await nowyUzytkownik("uparty");
     const { data: wiersz } = await admin
       .from("registrations")
@@ -155,6 +155,74 @@ describe("zgłoszenia rejestracyjne", () => {
       .eq("id", wiersz!.id)
       .single();
     expect(kontrola!.status).toBe("pending");
+  });
+
+  it("nie pozwala nawet adminowi zmienić statusu zwykłym UPDATE-em", async () => {
+    const petent = await nowyUzytkownik("podopieczny");
+    const { data: wiersz, error: bladZapisu } = await admin
+      .from("registrations")
+      .insert(zgloszenie(petent))
+      .select("id")
+      .single();
+    expect(bladZapisu).toBeNull();
+
+    const szef = await nowyUzytkownik("kaplan-update");
+    await makeAdmin(szef);
+    const client = await signIn(szef);
+
+    // Kontrola: admin ten wiersz widzi. Bez tego puste [] przy UPDATE mogłoby
+    // równie dobrze znaczyć „nie widzę wiersza", a nie „nie wolno mi go zmienić".
+    const { data: widoczny } = await client
+      .from("registrations")
+      .select("id")
+      .eq("id", wiersz!.id);
+    expect(widoczny).toHaveLength(1);
+
+    // To ta połowa reguły, którą ktoś odruchowo „naprawi", dokładając
+    // registrations_admin_write na wzór teams_admin_write z migracji 0001.
+    // Wtedy znika gwarancja, że profiles.status zmienia się wyłącznie przez
+    // review_registration.
+    const { data: poZmianie } = await client
+      .from("registrations")
+      .update({ status: "approved" })
+      .eq("id", wiersz!.id)
+      .select();
+
+    expect(poZmianie).toEqual([]);
+
+    const { data: kontrola } = await admin
+      .from("registrations")
+      .select("status")
+      .eq("id", wiersz!.id)
+      .single();
+    expect(kontrola!.status).toBe("pending");
+  });
+
+  it("nie pozwala skasować zgłoszenia", async () => {
+    const user = await nowyUzytkownik("wycofujacy");
+    const client = await signIn(user);
+    const { data: wiersz, error: bladZapisu } = await client
+      .from("registrations")
+      .insert(zgloszenie(user))
+      .select("id")
+      .single();
+    expect(bladZapisu).toBeNull();
+
+    // Gdyby DELETE był dozwolony, unikalny indeks na czekających zgłoszeniach
+    // przestałby cokolwiek chronić: pętla delete+insert zasypuje kolejkę admina.
+    const { data: poKasowaniu } = await client
+      .from("registrations")
+      .delete()
+      .eq("id", wiersz!.id)
+      .select();
+
+    expect(poKasowaniu).toEqual([]);
+
+    const { data: kontrola } = await admin
+      .from("registrations")
+      .select("id")
+      .eq("id", wiersz!.id);
+    expect(kontrola).toHaveLength(1);
   });
 
   it("pokazuje uczestnikowi jego własne zgłoszenie", async () => {
@@ -229,59 +297,6 @@ describe("hartowanie bramy", () => {
     expect(error).not.toBeNull();
   });
 
-  it("nie pozwala nawet adminowi zmienić statusu zwykłym UPDATE-em", async () => {
-    const petent = await nowyUzytkownik("podopieczny");
-    const { data: wiersz, error: bladZapisu } = await admin
-      .from("registrations")
-      .insert(zgloszenie(petent))
-      .select("id")
-      .single();
-    expect(bladZapisu).toBeNull();
-
-    const szef = await nowyUzytkownik("kaplan-update");
-    await makeAdmin(szef);
-    const client = await signIn(szef);
-
-    // To ta połowa reguły, którą ktoś odruchowo „naprawi", dokładając
-    // registrations_admin_write na wzór teams_admin_write z migracji 0001.
-    // Wtedy znika gwarancja, że profiles.status zmienia się wyłącznie przez
-    // review_registration.
-    const { data: poZmianie } = await client
-      .from("registrations")
-      .update({ status: "approved" })
-      .eq("id", wiersz!.id)
-      .select();
-
-    expect(poZmianie).toEqual([]);
-  });
-
-  it("nie pozwala skasować zgłoszenia", async () => {
-    const user = await nowyUzytkownik("wycofujacy");
-    const client = await signIn(user);
-    const { data: wiersz, error: bladZapisu } = await client
-      .from("registrations")
-      .insert(zgloszenie(user))
-      .select("id")
-      .single();
-    expect(bladZapisu).toBeNull();
-
-    // Gdyby DELETE był dozwolony, unikalny indeks na czekających zgłoszeniach
-    // przestałby cokolwiek chronić: pętla delete+insert zasypuje kolejkę admina.
-    const { data: poKasowaniu } = await client
-      .from("registrations")
-      .delete()
-      .eq("id", wiersz!.id)
-      .select();
-
-    expect(poKasowaniu).toEqual([]);
-
-    const { data: kontrola } = await admin
-      .from("registrations")
-      .select("id")
-      .eq("id", wiersz!.id);
-    expect(kontrola).toHaveLength(1);
-  });
-
   it("pozwala złożyć zgłoszenie ponownie po odrzuceniu", async () => {
     const user = await nowyUzytkownik("druga-szansa");
     const client = await signIn(user);
@@ -305,6 +320,12 @@ describe("hartowanie bramy", () => {
     const { error } = await client.from("registrations").insert(zgloszenie(user));
 
     expect(error).toBeNull();
+
+    const { data: wszystkie } = await admin
+      .from("registrations")
+      .select("status")
+      .eq("user_id", user.id);
+    expect(wszystkie).toHaveLength(2);
   });
 
   it("odrzuca liczbę trafionych słów spoza zakresu 0-6", async () => {
