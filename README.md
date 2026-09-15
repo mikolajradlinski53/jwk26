@@ -4,6 +4,7 @@ Webapp (PWA) dla uczestników wyjazdu samorządu UEW: ranking drużyn, bingo ze
 zdjęciami, sklepik, kasyno i gossipy. Dostęp wyłącznie dla adresów
 `@samorzad.ue.wroc.pl` po potwierdzeniu wpłaty.
 
+- Produkcja: <https://jwk26.vercel.app>
 - Spec: [`docs/superpowers/specs/2026-09-14-sekta-wyjazdowa-design.md`](docs/superpowers/specs/2026-09-14-sekta-wyjazdowa-design.md)
 - Plany: [`docs/superpowers/plans/`](docs/superpowers/plans/)
 - Poprzedni szkielet: gałąź `archive/skeleton`
@@ -44,6 +45,20 @@ Każdą migrację stosuj w **obu** projektach: głównym i testowym.
 
 Nową migrację twórz przez `npx supabase migration new <nazwa>` — wersja musi być
 znacznikiem czasu, żeby kolejność się zgadzała.
+
+## Wdrożenie
+
+```bash
+npx vercel --prod
+```
+
+Zmienne środowiskowe siedzą w Vercelu (`vercel env ls`), nie w repo. Po zmianie
+adresu produkcyjnego trzeba go dopisać w Supabase → **Authentication → URL
+Configuration** (`Site URL` oraz `Redirect URLs`) — inaczej kody OTP z produkcji
+odbijają.
+
+`SUPABASE_SERVICE_ROLE_KEY` celowo nie jest jeszcze w Vercelu. Dochodzi w planie
+08 razem z SMS-ami; wcześniej byłby tam ostrym nożem bez zastosowania.
 
 ## Architektura w trzech zdaniach
 
