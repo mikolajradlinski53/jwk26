@@ -76,14 +76,18 @@ export async function makeAdmin(user: TestUser): Promise<void> {
 }
 
 /**
- * Ustawia status 'approved' i drużynę, pomijając ścieżkę rejestracji.
- * Klucz serwisowy omija granty kolumnowe, które blokują te pola roli
- * `authenticated` — dlatego to działa tutaj, a nie zadziałałoby w aplikacji.
+ * Ustawia status 'approved' bez przechodzenia przez review_registration.
+ * Nazwa mówi „ustaw", nie „zaakceptuj", bo funkcja omija całą ścieżkę akceptacji:
+ * klucz serwisowy nie podlega grantom kolumnowym, które blokują te pola roli
+ * `authenticated`. Drużyna jest opcjonalna — bywa testowi obojętna.
  */
-export async function approve(user: TestUser, teamId: string): Promise<void> {
+export async function ustawJakoZaakceptowany(
+  user: TestUser,
+  teamId?: string,
+): Promise<void> {
   const { error } = await admin
     .from("profiles")
-    .update({ status: "approved", team_id: teamId })
+    .update({ status: "approved", ...(teamId ? { team_id: teamId } : {}) })
     .eq("id", user.id);
   if (error) throw error;
 }
