@@ -315,14 +315,18 @@ export async function makeAdmin(user: TestUser): Promise<void> {
 
 
 /**
- * Ustawia status 'approved' i drużynę, pomijając ścieżkę rejestracji.
- * Klucz serwisowy omija granty kolumnowe, które blokują te pola roli
- * `authenticated` — dlatego to działa tutaj, a nie zadziałałoby w aplikacji.
+ * Ustawia status 'approved' bez przechodzenia przez review_registration.
+ * Nazwa mówi „ustaw", nie „zaakceptuj", bo funkcja omija całą ścieżkę akceptacji:
+ * klucz serwisowy nie podlega grantom kolumnowym, które blokują te pola roli
+ * `authenticated`. Drużyna jest opcjonalna — bywa testowi obojętna.
  */
-export async function approve(user: TestUser, teamId: string): Promise<void> {
+export async function ustawJakoZaakceptowany(
+  user: TestUser,
+  teamId?: string,
+): Promise<void> {
   const { error } = await admin
     .from("profiles")
-    .update({ status: "approved", team_id: teamId })
+    .update({ status: "approved", ...(teamId ? { team_id: teamId } : {}) })
     .eq("id", user.id);
   if (error) throw error;
 }
@@ -344,8 +348,7 @@ import {
   signIn,
   deleteUser,
   makeAdmin,
-  approve,
-  firstTeamId,
+  ustawJakoZaakceptowany,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -354,6 +357,7 @@ const sprzatanie: TestUser[] = [];
 afterEach(async () => {
   while (sprzatanie.length) {
     const user = sprzatanie.pop()!;
+    // Redundantne wobec kaskady z profiles — zostawione jako polisa.
     await admin.from("registrations").delete().eq("user_id", user.id);
     await deleteUser(user);
   }
@@ -391,7 +395,12 @@ describe("zgłoszenia rejestracyjne", () => {
     const sprytny = await nowyUzytkownik("podszywacz");
     const client = await signIn(sprytny);
 
-    const { error } = await client.from("registrations").insert(zgloszenie(obcy));
+    const { error } = await client.from("registrations").insert({
+      ...zgloszenie(obcy),
+      // Własna ścieżka, żeby jedynym naruszeniem był user_id. Inaczej test
+      // przechodzi także po usunięciu warunku, który rzekomo pilnuje.
+      proof_path: `${sprytny.id}/dowod.jpg`,
+    });
 
     expect(error).not.toBeNull();
   });
@@ -424,7 +433,12 @@ describe("zgłoszenia rejestracyjne", () => {
 
   it("nie pokazuje cudzych zgłoszeń", async () => {
     const obcy = await nowyUzytkownik("skryty");
-    await admin.from("registrations").insert(zgloszenie(obcy));
+    const { error: bladZapisu } = await admin
+      .from("registrations")
+      .insert(zgloszenie(obcy));
+    // Bez tej asercji test byłby zielony także wtedy, gdyby wiersz w ogóle nie
+    // powstał — „nie widzę" nic nie znaczy, kiedy nie ma czego widzieć.
+    expect(bladZapisu).toBeNull();
 
     const patrzacy = await nowyUzytkownik("ciekawski");
     const client = await signIn(patrzacy);
@@ -440,9 +454,30 @@ describe("zgłoszenia rejestracyjne", () => {
     expect(data).toEqual([]);
   });
 
+  it("pokazuje uczestnikowi jego własne zgłoszenie", async () => {
+    const user = await nowyUzytkownik("wlasciciel-zgloszenia");
+    const client = await signIn(user);
+
+    const { error: bladZapisu } = await client
+      .from("registrations")
+      .insert(zgloszenie(user));
+    expect(bladZapisu).toBeNull();
+
+    // Na tym odczycie stoi cały ekran /rejestracja: to on decyduje, czy pokazać
+    // poczekalnię, formularz, czy notatkę o odrzuceniu. Bez testu ten człon
+    // polityki mógłby wypaść niezauważony.
+    const { data } = await client.from("registrations").select("id, status");
+
+    expect(data).toHaveLength(1);
+    expect(data![0].status).toBe("pending");
+  });
+
   it("pokazuje adminowi wszystkie zgłoszenia", async () => {
     const zglaszajacy = await nowyUzytkownik("petent");
-    await admin.from("registrations").insert(zgloszenie(zglaszajacy));
+    const { error: bladZapisu } = await admin
+      .from("registrations")
+      .insert(zgloszenie(zglaszajacy));
+    expect(bladZapisu).toBeNull();
 
     const szef = await nowyUzytkownik("kaplan");
     await makeAdmin(szef);
@@ -482,7 +517,7 @@ describe("zgłoszenia rejestracyjne", () => {
   });
 });
 
-// Cztery zabezpieczenia dołożone migracją 0003 po przeglądzie — patrz Task 1b.
+// Zabezpieczenia z migracji 20260915120200_hartowanie_bramy.sql.
 describe("hartowanie bramy", () => {
   it("nie pozwala złożyć drugiego zgłoszenia, póki pierwsze czeka", async () => {
     const user = await nowyUzytkownik("zalewacz");
@@ -513,9 +548,8 @@ describe("hartowanie bramy", () => {
   });
 
   it("nie pozwala złożyć zgłoszenia osobie już zaakceptowanej", async () => {
-    const teamId = await firstTeamId();
     const user = await nowyUzytkownik("juz-w-srodku");
-    await approve(user, teamId);
+    await ustawJakoZaakceptowany(user);
     const client = await signIn(user);
 
     // Inaczej odrzucenie takiego zgłoszenia zbiłoby jej status na 'rejected'
@@ -535,6 +569,95 @@ describe("hartowanie bramy", () => {
 
     expect(error).not.toBeNull();
   });
+
+  it("odrzuca liczbę trafionych słów spoza zakresu 0-6", async () => {
+    const user = await nowyUzytkownik("liczykrupa");
+    const client = await signIn(user);
+
+    const { error } = await client
+      .from("registrations")
+      .insert({ ...zgloszenie(user), ocr_keywords_hit: 99 });
+
+    expect(error).not.toBeNull();
+  });
+
+  it("nie pozwala nawet adminowi zmienić statusu zwykłym UPDATE-em", async () => {
+    const petent = await nowyUzytkownik("podopieczny");
+    const { data: wiersz, error: bladZapisu } = await admin
+      .from("registrations")
+      .insert(zgloszenie(petent))
+      .select("id")
+      .single();
+    expect(bladZapisu).toBeNull();
+
+    const szef = await nowyUzytkownik("kaplan-update");
+    await makeAdmin(szef);
+    const client = await signIn(szef);
+
+    // To ta połowa reguły, którą ktoś odruchowo „naprawi", dokładając
+    // registrations_admin_write na wzór teams_admin_write z migracji 0001.
+    // Wtedy znika gwarancja, że profiles.status zmienia się wyłącznie przez
+    // review_registration.
+    const { data: poZmianie } = await client
+      .from("registrations")
+      .update({ status: "approved" })
+      .eq("id", wiersz!.id)
+      .select();
+
+    expect(poZmianie).toEqual([]);
+  });
+
+  it("nie pozwala skasować zgłoszenia", async () => {
+    const user = await nowyUzytkownik("wycofujacy");
+    const client = await signIn(user);
+    const { data: wiersz, error: bladZapisu } = await client
+      .from("registrations")
+      .insert(zgloszenie(user))
+      .select("id")
+      .single();
+    expect(bladZapisu).toBeNull();
+
+    // Gdyby DELETE był dozwolony, unikalny indeks na czekających zgłoszeniach
+    // przestałby cokolwiek chronić: pętla delete+insert zasypuje kolejkę admina.
+    const { data: poKasowaniu } = await client
+      .from("registrations")
+      .delete()
+      .eq("id", wiersz!.id)
+      .select();
+
+    expect(poKasowaniu).toEqual([]);
+
+    const { data: kontrola } = await admin
+      .from("registrations")
+      .select("id")
+      .eq("id", wiersz!.id);
+    expect(kontrola).toHaveLength(1);
+  });
+
+  it("pozwala złożyć zgłoszenie ponownie po odrzuceniu", async () => {
+    const user = await nowyUzytkownik("druga-szansa");
+    const client = await signIn(user);
+
+    const { data: pierwsze, error: bladZapisu } = await client
+      .from("registrations")
+      .insert(zgloszenie(user))
+      .select("id")
+      .single();
+    expect(bladZapisu).toBeNull();
+
+    // Odrzucenie kluczem serwisowym — samą funkcję review_registration bada Task 3.
+    await admin
+      .from("registrations")
+      .update({ status: "rejected" })
+      .eq("id", pierwsze!.id);
+
+    // Indeks jest częściowy (where status = 'pending'). Gdyby ktoś zapisał go
+    // bez tego warunku, osoba odrzucona nigdy nie złożyłaby zgłoszenia ponownie,
+    // a ekran „Ponowna próba" z Taska 7 byłby ślepą uliczką.
+    const { error } = await client.from("registrations").insert(zgloszenie(user));
+
+    expect(error).toBeNull();
+  });
 });
 ```
 
@@ -544,7 +667,7 @@ describe("hartowanie bramy", () => {
 npm test -- tests/db/registrations.test.ts
 ```
 
-Expected: `11 passed`
+Expected: `16 passed`
 
 - [ ] **Step 4: Commit**
 
@@ -943,7 +1066,7 @@ Step 3 i sprawdź, czy `db push` na `jwk26-test` faktycznie przeszedł.
 npm test
 ```
 
-Expected: `35 passed` w sześciu plikach (13 z planu 01 + 22 z tego planu)
+Expected: `40 passed` w sześciu plikach (13 z planu 01 + 27 z tego planu)
 
 - [ ] **Step 4: Commit**
 
@@ -1741,7 +1864,7 @@ git commit -m "Dodaj kolejkę zgłoszeń w panelu admina"
 npm test
 ```
 
-Expected: `41 passed` w siedmiu plikach
+Expected: `46 passed` w siedmiu plikach
 
 - [ ] **Step 2: Przejdź pełną ścieżkę lokalnie**
 
@@ -1830,7 +1953,7 @@ git push origin main
 Działa: pełna droga od kodu OTP do rankingu — formularz ze zdjęciem przelewu,
 kompresja i OCR w przeglądarce, prywatny bucket widoczny wyłącznie dla admina,
 akceptacja przypisująca drużynę przez funkcję `SECURITY DEFINER`, kolejka
-zgłoszeń w panelu. 41 testów pilnujących RLS, funkcji rozpatrującej i polityk
+zgłoszeń w panelu. 46 testów pilnujących RLS, funkcji rozpatrującej i polityk
 bucketu.
 
 Nie działa jeszcze: ranking na żywo i pełny panel admina (plan 03), bingo (04),
