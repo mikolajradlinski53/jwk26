@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
@@ -19,8 +19,13 @@ export function PrzyciskiDecyzji({
   const [czeka, setCzeka] = useState(false);
   const [blad, setBlad] = useState<string | null>(null);
 
+  // Ten sam rygiel co w formularzu rejestracyjnym: `czeka` odczytane
+  // w domknięciu bywa nieaktualne, a chodzi o okno krótsze niż jeden render.
+  const wToku = useRef(false);
+
   async function rozpatrz(akceptuj: boolean) {
-    if (czeka) return;
+    if (wToku.current) return;
+    wToku.current = true;
     setBlad(null);
     setCzeka(true);
 
@@ -35,6 +40,7 @@ export function PrzyciskiDecyzji({
       console.error("Rozpatrzenie zgłoszenia nie przeszło:", error);
       setBlad(error.message);
       setCzeka(false);
+      wToku.current = false;
       return;
     }
     router.refresh();

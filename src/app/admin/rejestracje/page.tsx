@@ -55,6 +55,9 @@ export default async function KolejkaRejestracji() {
               <img
                 src={podglady.get(z.id)!}
                 alt={`Dowód przelewu — ${z.full_name}`}
+                // Bez lazy przeglądarka zleca pobranie wszystkich zdjęć w kolejce
+                // naraz. Admin ogląda je po kolei, często na telefonie w drodze.
+                loading="lazy"
                 className="mt-3 w-full border border-candle/20"
               />
             ) : (
