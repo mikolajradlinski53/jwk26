@@ -71,9 +71,15 @@ npx supabase migration new brama_wejsciowa
 
 Expected: `Created new migration at supabase/migrations/20260916XXXXXX_brama_wejsciowa.sql`
 
-Zapamiętaj wypisaną nazwę — dalsze kroki mówią o niej „plik migracji". Znacznik
-czasu musi być późniejszy niż `20260915120000_init.sql`, a `migration new` gwarantuje
-to samo z siebie.
+Zapamiętaj wypisaną nazwę — dalsze kroki mówią o niej „plik migracji".
+
+**Sprawdź znacznik czasu, zanim cokolwiek wpiszesz.** Musi być późniejszy niż
+`20260915120000_init.sql`, a `migration new` tego nie gwarantuje: bierze bieżący
+czas UTC, podczas gdy migracja 0001 dostała w planie 01 znacznik wpisany z ręki
+(12:00:00), wyprzedzający realny czas. Jeśli CLI wypisze wcześniejszą nazwę,
+przemianuj plik na `20260915120100_brama_wejsciowa.sql` — kolejność ma znaczenie,
+bo ta migracja korzysta z typu `user_status`, tabeli `profiles` i funkcji
+`public.is_admin()` z 0001.
 
 - [ ] **Step 2: Wpisz treść migracji**
 
@@ -255,6 +261,38 @@ git commit -m "Dodaj migrację 0002: zgłoszenia, bucket na dowody, funkcję roz
 
 ---
 
+## Task 1b: Hartowanie po przeglądzie (migracja 0003)
+
+> Dopisane w trakcie wykonania, po przeglądzie jakości migracji 0002. Ponieważ
+> 0002 była już zastosowana w obu bazach, poprawki musiały pójść osobnym plikiem:
+> `supabase/migrations/20260915120200_hartowanie_bramy.sql`.
+
+Cztery dziury, których pierwsza wersja nie zamykała:
+
+1. **Brak limitu liczby zgłoszeń.** Polityka INSERT pilnowała treści, nie liczby —
+   pętla insertów z konsoli przechodziła w całości i zasypywała kolejkę admina,
+   w której każdy wiersz kosztuje osobne `createSignedUrl`. Domknięte unikalnym
+   indeksem częściowym na `(user_id) where status = 'pending'`.
+2. **Path traversal w `proof_path`.** `like 'uuid/%'` przepuszczał
+   `uuid/../cudzy-uuid/plik.jpg`, a klient Storage normalizuje `..` przy budowaniu
+   URL-a — admin oglądałby cudzy dowód podpisany nazwiskiem napastnika. Domknięte
+   warunkiem `proof_path !~ '\.\.'`.
+3. **`p_approve = null` po cichu odrzucało zgłoszenie.** `null and ...` daje `null`,
+   czyli gałąź `else`, a `case when null` traktuje `null` jak fałsz. Literówka
+   w panelu kosztowałaby kogoś wyjazd. Domknięte jawnym `raise exception`.
+4. **Osoba już zaakceptowana mogła złożyć nowe zgłoszenie**, a jego odrzucenie
+   zbijało jej `profiles.status` na `rejected` i wyrzucało z aplikacji. Domknięte
+   warunkiem `not public.is_approved()` w polityce INSERT.
+
+Dołożone też `check`i na pola OCR (`ocr_confidence` w 0–1, `ocr_keywords_hit`
+w 0–6, `ocr_text` do 20 000 znaków) — nie po to, żeby ufać klientowi, bo bramką
+jest człowiek (D4), tylko żeby panel nie wyświetlił „pewność 1e+32%" i żeby jedno
+zgłoszenie nie wepchnęło megabajta tekstu do darmowej bazy.
+
+Testy tych czterech zabezpieczeń są w Taskach 2 i 3.
+
+---
+
 ## Task 2: Testy RLS tabeli zgłoszeń
 
 **Files:**
@@ -275,13 +313,22 @@ export async function makeAdmin(user: TestUser): Promise<void> {
   if (error) throw error;
 }
 
+
+/**
+ * Ustawia status 'approved' i drużynę, pomijając ścieżkę rejestracji.
+ * Klucz serwisowy omija granty kolumnowe, które blokują te pola roli
+ * `authenticated` — dlatego to działa tutaj, a nie zadziałałoby w aplikacji.
+ */
+export async function approve(user: TestUser, teamId: string): Promise<void> {
+  const { error } = await admin
+    .from("profiles")
+    .update({ status: "approved", team_id: teamId })
+    .eq("id", user.id);
+  if (error) throw error;
+}
 ```
 
-Tylko `makeAdmin` — odpowiednika dla „zatwierdź i przypisz drużynę" celowo tu nie
-ma, bo żaden test z tego planu go nie potrzebuje: status zmienia się przez
-`review_registration`, czyli dokładnie to, co jest tu badane.
-
-Testy z planu 01 mają własną, lokalną kopię tego pomocnika. Zostawiamy ją
+Testy z planu 01 mają własne, lokalne kopie tych pomocników. Zostawiamy je
 w spokoju — przepisywanie działających testów przy okazji dokładania nowych to
 proszenie się o regres w miejscu, którego ten plan nie dotyczy.
 
@@ -297,6 +344,8 @@ import {
   signIn,
   deleteUser,
   makeAdmin,
+  approve,
+  firstTeamId,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -432,6 +481,61 @@ describe("zgłoszenia rejestracyjne", () => {
     expect(kontrola!.status).toBe("pending");
   });
 });
+
+// Cztery zabezpieczenia dołożone migracją 0003 po przeglądzie — patrz Task 1b.
+describe("hartowanie bramy", () => {
+  it("nie pozwala złożyć drugiego zgłoszenia, póki pierwsze czeka", async () => {
+    const user = await nowyUzytkownik("zalewacz");
+    const client = await signIn(user);
+
+    const pierwsze = await client.from("registrations").insert(zgloszenie(user));
+    expect(pierwsze.error).toBeNull();
+
+    // Bez unikalnego indeksu częściowego pętla insertów z konsoli zasypałaby
+    // kolejkę admina, gdzie każdy wiersz kosztuje osobne createSignedUrl.
+    const drugie = await client.from("registrations").insert(zgloszenie(user));
+    expect(drugie.error).not.toBeNull();
+  });
+
+  it("nie pozwala wskazać ścieżki wychodzącej z własnego folderu", async () => {
+    const obcy = await nowyUzytkownik("sasiad");
+    const sprytny = await nowyUzytkownik("wedrowiec");
+    const client = await signIn(sprytny);
+
+    // `like 'uuid/%'` sam w sobie to przepuszcza, a klient Storage normalizuje
+    // `..` przy budowaniu URL-a — czyli trafiłoby na cudzy plik.
+    const { error } = await client.from("registrations").insert({
+      ...zgloszenie(sprytny),
+      proof_path: `${sprytny.id}/../${obcy.id}/dowod.jpg`,
+    });
+
+    expect(error).not.toBeNull();
+  });
+
+  it("nie pozwala złożyć zgłoszenia osobie już zaakceptowanej", async () => {
+    const teamId = await firstTeamId();
+    const user = await nowyUzytkownik("juz-w-srodku");
+    await approve(user, teamId);
+    const client = await signIn(user);
+
+    // Inaczej odrzucenie takiego zgłoszenia zbiłoby jej status na 'rejected'
+    // i wyrzuciło ją z aplikacji, mimo że była już w drużynie.
+    const { error } = await client.from("registrations").insert(zgloszenie(user));
+
+    expect(error).not.toBeNull();
+  });
+
+  it("odrzuca pewność OCR spoza zakresu 0-1", async () => {
+    const user = await nowyUzytkownik("fantasta");
+    const client = await signIn(user);
+
+    const { error } = await client
+      .from("registrations")
+      .insert({ ...zgloszenie(user), ocr_confidence: 5 });
+
+    expect(error).not.toBeNull();
+  });
+});
 ```
 
 - [ ] **Step 3: Uruchom testy**
@@ -440,7 +544,7 @@ describe("zgłoszenia rejestracyjne", () => {
 npm test -- tests/db/registrations.test.ts
 ```
 
-Expected: `7 passed`
+Expected: `11 passed`
 
 - [ ] **Step 4: Commit**
 
@@ -648,6 +752,30 @@ describe("rozpatrywanie zgłoszeń", () => {
       .single();
     expect(data!.status).toBe("approved");
   });
+
+  it("odmawia rozpatrzenia bez decyzji", async () => {
+    // Zabezpieczenie z migracji 0003: przed nim `p_approve = null` przechodziło
+    // oba warunki i po cichu odrzucało zgłoszenie, bo `case when null` zachowuje
+    // się jak fałsz. Literówka w panelu kosztowałaby kogoś wyjazd.
+    const petent = await nowyUzytkownik("niezdecydowany");
+    const zgloszenieId = await zlozZgloszenie(petent);
+    const szef = await nowyAdmin("kaplan5");
+    const client = await signIn(szef);
+
+    const { error } = await client.rpc("review_registration", {
+      p_registration_id: zgloszenieId,
+      p_approve: null,
+    });
+
+    expect(error).not.toBeNull();
+
+    const { data } = await admin
+      .from("registrations")
+      .select("status")
+      .eq("id", zgloszenieId)
+      .single();
+    expect(data!.status).toBe("pending");
+  });
 });
 ```
 
@@ -657,7 +785,7 @@ describe("rozpatrywanie zgłoszeń", () => {
 npm test -- tests/db/review-registration.test.ts
 ```
 
-Expected: `5 passed`
+Expected: `6 passed`
 
 - [ ] **Step 3: Commit**
 
@@ -815,7 +943,7 @@ Step 3 i sprawdź, czy `db push` na `jwk26-test` faktycznie przeszedł.
 npm test
 ```
 
-Expected: `30 passed` w sześciu plikach (13 z planu 01 + 17 z tego planu)
+Expected: `35 passed` w sześciu plikach (13 z planu 01 + 22 z tego planu)
 
 - [ ] **Step 4: Commit**
 
@@ -1613,7 +1741,7 @@ git commit -m "Dodaj kolejkę zgłoszeń w panelu admina"
 npm test
 ```
 
-Expected: `36 passed` w siedmiu plikach
+Expected: `41 passed` w siedmiu plikach
 
 - [ ] **Step 2: Przejdź pełną ścieżkę lokalnie**
 
@@ -1702,7 +1830,7 @@ git push origin main
 Działa: pełna droga od kodu OTP do rankingu — formularz ze zdjęciem przelewu,
 kompresja i OCR w przeglądarce, prywatny bucket widoczny wyłącznie dla admina,
 akceptacja przypisująca drużynę przez funkcję `SECURITY DEFINER`, kolejka
-zgłoszeń w panelu. 36 testów pilnujących RLS, funkcji rozpatrującej i polityk
+zgłoszeń w panelu. 41 testów pilnujących RLS, funkcji rozpatrującej i polityk
 bucketu.
 
 Nie działa jeszcze: ranking na żywo i pełny panel admina (plan 03), bingo (04),
