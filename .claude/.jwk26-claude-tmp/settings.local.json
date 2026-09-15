@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(git ls-remote https://github.com/mikolajradlinski53/jwk26.git 2>&1)",
+      "Bash(rm -rf mnt)",
+      "Bash(rm -f Leaderboard.tsx actions.ts client.ts middleware.ts page.tsx server.ts open-next.config.ts wrangler.jsonc README.md .env.local.example)",
+      "Bash(cd \"/c/Users/Mikołaj/Downloads/jwk26\" && find .claude -type f | head -20 && mv .claude ../.jwk26-claude-tmp && ls -A)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Mikołaj\\Downloads\\jwk26\\.claude"
+    ]
+  }
+}
