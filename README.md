@@ -60,6 +60,20 @@ odbijają.
 `SUPABASE_SERVICE_ROLE_KEY` celowo nie jest jeszcze w Vercelu. Dochodzi w planie
 08 razem z SMS-ami; wcześniej byłby tam ostrym nożem bez zastosowania.
 
+## Logowanie
+
+Apka loguje kodem OTP (`verifyOtp`), nie magic linkiem. Supabase wysyła jedno
+i drugie tym samym mailem, ale **domyślne szablony renderują wyłącznie
+`{{ .ConfirmationURL }}`** — trzeba je podmienić na `{{ .Token }}`
+w Authentication → Emails → Templates.
+
+Szablony są dwa i oba mają znaczenie: **Confirm signup** idzie przy pierwszym
+logowaniu (konto powstaje dopiero wtedy), **Magic Link** przy każdym kolejnym.
+Poprawienie jednego sprawia, że błąd wraca za drugim razem.
+
+`Site URL` w Authentication → URL Configuration musi wskazywać na produkcję.
+Zostawiony na `http://localhost:3000` wysyła ludziom linki w pustkę.
+
 ## Architektura w trzech zdaniach
 
 Saldo punktów nigdy nie jest kolumną — to zawsze `SUM(delta)` z `points_ledger`,
