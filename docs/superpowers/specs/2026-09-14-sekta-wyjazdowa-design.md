@@ -241,7 +241,7 @@ bo Safari udostępnia push wyłącznie zainstalowanym PWA.
 
 Bez przypisania do dni — kolejność wynika z zależności, nie z kalendarza.
 
-1. **Fundament** — projekt Next.js, migracja `0001_init.sql`, auth, RLS,
+1. **Fundament** — projekt Next.js, migracja `20260915120000_init.sql`, auth, RLS,
    deploy na Vercel
 2. **Bramka wejściowa** — formularz rejestracyjny z OCR + akceptacja w panelu
 3. **Rdzeń** — ranking realtime, panel admina, design system
