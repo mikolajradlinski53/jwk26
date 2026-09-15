@@ -14,6 +14,20 @@
 
 ---
 
+## Status wykonania
+
+Plan jest w trakcie realizacji. Taski 1–3 są zrobione, a **źródłem prawdy dla
+nich jest repozytorium, nie ten dokument**: przeglądy jakości wymusiły zmiany,
+których snapshoty poniżej nie zawierają. Snapshoty zostawiono, bo tłumaczą
+zamiar; gdy różnią się od kodu, rację ma kod.
+
+| Task | Commity | Co doszło poza pierwotny tekst |
+|---|---|---|
+| 1 | `cb55a4f` | — |
+| 1b | `43bd34a` | cała migracja 0003, po przeglądzie |
+| 2 | `5f1d144`, `4dde9c7`, `7bc3e77` | 9 testów ponad pierwotne 7 |
+| 3 | `731a28e`, `964972b` | test wywołania bez sesji, dwa testy gałęzi „zachowaj istniejącą wartość", wspólne rusztowanie testów w helperze |
+
 ## Czego ten plan świadomie nie robi
 
 Panel admina powstaje tu w wersji minimalnej — jedna trasa `/admin/rejestracje`
@@ -44,7 +58,7 @@ src/
   types/db.ts                     + typ Registration
 supabase/migrations/<ts>_brama_wejsciowa.sql
 tests/
-  helpers/supabase.ts             + makeAdmin, approve
+  helpers/supabase.ts             + makeAdmin, ustawJakoZaakceptowany
   db/registrations.test.ts        RLS tabeli zgłoszeń
   db/review-registration.test.ts  funkcja rozpatrująca
   db/storage-proofs.test.ts       polityki bucketu
@@ -681,7 +695,28 @@ git commit -m "Dodaj testy RLS zgłoszeń rejestracyjnych"
 ## Task 3: Testy funkcji rozpatrującej
 
 **Files:**
+- Modify: `tests/helpers/supabase.ts`
 - Create: `tests/db/review-registration.test.ts`
+
+> **Wykonane inaczej, niż opisuje poniższy snapshot.** Przegląd dołożył trzy
+> testy i jeden refaktor — szczegóły w tabeli „Status wykonania" na górze.
+>
+> **Test wywołania bez sesji.** `revoke execute ... from anon` z migracji
+> hartowania nie miało pokrycia w żadnym tasku. Dopisany test wywołuje funkcję
+> klientem bez sesji (`anonimowy()` w helperze) i sprawdza, że komunikat błędu
+> **nie** wspomina o adminie — bo gdyby grant dla roli `anon` przetrwał, funkcja
+> wykonałaby się i padła dopiero na strażniku `is_admin()`. Faktycznie odbija się
+> o `42501 permission denied for function`, czyli przed wejściem do ciała.
+>
+> **Dwie gałęzie „zachowaj istniejącą wartość".** Testy startujące ze stanem
+> `null` nie odróżniają `coalesce(display_name, v_full_name)` od samego
+> `v_full_name`, ani `else team_id` od „zawsze wyzeruj". Dopisane dwa testy
+> startują od wartości niepustej: uczestnik z własnoręcznie ustawioną nazwą
+> i uczestnik, który był już w drużynie.
+>
+> **Wspólne rusztowanie.** `sprzatanieUzytkownikow()` w helperze zastąpiło piątą
+> i szóstą kopię tej samej pętli `afterEach`. Testy planu 01 zostały przy swoich
+> kopiach — świadomie, żeby nie ruszać działającego kodu poza zakresem taska.
 
 - [ ] **Step 1: Napisz testy**
 
@@ -908,7 +943,7 @@ describe("rozpatrywanie zgłoszeń", () => {
 npm test -- tests/db/review-registration.test.ts
 ```
 
-Expected: `6 passed`
+Expected: `9 passed`
 
 - [ ] **Step 3: Commit**
 
@@ -1066,7 +1101,7 @@ Step 3 i sprawdź, czy `db push` na `jwk26-test` faktycznie przeszedł.
 npm test
 ```
 
-Expected: `40 passed` w sześciu plikach (13 z planu 01 + 27 z tego planu)
+Expected: `43 passed` w sześciu plikach (13 z planu 01 + 30 z tego planu)
 
 - [ ] **Step 4: Commit**
 
@@ -1864,7 +1899,7 @@ git commit -m "Dodaj kolejkę zgłoszeń w panelu admina"
 npm test
 ```
 
-Expected: `46 passed` w siedmiu plikach
+Expected: `49 passed` w siedmiu plikach
 
 - [ ] **Step 2: Przejdź pełną ścieżkę lokalnie**
 
@@ -1953,7 +1988,7 @@ git push origin main
 Działa: pełna droga od kodu OTP do rankingu — formularz ze zdjęciem przelewu,
 kompresja i OCR w przeglądarce, prywatny bucket widoczny wyłącznie dla admina,
 akceptacja przypisująca drużynę przez funkcję `SECURITY DEFINER`, kolejka
-zgłoszeń w panelu. 46 testów pilnujących RLS, funkcji rozpatrującej i polityk
+zgłoszeń w panelu. 49 testów pilnujących RLS, funkcji rozpatrującej i polityk
 bucketu.
 
 Nie działa jeszcze: ranking na żywo i pełny panel admina (plan 03), bingo (04),
