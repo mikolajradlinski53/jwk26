@@ -38,3 +38,21 @@ export type UserScore = {
   color: string | null;
   score: number;
 };
+
+export type Registration = {
+  id: string;
+  user_id: string;
+  full_name: string;
+  phone: string | null;
+  sms_consent: boolean;
+  diet_notes: string | null;
+  proof_path: string;
+  ocr_text: string | null;
+  ocr_confidence: number | null;
+  ocr_keywords_hit: number;
+  status: UserStatus;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  review_note: string | null;
+  created_at: string;
+};
