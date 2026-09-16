@@ -137,6 +137,12 @@ Subskrypcja dotyczy `points_ledger`, nie widoku — Supabase nie wysyła zdarze�
 z widoków. Zdarzenie niesie tylko sygnał „coś się zmieniło"; wynik pobieramy
 ponownie zapytaniem, bo suma po drużynie i tak liczy się w bazie.
 
+Kanał musi mieć `config.postgres_changes_options.wait = true`. Domyślnie
+`subscribe()` zgłasza `SUBSCRIBED` już przy dołączeniu do kanału, zanim serwer
+uruchomi subskrypcję na replikacji — zmiana wykonana w tym oknie ginie bez
+żadnego błędu po stronie klienta. Sprawdzone doświadczalnie: bez tej opcji
+zdarzenie nie przyszło ani razu w ciągu piętnastu sekund.
+
 Wiersz, którego wynik się zmienił, dostaje krótki błysk. **Nie animujemy
 przestawienia pozycji** — wymagałoby to techniki FLIP z pomiarem każdego wiersza
 przed i po zmianie, co przy czterech drużynach jest nieproporcjonalne do zysku.
