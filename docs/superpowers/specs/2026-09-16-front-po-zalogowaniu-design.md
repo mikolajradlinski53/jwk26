@@ -137,8 +137,12 @@ Subskrypcja dotyczy `points_ledger`, nie widoku — Supabase nie wysyła zdarze�
 z widoków. Zdarzenie niesie tylko sygnał „coś się zmieniło"; wynik pobieramy
 ponownie zapytaniem, bo suma po drużynie i tak liczy się w bazie.
 
-Zmiana pozycji jest animowana. Przy `prefers-reduced-motion` pozycje zmieniają się
-bez przejścia.
+Wiersz, którego wynik się zmienił, dostaje krótki błysk. **Nie animujemy
+przestawienia pozycji** — wymagałoby to techniki FLIP z pomiarem każdego wiersza
+przed i po zmianie, co przy czterech drużynach jest nieproporcjonalne do zysku.
+Błysk niesie tę samą informację: tu coś się przed chwilą zdarzyło.
+
+Przy `prefers-reduced-motion` błysk nie występuje.
 
 Kryterium ze speca głównego §12.3: ranking aktualizuje się w drugiej karcie bez
 odświeżania.
@@ -150,10 +154,14 @@ Rozszerzenie tego, co powstało w planie 02:
 - **Zgłoszenia** — kolejka, już istnieje, dostaje nowy wygląd
 - **Punkty** — przyznanie dowolnej liczby punktów osobie lub drużynie
   z obowiązkowym uzasadnieniem, `category = 'admin_adjust'`
-- **Drużyny** — zakładanie, zmiana nazwy, koloru i motta, wskazanie kapitana;
-  idzie zwykłym zapisem, bo polityka `teams_admin_write` z migracji 0001 już to
-  obsługuje
 - **Historia** — ostatnie wpisy z `points_ledger`, tylko do odczytu
+
+**Drużyny bez własnego ekranu.** Migracja 0001 zasiewa cztery drużyny, a polityka
+`teams_admin_write` już pozwala adminowi je zmieniać. Ekran do tego byłby
+zbudowany na zapas: przed wyjazdem drużyny ustala się raz, a zmiana nazwy czy
+koloru to jedno zapytanie w SQL Editorze. Politykę mimo to obejmujemy testem, bo
+dziś nikt jej nie pilnuje — dzięki temu ekran da się dołożyć później bez ruszania
+bazy.
 
 Przyznawanie punktów idzie przez funkcję `SECURITY DEFINER`, nie bezpośrednim
 `INSERT`. RLS przepuszcza wprawdzie `INSERT` adminowi, ale funkcja daje jedno
@@ -187,9 +195,10 @@ Testami obejmujemy to, co dokłada logikę:
   wpis w `points_ledger`
 - zarządzanie drużynami: uczestnik nie założy ani nie zmieni drużyny
 
-Zarządzanie drużynami **nie wymaga nowej funkcji** — migracja 0001 dała już
-politykę `teams_admin_write`, która przepuszcza admina i odrzuca resztę.
-Dokładamy wyłącznie test, bo dziś nikt tej polityki nie pilnuje.
+Bramka (`gate.ts`, `proxy.ts`) pozostaje **bez testów automatycznych** — to
+middleware Next.js, którego sprawdzenie wymagałoby narzędzia do testów
+end-to-end, a tego w stacku nie ma i nie warto go dokładać przed wyjazdem. To, że
+uczestnik nie widzi tras panelu, potwierdzamy ręcznie przy weryfikacji.
 
 Realtime sprawdzamy ręcznie, w dwóch kartach — automatyzacja subskrypcji
 WebSocket w Vitest kosztuje więcej, niż jest tu warta.
@@ -213,4 +222,4 @@ WebSocket w Vitest kosztuje więcej, niż jest tu warta.
 5. Admin przyznaje punkty z uzasadnieniem i widzi je w historii.
 6. Przy wyłączonej obsłudze `backdrop-filter` cały interfejs pozostaje czytelny.
 7. Na telefonie przewijanie rankingu i kolejki zgłoszeń jest płynne.
-8. `prefers-reduced-motion` wyłącza animacje zmiany pozycji w rankingu.
+8. `prefers-reduced-motion` wyłącza błysk na zmienionym wierszu rankingu.
