@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { RitualFrame } from "@/components/RitualFrame";
+import { Ekran } from "@/components/Ekran";
 import { Button } from "@/components/ui/Button";
 import { FormularzRejestracji } from "./FormularzRejestracji";
 import type { Registration } from "@/types/db";
@@ -29,17 +29,17 @@ export default async function RejestracjaPage() {
 
   if (ostatnie?.status === "pending") {
     return (
-      <RitualFrame title="Próba">
+      <Ekran tytul="Próba">
         <p className="text-center leading-relaxed text-smoke">
           Twoja ofiara została złożona. Czekaj na wyrok Kapłana.
         </p>
         <Wyloguj />
-      </RitualFrame>
+      </Ekran>
     );
   }
 
   return (
-    <RitualFrame title={ostatnie ? "Ponowna próba" : "Próba"}>
+    <Ekran tytul={ostatnie ? "Ponowna próba" : "Próba"}>
       {ostatnie?.status === "rejected" && (
         <div className="mb-6 border-l-4 border-blood bg-ash/60 px-4 py-3">
           <p className="font-display text-xs uppercase tracking-widest text-blood">
@@ -53,14 +53,14 @@ export default async function RejestracjaPage() {
 
       <FormularzRejestracji />
       <Wyloguj />
-    </RitualFrame>
+    </Ekran>
   );
 }
 
 function Wyloguj() {
   return (
     <form action="/auth/signout" method="post" className="mt-10">
-      <Button variant="ghost" type="submit" className="w-full">
+      <Button variant="cichy" type="submit" className="w-full">
         Wyloguj
       </Button>
     </form>

@@ -81,7 +81,7 @@ export function PrzyciskiDecyzji({
         <Button onClick={() => rozpatrz(true)} disabled={czeka || !teamId}>
           Przyjmij
         </Button>
-        <Button variant="danger" onClick={() => rozpatrz(false)} disabled={czeka}>
+        <Button variant="szklo" onClick={() => rozpatrz(false)} disabled={czeka}>
           Odrzuć
         </Button>
       </div>

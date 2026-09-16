@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { RitualFrame } from "@/components/RitualFrame";
+import { Ekran } from "@/components/Ekran";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 
@@ -77,7 +77,7 @@ export default function LoginPage() {
   }
 
   return (
-    <RitualFrame title="Wstąp do Sekty">
+    <Ekran tytul="Wstąp do Sekty">
       {etap === "email" ? (
         <div className="grid gap-5">
           <Field
@@ -98,7 +98,7 @@ export default function LoginPage() {
               a wbudowany mailer Supabase przepuszcza dwa na godzinę. Kto ma już
               kod, nie powinien palić limitu tylko po to, żeby go wpisać. */}
           <Button
-            variant="ghost"
+            variant="szklo"
             onClick={() => {
               setBlad(null);
               setWyslano(false);
@@ -141,7 +141,7 @@ export default function LoginPage() {
             {czeka ? "Sprawdzam..." : "Wejdź"}
           </Button>
           <Button
-            variant="ghost"
+            variant="szklo"
             onClick={() => {
               setEtap("email");
               setBlad(null);
@@ -151,6 +151,6 @@ export default function LoginPage() {
           </Button>
         </div>
       )}
-    </RitualFrame>
+    </Ekran>
   );
 }

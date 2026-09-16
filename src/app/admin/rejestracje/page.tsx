@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { RitualFrame } from "@/components/RitualFrame";
+import { Ekran } from "@/components/Ekran";
 import { PrzyciskiDecyzji } from "./PrzyciskiDecyzji";
 import type { Registration, Team } from "@/types/db";
 
@@ -35,7 +35,7 @@ export default async function KolejkaRejestracji() {
   const podglady = new Map(wpisy);
 
   return (
-    <RitualFrame title="Zgłoszenia">
+    <Ekran tytul="Zgłoszenia">
       {zgloszenia.length === 0 && (
         <p className="text-center text-smoke">Kolejka pusta.</p>
       )}
@@ -95,6 +95,6 @@ export default async function KolejkaRejestracji() {
       >
         ← Sanktuarium
       </Link>
-    </RitualFrame>
+    </Ekran>
   );
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { RitualFrame } from "@/components/RitualFrame";
+import { Ekran } from "@/components/Ekran";
 import { Button } from "@/components/ui/Button";
 import type { TeamScore } from "@/types/db";
 
@@ -27,7 +27,7 @@ export default async function Home() {
   const jestAdminem = profil?.role === "admin";
 
   return (
-    <RitualFrame title="Ranking Sekt">
+    <Ekran tytul="Ranking Sekt">
       <ol className="grid gap-2">
         {wyniki.map((w, i) => (
           <li
@@ -55,10 +55,10 @@ export default async function Home() {
       )}
 
       <form action="/auth/signout" method="post" className="mt-4">
-        <Button variant="ghost" type="submit" className="w-full">
+        <Button variant="cichy" type="submit" className="w-full">
           Opuść sektę
         </Button>
       </form>
-    </RitualFrame>
+    </Ekran>
   );
 }

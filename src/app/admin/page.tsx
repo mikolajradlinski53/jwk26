@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { RitualFrame } from "@/components/RitualFrame";
+import { Ekran } from "@/components/Ekran";
 
 export default function AdminPage() {
   return (
-    <RitualFrame title="Sanktuarium">
+    <Ekran tytul="Sanktuarium">
       <nav className="grid gap-3">
         <Link
           href="/admin/rejestracje"
@@ -22,6 +22,6 @@ export default function AdminPage() {
           ← Ranking
         </Link>
       </nav>
-    </RitualFrame>
+    </Ekran>
   );
 }
