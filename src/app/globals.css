@@ -1,64 +1,85 @@
 @import "tailwindcss";
 
 @theme {
-  --color-void: #0a0908;
-  --color-ash: #16130f;
-  --color-candle: #c9a227;
-  --color-candle-bright: #e0b64a;
-  --color-blood: #8b1e1e;
-  --color-parchment: #e8e0d0;
-  --color-smoke: #8a8172;
+  /* Czerń z odchyleniem w czerwień — neutralna szarość czytałaby się jak brak decyzji. */
+  --color-noc: #0c0709;
+  --color-noc-glab: #060304;
+  --color-krew: #c8102e;
+  --color-krew-glab: #6e0a1a;
+  --color-kosc: #f4eeeb;
+  --color-dym: #9c8b8e;
 
-  --font-display: var(--font-cinzel), ui-serif, Georgia, serif;
-  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --radius-s: 14px;
+  --radius-m: 20px;
+  --radius-l: 28px;
+
+  --font-tytul: var(--font-bodoni), Didot, "Times New Roman", serif;
+  --font-ui: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --szklo: rgb(255 255 255 / 0.07);
+  --szklo-mocne: rgb(255 255 255 / 0.12);
+  --szklo-kraw: rgb(255 255 255 / 0.16);
+  --szklo-blysk: rgb(255 255 255 / 0.34);
 }
 
 html {
   color-scheme: dark;
+  background-color: var(--color-noc);
 }
 
 body {
-  background-color: var(--color-void);
-  color: var(--color-parchment);
-  font-family: var(--font-body);
+  color: var(--color-kosc);
+  font-family: var(--font-ui);
   min-height: 100dvh;
 }
 
-/* Ziarno i winieta — nakładka na całą stronę, nie przechwytuje kliknięć. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 50;
-  background:
-    radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.55) 100%),
-    repeating-linear-gradient(
-      0deg,
-      rgb(255 255 255 / 0.014) 0 1px,
-      transparent 1px 2px
-    );
+/*
+ * Szkło jako jedna klasa, nie powtarzane utility.
+ * Cztery właściwości muszą występować razem, a rozsypane po komponentach
+ * rozjeżdżają się przy pierwszej zmianie.
+ */
+.szklo {
+  background: var(--szklo);
+  border: 1px solid var(--szklo-kraw);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  backdrop-filter: blur(20px) saturate(170%);
+  box-shadow: inset 0 1px 0 var(--szklo-blysk);
 }
 
-@keyframes flicker {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  45% {
-    opacity: 0.86;
-  }
-  55% {
-    opacity: 0.97;
+/*
+ * Bez obsługi rozmycia szkło degraduje się do panelu o wyższej
+ * nieprzezroczystości. Obramowanie i zaokrąglenie zostają, więc układ się nie
+ * rusza — zmienia się wyłącznie to, czy widać przez panel.
+ */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .szklo {
+    background: rgb(28 20 23 / 0.94);
   }
 }
 
-.flicker {
-  animation: flicker 4s ease-in-out infinite;
+/*
+ * Błysk na wierszu, którego wynik się zmienił. Wybrany zamiast animowania
+ * przestawienia pozycji: tamto wymaga techniki FLIP i pomiaru każdego wiersza
+ * przed i po, co przy czterech drużynach jest nieproporcjonalne. Błysk mówi
+ * dokładnie to samo — „tu coś się przed chwilą zdarzyło".
+ */
+@keyframes blysk {
+  0%   { background-color: rgb(200 16 46 / 0.32); }
+  100% { background-color: var(--szklo); }
+}
+
+.blysk {
+  animation: blysk 1.4s ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .flicker {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

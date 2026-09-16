@@ -1,16 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Cinzel, Inter } from "next/font/google";
+import { Bodoni_Moda, Manrope } from "next/font/google";
 import "./globals.css";
 
-const cinzel = Cinzel({
+// Oś `opsz` celowo pominięta: poprawia rysunek w dużych rozmiarach, ale dokłada
+// wariantów do pobrania. Jeśli tytuły będą wyglądać ciężko, dopisz axes: ["opsz"].
+const bodoni = Bodoni_Moda({
   subsets: ["latin", "latin-ext"],
-  weight: ["400", "600", "700"],
-  variable: "--font-cinzel",
+  weight: "variable",
+  variable: "--font-bodoni",
 });
 
-const inter = Inter({
+// Manrope nie ma kursywy — <em> dostanie syntetyczny pochył. Do wyróżnień
+// używamy wagi, nie kursywy.
+const manrope = Manrope({
   subsets: ["latin", "latin-ext"],
-  variable: "--font-inter",
+  weight: "variable",
+  variable: "--font-manrope",
 });
 
 export const metadata: Metadata = {
@@ -25,7 +30,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0908",
+  themeColor: "#0c0709",
   viewportFit: "cover",
 };
 
@@ -35,8 +40,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pl" className={`${cinzel.variable} ${inter.variable}`}>
-      <body>{children}</body>
+    <html lang="pl" className={`${bodoni.variable} ${manrope.variable}`}>
+      <body>
+        {/*
+          Poświata mieszka w warstwie globalnej, nie na ekranach. Bez niej
+          backdrop-filter nie ma czego rozmywać i szkło zamienia się w szarą
+          płytę. Jedno tło znaczy też, że każdy nowy ekran jest szklany od razu.
+        */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-[-30%] -z-10 blur-3xl"
+          style={{
+            background:
+              "radial-gradient(circle at 24% 12%, rgb(200 16 46 / 0.5) 0%, transparent 44%)," +
+              "radial-gradient(circle at 84% 30%, rgb(110 10 26 / 0.55) 0%, transparent 42%)," +
+              "radial-gradient(circle at 50% 96%, rgb(200 16 46 / 0.3) 0%, transparent 46%)",
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }
