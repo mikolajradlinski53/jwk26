@@ -23,6 +23,13 @@ export function FormularzPunktow({
   const [czeka, setCzeka] = useState(false);
   const wToku = useRef(false);
 
+  // Osoby bez drużyny są w liście celowo widoczne (admin musi je widzieć, żeby
+  // wiedzieć, że wymagają przypisania), ale `award_points` odrzuca wpis na kogoś
+  // bez drużyny surowym błędem Postgresa. Łapiemy to wcześniej, po ludzku.
+  const bezDruzyny = new Set(
+    osoby.filter((o) => o.team_id === null).map((o) => o.user_id),
+  );
+
   async function przyznaj() {
     if (wToku.current) return;
     setBlad(null);
@@ -42,10 +49,15 @@ export function FormularzPunktow({
       return;
     }
 
+    const [rodzaj, id] = cel.split(":");
+    if (rodzaj === "u" && bezDruzyny.has(id)) {
+      setBlad("Ta osoba nie ma jeszcze drużyny. Przypisz ją przy zgłoszeniu.");
+      return;
+    }
+
     wToku.current = true;
     setCzeka(true);
 
-    const [rodzaj, id] = cel.split(":");
     const { error } = await createClient().rpc("award_points", {
       p_delta: liczba,
       p_reason: powod.trim(),
@@ -103,7 +115,13 @@ export function FormularzPunktow({
         inputMode="numeric"
         placeholder="np. 40 albo -25"
         value={delta}
-        onChange={(e) => setDelta(e.target.value.replace(/[^\d-]/g, ""))}
+        onChange={(e) => {
+          // Jeden opcjonalny minus na początku i cyfry. Filtr przepuszczający
+          // minus w środku pozwalał wpisać „40-20", a parseInt czytał to jako 40
+          // — inna liczba niż ta, którą admin widział, w księdze bez cofania.
+          const v = e.target.value;
+          if (v === "" || /^-?\d*$/.test(v)) setDelta(v);
+        }}
       />
 
       <Field
@@ -114,7 +132,11 @@ export function FormularzPunktow({
         error={blad}
       />
 
-      {udane && <p className="text-sm text-krew-jasna">{udane}</p>}
+      {udane && (
+        <p role="status" className="text-sm text-krew-jasna">
+          {udane}
+        </p>
+      )}
 
       <Button onClick={przyznaj} disabled={czeka}>
         {czeka ? "Zapisuję..." : "Wpisz do księgi"}

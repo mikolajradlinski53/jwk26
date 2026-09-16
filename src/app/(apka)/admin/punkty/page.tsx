@@ -20,7 +20,7 @@ export default async function PunktyPage() {
       />
       <Link
         href="/admin"
-        className="mt-7 block text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
+        className="mt-7 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
       >
         Wróć do sanktuarium
       </Link>

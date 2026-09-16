@@ -15,12 +15,20 @@ type Wpis = {
 export default async function HistoriaPage() {
   const supabase = await createClient();
 
-  // Zagnieżdżony select korzysta z kluczy obcych points_ledger → teams i profiles.
-  const { data } = await supabase
+  // Relację do profiles trzeba wskazać po nazwie klucza obcego. `points_ledger`
+  // ma ich dwa — `user_id` i `awarded_by` — więc samo `profiles(...)` kończy się
+  // błędem PGRST201 „more than one relationship was found". Bez tego zapytanie
+  // nie zwraca nic, a strona renderuje „Księga jest pusta" niezależnie od
+  // zawartości: typ jest rzutowany ręcznie, więc TypeScript milczy.
+  const { data, error } = await supabase
     .from("points_ledger")
-    .select("id, delta, category, reason, created_at, teams(name), profiles(display_name)")
+    .select(
+      "id, delta, category, reason, created_at, teams(name), profiles!points_ledger_user_id_fkey(display_name)",
+    )
     .order("created_at", { ascending: false })
     .limit(50);
+
+  if (error) console.error("Nie udało się wczytać księgi:", error);
 
   const wpisy = (data ?? []) as unknown as Wpis[];
 
@@ -65,7 +73,7 @@ export default async function HistoriaPage() {
 
       <Link
         href="/admin"
-        className="mt-7 block text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
+        className="mt-7 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
       >
         Wróć do sanktuarium
       </Link>
