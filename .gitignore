@@ -42,3 +42,7 @@ next-env.d.ts
 
 # Wzorzec bez sekretów ma być śledzony mimo reguły .env* wyżej.
 !.env.example
+
+# Stan CLI Supabase: który projekt jest podlinkowany, wersje usług.
+# Zmienia się przy każdym `link` i `db push`, więc zaśmiecał każdy commit z migracją.
+supabase/.temp/
