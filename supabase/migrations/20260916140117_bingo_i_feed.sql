@@ -115,6 +115,13 @@ create policy feed_likes_insert_own on feed_likes
   for insert to authenticated
   with check (user_id = (select auth.uid()) and public.is_approved());
 
+-- Kasowanie świadomie NIE wymaga is_approved(), choć wstawianie wymaga.
+-- To nie przeoczenie. Po pierwsze, cofnięcie statusu jest dziś nieosiągalne:
+-- grant kolumnowy na profiles blokuje UPDATE na status nawet adminowi, a
+-- review_registration dotyka wyłącznie rejestracji oczekujących. Po drugie,
+-- nawet gdyby taka ścieżka powstała, skasowanie własnej treści nie jest
+-- eskalacją uprawnień — wymuszenie tu is_approved() uczyniłoby tylko własny
+-- lajk nieusuwalnym dla właściciela, podczas gdy admin i tak może go usunąć.
 create policy feed_likes_delete_own on feed_likes
   for delete to authenticated
   using (user_id = (select auth.uid()));
@@ -128,6 +135,7 @@ create policy feed_comments_insert_own on feed_comments
   for insert to authenticated
   with check (user_id = (select auth.uid()) and public.is_approved());
 
+-- Brak is_approved() z tego samego powodu co przy feed_likes_delete_own.
 create policy feed_comments_delete on feed_comments
   for delete to authenticated
   using (user_id = (select auth.uid()) or public.is_admin());
