@@ -7,7 +7,6 @@ import {
   firstTeamId,
   idZadania,
   zgloszenieBingoDla,
-  type TestUser,
 } from "../helpers/supabase";
 
 const { nowyUzytkownik, posprzataj } = sprzatanieUzytkownikow();
