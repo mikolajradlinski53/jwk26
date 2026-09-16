@@ -155,18 +155,19 @@ export function FormularzRejestracji() {
         onChange={(e) => setTelefon(e.target.value)}
       />
 
-      <label className="flex min-h-11 items-center gap-3 text-sm text-smoke">
+      {/* Cel dotykowy daje cała etykieta (44 px), nie sam kwadracik. */}
+      <label className="flex min-h-11 items-center gap-3 text-sm text-dym">
         <input
           type="checkbox"
           checked={zgodaSms}
           onChange={(e) => setZgodaSms(e.target.checked)}
-          className="size-6 shrink-0 accent-[var(--color-candle)]"
+          className="size-6 shrink-0 accent-[var(--color-krew)]"
         />
         <span>Zgadzam się na SMS-y z komunikatami organizacyjnymi</span>
       </label>
 
       <label className="block">
-        <span className="mb-1.5 block font-display text-xs uppercase tracking-widest text-smoke">
+        <span className="mb-1.5 block pl-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-dym">
           Dieta i uwagi
         </span>
         <textarea
@@ -174,14 +175,13 @@ export function FormularzRejestracji() {
           value={dieta}
           onChange={(e) => setDieta(e.target.value)}
           placeholder="wegetarianizm, alergie, cokolwiek ważnego"
-          className="w-full rounded-sm border border-candle/25 bg-ash px-3 py-2
-                     text-parchment outline-none placeholder:text-smoke/60
-                     focus:border-candle"
+          className="szklo w-full rounded-sm px-3.5 py-2.5 text-sm text-kosc
+                     outline-none placeholder:text-dym/70 focus-visible:border-krew"
         />
       </label>
 
       <label className="block">
-        <span className="mb-1.5 block font-display text-xs uppercase tracking-widest text-smoke">
+        <span className="mb-1.5 block pl-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-dym">
           Potwierdzenie przelewu
         </span>
         <input
@@ -195,26 +195,25 @@ export function FormularzRejestracji() {
             setPlik(e.target.files?.[0] ?? null);
             setBladPliku(null);
           }}
-          className="block w-full text-sm text-smoke
-                     file:mr-3 file:min-h-11 file:rounded-sm file:border-0
-                     file:bg-candle file:px-4 file:font-display file:text-xs
-                     file:uppercase file:tracking-widest file:text-void"
+          className="block w-full text-sm text-dym
+                     file:mr-3 file:min-h-11 file:rounded-full file:border-0
+                     file:bg-krew file:px-4 file:text-xs file:font-bold file:text-white"
         />
         {plik && (
-          <span className="mt-1.5 block text-sm text-smoke">
+          <span className="mt-1.5 block text-sm text-dym">
             {plik.name} ({Math.round(plik.size / 1024)} kB)
           </span>
         )}
-        {bladPliku && <span className="mt-1.5 block text-sm text-blood">{bladPliku}</span>}
+        {bladPliku && <span className="mt-1.5 block text-sm text-krew">{bladPliku}</span>}
       </label>
 
-      {blad && <p className="text-sm text-blood">{blad}</p>}
+      {blad && <p className="text-sm text-krew">{blad}</p>}
 
       <Button onClick={wyslij} disabled={czeka}>
         {etap ?? "Złóż ofiarę"}
       </Button>
 
-      <p className="text-center text-xs leading-relaxed text-smoke">
+      <p className="text-center text-xs leading-relaxed text-dym">
         Odczyt przelewu dzieje się na twoim telefonie i może chwilę potrwać.
         Zdjęcie widzi wyłącznie organizator.
       </p>

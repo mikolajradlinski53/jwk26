@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/*
+ * Tailwind domyślnie skanuje cały projekt w poszukiwaniu nazw klas — także
+ * dokumenty planów, które są pełne fragmentów kodu. Efekt: reguły dla klas,
+ * których w aplikacji nie ma (`accent-[var(--color-candle)]` ze starego planu)
+ * lądowały w produkcyjnym arkuszu i jechały na telefony uczestników.
+ */
+@source not "../../docs";
+
 @theme {
   /* Czerń z odchyleniem w czerwień — neutralna szarość czytałaby się jak brak decyzji. */
   --color-noc: #0c0709;

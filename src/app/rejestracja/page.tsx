@@ -29,9 +29,9 @@ export default async function RejestracjaPage() {
 
   if (ostatnie?.status === "pending") {
     return (
-      <Ekran tytul="Próba">
-        <p className="text-center leading-relaxed text-smoke">
-          Twoja ofiara została złożona. Czekaj na wyrok Kapłana.
+      <Ekran tytul="Próba" podtytul="Czekaj na wyrok Kapłana">
+        <p className="szklo rounded-md px-4 py-6 text-center text-sm leading-relaxed text-dym">
+          Twoja ofiara została złożona.
         </p>
         <Wyloguj />
       </Ekran>
@@ -41,11 +41,11 @@ export default async function RejestracjaPage() {
   return (
     <Ekran tytul={ostatnie ? "Ponowna próba" : "Próba"}>
       {ostatnie?.status === "rejected" && (
-        <div className="mb-6 border-l-4 border-blood bg-ash/60 px-4 py-3">
-          <p className="font-display text-xs uppercase tracking-widest text-blood">
+        <div className="szklo mb-5 rounded-md border-krew/50 px-4 py-3.5">
+          <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-krew">
             Odrzucono
           </p>
-          <p className="mt-1 text-sm text-smoke">
+          <p className="mt-1 text-sm text-dym">
             {ostatnie.review_note ?? "Bez podania powodu."}
           </p>
         </div>
