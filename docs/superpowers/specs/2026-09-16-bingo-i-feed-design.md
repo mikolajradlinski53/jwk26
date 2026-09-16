@@ -86,8 +86,28 @@ i dokładnie do tego służą. Idempotentność wychodzi wtedy z danych, a nie
 z pamiętania o niej przy każdej zmianie kodu. Zero nowych tabel.
 
 Akceptacja, punkty za zadanie, sprawdzenie linii i bonusy dzieją się
-w **jednej funkcji `SECURITY DEFINER`, w jednej transakcji**. Inaczej dwóch
-adminów klikających równocześnie mogłoby przyznać ten sam bonus dwa razy.
+w **jednej funkcji `SECURITY DEFINER`, w jednej transakcji**.
+
+**To jednak nie wystarcza i pierwsza wersja tego speca twierdziła inaczej.**
+Każde wywołanie `rpc` z osobnej sesji admina to osobna transakcja, więc „jedna
+transakcja" chroni wyłącznie wnętrze pojedynczego wywołania. Oba wyścigi zostały
+odtworzone na żywej bazie:
+
+- dwóch adminów domyka ostatnie dwa pola linii — żadna transakcja nie widzi
+  commitu drugiej, obie uznają linię za niekompletną i **bonus nie pada wcale**
+  (1 raz na 15 prób);
+- linia jest już kompletna, a dwóch adminów akceptuje dwa inne zgłoszenia — obie
+  transakcje przechodzą sprawdzenie „czy już był" zanim któraś zdąży wstawić
+  wiersz i **bonus pada dwa razy** (4 razy na 25 prób).
+
+Zamykają to dwa niezależne mechanizmy, bo każdy odpowiada za co innego:
+**blokada na wierszu drużyny** serializuje akceptacje w obrębie drużyny i jako
+jedyna naprawia wariant z utratą, a **unikalny indeks częściowy** na księdze
+`(team_id, ref_type, ref_id)` czyni podwójny wpis niemożliwym niezależnie od
+logiki aplikacji — także dla źródeł punktów, które powstaną później.
+
+Po naprawie: utrata 0 na 15, podwójne przyznanie 0 na 25, zero zakleszczeń
+w dwudziestu rundach z mieszaną kolejnością blokad.
 
 ### D5. Zdjęcia z bingo widzą wszyscy zaakceptowani
 
