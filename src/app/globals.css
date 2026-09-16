@@ -9,9 +9,16 @@
   --color-kosc: #f4eeeb;
   --color-dym: #9c8b8e;
 
-  --radius-s: 14px;
-  --radius-m: 20px;
-  --radius-l: 28px;
+  /*
+   * Nazwy sm/md/lg nadpisują domyślną skalę Tailwinda i to jest zamierzone.
+   * NIE skracaj ich do s/m/l: w Tailwindzie v4 `rounded-s` znaczy „border-start",
+   * a `rounded-l` znaczy „border-left". Wbudowana reguła trafia do arkusza po
+   * naszej i wygrywa w kaskadzie, więc pole dostałoby lewe narożniki 4 px zamiast
+   * czternastu. Nic tego nie zgłasza — ani kompilator, ani linter.
+   */
+  --radius-sm: 14px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
 
   --font-tytul: var(--font-bodoni), Didot, "Times New Roman", serif;
   --font-ui: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;

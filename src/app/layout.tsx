@@ -46,10 +46,20 @@ export default function RootLayout({
           Poświata mieszka w warstwie globalnej, nie na ekranach. Bez niej
           backdrop-filter nie ma czego rozmywać i szkło zamienia się w szarą
           płytę. Jedno tło znaczy też, że każdy nowy ekran jest szklany od razu.
+
+          Bez `blur`: trzy radialne gradienty są już z natury miękkie, a filtr
+          rozmycia na powierzchni większej niż ekran to jedna z najdroższych
+          rzeczy, jakie można kazać zrobić GPU telefonu — i dokłada się do
+          każdego backdrop-filter w interfejsie. Jeśli na prawdziwym urządzeniu
+          widać pasmowanie, dopiero wtedy dodaj `blur-2xl`.
+
+          Kolory powtarzają --color-krew i --color-krew-glab, bo gradient
+          potrzebuje ich z kanałem alfa, a tokeny są nieprzezroczyste.
+          Zmieniając paletę, zmień oba miejsca.
         */}
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed inset-[-30%] -z-10 blur-3xl"
+          className="pointer-events-none fixed inset-[-30%] -z-10"
           style={{
             background:
               "radial-gradient(circle at 24% 12%, rgb(200 16 46 / 0.5) 0%, transparent 44%)," +
