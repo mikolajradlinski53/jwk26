@@ -1,4 +1,5 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   admin,
   signIn,
@@ -7,10 +8,12 @@ import {
   firstTeamId,
   idZadania,
   zgloszenieBingoDla,
+  createUser,
+  deleteUser,
+  type TestUser,
 } from "../helpers/supabase";
 
 const { nowyUzytkownik, posprzataj } = sprzatanieUzytkownikow();
-afterEach(posprzataj);
 
 /**
  * Druga drużyna, różna od tej podanej — potrzebna wyłącznie do testu, który
@@ -29,24 +32,49 @@ async function innaDruzyna(niz: string): Promise<string> {
   return data.id as string;
 }
 
+// Jeden uczestnik na cały plik, zalogowany raz w beforeAll: dwanaście testów
+// bada politykę RLS z punktu widzenia „jakiegoś" (nie)zaakceptowanego członka
+// drużyny, żaden nie rozróżnia dwóch konkretnych osób. is_approved() czyta
+// status z profili na żywo przy każdym wywołaniu, więc zatwierdzenie albo
+// cofnięcie statusu kluczem serwisowym w afterEach widać w sesji od razu, bez
+// ponownego logowania.
+let czlonek: TestUser;
+let czlonekClient: SupabaseClient;
+
+beforeAll(async () => {
+  czlonek = await createUser("uczestnik-bingo-rls");
+  czlonekClient = await signIn(czlonek);
+});
+
+afterAll(async () => {
+  await deleteUser(czlonek);
+});
+
+afterEach(async () => {
+  await admin.from("bingo_submissions").delete().eq("user_id", czlonek.id);
+  // Reset do stanu domyślnego (pending, bez drużyny) — kilka testów zatwierdza
+  // tego uczestnika, kolejny test ma zawsze zaczynać od świeżego konta.
+  await admin
+    .from("profiles")
+    .update({ status: "pending", team_id: null })
+    .eq("id", czlonek.id);
+  await posprzataj();
+});
+
 describe("polityki RLS: bingo", () => {
   it("zaakceptowany widzi zadania", async () => {
-    const user = await nowyUzytkownik("widz-zadan");
-    await ustawJakoZaakceptowany(user);
-    const client = await signIn(user);
+    await ustawJakoZaakceptowany(czlonek);
 
-    const { data, error } = await client.from("bingo_tasks").select("id");
+    const { data, error } = await czlonekClient.from("bingo_tasks").select("id");
 
     expect(error).toBeNull();
     expect(data).toHaveLength(25);
   });
 
   it("oczekujący nie widzi zadań", async () => {
-    // Świeży użytkownik jest 'pending' domyślnie — bez żadnej dodatkowej akcji.
-    const user = await nowyUzytkownik("czekajacy-na-plansze");
-    const client = await signIn(user);
-
-    const { data, error } = await client.from("bingo_tasks").select("id");
+    // Uczestnik jest 'pending' na starcie tego testu — poprzedni afterEach
+    // sprowadza go z powrotem do tego stanu, więc dodatkowa akcja niepotrzebna.
+    const { data, error } = await czlonekClient.from("bingo_tasks").select("id");
 
     // RLS przy odczycie nie zwraca błędu, tylko pusty zbiór.
     expect(error).toBeNull();
@@ -55,14 +83,12 @@ describe("polityki RLS: bingo", () => {
 
   it("uczestnik składa zgłoszenie dla własnej drużyny", async () => {
     const teamId = await firstTeamId();
-    const user = await nowyUzytkownik("zglaszajacy-bingo");
-    await ustawJakoZaakceptowany(user, teamId);
-    const client = await signIn(user);
+    await ustawJakoZaakceptowany(czlonek, teamId);
     const taskId = await idZadania(0);
 
-    const { error } = await client
+    const { error } = await czlonekClient
       .from("bingo_submissions")
-      .insert(zgloszenieBingoDla(user, teamId, taskId));
+      .insert(zgloszenieBingoDla(czlonek, teamId, taskId));
 
     expect(error).toBeNull();
   });
@@ -70,16 +96,14 @@ describe("polityki RLS: bingo", () => {
   it("nie złoży zgłoszenia w cudzym imieniu", async () => {
     const teamId = await firstTeamId();
     const ofiara = await nowyUzytkownik("ofiara-bingo");
-    const podszywacz = await nowyUzytkownik("podszywacz-bingo");
-    await ustawJakoZaakceptowany(podszywacz, teamId);
-    const client = await signIn(podszywacz);
+    await ustawJakoZaakceptowany(czlonek, teamId);
     const taskId = await idZadania(1);
 
-    const { error } = await client.from("bingo_submissions").insert({
+    const { error } = await czlonekClient.from("bingo_submissions").insert({
       ...zgloszenieBingoDla(ofiara, teamId, taskId),
       // Własna ścieżka, żeby jedynym naruszeniem był user_id. Inaczej test
       // przechodzi także po usunięciu warunku, który rzekomo pilnuje.
-      photo_path: `${podszywacz.id}/zdjecie.jpg`,
+      photo_path: `${czlonek.id}/zdjecie.jpg`,
     });
 
     expect(error).not.toBeNull();
@@ -88,14 +112,12 @@ describe("polityki RLS: bingo", () => {
   it("nie złoży zgłoszenia dla cudzej drużyny", async () => {
     const wlasnaDruzyna = await firstTeamId();
     const cudzaDruzyna = await innaDruzyna(wlasnaDruzyna);
-    const user = await nowyUzytkownik("chytry-bingo");
-    await ustawJakoZaakceptowany(user, wlasnaDruzyna);
-    const client = await signIn(user);
+    await ustawJakoZaakceptowany(czlonek, wlasnaDruzyna);
     const taskId = await idZadania(2);
 
-    const { error } = await client
+    const { error } = await czlonekClient
       .from("bingo_submissions")
-      .insert(zgloszenieBingoDla(user, cudzaDruzyna, taskId));
+      .insert(zgloszenieBingoDla(czlonek, cudzaDruzyna, taskId));
 
     expect(error).not.toBeNull();
   });
@@ -105,13 +127,11 @@ describe("polityki RLS: bingo", () => {
     // swoje zgłoszenie ścieżkę do cudzego zdjęcia i zobaczyłby je w feedzie.
     const teamId = await firstTeamId();
     const wlasciciel = await nowyUzytkownik("wlasciciel-zdjecia-bingo");
-    const zerkacz = await nowyUzytkownik("zerkacz-bingo");
-    await ustawJakoZaakceptowany(zerkacz, teamId);
-    const client = await signIn(zerkacz);
+    await ustawJakoZaakceptowany(czlonek, teamId);
     const taskId = await idZadania(3);
 
-    const { error } = await client.from("bingo_submissions").insert({
-      ...zgloszenieBingoDla(zerkacz, teamId, taskId),
+    const { error } = await czlonekClient.from("bingo_submissions").insert({
+      ...zgloszenieBingoDla(czlonek, teamId, taskId),
       photo_path: `${wlasciciel.id}/zdjecie.jpg`,
     });
 
@@ -120,29 +140,25 @@ describe("polityki RLS: bingo", () => {
 
   it("nie złoży drugiego zgłoszenia do tego samego pola", async () => {
     const teamId = await firstTeamId();
-    const user = await nowyUzytkownik("zalewacz-bingo");
-    await ustawJakoZaakceptowany(user, teamId);
-    const client = await signIn(user);
+    await ustawJakoZaakceptowany(czlonek, teamId);
     const taskId = await idZadania(4);
-    const zgloszenie = zgloszenieBingoDla(user, teamId, taskId);
+    const zgloszenie = zgloszenieBingoDla(czlonek, teamId, taskId);
 
-    const pierwsze = await client.from("bingo_submissions").insert(zgloszenie);
+    const pierwsze = await czlonekClient.from("bingo_submissions").insert(zgloszenie);
     expect(pierwsze.error).toBeNull();
 
     // Unikalny indeks częściowy na (team_id, task_id) where status <> 'rejected'.
-    const drugie = await client.from("bingo_submissions").insert(zgloszenie);
+    const drugie = await czlonekClient.from("bingo_submissions").insert(zgloszenie);
     expect(drugie.error).not.toBeNull();
   });
 
   it("odrzucenie zwalnia pole", async () => {
     const teamId = await firstTeamId();
-    const user = await nowyUzytkownik("druga-szansa-bingo");
-    await ustawJakoZaakceptowany(user, teamId);
-    const client = await signIn(user);
+    await ustawJakoZaakceptowany(czlonek, teamId);
     const taskId = await idZadania(5);
-    const zgloszenie = zgloszenieBingoDla(user, teamId, taskId);
+    const zgloszenie = zgloszenieBingoDla(czlonek, teamId, taskId);
 
-    const { data: pierwsze, error: bladZapisu } = await client
+    const { data: pierwsze, error: bladZapisu } = await czlonekClient
       .from("bingo_submissions")
       .insert(zgloszenie)
       .select("id")
@@ -159,7 +175,7 @@ describe("polityki RLS: bingo", () => {
     // ten warunek, nie samą unikalność (którą już potwierdził test powyżej).
     // Gdyby zapisano go bez tego warunku, pole raz zajęte zostałoby zablokowane
     // na stałe nawet po odrzuceniu zgłoszenia.
-    const { error } = await client.from("bingo_submissions").insert(zgloszenie);
+    const { error } = await czlonekClient.from("bingo_submissions").insert(zgloszenie);
     expect(error).toBeNull();
 
     const { data: wszystkie } = await admin
@@ -172,19 +188,17 @@ describe("polityki RLS: bingo", () => {
 
   it("autor wycofuje własne oczekujące", async () => {
     const teamId = await firstTeamId();
-    const user = await nowyUzytkownik("wycofujacy-bingo");
-    await ustawJakoZaakceptowany(user, teamId);
-    const client = await signIn(user);
+    await ustawJakoZaakceptowany(czlonek, teamId);
     const taskId = await idZadania(6);
 
-    const { data: wiersz, error: bladZapisu } = await client
+    const { data: wiersz, error: bladZapisu } = await czlonekClient
       .from("bingo_submissions")
-      .insert(zgloszenieBingoDla(user, teamId, taskId))
+      .insert(zgloszenieBingoDla(czlonek, teamId, taskId))
       .select("id")
       .single();
     expect(bladZapisu).toBeNull();
 
-    const { data: skasowane } = await client
+    const { data: skasowane } = await czlonekClient
       .from("bingo_submissions")
       .delete()
       .eq("id", wiersz!.id)
@@ -196,8 +210,7 @@ describe("polityki RLS: bingo", () => {
   it("nie wycofa cudzego", async () => {
     const teamId = await firstTeamId();
     const autor = await nowyUzytkownik("autor-bingo");
-    const ciekawski = await nowyUzytkownik("ciekawski-bingo");
-    await ustawJakoZaakceptowany(ciekawski, teamId);
+    await ustawJakoZaakceptowany(czlonek, teamId);
     const taskId = await idZadania(7);
 
     // Wstawione kluczem serwisowym — bez tego test byłby zielony także wtedy,
@@ -209,8 +222,7 @@ describe("polityki RLS: bingo", () => {
       .single();
     expect(bladZapisu).toBeNull();
 
-    const client = await signIn(ciekawski);
-    const { data: poKasowaniu } = await client
+    const { data: poKasowaniu } = await czlonekClient
       .from("bingo_submissions")
       .delete()
       .eq("id", wiersz!.id)
@@ -227,22 +239,20 @@ describe("polityki RLS: bingo", () => {
 
   it("nie wycofa zaakceptowanego", async () => {
     const teamId = await firstTeamId();
-    const user = await nowyUzytkownik("zaakceptowany-bingo");
-    await ustawJakoZaakceptowany(user, teamId);
+    await ustawJakoZaakceptowany(czlonek, teamId);
     const taskId = await idZadania(8);
 
     const { data: wiersz, error: bladZapisu } = await admin
       .from("bingo_submissions")
       .insert({
-        ...zgloszenieBingoDla(user, teamId, taskId),
+        ...zgloszenieBingoDla(czlonek, teamId, taskId),
         status: "approved",
       })
       .select("id")
       .single();
     expect(bladZapisu).toBeNull();
 
-    const client = await signIn(user);
-    const { data: poKasowaniu } = await client
+    const { data: poKasowaniu } = await czlonekClient
       .from("bingo_submissions")
       .delete()
       .eq("id", wiersz!.id)
@@ -259,13 +269,12 @@ describe("polityki RLS: bingo", () => {
 
   it("nikt nie zmieni statusu zwykłym UPDATE-em", async () => {
     const teamId = await firstTeamId();
-    const user = await nowyUzytkownik("uparty-bingo");
-    await ustawJakoZaakceptowany(user, teamId);
+    await ustawJakoZaakceptowany(czlonek, teamId);
     const taskId = await idZadania(9);
 
     const { data: wiersz, error: bladZapisu } = await admin
       .from("bingo_submissions")
-      .insert(zgloszenieBingoDla(user, teamId, taskId))
+      .insert(zgloszenieBingoDla(czlonek, teamId, taskId))
       .select("id")
       .single();
     expect(bladZapisu).toBeNull();
@@ -273,8 +282,7 @@ describe("polityki RLS: bingo", () => {
     // Brak polityki UPDATE na bingo_submissions: status zmienia wyłącznie
     // review_bingo. W PostgREST odbicie przez RLS nie zwraca błędu, tylko
     // pustą listę zmienionych wierszy.
-    const client = await signIn(user);
-    const { data: poZmianie } = await client
+    const { data: poZmianie } = await czlonekClient
       .from("bingo_submissions")
       .update({ status: "approved" })
       .eq("id", wiersz!.id)
