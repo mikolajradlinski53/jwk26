@@ -99,6 +99,27 @@ export function anonimowy(): SupabaseClient {
   });
 }
 
+/** Id zadania bingo po pozycji na planszy (0-24) — zasiane na stałe w migracji. */
+export async function idZadania(position: number): Promise<string> {
+  const { data, error } = await admin
+    .from("bingo_tasks")
+    .select("id")
+    .eq("position", position)
+    .single();
+  if (error) throw error;
+  return data.id as string;
+}
+
+/** Minimalne poprawne zgłoszenie bingo dla danego użytkownika, drużyny i zadania. */
+export function zgloszenieBingoDla(user: TestUser, teamId: string, taskId: string) {
+  return {
+    user_id: user.id,
+    team_id: teamId,
+    task_id: taskId,
+    photo_path: `${user.id}/zdjecie.jpg`,
+  };
+}
+
 /** Minimalne poprawne zgłoszenie dla danego użytkownika. */
 export function zgloszenieDla(user: TestUser) {
   return {

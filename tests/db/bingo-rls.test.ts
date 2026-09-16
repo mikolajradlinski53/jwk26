@@ -5,6 +5,8 @@ import {
   ustawJakoZaakceptowany,
   sprzatanieUzytkownikow,
   firstTeamId,
+  idZadania,
+  zgloszenieBingoDla,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -26,27 +28,6 @@ async function innaDruzyna(niz: string): Promise<string> {
     .single();
   if (error) throw error;
   return data.id as string;
-}
-
-/** Id zadania bingo po pozycji na planszy (0-24) — zasiane na stałe w migracji. */
-async function idZadania(position: number): Promise<string> {
-  const { data, error } = await admin
-    .from("bingo_tasks")
-    .select("id")
-    .eq("position", position)
-    .single();
-  if (error) throw error;
-  return data.id as string;
-}
-
-/** Minimalne poprawne zgłoszenie bingo dla danego użytkownika, drużyny i zadania. */
-function zgloszenieBingoDla(user: TestUser, teamId: string, taskId: string) {
-  return {
-    user_id: user.id,
-    team_id: teamId,
-    task_id: taskId,
-    photo_path: `${user.id}/zdjecie.jpg`,
-  };
 }
 
 describe("polityki RLS: bingo", () => {
