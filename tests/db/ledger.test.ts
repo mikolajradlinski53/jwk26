@@ -1,10 +1,12 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   admin,
   createUser,
   signIn,
   deleteUser,
   firstTeamId,
+  makeAdmin,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -28,20 +30,42 @@ async function czlonek(tag: string, teamId: string) {
   return user;
 }
 
-async function adminUzytkownik(tag: string, teamId: string) {
-  const user = await czlonek(tag, teamId);
-  await admin.from("profiles").update({ role: "admin" }).eq("id", user.id);
-  return user;
-}
+// Jeden zwykły członek drużyny i jeden admin na cały plik. Żaden z pięciu
+// testów nie bada rozróżnienia między dwiema konkretnymi osobami tego samego
+// typu — tylko to, co wolno roli. is_admin() czyta rolę na żywo z profili.
+let uczestnik: TestUser;
+let uczestnikClient: SupabaseClient;
+let szef: TestUser;
+let adminClient: SupabaseClient;
+
+beforeAll(async () => {
+  const teamId = await firstTeamId();
+
+  uczestnik = await createUser("uczestnik-ksiega");
+  await admin
+    .from("profiles")
+    .update({ status: "approved", team_id: teamId })
+    .eq("id", uczestnik.id);
+  uczestnikClient = await signIn(uczestnik);
+
+  szef = await createUser("kaplan-ksiega");
+  await makeAdmin(szef);
+  adminClient = await signIn(szef);
+});
+
+afterAll(async () => {
+  await admin.from("points_ledger").delete().eq("user_id", uczestnik.id);
+  await deleteUser(uczestnik);
+  await admin.from("points_ledger").delete().eq("user_id", szef.id);
+  await deleteUser(szef);
+});
 
 describe("księga punktów", () => {
   it("nie pozwala uczestnikowi dopisać sobie punktów", async () => {
     const teamId = await firstTeamId();
-    const user = await czlonek("cwaniak", teamId);
-    const client = await signIn(user);
 
-    const { error } = await client.from("points_ledger").insert({
-      user_id: user.id,
+    const { error } = await uczestnikClient.from("points_ledger").insert({
+      user_id: uczestnik.id,
       team_id: teamId,
       delta: 9999,
       category: "admin_adjust",
@@ -53,11 +77,9 @@ describe("księga punktów", () => {
 
   it("pozwala adminowi przyznać punkty", async () => {
     const teamId = await firstTeamId();
-    const szef = await adminUzytkownik("kaplan", teamId);
     const gracz = await czlonek("gracz", teamId);
-    const client = await signIn(szef);
 
-    const { error } = await client.from("points_ledger").insert({
+    const { error } = await adminClient.from("points_ledger").insert({
       user_id: gracz.id,
       team_id: teamId,
       delta: 50,
@@ -71,8 +93,6 @@ describe("księga punktów", () => {
 
   it("nie pozwala nikomu zmienić ani skasować historii", async () => {
     const teamId = await firstTeamId();
-    const szef = await adminUzytkownik("archiwista", teamId);
-    const client = await signIn(szef);
 
     const { data: wiersz } = await admin
       .from("points_ledger")
@@ -83,13 +103,13 @@ describe("księga punktów", () => {
     // Brak polityk UPDATE i DELETE nie powoduje błędu — powoduje, że żaden
     // wiersz nie jest dla tych operacji widoczny. PostgREST zwraca wtedy pustą
     // listę zmienionych wierszy, więc asercja na błędzie niczego by nie złapała.
-    const { data: poZmianie } = await client
+    const { data: poZmianie } = await adminClient
       .from("points_ledger")
       .update({ delta: 999 })
       .eq("id", wiersz!.id)
       .select();
 
-    const { data: poKasowaniu } = await client
+    const { data: poKasowaniu } = await adminClient
       .from("points_ledger")
       .delete()
       .eq("id", wiersz!.id)

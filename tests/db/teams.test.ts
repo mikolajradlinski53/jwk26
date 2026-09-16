@@ -1,30 +1,54 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   admin,
   signIn,
   firstTeamId,
   ustawJakoZaakceptowany,
-  sprzatanieUzytkownikow,
+  createUser,
+  deleteUser,
+  makeAdmin,
+  type TestUser,
 } from "../helpers/supabase";
 
-const { nowyUzytkownik, nowyAdmin, posprzataj } = sprzatanieUzytkownikow();
 const zalozone: string[] = [];
+
+// Jeden zwykły członek drużyny i jeden admin na cały plik. Żaden z trzech
+// testów nie bada rozróżnienia między dwiema konkretnymi osobami — tylko to,
+// co wolno roli. is_admin()/is_approved() czytają rolę i status na żywo z
+// profili, więc zatwierdzenie kluczem serwisowym w beforeAll wystarczy raz.
+let uczestnik: TestUser;
+let uczestnikClient: SupabaseClient;
+let szef: TestUser;
+let adminClient: SupabaseClient;
+
+beforeAll(async () => {
+  const teamId = await firstTeamId();
+  uczestnik = await createUser("uczestnik-druzyny");
+  await ustawJakoZaakceptowany(uczestnik, teamId);
+  uczestnikClient = await signIn(uczestnik);
+
+  szef = await createUser("kaplan-druzyn");
+  await makeAdmin(szef);
+  adminClient = await signIn(szef);
+});
+
+afterAll(async () => {
+  await deleteUser(uczestnik);
+  await deleteUser(szef);
+});
 
 afterEach(async () => {
   if (zalozone.length) {
     await admin.from("teams").delete().in("id", zalozone.splice(0));
   }
-  await posprzataj();
 });
 
 describe("drużyny", () => {
   it("nie pozwala uczestnikowi zmienić nazwy drużyny", async () => {
     const teamId = await firstTeamId();
-    const user = await nowyUzytkownik("przemianowywacz");
-    await ustawJakoZaakceptowany(user, teamId);
-    const client = await signIn(user);
 
-    const { data } = await client
+    const { data } = await uczestnikClient
       .from("teams")
       .update({ name: "Loża Przejęta" })
       .eq("id", teamId)
@@ -43,12 +67,7 @@ describe("drużyny", () => {
   });
 
   it("nie pozwala uczestnikowi założyć drużyny", async () => {
-    const teamId = await firstTeamId();
-    const user = await nowyUzytkownik("zalozyciel");
-    await ustawJakoZaakceptowany(user, teamId);
-    const client = await signIn(user);
-
-    const { error } = await client
+    const { error } = await uczestnikClient
       .from("teams")
       .insert({ name: "Sekta Prywatna", slug: "prywatna" });
 
@@ -56,10 +75,7 @@ describe("drużyny", () => {
   });
 
   it("pozwala adminowi założyć drużynę", async () => {
-    const szef = await nowyAdmin("kaplan-druzyn");
-    const client = await signIn(szef);
-
-    const { data, error } = await client
+    const { data, error } = await adminClient
       .from("teams")
       .insert({ name: "Zakon Testowy", slug: `test-${Date.now()}` })
       .select("id")

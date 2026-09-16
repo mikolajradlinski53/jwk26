@@ -1,4 +1,5 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   admin,
   createUser,
@@ -9,15 +10,34 @@ import {
 
 const sprzatanie: TestUser[] = [];
 
-afterEach(async () => {
-  while (sprzatanie.length) await deleteUser(sprzatanie.pop()!);
-});
-
 async function nowyUzytkownik(tag: string) {
   const user = await createUser(tag);
   sprzatanie.push(user);
   return user;
 }
+
+// Jedna zwykła sesja na cały plik: granty kolumnowe i is_approved() czytają
+// rolę/status na żywo z profili, więc te same reguły widać bez logowania się
+// od nowa za każdym razem. Test zakładania profilu potrzebuje świeżego
+// użytkownika — bada sam moment jego powstania — więc jego nie ruszamy.
+let uczestnik: TestUser;
+let uczestnikClient: SupabaseClient;
+
+beforeAll(async () => {
+  uczestnik = await createUser("uczestnik-profile");
+  uczestnikClient = await signIn(uczestnik);
+});
+
+afterAll(async () => {
+  await deleteUser(uczestnik);
+});
+
+afterEach(async () => {
+  // Test zmiany nazwy zostawia trwały ślad na współdzielonym koncie — reset,
+  // żeby kolejny test zawsze widział domyślny (pusty) profil.
+  await admin.from("profiles").update({ display_name: null }).eq("id", uczestnik.id);
+  while (sprzatanie.length) await deleteUser(sprzatanie.pop()!);
+});
 
 describe("profile", () => {
   it("zakłada profil automatycznie ze statusem pending", async () => {
@@ -37,70 +57,57 @@ describe("profile", () => {
   });
 
   it("pozwala zmienić własną nazwę wyświetlaną", async () => {
-    const user = await nowyUzytkownik("nazwa");
-    const client = await signIn(user);
-
-    const { error } = await client
+    const { error } = await uczestnikClient
       .from("profiles")
       .update({ display_name: "Brat Mikołaj" })
-      .eq("id", user.id);
+      .eq("id", uczestnik.id);
 
     expect(error).toBeNull();
 
     const { data } = await admin
       .from("profiles")
       .select("display_name")
-      .eq("id", user.id)
+      .eq("id", uczestnik.id)
       .single();
     expect(data!.display_name).toBe("Brat Mikołaj");
   });
 
   it("nie pozwala mianować się adminem", async () => {
-    const user = await nowyUzytkownik("awans");
-    const client = await signIn(user);
-
-    const { error } = await client
+    const { error } = await uczestnikClient
       .from("profiles")
       .update({ role: "admin" })
-      .eq("id", user.id);
+      .eq("id", uczestnik.id);
 
     expect(error).not.toBeNull();
 
     const { data } = await admin
       .from("profiles")
       .select("role")
-      .eq("id", user.id)
+      .eq("id", uczestnik.id)
       .single();
     expect(data!.role).toBe("member");
   });
 
   it("nie pozwala zaakceptować się samemu", async () => {
-    const user = await nowyUzytkownik("akcept");
-    const client = await signIn(user);
-
-    const { error } = await client
+    const { error } = await uczestnikClient
       .from("profiles")
       .update({ status: "approved" })
-      .eq("id", user.id);
+      .eq("id", uczestnik.id);
 
     expect(error).not.toBeNull();
 
     const { data } = await admin
       .from("profiles")
       .select("status")
-      .eq("id", user.id)
+      .eq("id", uczestnik.id)
       .single();
     expect(data!.status).toBe("pending");
   });
 
   it("ukrywa cudze profile przed osobą przed akceptacją", async () => {
     const obcy = await nowyUzytkownik("obcy");
-    const patrzacy = await nowyUzytkownik("patrzacy");
-    const client = await signIn(patrzacy);
 
-    // RLS nie zwraca błędu przy odczycie, tylko pusty zbiór —
-    // asercja na error niczego by tu nie wykryła.
-    const { data, error } = await client
+    const { data, error } = await uczestnikClient
       .from("profiles")
       .select("id")
       .eq("id", obcy.id);
