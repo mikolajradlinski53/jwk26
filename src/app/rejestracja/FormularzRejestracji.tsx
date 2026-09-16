@@ -204,10 +204,10 @@ export function FormularzRejestracji() {
             {plik.name} ({Math.round(plik.size / 1024)} kB)
           </span>
         )}
-        {bladPliku && <span className="mt-1.5 block text-sm text-krew">{bladPliku}</span>}
+        {bladPliku && <span className="mt-1.5 block text-sm text-krew-jasna">{bladPliku}</span>}
       </label>
 
-      {blad && <p className="text-sm text-krew">{blad}</p>}
+      {blad && <p className="text-sm text-krew-jasna">{blad}</p>}
 
       <Button onClick={wyslij} disabled={czeka}>
         {etap ?? "Złóż ofiarę"}

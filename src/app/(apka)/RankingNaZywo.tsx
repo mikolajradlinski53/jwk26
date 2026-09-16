@@ -90,7 +90,7 @@ export function RankingNaZywo({ poczatkowe }: { poczatkowe: TeamScore[] }) {
             <span
               className={
                 "w-6 flex-none text-center font-tytul text-xl leading-none tabular-nums " +
-                (lider ? "text-krew" : "text-dym")
+                (lider ? "text-krew-jasna" : "text-dym")
               }
             >
               {RZYMSKIE[i] ?? i + 1}
@@ -102,7 +102,7 @@ export function RankingNaZywo({ poczatkowe }: { poczatkowe: TeamScore[] }) {
             <span
               className={
                 "flex-none font-tytul text-xl leading-none tabular-nums " +
-                (lider ? "text-krew" : "")
+                (lider ? "text-krew-jasna" : "")
               }
             >
               {w.score}

@@ -20,7 +20,7 @@ export function Field({
           className
         }
       />
-      {error && <span className="mt-1.5 block text-sm text-krew">{error}</span>}
+      {error && <span className="mt-1.5 block text-sm text-krew-jasna">{error}</span>}
     </label>
   );
 }

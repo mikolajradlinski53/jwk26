@@ -42,7 +42,7 @@ export default async function RejestracjaPage() {
     <Ekran tytul={ostatnie ? "Ponowna próba" : "Próba"}>
       {ostatnie?.status === "rejected" && (
         <div className="szklo mb-5 rounded-md border-krew/50 px-4 py-3.5">
-          <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-krew">
+          <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em] text-krew-jasna">
             Odrzucono
           </p>
           <p className="mt-1 text-sm text-dym">
