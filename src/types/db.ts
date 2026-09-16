@@ -40,6 +40,29 @@ export type UserScore = {
   score: number;
 };
 
+export type BingoTask = {
+  id: string;
+  position: number;
+  title: string;
+  description: string;
+  points: number;
+  active: boolean;
+};
+
+export type BingoSubmission = {
+  id: string;
+  team_id: string;
+  user_id: string;
+  task_id: string;
+  photo_path: string;
+  caption: string | null;
+  status: UserStatus;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  review_note: string | null;
+  created_at: string;
+};
+
 export type Registration = {
   id: string;
   user_id: string;
