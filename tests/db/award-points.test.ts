@@ -1,4 +1,5 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   admin,
   signIn,
@@ -6,26 +7,57 @@ import {
   firstTeamId,
   ustawJakoZaakceptowany,
   sprzatanieUzytkownikow,
+  createUser,
+  deleteUser,
+  makeAdmin,
+  type TestUser,
 } from "../helpers/supabase";
 
-const { nowyUzytkownik, nowyAdmin, posprzataj } = sprzatanieUzytkownikow();
+const { nowyUzytkownik, posprzataj } = sprzatanieUzytkownikow();
+
+// Jeden zwykły uczestnik i jeden admin na cały plik, założeni raz w beforeAll.
+// Żaden z dziesięciu testów nie bada rozróżnienia między dwiema konkretnymi
+// osobami tego samego typu — award_points wywołuje „jakiś admin", odmowę
+// sprawdza „jakiś zwykły uczestnik". is_admin() czyta rolę na żywo z profili
+// przy każdym wywołaniu, więc jedno logowanie na rolę wystarcza.
+let uczestnik: TestUser;
+let uczestnikClient: SupabaseClient;
+let szef: TestUser;
+let adminClient: SupabaseClient;
+
+beforeAll(async () => {
+  uczestnik = await createUser("uczestnik-punkty");
+  uczestnikClient = await signIn(uczestnik);
+  szef = await createUser("kaplan-punkty");
+  await makeAdmin(szef);
+  adminClient = await signIn(szef);
+});
+
+afterAll(async () => {
+  await deleteUser(uczestnik);
+  await deleteUser(szef);
+});
 
 afterEach(async () => {
   await admin.from("points_ledger").delete().eq("category", "admin_adjust");
+  // Pierwszy test zatwierdza współdzielonego uczestnika do drużyny — reset,
+  // żeby kolejne testy zawsze widziały go w domyślnym stanie.
+  await admin
+    .from("profiles")
+    .update({ status: "pending", team_id: null })
+    .eq("id", uczestnik.id);
   await posprzataj();
 });
 
 describe("przyznawanie punktów", () => {
   it("nie pozwala uczestnikowi przyznać punktów", async () => {
     const teamId = await firstTeamId();
-    const user = await nowyUzytkownik("chytrus");
-    await ustawJakoZaakceptowany(user, teamId);
-    const client = await signIn(user);
+    await ustawJakoZaakceptowany(uczestnik, teamId);
 
-    const { error } = await client.rpc("award_points", {
+    const { error } = await uczestnikClient.rpc("award_points", {
       p_delta: 500,
       p_reason: "bo tak",
-      p_user_id: user.id,
+      p_user_id: uczestnik.id,
     });
 
     expect(error).not.toBeNull();
@@ -47,10 +79,8 @@ describe("przyznawanie punktów", () => {
     const teamId = await firstTeamId();
     const gracz = await nowyUzytkownik("nagrodzony");
     await ustawJakoZaakceptowany(gracz, teamId);
-    const szef = await nowyAdmin("kaplan-punkty");
-    const client = await signIn(szef);
 
-    const { error } = await client.rpc("award_points", {
+    const { error } = await adminClient.rpc("award_points", {
       p_delta: 40,
       p_reason: "wygrana konkurencja przy ognisku",
       p_user_id: gracz.id,
@@ -72,10 +102,8 @@ describe("przyznawanie punktów", () => {
 
   it("przyznaje punkty drużynie bez wskazywania osoby", async () => {
     const teamId = await firstTeamId();
-    const szef = await nowyAdmin("kaplan-druzyna");
-    const client = await signIn(szef);
 
-    const { error } = await client.rpc("award_points", {
+    const { error } = await adminClient.rpc("award_points", {
       p_delta: -60,
       p_reason: "kara za nocne wycie",
       p_team_id: teamId,
@@ -95,10 +123,8 @@ describe("przyznawanie punktów", () => {
 
   it("odmawia przyznania bez uzasadnienia", async () => {
     const teamId = await firstTeamId();
-    const szef = await nowyAdmin("kaplan-niemowa");
-    const client = await signIn(szef);
 
-    const { error } = await client.rpc("award_points", {
+    const { error } = await adminClient.rpc("award_points", {
       p_delta: 10,
       p_reason: "  ",
       p_team_id: teamId,
@@ -109,10 +135,8 @@ describe("przyznawanie punktów", () => {
 
   it("odmawia zerowej zmiany", async () => {
     const teamId = await firstTeamId();
-    const szef = await nowyAdmin("kaplan-zero");
-    const client = await signIn(szef);
 
-    const { error } = await client.rpc("award_points", {
+    const { error } = await adminClient.rpc("award_points", {
       p_delta: 0,
       p_reason: "nic się nie stało",
       p_team_id: teamId,
@@ -126,10 +150,8 @@ describe("przyznawanie punktów", () => {
     // żeby odczyt widoku padał na `22003 integer out of range` — i ranking
     // przestaje działać dla wszystkich drużyn naraz, nie tylko dla tej jednej.
     const teamId = await firstTeamId();
-    const szef = await nowyAdmin("kaplan-rozmach");
-    const client = await signIn(szef);
 
-    const { error } = await client.rpc("award_points", {
+    const { error } = await adminClient.rpc("award_points", {
       p_delta: 2147483647,
       p_reason: "hojnosc bez granic",
       p_team_id: teamId,
@@ -139,10 +161,7 @@ describe("przyznawanie punktów", () => {
   });
 
   it("odmawia, gdy nie wskazano ani osoby, ani drużyny", async () => {
-    const szef = await nowyAdmin("kaplan-donikad");
-    const client = await signIn(szef);
-
-    const { error } = await client.rpc("award_points", {
+    const { error } = await adminClient.rpc("award_points", {
       p_delta: 10,
       p_reason: "w przestrzen",
     });
@@ -163,10 +182,8 @@ describe("przyznawanie punktów", () => {
 
     const gracz = await nowyUzytkownik("dwuznaczny");
     await ustawJakoZaakceptowany(gracz, pierwsza.id);
-    const szef = await nowyAdmin("kaplan-rozjazd");
-    const client = await signIn(szef);
 
-    const { error } = await client.rpc("award_points", {
+    const { error } = await adminClient.rpc("award_points", {
       p_delta: 15,
       p_reason: "sprzeczne parametry",
       p_user_id: gracz.id,
@@ -187,10 +204,8 @@ describe("przyznawanie punktów", () => {
 
   it("odmawia przyznania osobie bez drużyny", async () => {
     const sierota = await nowyUzytkownik("bezdomny");
-    const szef = await nowyAdmin("kaplan-sierota");
-    const client = await signIn(szef);
 
-    const { error } = await client.rpc("award_points", {
+    const { error } = await adminClient.rpc("award_points", {
       p_delta: 10,
       p_reason: "za nic konkretnego",
       p_user_id: sierota.id,

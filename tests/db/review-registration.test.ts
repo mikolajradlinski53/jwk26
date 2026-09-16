@@ -1,4 +1,5 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   admin,
   signIn,
@@ -7,11 +8,49 @@ import {
   sprzatanieUzytkownikow,
   zgloszenieDla,
   ustawJakoZaakceptowany,
+  createUser,
+  deleteUser,
+  makeAdmin,
   type TestUser,
 } from "../helpers/supabase";
 
-const { nowyUzytkownik, nowyAdmin, posprzataj } = sprzatanieUzytkownikow();
-afterEach(posprzataj);
+const { nowyUzytkownik, posprzataj } = sprzatanieUzytkownikow();
+
+// Jeden zwykły uczestnik i jeden admin na cały plik, założeni raz w beforeAll:
+// dziewięć testów, część woła review_registration jako „jakiś admin", część
+// tylko sprawdza, że „jakiś zwykły uczestnik" nie ma do tego prawa.
+// is_admin()/is_approved() czytają rolę i status na żywo z profili przy
+// każdym wywołaniu, więc zmiana kluczem serwisowym w afterEach jest widoczna
+// w sesji od razu, bez ponownego logowania.
+let uczestnik: TestUser;
+let uczestnikClient: SupabaseClient;
+let szef: TestUser;
+let adminClient: SupabaseClient;
+
+beforeAll(async () => {
+  uczestnik = await createUser("uczestnik-rozpatrzenie");
+  uczestnikClient = await signIn(uczestnik);
+  szef = await createUser("kaplan-rozpatrzenie");
+  await makeAdmin(szef);
+  adminClient = await signIn(szef);
+});
+
+afterAll(async () => {
+  await deleteUser(uczestnik);
+  await deleteUser(szef);
+});
+
+afterEach(async () => {
+  // Dwa testy zostawiają trwały ślad na współdzielonym uczestniku: zgłoszenie
+  // i zmienioną nazwę wyświetlaną po zatwierdzeniu. Reset, żeby kolejny test
+  // zawsze zaczynał od domyślnego stanu (pending, bez drużyny, bez nazwy).
+  await admin.from("registrations").delete().eq("user_id", uczestnik.id);
+  await admin
+    .from("profiles")
+    .update({ status: "pending", team_id: null, display_name: null })
+    .eq("id", uczestnik.id);
+  await posprzataj();
+});
 
 /** Zakłada czekające zgłoszenie i zwraca jego identyfikator. */
 async function zlozZgloszenie(user: TestUser): Promise<string> {
@@ -27,11 +66,9 @@ async function zlozZgloszenie(user: TestUser): Promise<string> {
 describe("rozpatrywanie zgłoszeń", () => {
   it("nie pozwala uczestnikowi zaakceptować samego siebie", async () => {
     const teamId = await firstTeamId();
-    const user = await nowyUzytkownik("samozwaniec");
-    const zgloszenieId = await zlozZgloszenie(user);
-    const client = await signIn(user);
+    const zgloszenieId = await zlozZgloszenie(uczestnik);
 
-    const { error } = await client.rpc("review_registration", {
+    const { error } = await uczestnikClient.rpc("review_registration", {
       p_registration_id: zgloszenieId,
       p_approve: true,
       p_team_id: teamId,
@@ -42,7 +79,7 @@ describe("rozpatrywanie zgłoszeń", () => {
     const { data } = await admin
       .from("profiles")
       .select("status")
-      .eq("id", user.id)
+      .eq("id", uczestnik.id)
       .single();
     expect(data!.status).toBe("pending");
   });
@@ -79,10 +116,8 @@ describe("rozpatrywanie zgłoszeń", () => {
     const teamId = await firstTeamId();
     const petent = await nowyUzytkownik("petent");
     const zgloszenieId = await zlozZgloszenie(petent);
-    const szef = await nowyAdmin("kaplan");
-    const client = await signIn(szef);
 
-    const { error } = await client.rpc("review_registration", {
+    const { error } = await adminClient.rpc("review_registration", {
       p_registration_id: zgloszenieId,
       p_approve: true,
       p_team_id: teamId,
@@ -112,10 +147,8 @@ describe("rozpatrywanie zgłoszeń", () => {
   it("odmawia akceptacji bez wskazania drużyny", async () => {
     const petent = await nowyUzytkownik("bezdruzyny");
     const zgloszenieId = await zlozZgloszenie(petent);
-    const szef = await nowyAdmin("kaplan2");
-    const client = await signIn(szef);
 
-    const { error } = await client.rpc("review_registration", {
+    const { error } = await adminClient.rpc("review_registration", {
       p_registration_id: zgloszenieId,
       p_approve: true,
     });
@@ -136,10 +169,8 @@ describe("rozpatrywanie zgłoszeń", () => {
     // null` zachowuje się jak fałsz. Literówka w panelu kosztowałaby kogoś wyjazd.
     const petent = await nowyUzytkownik("niezdecydowany");
     const zgloszenieId = await zlozZgloszenie(petent);
-    const szef = await nowyAdmin("kaplan5");
-    const client = await signIn(szef);
 
-    const { error } = await client.rpc("review_registration", {
+    const { error } = await adminClient.rpc("review_registration", {
       p_registration_id: zgloszenieId,
       p_approve: null,
     });
@@ -157,10 +188,8 @@ describe("rozpatrywanie zgłoszeń", () => {
   it("odrzuca zgłoszenie razem z notatką", async () => {
     const petent = await nowyUzytkownik("odrzucony");
     const zgloszenieId = await zlozZgloszenie(petent);
-    const szef = await nowyAdmin("kaplan3");
-    const client = await signIn(szef);
 
-    const { error } = await client.rpc("review_registration", {
+    const { error } = await adminClient.rpc("review_registration", {
       p_registration_id: zgloszenieId,
       p_approve: false,
       p_note: "Zdjęcie nieczytelne",
@@ -191,17 +220,15 @@ describe("rozpatrywanie zgłoszeń", () => {
     const teamId = await firstTeamId();
     const petent = await nowyUzytkownik("dwukrotny");
     const zgloszenieId = await zlozZgloszenie(petent);
-    const szef = await nowyAdmin("kaplan4");
-    const client = await signIn(szef);
 
-    const pierwsze = await client.rpc("review_registration", {
+    const pierwsze = await adminClient.rpc("review_registration", {
       p_registration_id: zgloszenieId,
       p_approve: true,
       p_team_id: teamId,
     });
     expect(pierwsze.error).toBeNull();
 
-    const drugie = await client.rpc("review_registration", {
+    const drugie = await adminClient.rpc("review_registration", {
       p_registration_id: zgloszenieId,
       p_approve: false,
       p_note: "Rozmyśliłem się",
@@ -218,21 +245,17 @@ describe("rozpatrywanie zgłoszeń", () => {
 
   it("nie nadpisuje nazwy, którą uczestnik już sobie ustawił", async () => {
     const teamId = await firstTeamId();
-    const petent = await nowyUzytkownik("nazwany");
 
     // Granty kolumnowe z migracji 0001 pozwalają zmienić własne display_name.
-    const jego = await signIn(petent);
-    const { error: bladNazwy } = await jego
+    const { error: bladNazwy } = await uczestnikClient
       .from("profiles")
       .update({ display_name: "Siostra Zofia" })
-      .eq("id", petent.id);
+      .eq("id", uczestnik.id);
     expect(bladNazwy).toBeNull();
 
-    const zgloszenieId = await zlozZgloszenie(petent);
-    const szef = await nowyAdmin("kaplan6");
-    const client = await signIn(szef);
+    const zgloszenieId = await zlozZgloszenie(uczestnik);
 
-    const { error } = await client.rpc("review_registration", {
+    const { error } = await adminClient.rpc("review_registration", {
       p_registration_id: zgloszenieId,
       p_approve: true,
       p_team_id: teamId,
@@ -245,7 +268,7 @@ describe("rozpatrywanie zgłoszeń", () => {
     const { data } = await admin
       .from("profiles")
       .select("display_name")
-      .eq("id", petent.id)
+      .eq("id", uczestnik.id)
       .single();
     expect(data!.display_name).toBe("Siostra Zofia");
   });
@@ -260,10 +283,8 @@ describe("rozpatrywanie zgłoszeń", () => {
     await admin.from("profiles").update({ status: "pending" }).eq("id", petent.id);
 
     const zgloszenieId = await zlozZgloszenie(petent);
-    const szef = await nowyAdmin("kaplan7");
-    const client = await signIn(szef);
 
-    const { error } = await client.rpc("review_registration", {
+    const { error } = await adminClient.rpc("review_registration", {
       p_registration_id: zgloszenieId,
       p_approve: false,
       p_note: "Brak wplaty",
