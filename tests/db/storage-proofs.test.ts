@@ -1,12 +1,38 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   admin,
   signIn,
   sprzatanieUzytkownikow,
+  createUser,
+  deleteUser,
+  makeAdmin,
+  type TestUser,
 } from "../helpers/supabase";
 
-const { nowyUzytkownik, nowyAdmin, posprzataj } = sprzatanieUzytkownikow();
+const { nowyUzytkownik, posprzataj } = sprzatanieUzytkownikow();
 const pliki: string[] = [];
+
+// Jeden zwykły uczestnik i jeden admin na cały plik. Polityki na buckecie
+// „proofs" patrzą tylko na auth.uid() (własny folder) albo na rolę admina —
+// obie da się sprawdzić żywą sesją jednej osoby na rolę, założoną raz.
+let uczestnik: TestUser;
+let uczestnikClient: SupabaseClient;
+let szef: TestUser;
+let adminClient: SupabaseClient;
+
+beforeAll(async () => {
+  uczestnik = await createUser("uczestnik-dowody");
+  uczestnikClient = await signIn(uczestnik);
+  szef = await createUser("kaplan-dowody");
+  await makeAdmin(szef);
+  adminClient = await signIn(szef);
+});
+
+afterAll(async () => {
+  await deleteUser(uczestnik);
+  await deleteUser(szef);
+});
 
 afterEach(async () => {
   // Pliki najpierw. Storage nie ma kaskady na auth.users, więc po skasowaniu
@@ -26,11 +52,9 @@ function atrapaZdjecia(): Blob {
 
 describe("bucket z dowodami przelewu", () => {
   it("pozwala wrzucić plik do własnego folderu", async () => {
-    const user = await nowyUzytkownik("wrzucacz");
-    const client = await signIn(user);
-    const sciezka = `${user.id}/dowod.jpg`;
+    const sciezka = `${uczestnik.id}/dowod.jpg`;
 
-    const { error } = await client.storage
+    const { error } = await uczestnikClient.storage
       .from("proofs")
       .upload(sciezka, atrapaZdjecia(), { contentType: "image/jpeg" });
 
@@ -40,10 +64,8 @@ describe("bucket z dowodami przelewu", () => {
 
   it("nie pozwala wrzucić pliku do cudzego folderu", async () => {
     const obcy = await nowyUzytkownik("wlasciciel");
-    const sprytny = await nowyUzytkownik("intruz");
-    const client = await signIn(sprytny);
 
-    const { error } = await client.storage
+    const { error } = await uczestnikClient.storage
       .from("proofs")
       .upload(`${obcy.id}/podrzucone.jpg`, atrapaZdjecia(), {
         contentType: "image/jpeg",
@@ -61,10 +83,7 @@ describe("bucket z dowodami przelewu", () => {
     expect(bladZapisu).toBeNull();
     pliki.push(sciezka);
 
-    const ciekawski = await nowyUzytkownik("ciekawski");
-    const client = await signIn(ciekawski);
-
-    const { error } = await client.storage.from("proofs").download(sciezka);
+    const { error } = await uczestnikClient.storage.from("proofs").download(sciezka);
 
     expect(error).not.toBeNull();
   });
@@ -72,16 +91,14 @@ describe("bucket z dowodami przelewu", () => {
   it("nie pozwala uczestnikowi pobrać nawet własnego dowodu", async () => {
     // Polityka SELECT jest wyłącznie dla admina — świadomie, zgodnie ze specem.
     // Autor widział zdjęcie przed wysłaniem i nie ma po co do niego wracać.
-    const user = await nowyUzytkownik("autor");
-    const sciezka = `${user.id}/dowod.jpg`;
+    const sciezka = `${uczestnik.id}/dowod.jpg`;
     const { error: bladZapisu } = await admin.storage
       .from("proofs")
       .upload(sciezka, atrapaZdjecia(), { contentType: "image/jpeg" });
     expect(bladZapisu).toBeNull();
     pliki.push(sciezka);
 
-    const client = await signIn(user);
-    const { error } = await client.storage.from("proofs").download(sciezka);
+    const { error } = await uczestnikClient.storage.from("proofs").download(sciezka);
 
     expect(error).not.toBeNull();
   });
@@ -89,17 +106,15 @@ describe("bucket z dowodami przelewu", () => {
   it("nie pozwala uczestnikowi podmienić ani skasować dowodu", async () => {
     // Brak polityk UPDATE i DELETE. Gdyby któraś istniała, autor mógłby po
     // akceptacji podmienić dowód albo zatrzeć ślad po odrzuconym zgłoszeniu.
-    const user = await nowyUzytkownik("podmieniacz");
-    const client = await signIn(user);
-    const sciezka = `${user.id}/dowod.jpg`;
+    const sciezka = `${uczestnik.id}/dowod.jpg`;
 
-    const { error: bladZapisu } = await client.storage
+    const { error: bladZapisu } = await uczestnikClient.storage
       .from("proofs")
       .upload(sciezka, atrapaZdjecia(), { contentType: "image/jpeg" });
     expect(bladZapisu).toBeNull();
     pliki.push(sciezka);
 
-    const { error: bladPodmiany } = await client.storage
+    const { error: bladPodmiany } = await uczestnikClient.storage
       .from("proofs")
       .upload(sciezka, atrapaZdjecia(), {
         contentType: "image/jpeg",
@@ -107,7 +122,7 @@ describe("bucket z dowodami przelewu", () => {
       });
     expect(bladPodmiany).not.toBeNull();
 
-    const { error: bladKasowania } = await client.storage
+    const { error: bladKasowania } = await uczestnikClient.storage
       .from("proofs")
       .remove([sciezka]);
 
@@ -129,10 +144,7 @@ describe("bucket z dowodami przelewu", () => {
     expect(bladZapisu).toBeNull();
     pliki.push(sciezka);
 
-    const szef = await nowyAdmin("kaplan");
-    const client = await signIn(szef);
-
-    const { data, error } = await client.storage
+    const { data, error } = await adminClient.storage
       .from("proofs")
       .createSignedUrl(sciezka, 60);
 
@@ -143,12 +155,9 @@ describe("bucket z dowodami przelewu", () => {
   it("odrzuca plik o niedozwolonym typie", async () => {
     // allowed_mime_types na buckecie: jpeg, png, webp. PDF przechodziłby przez
     // politykę RLS — zatrzymuje go dopiero konfiguracja bucketu.
-    const user = await nowyUzytkownik("pedeefiarz");
-    const client = await signIn(user);
-
-    const { error } = await client.storage
+    const { error } = await uczestnikClient.storage
       .from("proofs")
-      .upload(`${user.id}/dowod.pdf`, new Blob(["%PDF-1.4"], {
+      .upload(`${uczestnik.id}/dowod.pdf`, new Blob(["%PDF-1.4"], {
         type: "application/pdf",
       }), { contentType: "application/pdf" });
 
