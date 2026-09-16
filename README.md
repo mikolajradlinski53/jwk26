@@ -30,6 +30,12 @@ Projekt testowy musi mieć włączone logowanie hasłem (Authentication → Prov
 Email, `Confirm email` wyłączone). Apka używa OTP, ale kodu z maila nie da się
 przepisać w teście automatycznym.
 
+**Nie uruchamiaj pakietu częściej niż raz na pięć minut.** Supabase limituje
+logowania do trzydziestu na pięć minut, a jeden przebieg zakłada i loguje
+kilkadziesiąt kont. Przy zbyt szybkim powtórzeniu testy padają na
+`AuthApiError: Request rate limit reached` — to limit usługi, nie regres w kodzie.
+Limit podnosi się w Authentication → Rate Limits.
+
 ## Migracje
 
 Zawsze przez CLI — `db push` zapisuje w bazie, co zostało zastosowane, i nie
