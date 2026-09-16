@@ -28,6 +28,7 @@ export type TeamScore = {
   slug: string;
   color: string;
   score: number;
+  motto: string | null;
 };
 
 export type UserScore = {
