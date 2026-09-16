@@ -11,6 +11,7 @@ import {
   makeAdmin,
   idZadania,
   zgloszenieBingoDla,
+  zapal,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -47,25 +48,6 @@ afterEach(async () => {
   await admin.from("bingo_submissions").delete().not("id", "is", null);
   await posprzataj();
 });
-
-/** Zapala wskazane pola planszy dla drużyny, omijając akceptację. */
-async function zapal(teamId: string, userId: string, pozycje: number[]) {
-  const { data: zadania } = await admin
-    .from("bingo_tasks")
-    .select("id, position")
-    .in("position", pozycje);
-
-  for (const z of zadania ?? []) {
-    const { error } = await admin.from("bingo_submissions").insert({
-      team_id: teamId,
-      user_id: userId,
-      task_id: z.id,
-      photo_path: `${userId}/${crypto.randomUUID()}.jpg`,
-      status: "approved",
-    });
-    if (error) throw error;
-  }
-}
 
 /** Wstawia oczekujące zgłoszenie kluczem serwisowym i zwraca jego id. */
 async function wstawZgloszenie(
@@ -188,10 +170,16 @@ describe("akceptacja zgłoszeń bingo i bonusy", () => {
     expect(zgl!.status).toBe("rejected");
     expect(zgl!.review_note).toBe("Zdjęcie nie pokazuje zadania");
 
+    // Filtr po ref_type jest tu istotny, choć wygląda na nadmiarowy. Drużyna
+    // jest zasiana na stałe i współdzielona z innymi plikami testowymi — bez
+    // tego filtra jeden przerwany przebieg `award-points.test.ts` zostawiłby
+    // w księdze wiersz kategorii `admin_adjust`, a ten test padłby przy
+    // następnym, zupełnie czystym uruchomieniu. Sprawdzone: pada.
     const { data: wpisy } = await admin
       .from("points_ledger")
       .select("id")
-      .eq("team_id", teamId);
+      .eq("team_id", teamId)
+      .eq("ref_type", "bingo_zadanie");
     expect(wpisy).toEqual([]);
   });
 

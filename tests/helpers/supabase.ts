@@ -120,6 +120,39 @@ export function zgloszenieBingoDla(user: TestUser, teamId: string, taskId: strin
   };
 }
 
+/**
+ * Zapala wskazane pola planszy dla drużyny, omijając review_bingo.
+ *
+ * Wstawia zgłoszenia od razu jako `approved`, bez `reviewed_by`/`reviewed_at` —
+ * to stan, do którego aplikacja dochodzi wyłącznie przez funkcję akceptacji.
+ * Skrót jest bezpieczny, bo wykrywanie linii i pełnej planszy patrzy tylko na
+ * `status`, nigdy na pola recenzenta. Dzięki temu test bonusu za linię nie musi
+ * przepuszczać czterech zgłoszeń przez funkcję, żeby dojść do tego piątego,
+ * które faktycznie bada.
+ */
+export async function zapal(
+  teamId: string,
+  userId: string,
+  pozycje: number[],
+): Promise<void> {
+  const { data: zadania, error: bladZadan } = await admin
+    .from("bingo_tasks")
+    .select("id")
+    .in("position", pozycje);
+  if (bladZadan) throw bladZadan;
+
+  for (const z of zadania ?? []) {
+    const { error } = await admin.from("bingo_submissions").insert({
+      team_id: teamId,
+      user_id: userId,
+      task_id: z.id,
+      photo_path: `${userId}/${crypto.randomUUID()}.jpg`,
+      status: "approved",
+    });
+    if (error) throw error;
+  }
+}
+
 /** Minimalne poprawne zgłoszenie dla danego użytkownika. */
 export function zgloszenieDla(user: TestUser) {
   return {
