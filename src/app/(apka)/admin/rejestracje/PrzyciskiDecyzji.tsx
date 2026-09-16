@@ -49,14 +49,14 @@ export function PrzyciskiDecyzji({
   return (
     <div className="mt-4 grid gap-3">
       <label className="block">
-        <span className="mb-1.5 block font-display text-xs uppercase tracking-widest text-smoke">
+        <span className="mb-1.5 block font-tytul text-xs uppercase tracking-widest text-dym">
           Drużyna
         </span>
         <select
           value={teamId}
           onChange={(e) => setTeamId(e.target.value)}
-          className="min-h-11 w-full rounded-sm border border-candle/25 bg-ash px-3
-                     text-parchment outline-none focus:border-candle"
+          className="szklo min-h-11 w-full rounded-sm px-3
+                     text-kosc outline-none focus-visible:border-krew"
         >
           {druzyny.map((d) => (
             <option key={d.id} value={d.id}>
@@ -70,12 +70,12 @@ export function PrzyciskiDecyzji({
         value={notatka}
         onChange={(e) => setNotatka(e.target.value)}
         placeholder="Notatka (widoczna przy odrzuceniu)"
-        className="min-h-11 w-full rounded-sm border border-candle/25 bg-ash px-3
-                   text-parchment outline-none placeholder:text-smoke/60
-                   focus:border-candle"
+        className="szklo min-h-11 w-full rounded-sm px-3
+                   text-kosc outline-none placeholder:text-dym/70
+                   focus-visible:border-krew"
       />
 
-      {blad && <p className="text-sm text-blood">{blad}</p>}
+      {blad && <p className="text-sm text-krew-jasna">{blad}</p>}
 
       <div className="grid grid-cols-2 gap-3">
         <Button onClick={() => rozpatrz(true)} disabled={czeka || !teamId}>

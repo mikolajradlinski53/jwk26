@@ -37,16 +37,16 @@ export default async function KolejkaRejestracji() {
   return (
     <Ekran tytul="Zgłoszenia">
       {zgloszenia.length === 0 && (
-        <p className="text-center text-smoke">Kolejka pusta.</p>
+        <p className="text-center text-dym">Kolejka pusta.</p>
       )}
 
       <ul className="grid gap-8">
         {zgloszenia.map((z) => (
-          <li key={z.id} className="border border-candle/20 bg-ash/40 p-4">
-            <p className="font-display tracking-wider text-candle">{z.full_name}</p>
-            <p className="text-sm text-smoke">{z.phone ?? "bez telefonu"}</p>
+          <li key={z.id} className="szklo rounded-lg overflow-hidden p-4">
+            <p className="font-tytul tracking-wider text-kosc">{z.full_name}</p>
+            <p className="text-sm text-dym">{z.phone ?? "bez telefonu"}</p>
             {z.diet_notes && (
-              <p className="mt-2 text-sm text-parchment">Dieta: {z.diet_notes}</p>
+              <p className="mt-2 text-sm text-kosc">Dieta: {z.diet_notes}</p>
             )}
 
             {/* Zwykły <img>, nie next/image: podpisany URL wygasa po godzinie,
@@ -59,13 +59,13 @@ export default async function KolejkaRejestracji() {
                 // Bez lazy przeglądarka zleca pobranie wszystkich zdjęć w kolejce
                 // naraz. Admin ogląda je po kolei, często na telefonie w drodze.
                 loading="lazy"
-                className="mt-3 w-full border border-candle/20"
+                className="mt-3 w-full"
               />
             ) : (
-              <p className="mt-3 text-sm text-blood">Nie udało się wczytać zdjęcia.</p>
+              <p className="mt-3 text-sm text-krew-jasna">Nie udało się wczytać zdjęcia.</p>
             )}
 
-            <p className="mt-3 text-xs text-smoke">
+            <p className="mt-3 text-xs text-dym">
               {z.ocr_confidence === null
                 ? "OCR się nie powiódł — oceniaj wyłącznie po zdjęciu."
                 : `OCR: ${z.ocr_keywords_hit} słów kluczowych, pewność ${Math.round(
@@ -74,10 +74,10 @@ export default async function KolejkaRejestracji() {
             </p>
             {z.ocr_text && (
               <details className="mt-1">
-                <summary className="cursor-pointer text-xs text-smoke">
+                <summary className="cursor-pointer text-xs text-dym">
                   Odczytany tekst
                 </summary>
-                <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap text-xs text-smoke">
+                <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap text-xs text-dym">
                   {z.ocr_text}
                 </pre>
               </details>
@@ -90,8 +90,8 @@ export default async function KolejkaRejestracji() {
 
       <Link
         href="/admin"
-        className="mt-8 flex min-h-11 items-center px-4 font-display text-sm
-                   uppercase tracking-widest text-smoke hover:text-candle"
+        className="mt-8 flex min-h-11 items-center px-4 font-tytul text-sm
+                   uppercase tracking-widest text-dym hover:text-kosc"
       >
         ← Sanktuarium
       </Link>

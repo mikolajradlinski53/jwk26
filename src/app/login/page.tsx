@@ -111,14 +111,14 @@ export default function LoginPage() {
         </div>
       ) : (
         <div className="grid gap-5">
-          <p className="text-center text-sm text-smoke">
+          <p className="text-center text-sm text-dym">
             {wyslano ? (
               <>
-                Kod poleciał na <span className="text-parchment">{email}</span>
+                Kod poleciał na <span className="text-kosc">{email}</span>
               </>
             ) : (
               <>
-                Wpisz kod dla <span className="text-parchment">{email}</span>
+                Wpisz kod dla <span className="text-kosc">{email}</span>
               </>
             )}
           </p>
