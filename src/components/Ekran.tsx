@@ -9,7 +9,11 @@ export function Ekran({
 }) {
   return (
     <section className="mx-auto w-full max-w-md px-4 pb-10">
-      <header className="px-1 pb-4 pt-7 text-center">
+      {/* Odstęp na wcięcie ekranu daje `body` przez env(safe-area-inset-top),
+          więc tutaj zostaje tylko oddech typograficzny. Wcześniejsze `pt-7`
+          było dobrane pod widok z paskiem adresu i w trybie aplikacji
+          zostawało jako pusta przestrzeń. */}
+      <header className="px-1 pb-4 pt-4 text-center">
         <h1 className="font-tytul text-[1.7rem] leading-tight tracking-tight text-kosc">
           {tytul}
         </h1>

@@ -56,6 +56,17 @@ body {
   color: var(--color-kosc);
   font-family: var(--font-ui);
   min-height: 100dvh;
+  /*
+   * Po zainstalowaniu na ekranie głównym przeglądarka znika i strona zaczyna się
+   * od samej góry ekranu. Przy `viewportFit: "cover"` i przezroczystym pasku
+   * stanu treść wjeżdża wtedy pod zegar i wcięcie aparatu.
+   *
+   * `env()` daje dokładnie tyle, ile dane urządzenie potrzebuje: zero
+   * w przeglądarce i na telefonach bez wcięcia, kilkadziesiąt pikseli na
+   * iPhonie z wyspą. Sztywny odstęp byłby albo za mały tam, albo martwą
+   * przestrzenią tu.
+   */
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 /*

@@ -3,7 +3,7 @@
   "short_name": "Sekta",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0908",
-  "theme_color": "#0a0908",
+  "background_color": "#0c0709",
+  "theme_color": "#0c0709",
   "icons": []
 }
