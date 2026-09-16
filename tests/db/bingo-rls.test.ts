@@ -72,8 +72,10 @@ describe("polityki RLS: bingo", () => {
   });
 
   it("oczekujący nie widzi zadań", async () => {
-    // Uczestnik jest 'pending' na starcie tego testu — poprzedni afterEach
-    // sprowadza go z powrotem do tego stanu, więc dodatkowa akcja niepotrzebna.
+    // Brak tu jawnego ustawienia statusu, bo 'pending' to stan domyślny świeżego
+    // konta — a afterEach i tak przywraca go po każdym teście. Test przechodzi
+    // więc również uruchomiony samotnie, przez `-t`; nie zależy od tego, że coś
+    // przed nim poszło pierwsze. Sprawdzone.
     const { data, error } = await czlonekClient.from("bingo_tasks").select("id");
 
     // RLS przy odczycie nie zwraca błędu, tylko pusty zbiór.
