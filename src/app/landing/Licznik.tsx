@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { odliczanie } from "@/lib/odliczanie";
+import { odliczanie, type Odliczanie } from "@/lib/odliczanie";
 
 function subskrybuj(powiadom: () => void) {
   const id = setInterval(powiadom, 1000);
@@ -46,28 +46,49 @@ export function Licznik({
   docelowa,
   etykieta,
   poTerminie,
+  poczatkowe,
 }: {
   docelowa: string | null;
   etykieta: string;
   poTerminie: string;
+  /**
+   * Odliczanie policzone na serwerze, dla pierwszej klatki.
+   *
+   * Bez tego licznik pokazywał kreskę, dopóki nie doładował się JavaScript —
+   * a licznik do wyjazdu jest jednym z dwóch elementów sekcji wejściowej
+   * landinga, którą spec każe uczynić czytelną w pierwszej klatce. Landing
+   * promujemy na Instagramie, więc trafia też do ludzi na słabym łączu.
+   *
+   * To nie grozi rozjazdem hydracji: wartość jest zwykłą właściwością,
+   * zamrożoną w chwili renderu serwerowego, więc serwer i klient renderują
+   * dokładnie ten sam napis. Sekundy bywają wtedy o moment nieświeże
+   * i przeskakują przy pierwszym tyknięciu — niewidoczne w praktyce, a cena
+   * za pokazanie prawdziwej liczby dni od razu.
+   */
+  poczatkowe: Odliczanie;
 }) {
   const teraz = useSyncExternalStore(subskrybuj, terazMs, terazNaSerwerze);
-  const w = teraz === null ? null : odliczanie(docelowa, new Date(teraz));
+  const w = teraz === null ? poczatkowe : odliczanie(docelowa, new Date(teraz));
 
-  const opis =
-    w === null
-      ? `${etykieta}: liczę…`
-      : w.minelo
-        ? `${etykieta}: ${poTerminie}`
-        : `${etykieta}: za ${w.dni} dni, ${w.godziny} godzin, ${w.minuty} minut`;
+  const opis = w.minelo
+    ? `${etykieta}: ${poTerminie}`
+    : `${etykieta}: za ${w.dni} dni, ${w.godziny} godzin, ${w.minuty} minut`;
 
   return (
-    <div className="szklo grid gap-3 rounded-lg p-5" aria-label={opis}>
-      <p className="text-xs uppercase tracking-wide text-dym">{etykieta}</p>
+    <div className="szklo grid gap-3 rounded-lg p-5">
+      {/* Opis w ukrytym akapicie, nie w `aria-label` na tym kontenerze:
+          `aria-label` na zwykłym `div` bez roli bywa przez czytniki ekranu
+          pomijany, bo element nie ma roli, której nazwę dałoby się nadać.
+          Ukryty tekst czyta się zawsze i nie zależy od implementacji. */}
+      <p className="sr-only">{opis}</p>
 
-      {w === null || w.minelo ? (
+      <p className="text-xs uppercase tracking-wide text-dym" aria-hidden="true">
+        {etykieta}
+      </p>
+
+      {w.minelo ? (
         <p className="font-tytul text-2xl text-krew-jasna" aria-hidden="true">
-          {w === null ? "—" : poTerminie}
+          {poTerminie}
         </p>
       ) : (
         <div className="flex gap-4" aria-hidden="true">
