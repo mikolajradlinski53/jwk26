@@ -166,6 +166,12 @@ trasę do linkowania.
 
 Kolejność sekcji:
 
+0. **Nagłówek** — przyklejony do góry, przezroczysty nad treścią. Po lewej
+   znak wydarzenia, po prawej przycisk „Zaloguj". Ten przycisk jest widoczny
+   przez cały zjazd w dół, bo część osób zna już wydarzenie i wchodzi wyłącznie
+   po to, żeby się dostać do środka — nie mają powodu szukać wezwania ukrytego
+   gdzieś w treści. Prowadzi w to samo miejsce co duży przycisk w sekcji
+   wejściowej, czyli na `/wejscie`.
 1. **Wejście** — żaba, nazwa wydarzenia, licznik do JWK, przycisk „Wejdź
    do Sekty". Ten ekran musi być czytelny w pierwszej klatce, bez czekania
    na animację.
@@ -228,12 +234,12 @@ Do tabeli `app_settings`, która już istnieje:
 |---|---|---|
 | `data_jwk` | `2026-10-23T18:00:00+02:00` | początek wyjazdu |
 | `data_swiezakow` | `2026-10-16T18:00:00+02:00` | przyjęcie świeżaków |
-| `miejsce_nazwa` | pusta | nazwa ośrodka |
-| `miejsce_adres` | pusta | adres na landingu |
+| `miejsce_nazwa` | `OW Zielone Wzgórze` | nazwa ośrodka |
+| `miejsce_adres` | `Poznańska 5, 58-540 Karpacz` | adres na landingu |
 
-Miejsce nie jest jeszcze znane, więc obie wartości startują puste, a sekcja
-„Kiedy i gdzie" renderuje wtedy same daty, bez pustego nagłówka i bez łamania
-układu. To stan przejściowy, nie brakująca decyzja.
+Sekcja „Kiedy i gdzie" pokazuje nazwę, adres i odnośnik do map. Jeśli
+którakolwiek wartość jest pusta, sekcja renderuje samo to, co ma — bez pustego
+nagłówka i bez łamania układu.
 
 Obie daty wypadają przed zmianą czasu 25 października 2026, więc przesunięcie
 `+02:00` jest poprawne dla obu.
@@ -271,6 +277,21 @@ ma wyglądać, bo liczniki nie są powodem istnienia tej strony.
    wariantów `display-mode` i wyjątek szerokości. Sprawdzane na artefakcie
    budowania, nie na źródle, bo w tym repozytorium kaskada już dwa razy
    zjadła regułę, która w źródle wyglądała poprawnie.
+
+## Czego nie da się zrobić z kodu
+
+Logowanie Google wymaga dwóch rzeczy skonfigurowanych ręcznie, poza
+repozytorium, i **obie musi zrobić właściciel**, bo wymagają dostępu do konsol,
+których program nie ma:
+
+1. **Google Cloud** — projekt, ekran zgody i dane klienta OAuth, z adresem
+   powrotnym wskazującym na `<projekt>.supabase.co/auth/v1/callback`.
+2. **Supabase** — włączenie dostawcy Google i wklejenie identyfikatora oraz
+   sekretu klienta.
+
+Dopóki to nie stoi, przycisk logowania nie ma dokąd prowadzić. Plan umieszcza
+te kroki na samym początku, z instrukcją klikaną krok po kroku, i dopiero za
+nimi stawia sprawdzenie na telefonie.
 
 ## Ryzyko, które trzeba zamknąć przed resztą prac
 
