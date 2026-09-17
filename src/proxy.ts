@@ -15,9 +15,14 @@ export const config = {
   // początkowego" jest niezalogowane: zamiast znaku apki pobierało HTML
   // strony logowania i stawiało na ekranie zrzut strony.
   //
+  // Oba wpisy są zakotwiczone `$`, bo wykluczenia działają jak dopasowanie
+  // prefiksu: bez kotwicy spod bramki wypadało także /iconoclast, /icones
+  // czy /apple-iconography. Sprawdzone uruchomieniem — nieistniejąca trasa
+  // /losowanazwa dostawała przekierowanie na /login, a /iconoclast nie.
+  //
   // Ta czarna lista znika w Tasku 4 planu 05, gdy apka przeniesie się pod
   // /app i matcher zwęzi się do jednego prefiksu.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|icon|apple-icon|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|icon$|apple-icon$|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
