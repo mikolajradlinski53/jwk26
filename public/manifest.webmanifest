@@ -1,9 +1,12 @@
 {
   "name": "Sekta Wyjazdowa",
   "short_name": "Sekta",
-  "start_url": "/",
+  "start_url": "/app",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0c0709",
   "theme_color": "#0c0709",
-  "icons": []
+  "icons": [
+    { "src": "/icon", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
 }
