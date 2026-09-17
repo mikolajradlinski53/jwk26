@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { bladLogowania } from "@/lib/auth/blad";
 import { Ekran } from "@/components/Ekran";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
@@ -11,8 +12,10 @@ const DOMENA = "@samorzad.ue.wroc.pl";
 
 // Kod OTP zamiast magic linka: na telefonie przepisanie kilku cyfr jest
 // wygodniejsze niż skakanie między aplikacją pocztową a przeglądarką.
-export default function LoginPage() {
+function TrescLogowania() {
   const router = useRouter();
+  const parametry = useSearchParams();
+  const bladZPowrotu = parametry.get("blad");
 
   const [email, setEmail] = useState("");
   const [kod, setKod] = useState("");
@@ -21,6 +24,25 @@ export default function LoginPage() {
   const [czeka, setCzeka] = useState(false);
   // Czy mail faktycznie poszedł. Do ekranu z kodem można wejść także bez tego.
   const [wyslano, setWyslano] = useState(false);
+
+  async function zalogujGoogle() {
+    setBlad(null);
+    setCzeka(true);
+    const { error } = await createClient().auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        // `hd` to wyłącznie podpowiedź dla ekranu wyboru konta — prawdziwą
+        // bramką jest wyzwalacz w bazie. `select_account` wymusza wybór konta
+        // u kogoś, kto ma zalogowane prywatne i uczelniane naraz.
+        queryParams: { hd: "samorzad.ue.wroc.pl", prompt: "select_account" },
+      },
+    });
+    if (error) {
+      setBlad(bladLogowania(error.message));
+      setCzeka(false);
+    }
+  }
 
   async function wyslijKod() {
     setBlad(null);
@@ -80,6 +102,18 @@ export default function LoginPage() {
     <Ekran tytul="Wstąp do Sekty">
       {etap === "email" ? (
         <div className="grid gap-5">
+          {bladZPowrotu && (
+            <p className="text-center text-sm text-krew-jasna">{bladZPowrotu}</p>
+          )}
+
+          <Button onClick={zalogujGoogle} disabled={czeka}>
+            {czeka ? "Łączę z Google..." : "Zaloguj przez Google"}
+          </Button>
+
+          <p className="text-center text-xs text-dym">
+            albo kodem na maila — furtka awaryjna
+          </p>
+
           <Field
             label="Adres wtajemniczenia"
             type="email"
@@ -152,5 +186,13 @@ export default function LoginPage() {
         </div>
       )}
     </Ekran>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<Ekran tytul="Wstąp do Sekty">{null}</Ekran>}>
+      <TrescLogowania />
+    </Suspense>
   );
 }
