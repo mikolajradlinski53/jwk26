@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
 
   function zBledem(surowy: string) {
-    const url = new URL("/login", origin);
+    const url = new URL("/wejscie", origin);
     url.searchParams.set("blad", bladLogowania(surowy));
     return NextResponse.redirect(url);
   }

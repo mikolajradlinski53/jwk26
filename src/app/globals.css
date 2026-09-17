@@ -110,6 +110,22 @@ body {
   .blysk {
     animation: blysk 1.4s ease-out;
   }
+
+  /*
+   * Zamek instalacji. Decyduje CSS, nie JavaScript — reguła obowiązuje od
+   * pierwszej klatki, więc nie ma błysku niewłaściwej treści przed hydracją.
+   *
+   * Zamek działa wyłącznie na wąskich ekranach. Panel admina obsługuje się
+   * z laptopa, gdzie display-mode jest zawsze `browser`; bez tego wyjątku
+   * właściciel zamknąłby sam siebie poza kolejką bingo.
+   */
+  .tylko-w-apce { display: none; }
+  .tylko-w-przegladarce { display: block; }
+
+  @media (display-mode: standalone), (display-mode: fullscreen), (min-width: 900px) {
+    .tylko-w-apce { display: block; }
+    .tylko-w-przegladarce { display: none; }
+  }
 }
 
 /* Keyframes nie należą do warstw — trzymamy je poza. */

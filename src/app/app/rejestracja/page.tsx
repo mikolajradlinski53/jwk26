@@ -13,7 +13,7 @@ export default async function RejestracjaPage() {
 
   // Bramka w proxy.ts nie wpuści tu niezalogowanego, ale token może wygasnąć
   // między jej sprawdzeniem a tym renderem. Lepsze przekierowanie niż 500.
-  if (!user) redirect("/login");
+  if (!user) redirect("/wejscie");
 
   // RLS i tak przepuszcza wyłącznie własne zgłoszenia, ale filtr po user_id
   // zostawia zapytaniu indeks do wykorzystania.

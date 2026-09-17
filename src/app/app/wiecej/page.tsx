@@ -11,7 +11,7 @@ export default async function WiecejPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user) redirect("/wejscie");
 
   const [{ data: profil }, { data: wynik }] = await Promise.all([
     supabase.from("profiles").select("display_name, role").eq("id", user.id).maybeSingle(),

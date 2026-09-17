@@ -13,7 +13,7 @@ export default async function Home() {
 
   // Bramka nie wpuści tu niezalogowanego, ale token może wygasnąć między jej
   // sprawdzeniem a tym renderem. Lepsze przekierowanie niż 500.
-  if (!user) redirect("/login");
+  if (!user) redirect("/wejscie");
 
   const { data } = await supabase
     .from("team_scores")

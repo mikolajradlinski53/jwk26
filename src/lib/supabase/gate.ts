@@ -41,7 +41,7 @@ export async function updateSession(request: NextRequest) {
 
   const sciezka = request.nextUrl.pathname;
 
-  if (!user) return przekieruj(request, "/login");
+  if (!user) return przekieruj(request, "/wejscie");
 
   const { data: profile } = await supabase
     .from("profiles")

@@ -26,7 +26,7 @@ export default async function BingoPage() {
   } = await supabase.auth.getUser();
   // Bramka w middleware już to gwarantuje, ale strona ma stać samodzielnie,
   // gdyby kiedyś trafiła tu inna ścieżka.
-  if (!user) redirect("/login");
+  if (!user) redirect("/wejscie");
 
   const { data: profil, error: bladProfilu } = await supabase
     .from("profiles")
