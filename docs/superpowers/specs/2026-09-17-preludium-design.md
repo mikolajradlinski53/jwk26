@@ -273,10 +273,11 @@ ma wyglądać, bo liczniki nie są powodem istnienia tej strony.
    granica nie zależy od parametru `hd` po stronie przeglądarki.
 3. **Liczniki** — data w przyszłości, data przeszła, oraz obie daty z tego
    wydarzenia. Sprawdza brak wartości ujemnych i poprawną strefę.
-4. **Zamek instalacji** — zbudowany arkusz CSS zawiera reguły dla obu
-   wariantów `display-mode` i wyjątek szerokości. Sprawdzane na artefakcie
-   budowania, nie na źródle, bo w tym repozytorium kaskada już dwa razy
-   zjadła regułę, która w źródle wyglądała poprawnie.
+4. **Zamek instalacji** — krok weryfikacyjny po zbudowaniu, nie przypadek
+   w Vitest: zbudowany arkusz CSS musi zawierać reguły dla obu wariantów
+   `display-mode` oraz wyjątek szerokości. Sprawdzane na artefakcie budowania,
+   nie na źródle, bo w tym repozytorium kaskada już dwa razy zjadła regułę,
+   która w źródle wyglądała poprawnie — a Vitest nie widzi wyniku Tailwinda.
 
 ## Czego nie da się zrobić z kodu
 
