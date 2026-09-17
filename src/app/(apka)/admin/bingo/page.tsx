@@ -85,12 +85,28 @@ export default async function KolejkaBingo() {
               {z.bingo_tasks?.description && (
                 <p className="mt-1 text-sm text-dym">{z.bingo_tasks.description}</p>
               )}
-              <p className="mt-2 text-sm text-dym">
-                {autor} · <span style={{ color: z.teams?.color }}>{druzyna}</span>
-                {z.bingo_tasks && ` · ${z.bingo_tasks.points} pkt za zadanie`}
+              {/* Kolor drużyny jako kropka, nie jako kolor tekstu. Kolory są
+                  wpisywane w bazie i nikt ich nie dobiera pod kontrast: zasiane
+                  „Bractwo Krwi" ma #8b1e1e, co jako tekst na szkle daje 1,92:1
+                  — nazwa drużyny byłaby nieczytelna przy każdym ich zgłoszeniu.
+                  Ten sam wzorzec co we wpisie feedu. */}
+              <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-sm text-dym">
+                <span>{autor}</span>
+                <span aria-hidden="true">·</span>
+                <span
+                  aria-hidden="true"
+                  className="inline-block size-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: z.teams?.color }}
+                />
+                <span>{druzyna}</span>
+                {z.bingo_tasks && <span>· {z.bingo_tasks.points} pkt za zadanie</span>}
               </p>
+              {/* break-words, bo podpis ma limit 300 znaków, ale nie ma wymogu
+                  spacji. Bez tego karta ma overflow-hidden i ucięłaby tekst
+                  w połowie słowa — admin decydowałby na podstawie niepełnej
+                  treści, nie wiedząc, że czegoś nie widzi. */}
               {z.caption && (
-                <p className="mt-2 text-sm text-kosc">{`„${z.caption}”`}</p>
+                <p className="mt-2 break-words text-sm text-kosc">{`„${z.caption}”`}</p>
               )}
 
               {/* Zwykły <img>, nie next/image: podpisany URL wygasa po

@@ -80,7 +80,7 @@ export function DecyzjaBingo({ zgloszenieId }: { zgloszenieId: string }) {
           placeholder="Widoczna dla uczestnika, zwłaszcza przy odrzuceniu"
           disabled={czeka}
           className="szklo min-h-11 w-full rounded-sm px-3
-                     text-kosc outline-none placeholder:text-dym/70
+                     text-kosc outline-none placeholder:text-dym
                      focus-visible:border-krew disabled:opacity-60"
         />
       </label>

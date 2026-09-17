@@ -16,7 +16,7 @@ export function Field({
         aria-invalid={error ? true : undefined}
         className={
           "szklo min-h-11 w-full rounded-sm px-3.5 text-sm text-kosc outline-none " +
-          "placeholder:text-dym/70 focus-visible:border-krew " +
+          "placeholder:text-dym focus-visible:border-krew " +
           className
         }
       />

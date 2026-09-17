@@ -71,7 +71,7 @@ export function PrzyciskiDecyzji({
         onChange={(e) => setNotatka(e.target.value)}
         placeholder="Notatka (widoczna przy odrzuceniu)"
         className="szklo min-h-11 w-full rounded-sm px-3
-                   text-kosc outline-none placeholder:text-dym/70
+                   text-kosc outline-none placeholder:text-dym
                    focus-visible:border-krew"
       />
 

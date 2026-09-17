@@ -176,7 +176,7 @@ export function FormularzRejestracji() {
           onChange={(e) => setDieta(e.target.value)}
           placeholder="wegetarianizm, alergie, cokolwiek ważnego"
           className="szklo w-full rounded-sm px-3.5 py-2.5 text-sm text-kosc
-                     outline-none placeholder:text-dym/70 focus-visible:border-krew"
+                     outline-none placeholder:text-dym focus-visible:border-krew"
         />
       </label>
 
