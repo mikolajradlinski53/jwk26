@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { bladLogowania } from "@/lib/auth/blad";
@@ -24,10 +24,40 @@ function TrescLogowania() {
   const [czeka, setCzeka] = useState(false);
   // Czy mail faktycznie poszedł. Do ekranu z kodem można wejść także bez tego.
   const [wyslano, setWyslano] = useState(false);
+  // Osobno od `czeka`, bo cofa się inaczej: `czeka` gaśnie po odpowiedzi
+  // serwera, a to — dopiero gdy człowiek wróci na tę stronę.
+  const [czekaGoogle, setCzekaGoogle] = useState(false);
+
+  /**
+   * Odblokowuje przycisk po powrocie z ekranu Google.
+   *
+   * Na iOS w trybie aplikacji ekran wyboru konta otwiera się jako nakładka nad
+   * tą samą, żywą stroną — nie ma przeładowania. Kto się rozmyśli i zamknie
+   * nakładkę, wraca do komponentu, w którym stan „czekam" został ustawiony
+   * przed przekierowaniem i nikt go nie cofnął: przycisk zostaje wyłączony
+   * na zawsze, a apka wygląda na zaciętą, aż do ubicia i uruchomienia od nowa.
+   * W przeglądarce tego nie widać, bo tam następuje pełne przeładowanie.
+   *
+   * Przy udanym logowaniu ten efekt nie ma znaczenia — strona i tak odjeżdża
+   * na /auth/callback, zanim ktokolwiek zobaczy odblokowany przycisk.
+   */
+  useEffect(() => {
+    function odblokuj() {
+      if (document.visibilityState === "visible") setCzekaGoogle(false);
+    }
+    document.addEventListener("visibilitychange", odblokuj);
+    // Safari potrafi przywrócić stronę z pamięci podręcznej przy cofnięciu,
+    // również bez przeładowania i bez zmiany widoczności.
+    window.addEventListener("pageshow", odblokuj);
+    return () => {
+      document.removeEventListener("visibilitychange", odblokuj);
+      window.removeEventListener("pageshow", odblokuj);
+    };
+  }, []);
 
   async function zalogujGoogle() {
     setBlad(null);
-    setCzeka(true);
+    setCzekaGoogle(true);
     const { error } = await createClient().auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -40,7 +70,7 @@ function TrescLogowania() {
     });
     if (error) {
       setBlad(bladLogowania(error.message));
-      setCzeka(false);
+      setCzekaGoogle(false);
     }
   }
 
@@ -106,8 +136,8 @@ function TrescLogowania() {
             <p className="text-center text-sm text-krew-jasna">{bladZPowrotu}</p>
           )}
 
-          <Button onClick={zalogujGoogle} disabled={czeka}>
-            {czeka ? "Łączę z Google..." : "Zaloguj przez Google"}
+          <Button onClick={zalogujGoogle} disabled={czeka || czekaGoogle}>
+            {czekaGoogle ? "Łączę z Google..." : "Zaloguj przez Google"}
           </Button>
 
           <p className="text-center text-xs text-dym">
