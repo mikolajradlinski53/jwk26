@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export type KomentarzWpis = {
@@ -128,16 +128,79 @@ export function Wpis({
   const polubione = lajki.includes(userId);
   const liczbaLubien = lajki.length;
 
-  // Celowo BEZ rygla blokującego przycisk na czas requestu: przy podwójnym
-  // kliknięciu drugi insert tej samej osoby pada naruszeniem klucza głównego
-  // (23505) — to spodziewana sytuacja przy szybkim podwójnym dotyku, nie
-  // usterka, więc obsługujemy ją po cichu zamiast straszyć surowym błędem.
-  async function przelaczLubienie() {
-    const bylPolubione = lajki.includes(userId);
-    const wlacz = !bylPolubione;
+  // Czego użytkownik chce, i co już leży w bazie. Dwie osobne prawdy, bo
+  // między stuknięciem a odpowiedzią serwera rozjeżdżają się na chwilę.
+  const pragnienie = useRef(initialLikes.includes(userId));
+  const zapisane = useRef(initialLikes.includes(userId));
+  const synchronizacjaTrwa = useRef(false);
+
+  /**
+   * Doprowadza bazę do stanu, którego użytkownik chce — po jednym żądaniu
+   * naraz, aż jedno i drugie się zgodzi.
+   *
+   * Naiwne „wystrzel żądanie przy każdym stuknięciu" rozjeżdżało licznik
+   * z bazą w 53% prób na żywej bazie (zmierzone, nie oszacowane). Winne nie
+   * były refleksy klikającego, tylko to, że INSERT przechodzi politykę RLS
+   * z podzapytaniem na profiles i dwa sprawdzenia kluczy obcych, a DELETE
+   * idzie prosto po kluczu głównym. INSERT jest systematycznie wolniejszy,
+   * więc wysłany pierwszy potrafi skończyć się drugi — i lajk zostawał
+   * w bazie mimo odklikania, aż do odświeżenia strony.
+   *
+   * Blokada przycisku na czas żądania też by to zamknęła, ale gubiłaby
+   * drugie stuknięcie. Tutaj każde stuknięcie liczy się od razu w interfejsie,
+   * a pętla dosyła tyle żądań, ile trzeba, żeby baza dogoniła ostatnią wolę.
+   */
+  async function zsynchronizujLubienie() {
+    if (synchronizacjaTrwa.current) return;
+    synchronizacjaTrwa.current = true;
+
+    try {
+      const supabase = createClient();
+
+      while (pragnienie.current !== zapisane.current) {
+        const cel = pragnienie.current;
+
+        const { error } = cel
+          ? await supabase.from("feed_likes").insert({ submission_id: id, user_id: userId })
+          : await supabase
+              .from("feed_likes")
+              .delete()
+              .eq("submission_id", id)
+              .eq("user_id", userId);
+
+        const kod = (error as { code?: string } | null)?.code;
+
+        // 23505 na kluczu (submission_id, user_id) może znaczyć tylko jedno:
+        // wiersz tej osoby już tam jest. Czyli cel osiągnięty, nie usterka.
+        if (!error || (cel && kod === "23505")) {
+          zapisane.current = cel;
+          continue;
+        }
+
+        console.error("Lajk nie przeszedł:", error);
+        // Baza została przy swoim, więc interfejs musi się do niej cofnąć —
+        // inaczej pokazywałby obietnicę, której nikt nie dotrzymał.
+        pragnienie.current = zapisane.current;
+        setLajki((poprzednie) =>
+          zapisane.current
+            ? poprzednie.includes(userId)
+              ? poprzednie
+              : [...poprzednie, userId]
+            : poprzednie.filter((uid) => uid !== userId),
+        );
+        setBladLajku("Lajk się nie zapisał. Spróbuj jeszcze raz.");
+        return;
+      }
+    } finally {
+      synchronizacjaTrwa.current = false;
+    }
+  }
+
+  function przelaczLubienie() {
+    const wlacz = !pragnienie.current;
+    pragnienie.current = wlacz;
     setBladLajku(null);
 
-    // Optymistyczna zmiana od razu — przy błędzie cofamy niżej.
     setLajki((poprzednie) =>
       wlacz
         ? poprzednie.includes(userId)
@@ -146,29 +209,7 @@ export function Wpis({
         : poprzednie.filter((uid) => uid !== userId),
     );
 
-    const supabase = createClient();
-    const { error } = wlacz
-      ? await supabase.from("feed_likes").insert({ submission_id: id, user_id: userId })
-      : await supabase.from("feed_likes").delete().eq("submission_id", id).eq("user_id", userId);
-
-    if (!error) return;
-
-    const kod = (error as { code?: string }).code;
-    if (wlacz && kod === "23505") {
-      // Lajk i tak już stoi (ten sam wiersz wstawiony przez wcześniejsze
-      // kliknięcie) — optymistyczny stan jest poprawny, nic nie cofamy.
-      return;
-    }
-
-    console.error("Lajk nie przeszedł:", error);
-    setLajki((poprzednie) =>
-      wlacz
-        ? poprzednie.filter((uid) => uid !== userId)
-        : poprzednie.includes(userId)
-          ? poprzednie
-          : [...poprzednie, userId],
-    );
-    setBladLajku("Lajk się nie zapisał. Spróbuj jeszcze raz.");
+    void zsynchronizujLubienie();
   }
 
   async function wyslijKomentarz(e: FormEvent) {
@@ -324,7 +365,7 @@ export function Wpis({
             placeholder="Dodaj komentarz..."
             maxLength={500}
             className="szklo min-h-11 w-full flex-1 rounded-full px-4 text-sm text-kosc outline-none
-                       placeholder:text-dym/70 focus-visible:border-krew"
+                       placeholder:text-dym focus-visible:border-krew"
           />
           <button
             type="submit"
