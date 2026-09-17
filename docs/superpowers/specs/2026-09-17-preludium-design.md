@@ -294,7 +294,33 @@ Dopóki to nie stoi, przycisk logowania nie ma dokąd prowadzić. Plan umieszcza
 te kroki na samym początku, z instrukcją klikaną krok po kroku, i dopiero za
 nimi stawia sprawdzenie na telefonie.
 
-## Ryzyko, które trzeba zamknąć przed resztą prac
+## Ryzyko — ZAMKNIĘTE 17 września 2026
+
+**Pytanie brzmiało: czy logowanie Google działa w apce przypiętej do ekranu
+głównego na iPhonie. Odpowiedź: tak.** Sprawdzone na prawdziwym urządzeniu po
+wdrożeniu Taska 3. Twardy zamek instalacji zostaje w projekcie bez zmian.
+
+Przy okazji wyszło, że Google **sam** wymusza domenę — parametr `hd` nie
+pozwolił wpisać innego adresu. Mamy więc dwie niezależne warstwy: ekran Google
+i wyzwalacz w bazie. Ta druga nadal jest tą, na której polegamy, bo pierwszą da
+się obejść pomijając parametr.
+
+**To samo sprawdzenie wykryło błąd, którego nie znalazłoby żadne narzędzie:**
+w trybie aplikacji ekran wyboru konta otwiera się jako nakładka nad tą samą,
+żywą stroną — bez przeładowania. Stan „czekam", ustawiony przed
+przekierowaniem, nie cofał się po powrocie i przycisk logowania zostawał
+wyłączony na zawsze; apka wyglądała na zaciętą aż do ubicia procesu.
+W przeglądarce objaw nie występuje, bo tam powrót oznacza pełne przeładowanie.
+
+Wniosek na przyszłość dla całego projektu: **każdy stan blokujący interfejs,
+ustawiany przed wyjściem na zewnętrzną domenę, musi mieć drogę powrotną przez
+`visibilitychange` albo `pageshow`.** Licznik cofany po odpowiedzi serwera nie
+wystarcza, bo odpowiedź może nigdy nie przyjść.
+
+Poniżej zostaje oryginalny opis ryzyka — jako zapis tego, czego się
+obawialiśmy i dlaczego sprawdzenie stało trzecie w planie, a nie ostatnie.
+
+---
 
 **Czy logowanie Google działa w apce przypiętej do ekranu głównego na iPhonie.**
 
