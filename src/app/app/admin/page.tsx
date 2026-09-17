@@ -6,6 +6,7 @@ const WEJSCIA = [
   { href: "/app/admin/bingo", nazwa: "Bingo", opis: "Kolejka zdjęć z planszy" },
   { href: "/app/admin/punkty", nazwa: "Punkty", opis: "Przyznaj lub odbierz" },
   { href: "/app/admin/historia", nazwa: "Historia", opis: "Ostatnie wpisy w księdze" },
+  { href: "/app/admin/ustawienia", nazwa: "Ustawienia", opis: "Daty i miejsce wydarzenia" },
 ];
 
 export default function AdminPage() {
