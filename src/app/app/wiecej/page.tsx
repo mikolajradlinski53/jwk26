@@ -35,7 +35,7 @@ export default async function WiecejPage() {
       <nav className="grid gap-2.5">
         {jestAdminem && (
           <Link
-            href="/admin"
+            href="/app/admin"
             className="szklo flex min-h-12 items-center rounded-md px-4 text-sm font-bold
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
           >

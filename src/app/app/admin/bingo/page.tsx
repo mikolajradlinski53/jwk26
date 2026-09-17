@@ -133,7 +133,7 @@ export default async function KolejkaBingo() {
       </ul>
 
       <Link
-        href="/admin"
+        href="/app/admin"
         className="mt-8 flex min-h-11 items-center px-4 font-tytul text-sm
                    uppercase tracking-widest text-dym hover:text-kosc"
       >

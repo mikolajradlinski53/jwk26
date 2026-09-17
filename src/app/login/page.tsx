@@ -123,9 +123,9 @@ function TrescLogowania() {
       return;
     }
     // refresh() zmusza bramkę do ponownej oceny statusu profilu,
-    // dzięki czemu nowa osoba ląduje od razu na /rejestracja.
+    // dzięki czemu nowa osoba ląduje od razu na /app/rejestracja.
     router.refresh();
-    router.push("/");
+    router.push("/app");
   }
 
   return (

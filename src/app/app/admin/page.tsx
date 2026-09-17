@@ -2,10 +2,10 @@ import Link from "next/link";
 import { Ekran } from "@/components/Ekran";
 
 const WEJSCIA = [
-  { href: "/admin/rejestracje", nazwa: "Zgłoszenia", opis: "Kolejka oczekujących" },
-  { href: "/admin/bingo", nazwa: "Bingo", opis: "Kolejka zdjęć z planszy" },
-  { href: "/admin/punkty", nazwa: "Punkty", opis: "Przyznaj lub odbierz" },
-  { href: "/admin/historia", nazwa: "Historia", opis: "Ostatnie wpisy w księdze" },
+  { href: "/app/admin/rejestracje", nazwa: "Zgłoszenia", opis: "Kolejka oczekujących" },
+  { href: "/app/admin/bingo", nazwa: "Bingo", opis: "Kolejka zdjęć z planszy" },
+  { href: "/app/admin/punkty", nazwa: "Punkty", opis: "Przyznaj lub odbierz" },
+  { href: "/app/admin/historia", nazwa: "Historia", opis: "Ostatnie wpisy w księdze" },
 ];
 
 export default function AdminPage() {

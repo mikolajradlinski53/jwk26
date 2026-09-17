@@ -72,7 +72,7 @@ export default async function HistoriaPage() {
       </ol>
 
       <Link
-        href="/admin"
+        href="/app/admin"
         className="mt-7 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
       >
         Wróć do sanktuarium

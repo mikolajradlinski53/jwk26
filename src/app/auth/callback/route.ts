@@ -23,5 +23,5 @@ export async function GET(request: NextRequest) {
   if (error) return zBledem(error.message);
 
   // Dokąd dalej, rozstrzyga bramka na podstawie statusu profilu.
-  return NextResponse.redirect(new URL("/", origin));
+  return NextResponse.redirect(new URL("/app", origin));
 }

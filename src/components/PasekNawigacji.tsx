@@ -9,12 +9,12 @@ type Pozycja = { href: string; nazwa: string; ikona: React.ReactNode };
 // kolejnej zależności, a te muszą być czytelne przy 21 px.
 const POZYCJE: Pozycja[] = [
   {
-    href: "/",
+    href: "/app",
     nazwa: "Ranking",
     ikona: <path d="M5 20v-6M12 20V5M19 20v-9" />,
   },
   {
-    href: "/bingo",
+    href: "/app/bingo",
     nazwa: "Bingo",
     ikona: (
       <>
@@ -24,7 +24,7 @@ const POZYCJE: Pozycja[] = [
     ),
   },
   {
-    href: "/feed",
+    href: "/app/feed",
     nazwa: "Feed",
     ikona: (
       <>
@@ -34,7 +34,7 @@ const POZYCJE: Pozycja[] = [
     ),
   },
   {
-    href: "/sklep",
+    href: "/app/sklep",
     nazwa: "Sklep",
     ikona: (
       <>
@@ -44,7 +44,7 @@ const POZYCJE: Pozycja[] = [
     ),
   },
   {
-    href: "/wiecej",
+    href: "/app/wiecej",
     nazwa: "Więcej",
     ikona: (
       <>
@@ -68,17 +68,18 @@ export function PasekNawigacji() {
                  shadow-[inset_0_1px_0_rgb(255_255_255/0.34),0_14px_34px_rgb(0_0_0/0.5)]"
     >
       {POZYCJE.map((p) => {
-        // Ranking jest pod "/", więc dopasowanie po prefiksie zapaliłoby go
+        // Ranking jest pod "/app", więc dopasowanie po prefiksie zapaliłoby go
         // na każdej trasie — stąd porównanie dokładne.
         //
-        // Panel admina leży pod /admin, a nie pod /wiecej, mimo że wchodzi się
-        // do niego z tej zakładki. Bez jawnej reguły na trasach panelu nie
-        // świeciłaby żadna pozycja i admin traciłby orientację, gdzie jest.
+        // Panel admina leży pod /app/admin, a nie pod /app/wiecej, mimo że
+        // wchodzi się do niego z tej zakładki. Bez jawnej reguły na trasach
+        // panelu nie świeciłaby żadna pozycja i admin traciłby orientację,
+        // gdzie jest.
         const aktywna =
-          p.href === "/"
-            ? sciezka === "/"
-            : p.href === "/wiecej"
-              ? sciezka.startsWith("/wiecej") || sciezka.startsWith("/admin")
+          p.href === "/app"
+            ? sciezka === "/app"
+            : p.href === "/app/wiecej"
+              ? sciezka.startsWith("/app/wiecej") || sciezka.startsWith("/app/admin")
               : sciezka.startsWith(p.href);
 
         return (

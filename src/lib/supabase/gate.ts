@@ -1,10 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Trasy dostępne bez zalogowania.
-const PUBLICZNE = ["/login", "/auth"];
 // Jedyna trasa dostępna osobie czekającej na akceptację.
-const POCZEKALNIA = "/rejestracja";
+const POCZEKALNIA = "/app/rejestracja";
+// Dokąd trafia zaakceptowany: ranking.
+const DOM = "/app";
 
 function zaczynaSie(sciezka: string, prefiksy: string[]) {
   return prefiksy.some((p) => sciezka === p || sciezka.startsWith(`${p}/`));
@@ -41,13 +41,7 @@ export async function updateSession(request: NextRequest) {
 
   const sciezka = request.nextUrl.pathname;
 
-  if (!user) {
-    if (zaczynaSie(sciezka, PUBLICZNE)) return response;
-    return przekieruj(request, "/login");
-  }
-
-  // Zalogowany na /login nie ma tam czego szukać.
-  if (sciezka === "/login") return przekieruj(request, "/");
+  if (!user) return przekieruj(request, "/login");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -62,11 +56,11 @@ export async function updateSession(request: NextRequest) {
     return przekieruj(request, POCZEKALNIA);
   }
 
-  // Zaakceptowany na /rejestracja — formularz ma już za sobą.
-  if (sciezka === POCZEKALNIA) return przekieruj(request, "/");
+  // Zaakceptowany na /app/rejestracja — formularz ma już za sobą.
+  if (sciezka === POCZEKALNIA) return przekieruj(request, DOM);
 
-  if (zaczynaSie(sciezka, ["/admin"]) && profile?.role !== "admin") {
-    return przekieruj(request, "/");
+  if (zaczynaSie(sciezka, ["/app/admin"]) && profile?.role !== "admin") {
+    return przekieruj(request, DOM);
   }
 
   return response;
