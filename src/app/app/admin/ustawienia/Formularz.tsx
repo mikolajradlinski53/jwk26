@@ -7,9 +7,32 @@ import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import type { Ustawienia } from "@/lib/ustawienia";
 
-// Obie daty wydarzenia wypadają przed zmianą czasu 25 października 2026,
-// więc stałe przesunięcie +02:00 (czas letni) jest dla nich poprawne.
-const PRZESUNIECIE = "+02:00";
+/**
+ * Przesunięcie strefy warszawskiej **dla konkretnej chwili**.
+ *
+ * Wcześniej stała `+02:00` była doklejana do każdej wpisanej daty. Dla dwóch
+ * dat tego wydarzenia to działa, bo obie wypadają przed zmianą czasu
+ * 25 października 2026 — ale ten ekran istnieje po to, żeby właściciel mógł
+ * wpisać dowolną datę. Data listopadowa zapisywała się wtedy z letnim
+ * przesunięciem i cicho przesuwała godzinę o jedną, bez ostrzeżenia.
+ */
+function przesuniecieWarszawy(lokalna: string): string {
+  // Przybliżenie chwili wystarczy: przesunięcie zmienia się raz na pół roku,
+  // a błąd rzędu godziny nie przeskoczy granicy zmiany czasu inaczej niż
+  // w samą noc przestawienia zegarków.
+  const przyblizona = new Date(`${lokalna}Z`);
+  const nazwa = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Warsaw",
+    timeZoneName: "longOffset",
+  })
+    .formatToParts(przyblizona)
+    .find((cz) => cz.type === "timeZoneName")?.value;
+
+  // "GMT+02:00" → "+02:00"; przy niespodziance zostaje czas zimowy, bo lepiej
+  // pomylić się o godzinę w stronę wcześniejszą niż zapisać śmieci.
+  const dopasowanie = nazwa?.match(/[+-]\d{2}:\d{2}$/);
+  return dopasowanie ? dopasowanie[0] : "+01:00";
+}
 
 function naDatetimeLocal(iso: string | null): string {
   if (!iso) return "";
@@ -23,7 +46,7 @@ function naIso(lokalna: string): string {
   // rzadziej (gdy przeglądarka pokaże sekundy) "YYYY-MM-DDTHH:mm:ss" —
   // sekundy dokładamy tylko wtedy, gdy ich brakuje.
   const zSekundami = /T\d{2}:\d{2}:\d{2}$/.test(lokalna) ? lokalna : `${lokalna}:00`;
-  return `${zSekundami}${PRZESUNIECIE}`;
+  return `${zSekundami}${przesuniecieWarszawy(zSekundami)}`;
 }
 
 export function Formularz({ poczatkowe }: { poczatkowe: Ustawienia }) {
@@ -63,13 +86,17 @@ export function Formularz({ poczatkowe }: { poczatkowe: Ustawienia }) {
 
     try {
       const supabase = createClient();
-      for (const [key, value] of Object.entries(zmiany)) {
-        const { error } = await supabase
-          .from("app_settings")
-          .update({ value })
-          .eq("key", key);
-        if (error) throw error;
-      }
+      // Jedno zapytanie zamiast czterech osobnych. Pętla `update` zostawiała
+      // bazę w stanie mieszanym, gdy trzecie żądanie padło: dwa klucze
+      // zapisane, dwa nie, a formularz dalej pokazywał to, co człowiek wpisał.
+      // Sprawdzone na żywej bazie — tak właśnie się kończyło.
+      const { error } = await supabase
+        .from("app_settings")
+        .upsert(
+          Object.entries(zmiany).map(([key, value]) => ({ key, value })),
+          { onConflict: "key" },
+        );
+      if (error) throw error;
       setUdane(true);
       router.refresh();
     } catch (e) {
@@ -106,8 +133,17 @@ export function Formularz({ poczatkowe }: { poczatkowe: Ustawienia }) {
         placeholder="Poznańska 5, 58-540 Karpacz"
         value={miejsceAdres}
         onChange={(e) => setMiejsceAdres(e.target.value)}
-        error={blad}
       />
+
+      {/* Komunikat należy do całego formularza, nie do ostatniego pola.
+          Wcześniej trafiał przez `error` do „Adresu miejsca" niezależnie od
+          przyczyny — czytnik ekranu ogłaszał wtedy, że to pole jest błędne,
+          choć błąd dotyczył dat albo zapisu do bazy. */}
+      {blad && (
+        <p role="alert" className="text-sm text-krew-jasna">
+          {blad}
+        </p>
+      )}
 
       {udane && (
         <p role="status" className="text-sm text-krew-jasna">
