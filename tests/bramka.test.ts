@@ -8,7 +8,7 @@ const KORZEN = resolve(__dirname, "../src/app");
  * Ekrany dostępne bez zalogowania. Każdy inny musi siedzieć pod /app,
  * bo tylko ten prefiks obejmuje bramka w proxy.ts.
  */
-const PUBLICZNE_EKRANY = new Set(["/", "/wejscie"]);
+const PUBLICZNE_EKRANY = new Set(["/", "/wejscie", "/regulamin"]);
 
 /**
  * Uchwyty tras dostępne bez zalogowania — osobna lista, bo osobne ryzyko.
