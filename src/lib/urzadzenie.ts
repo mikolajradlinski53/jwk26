@@ -1,19 +1,25 @@
 /**
- * Rozpoznanie systemu i przeglądarki po stronie klienta.
+ * Rozpoznanie systemu i przeglądarki z ciągu identyfikacyjnego.
+ *
+ * Funkcje przyjmują ciąg zamiast czytać `navigator`, bo rozpoznanie dzieje się
+ * **na serwerze**, z nagłówka żądania. Wersja czytająca `navigator` działała
+ * dopiero po hydracji i zostawiała pustą ramkę w pierwszej klatce — akurat na
+ * najczęstszej drodze wejścia, czyli u kogoś, kto kliknął link z Instagrama
+ * na telefonie przy słabym łączu.
  *
  * Wyłącznie do doboru instrukcji — nie do decydowania o dostępie. Ciąg
- * identyfikacyjny przeglądarki da się podrobić, więc żadne zabezpieczenie
- * nie może się na nim opierać.
+ * identyfikacyjny da się podrobić, więc żadne zabezpieczenie nie może się
+ * na nim opierać.
  */
 export type System = "ios" | "android" | "inny";
 
-export function system(): System {
-  if (typeof navigator === "undefined") return "inny";
-  const ua = navigator.userAgent;
+export function system(ua: string): System {
   if (/iPad|iPhone|iPod/.test(ua)) return "ios";
-  // iPadOS 13+ podaje się za komputer — rozpoznajemy go po dotyku.
-  if (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) return "ios";
   if (/Android/.test(ua)) return "android";
+  // iPadOS 13+ podaje się za komputer i z samego nagłówka nie da się go
+  // odróżnić od Maca — po stronie klienta zdradzał go `maxTouchPoints`, tu
+  // nie mamy takiego sygnału. Taki iPad dostanie instrukcję ogólną, która
+  // i tak prowadzi do celu; cena za poprawną pierwszą klatkę dla wszystkich.
   return "inny";
 }
 
@@ -25,9 +31,6 @@ export function system(): System {
  * Bez tego sprawdzenia tutorial tłumaczyłby gest, którego nie da się wykonać,
  * i wyglądałby dla człowieka jak zepsuta strona.
  */
-export function wbudowanaPrzegladarka(): boolean {
-  if (typeof navigator === "undefined") return false;
-  return /Instagram|FBAN|FBAV|FB_IAB|Messenger|Twitter|TikTok/i.test(
-    navigator.userAgent,
-  );
+export function wbudowanaPrzegladarka(ua: string): boolean {
+  return /Instagram|FBAN|FBAV|FB_IAB|Messenger|Twitter|TikTok/i.test(ua);
 }

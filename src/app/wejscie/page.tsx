@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
+import { ZamekInstalacji } from "@/components/ZamekInstalacji";
 import { Logowanie } from "./Logowanie";
-import { Tutorial } from "./Tutorial";
 
 // Ta trasa leży poza bramką, więc sesję sprawdzamy tutaj: kto jest już
 // zalogowany, nie ma po co oglądać ekranu wejścia.
@@ -15,19 +15,14 @@ export default async function WejsciePage() {
   if (user) redirect("/app");
 
   return (
-    <Ekran tytul="Wstąp do Sekty">
-      {/* Oba warianty są w drzewie, widoczność rozstrzyga CSS. To bramka
-          wygody, nie bezpieczeństwa — treści apki tu nie ma. */}
-      <div className="tylko-w-przegladarce">
-        <Tutorial />
-      </div>
-      <div className="tylko-w-apce">
+    <ZamekInstalacji>
+      <Ekran tytul="Wstąp do Sekty">
         {/* Logowanie czyta błąd z adresu przez useSearchParams, a to wymaga
             granicy Suspense — bez niej build wywala całą trasę. */}
         <Suspense fallback={null}>
           <Logowanie />
         </Suspense>
-      </div>
-    </Ekran>
+      </Ekran>
+    </ZamekInstalacji>
   );
 }
