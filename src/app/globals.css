@@ -351,6 +351,40 @@ body {
     -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 92%);
     mask-image: linear-gradient(to bottom, black 55%, transparent 92%);
   }
+
+  /*
+   * Przyciemnienie zdjęcia hero. Wartości zmierzone skryptem względem
+   * najjaśniejszego piksela `hero-8.jpg` (prawie czysta biel, 249/255,
+   * w górnej jednej dziesiątej wysokości kadru — nie w dole, gdzie akurat
+   * jest cień): przy 62% czerni ten piksel spada do względnej jasności
+   * ok. 0,12, co wobec białego tekstu (jasność 1,0) daje kontrast ~6,2:1 —
+   * z zapasem nad progiem 4,5:1. Gradient schodzi do 85% na dole, pod
+   * przyciskiem i licznikiem (choć licznik i tak siedzi na własnej,
+   * nieprzezroczystej karcie `jesien-karta`, więc jego kontrast nie zależy
+   * od zdjęcia w ogóle).
+   */
+  .hero-przyciemnienie {
+    background: linear-gradient(
+      to bottom,
+      rgb(12 7 9 / 0.62) 0%,
+      rgb(12 7 9 / 0.68) 40%,
+      rgb(12 7 9 / 0.85) 100%
+    );
+  }
+
+  /*
+   * Ukośna krawędź między sekcjami — jeden z kilku motywów podziału obok
+   * fali (SVG) i paska z szewronem. `clip-path` tnie prostokąt na trójkątny
+   * klin; kolor wypełnienia ustawia się zwykłym Tailwindowym `bg-*` na tym
+   * samym elemencie, więc tutaj zostaje wyłącznie kształt.
+   */
+  .dzielnik-skos {
+    clip-path: polygon(0 100%, 100% 0, 100% 100%);
+  }
+
+  .dzielnik-skos-lustro {
+    clip-path: polygon(0 0, 100% 100%, 0 100%);
+  }
 }
 
 @keyframes stopka-oddech-klatki {

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useRef } from "react";
 
@@ -61,8 +62,17 @@ export function PanelWezwania() {
         className="stopka-wjazd relative z-10 mt-[59px] flex max-w-[680px] flex-col items-center
                    text-center min-[600px]:mt-[42px]"
       >
+        {/* Panel jest ciemny — jedyne miejsce, gdzie logo występuje w wariancie białym. */}
+        <Image
+          src="/logo/logo-biale.png"
+          alt="Jesienny Wyjazd Komisji"
+          width={1600}
+          height={597}
+          className="h-6 w-auto opacity-90 min-[600px]:h-7"
+        />
+
         <h2
-          className="max-w-[340px] font-tytul text-[clamp(26px,2.9vw,34px)] leading-[1.1]
+          className="mt-4 max-w-[340px] font-tytul text-[clamp(26px,2.9vw,34px)] leading-[1.1]
                      tracking-tight text-white [text-wrap:balance] min-[600px]:max-w-none"
         >
           Zostało mniej, niż myślisz

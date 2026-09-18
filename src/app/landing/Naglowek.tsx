@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 /**
@@ -18,8 +19,14 @@ export function Naglowek() {
                  border-jesien-kora/15 bg-jesien-tlo/90 px-4 pb-3
                  pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] backdrop-blur-md"
     >
-      <Link href="/" className="min-w-0 truncate font-tytul text-lg font-bold text-jesien-atrament">
-        JWK26
+      <Link href="/" className="flex min-w-0 shrink-0 items-center">
+        <Image
+          src="/logo/logo-kolor.png"
+          alt="Jesienny Wyjazd Komisji"
+          width={1600}
+          height={597}
+          className="h-7 w-auto min-[600px]:h-8"
+        />
       </Link>
 
       <Link

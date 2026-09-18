@@ -9,6 +9,8 @@ import { KiedyGdzie } from "./landing/KiedyGdzie";
 import { Licznik } from "./landing/Licznik";
 import { Liscie } from "./landing/Liscie";
 import { Stopka } from "./landing/Stopka";
+import { SekcjaNaglowek } from "./landing/SekcjaNaglowek";
+import { DzielnikFala, DzielnikSzewron, DzielnikSkos, DzielnikLisc } from "./landing/Dzielniki";
 
 /**
  * Landing wydarzenia. Publiczny, bez zamka instalacji — to jedyna trasa,
@@ -32,38 +34,55 @@ export default async function Landing() {
       <div className="relative z-10">
         <Naglowek />
         <Wejscie dataJwk={dataJwk} />
-        <Opis />
-        <Promocja />
-        <KiedyGdzie miejsceNazwa={miejsceNazwa} miejsceAdres={miejsceAdres} />
 
-        <section className="mx-auto w-full max-w-md px-4 py-10">
-          <h2 className="font-tytul text-xl text-jesien-atrament">Przyjęcie świeżaków</h2>
-          <p className="mt-3 text-sm leading-relaxed text-jesien-kora">
-            Tydzień przed wyjazdem przyjmujemy nowych członków Samorządu —
-            osobny, krótszy rytuał wtajemniczenia.
-          </p>
-          <div className="mt-4">
-            <Licznik
-              docelowa={dataSwiezakow}
-              etykieta="Do przyjęcia świeżaków"
-              poTerminie="Zakończone"
-              poczatkowe={odliczanie(dataSwiezakow, new Date())}
-            />
+        {/*
+          Fala wypływająca z ciemnego dołu zdjęcia hero w jasną sekcję —
+          nosiciel dzielnika maluje się na `bg-noc`, ten sam odcień co dół
+          gradientu `.hero-przyciemnienie`, żeby przejście było ciągłe.
+        */}
+        <DzielnikFala kolorKlasa="text-jesien-tlo" tloKlasa="bg-noc" />
+
+        <Opis />
+        <DzielnikSzewron />
+        <Promocja />
+        <DzielnikSkos kolorKlasa="bg-jesien-tlo" tloKlasa="bg-jesien-karta" />
+        <KiedyGdzie miejsceNazwa={miejsceNazwa} miejsceAdres={miejsceAdres} />
+        <DzielnikLisc />
+
+        <section className="bg-jesien-karta mx-auto w-full px-4 py-14">
+          <div className="mx-auto max-w-md">
+            <SekcjaNaglowek numer="04" nadtytul="Rekrutacja" tytul="Przyjęcie świeżaków" />
+            <p className="text-sm leading-relaxed text-jesien-kora">
+              Tydzień przed wyjazdem przyjmujemy nowych członków Samorządu —
+              osobny, krótszy rytuał wtajemniczenia.
+            </p>
+            <div className="mt-4">
+              <Licznik
+                docelowa={dataSwiezakow}
+                etykieta="Do przyjęcia świeżaków"
+                poTerminie="Zakończone"
+                poczatkowe={odliczanie(dataSwiezakow, new Date())}
+              />
+            </div>
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-md px-4 py-10">
-          <h2 className="font-tytul text-xl text-jesien-atrament">Regulamin</h2>
-          <p className="mt-3 text-sm leading-relaxed text-jesien-kora">
-            Kto może jechać, jak wygląda zgłoszenie i czego się od Ciebie
-            oczekuje na miejscu — spisane osobno, żeby dało się to zlinkować.
-          </p>
-          <Link
-            href="/regulamin"
-            className="mt-3 inline-block text-sm font-bold text-jesien-rdza underline underline-offset-2"
-          >
-            Przeczytaj regulamin
-          </Link>
+        <DzielnikSzewron />
+
+        <section className="bg-jesien-tlo mx-auto w-full px-4 py-14">
+          <div className="mx-auto max-w-md">
+            <SekcjaNaglowek numer="05" nadtytul="Zasady" tytul="Regulamin" />
+            <p className="text-sm leading-relaxed text-jesien-kora">
+              Kto może jechać, jak wygląda zgłoszenie i czego się od Ciebie
+              oczekuje na miejscu — spisane osobno, żeby dało się to zlinkować.
+            </p>
+            <Link
+              href="/regulamin"
+              className="mt-3 inline-block text-sm font-bold text-jesien-rdza underline underline-offset-2"
+            >
+              Przeczytaj regulamin
+            </Link>
+          </div>
         </section>
 
         <Stopka />

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
@@ -64,41 +65,16 @@ export function IkonaFacebook() {
   );
 }
 
-/** Trzy ukośne jasne kształty w znaku marki — nawiązanie do liścia/wstęgi. */
+/** Znak marki w stopce: logotyp zamiast dawnego rysowanego SVG. */
 export function ZnakMarki() {
   return (
-    <svg viewBox="0 0 25 25" fill="none" className="size-full" aria-hidden="true">
-      <rect x="0" y="0" width="25" height="25" rx="7" fill="var(--color-jesien-atrament)" />
-      <rect
-        x="5"
-        y="16"
-        width="18"
-        height="3.2"
-        rx="1.6"
-        transform="rotate(-32 5 16)"
-        fill="var(--color-jesien-tlo)"
-      />
-      <rect
-        x="8"
-        y="20"
-        width="14"
-        height="2.6"
-        rx="1.3"
-        transform="rotate(-32 8 20)"
-        fill="var(--color-jesien-tlo)"
-        opacity="0.55"
-      />
-      <rect
-        x="10.5"
-        y="23"
-        width="10"
-        height="2.2"
-        rx="1.1"
-        transform="rotate(-32 10.5 23)"
-        fill="var(--color-jesien-tlo)"
-        opacity="0.3"
-      />
-    </svg>
+    <Image
+      src="/logo/logo-kolor.png"
+      alt="Jesienny Wyjazd Komisji"
+      width={1600}
+      height={597}
+      className="h-7 w-auto"
+    />
   );
 }
 

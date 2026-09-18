@@ -9,9 +9,13 @@ import {
   type Odnosnik,
 } from "./StopkaElementy";
 
-// Podmień na prawdziwe adresy — puste znaczy „nie pokazuj tej ikony".
-// Lepszy brak odnośnika niż odnośnik prowadzący donikąd.
-const SPOLECZNOSCI = { instagram: "", facebook: "" } as const;
+// Placeholdery do podmiany: wydarzenie na Facebooku i profil „Nastukana"
+// na Instagramie. Puste znaczy „nie pokazuj tej ikony" — lepszy brak
+// odnośnika niż odnośnik prowadzący donikąd.
+const SPOLECZNOSCI = {
+  instagram: "https://www.instagram.com/",
+  facebook: "https://www.facebook.com/",
+} as const;
 
 const KONTAKT_MAIL = "samorzad@samorzad.ue.wroc.pl";
 
@@ -58,11 +62,8 @@ export function Stopka() {
         >
           {/* Marka */}
           <div>
-            <div className="flex items-center gap-2.5">
-              <div className="stopka-znak size-[25px] shrink-0 rounded-[7px] shadow-sm">
-                <ZnakMarki />
-              </div>
-              <p className="text-[15px] font-bold tracking-tight text-jesien-atrament">JWK26</p>
+            <div className="stopka-znak inline-flex">
+              <ZnakMarki />
             </div>
 
             <p className="mt-[27px] max-w-[420px] text-[11.5px] leading-[1.55] text-jesien-kora">
