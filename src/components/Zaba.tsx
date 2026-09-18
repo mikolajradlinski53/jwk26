@@ -4,8 +4,14 @@ import { useCallback, useRef, useSyncExternalStore } from "react";
 
 export type StanZaby = "powitanie" | "tutorial" | "odmowa" | "czekanie" | "sukces";
 
+/*
+ * Uwaga na `powitanie`: to jedyny stan używany na **landingu**, a landing nie
+ * może zdradzać motywu apki — także w drzewie dostępności. Opis „przed wejściem
+ * do Sekty" czytnik ekranu ogłaszał komuś, kto ogląda zwyczajną jesienną stronę.
+ * Pozostałe stany żyją wyłącznie za bramką i tam nazwa motywu jest zamierzona.
+ */
 const OPISY: Record<StanZaby, string> = {
-  powitanie: "Żaba wita uczestników przed wejściem do Sekty",
+  powitanie: "Żaba, maskotka wyjazdu",
   tutorial: "Żaba pokazuje, jak przypiąć aplikację do ekranu głównego",
   odmowa: "Żaba przy komunikacie o odmowie logowania",
   czekanie: "Żaba czeka razem z Tobą na akceptację zgłoszenia",
