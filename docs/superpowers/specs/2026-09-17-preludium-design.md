@@ -159,6 +159,30 @@ Po udanym logowaniu istniejąca logika kieruje dalej bez zmian: brak profilu
 albo status inny niż zaakceptowany prowadzi na rejestrację, zaakceptowany
 na `/app`.
 
+## Landing ma własny świat wizualny
+
+**Landing celowo nie wygląda jak apka.** Ciepły, zwyczajny motyw jesienny —
+brązy, bursztyn, rdza, mech, jasne tło — czyli dokładnie to, czego człowiek
+spodziewa się po stronie studenckiego wyjazdu w październiku. Przyjazny,
+nieszkodliwy, trochę pocztówkowy.
+
+Apka po zalogowaniu jest jego przeciwieństwem: czerń, krew, szkło, brutalizm
+rytualny. **Przejście między nimi ma być zaskoczeniem**, nie płynną
+kontynuacją. Landing jest przykrywką; wejście do środka zdejmuje maskę.
+
+Konsekwencje techniczne:
+
+- Landing dostaje **własny zestaw barw**, zakresowany klasą `.jesien`, a nie
+  nadpisuje tokenów apki. Dwa światy żyją w jednym arkuszu, nie walcząc o te
+  same nazwy.
+- Kontener landinga maluje własne tło przez całą wysokość okna, bo `html`
+  i `body` są ciemne z myślą o apce.
+- **Kontrast liczy się osobno dla obu palet.** Ciemny tekst na jasnym tle ma
+  własne progi i nie da się ich odziedziczyć po wyliczeniach dla apki.
+- Żaba pasuje do landinga, nie do apki — w apce pojawia się wyłącznie na
+  ekranach przejściowych (tutorial, odmowa, oczekiwanie), gdzie łagodzenie
+  tonu jest na miejscu.
+
 ## Landing
 
 Jedna długa strona ze zjazdem w dół, poza regulaminem, który dostaje własną

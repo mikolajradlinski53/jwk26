@@ -26,6 +26,32 @@
   --color-dym: #9c8b8e;
 
   /*
+   * Jesień — paleta wyłącznie dla landinga.
+   *
+   * Landing ma wyglądać jak zwyczajna, ciepła strona studenckiego wyjazdu
+   * w październiku, żeby wejście do apki uderzyło kontrastem. To przykrywka,
+   * nie wariant tego samego motywu, więc kolory mają własne nazwy i nie
+   * nadpisują niczego powyżej.
+   *
+   * Zmierzone kontrasty na tle `jesien-tlo` (#fbf3e7):
+   *   atrament 14,1:1 · kora 7,2:1 · rdza 5,5:1 · mech 5,2:1
+   * Na jaśniejszej `jesien-karta` każdy spada o jakieś pół punktu i nadal
+   * przechodzi próg 4,5:1 — najniżej mech, 4,7:1.
+   *
+   * `dynia` daje 2,8:1 i **nie jest kolorem tekstu** — wyłącznie wypełnienia
+   * i grube akcenty. Uwaga na pułapkę: biel na dyni to tylko 3,1:1, więc
+   * napis na pomarańczowym przycisku musi być w `atrament`, nie biały.
+   * Biel przechodzi na `rdza` (6,1:1) i na `mech` (5,8:1).
+   */
+  --color-jesien-tlo: #fbf3e7;
+  --color-jesien-karta: #f4e6d2;
+  --color-jesien-atrament: #2f2118;
+  --color-jesien-kora: #6b4a2f;
+  --color-jesien-rdza: #a8421c;
+  --color-jesien-dynia: #d97a2b;
+  --color-jesien-mech: #5f6b3a;
+
+  /*
    * Nazwy sm/md/lg nadpisują domyślną skalę Tailwinda i to jest zamierzone.
    * NIE skracaj ich do s/m/l: w Tailwindzie v4 `rounded-s` znaczy „border-start",
    * a `rounded-l` znaczy „border-left". Wbudowana reguła trafia do arkusza po
@@ -99,6 +125,21 @@ body {
     .szklo {
       background: rgb(28 20 23 / 0.94);
     }
+  }
+
+  /*
+   * Powłoka landinga. Maluje własne tło przez całą wysokość okna, bo `html`
+   * i `body` są ciemne z myślą o apce — bez tego jesienna strona świeciłaby
+   * czernią wszędzie tam, gdzie treść nie sięga.
+   *
+   * `color-scheme: light` prostuje przy okazji paski przewijania i kontrolki
+   * formularzy, które dziedziczyłyby ciemny wariant z `html`.
+   */
+  .jesien {
+    color-scheme: light;
+    min-height: 100dvh;
+    background: var(--color-jesien-tlo);
+    color: var(--color-jesien-atrament);
   }
 
   /*
