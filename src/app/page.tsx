@@ -7,6 +7,11 @@ import { Wejscie } from "./landing/Wejscie";
 import { Opis } from "./landing/Opis";
 import { Promocja } from "./landing/Promocja";
 import { KiedyGdzie } from "./landing/KiedyGdzie";
+import { Mapa } from "./landing/Mapa";
+import { CenaIWplata } from "./landing/CenaIWplata";
+import { JakSieZapisac } from "./landing/JakSieZapisac";
+import { CoZabrac } from "./landing/CoZabrac";
+import { Pytania } from "./landing/Pytania";
 import { Licznik } from "./landing/Licznik";
 import { Liscie } from "./landing/Liscie";
 import { Stopka } from "./landing/Stopka";
@@ -21,11 +26,22 @@ import { Kontener } from "./landing/Kontener";
  * ich zdradzić, nawet w miejscu, którego nikt nie czyta na oczy.
  * `themeColor` z layoutu jest z tego samego powodu ciemny — landing nadpisuje
  * go jasnym odcieniem tła, żeby pasek przeglądarki na telefonie nie był czarny.
+ *
+ * `appleWebApp.title` też trzeba nadpisać osobno: Next.js scala metadane
+ * segmentów pole po polu, więc bez tego landing dziedziczyłby z layoutu
+ * `appleWebApp: { title: "Sekta" }` — widoczne w `<meta name=
+ * "apple-mobile-web-app-title">`, czyli dokładnie ten sam wyciek motywu,
+ * przed którym ostrzega AGENTS.md, tylko w innym znaczniku niż title/description.
  */
 export const metadata: Metadata = {
   title: "Jesienny Wyjazd Komisji 2026",
   description:
     "23 października, Karpacz. Wyjazd integracyjny Samorządu Studenckiego UE Wrocław — zapisz się.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Jesienny Wyjazd Komisji",
+  },
 };
 
 export const viewport: Viewport = {
@@ -77,11 +93,27 @@ export default async function Landing() {
         <Promocja />
         <DzielnikSkos kolorKlasa="bg-jesien-tlo" tloKlasa="bg-jesien-karta" />
         <KiedyGdzie miejsceNazwa={miejsceNazwa} miejsceAdres={miejsceAdres} />
+        <Mapa />
+
+        {/*
+          Skos zamiast powtórzenia dzielnika sprzed „Kiedy i gdzie" (Lisc):
+          Mapa i KiedyGdzie stoją bez dzielnika między sobą (czytają się jako
+          jedna sekcja), więc pierwszy prawdziwy podział rytmu wypada dopiero
+          tutaj, na wyjściu w „Cenę i wpłatę".
+        */}
+        <DzielnikSkos kolorKlasa="bg-jesien-karta" tloKlasa="bg-jesien-tlo" />
+        <CenaIWplata />
+        <DzielnikSzewron />
+        <JakSieZapisac />
+        <DzielnikFala kolorKlasa="text-jesien-karta" tloKlasa="bg-jesien-tlo" />
+        <CoZabrac />
         <DzielnikLisc />
+        <Pytania />
+        <DzielnikSzewron />
 
         <section className="bg-jesien-karta/70 mx-auto w-full px-4 py-14">
           <Kontener>
-            <SekcjaNaglowek numer="04" nadtytul="Rekrutacja" tytul="Przyjęcie świeżaków" />
+            <SekcjaNaglowek numer="08" nadtytul="Rekrutacja" tytul="Przyjęcie świeżaków" />
             <p className="text-sm leading-relaxed text-jesien-kora">
               Tydzień przed wyjazdem przyjmujemy nowych członków Samorządu —
               osobny, krótszy proces rekrutacyjny.
@@ -101,7 +133,7 @@ export default async function Landing() {
 
         <section className="bg-jesien-tlo/70 mx-auto w-full px-4 py-14">
           <Kontener>
-            <SekcjaNaglowek numer="05" nadtytul="Zasady" tytul="Regulamin" />
+            <SekcjaNaglowek numer="09" nadtytul="Zasady" tytul="Regulamin" />
             <p className="text-sm leading-relaxed text-jesien-kora">
               Kto może jechać, jak wygląda zgłoszenie i czego się od Ciebie
               oczekuje na miejscu — spisane osobno, żeby dało się to zlinkować.
