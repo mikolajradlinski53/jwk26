@@ -11,6 +11,7 @@ import { Liscie } from "./landing/Liscie";
 import { Stopka } from "./landing/Stopka";
 import { SekcjaNaglowek } from "./landing/SekcjaNaglowek";
 import { DzielnikFala, DzielnikSzewron, DzielnikSkos, DzielnikLisc } from "./landing/Dzielniki";
+import { Kontener } from "./landing/Kontener";
 
 /**
  * Landing wydarzenia. Publiczny, bez zamka instalacji — to jedyna trasa,
@@ -50,7 +51,7 @@ export default async function Landing() {
         <DzielnikLisc />
 
         <section className="bg-jesien-karta mx-auto w-full px-4 py-14">
-          <div className="mx-auto max-w-md">
+          <Kontener>
             <SekcjaNaglowek numer="04" nadtytul="Rekrutacja" tytul="Przyjęcie świeżaków" />
             <p className="text-sm leading-relaxed text-jesien-kora">
               Tydzień przed wyjazdem przyjmujemy nowych członków Samorządu —
@@ -64,13 +65,13 @@ export default async function Landing() {
                 poczatkowe={odliczanie(dataSwiezakow, new Date())}
               />
             </div>
-          </div>
+          </Kontener>
         </section>
 
         <DzielnikSzewron />
 
         <section className="bg-jesien-tlo mx-auto w-full px-4 py-14">
-          <div className="mx-auto max-w-md">
+          <Kontener>
             <SekcjaNaglowek numer="05" nadtytul="Zasady" tytul="Regulamin" />
             <p className="text-sm leading-relaxed text-jesien-kora">
               Kto może jechać, jak wygląda zgłoszenie i czego się od Ciebie
@@ -82,7 +83,7 @@ export default async function Landing() {
             >
               Przeczytaj regulamin
             </Link>
-          </div>
+          </Kontener>
         </section>
 
         <Stopka />

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Zaba } from "@/components/Zaba";
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
+import { Kontener } from "./Kontener";
 
 /**
  * Materiały tej edycji jeszcze nie istnieją — właściciel dopiero je nagra.
@@ -37,7 +38,7 @@ const GALERIA: { plik: string; alt: string; szeroka?: boolean }[] = [
 export function Promocja() {
   return (
     <section id="promocja" className="bg-jesien-karta mx-auto w-full scroll-mt-20 px-4 py-14">
-      <div className="mx-auto max-w-md">
+      <Kontener wariant="szeroki">
         <SekcjaNaglowek numer="02" nadtytul="Materiały" tytul="Zapowiedź" />
 
         <p className="text-sm leading-relaxed text-jesien-kora">
@@ -84,7 +85,7 @@ export function Promocja() {
                        drop-shadow-[0_6px_14px_rgb(47_33_24/0.3)] min-[600px]:-top-8 min-[600px]:size-20"
           />
         </div>
-      </div>
+      </Kontener>
     </section>
   );
 }

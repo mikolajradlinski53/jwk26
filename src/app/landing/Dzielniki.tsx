@@ -50,7 +50,7 @@ function Szewrony() {
 
 export function DzielnikSzewron() {
   return (
-    <div className="mx-auto flex w-full max-w-md items-center gap-4 px-4 py-2" aria-hidden="true">
+    <div className="mx-auto flex w-full max-w-md items-center gap-4 px-4 py-2 min-[850px]:max-w-[1000px]" aria-hidden="true">
       <div className="h-px flex-1 bg-jesien-kora/20" />
       <Szewrony />
       <div className="h-px flex-1 bg-jesien-kora/20" />
@@ -61,7 +61,7 @@ export function DzielnikSzewron() {
 /** Cienka linia z liściem pośrodku — echo kanwy `Liscie` w statycznej formie. */
 export function DzielnikLisc() {
   return (
-    <div className="mx-auto flex w-full max-w-md items-center gap-4 px-4 py-2" aria-hidden="true">
+    <div className="mx-auto flex w-full max-w-md items-center gap-4 px-4 py-2 min-[850px]:max-w-[1000px]" aria-hidden="true">
       <div className="h-px flex-1 bg-jesien-kora/20" />
       <svg viewBox="0 0 24 24" className="size-4 text-jesien-mech" fill="currentColor">
         <path d="M12 2c5 3 8 7 8 12a8 8 0 0 1-16 0c0-5 3-9 8-12Z" opacity="0.8" />

@@ -1,10 +1,11 @@
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
+import { Kontener } from "./Kontener";
 
 /** Krótki opis wydarzenia — czym jest JWK, bez lania wody. */
 export function Opis() {
   return (
     <section id="o-wyjezdzie" className="bg-jesien-tlo mx-auto w-full scroll-mt-20 px-4 py-14">
-      <div className="mx-auto max-w-md">
+      <Kontener>
         <SekcjaNaglowek numer="01" nadtytul="Wyjazd" tytul="Czym to jest" />
         <div className="grid gap-3 text-sm leading-relaxed text-jesien-kora">
           <p>
@@ -19,7 +20,7 @@ export function Opis() {
             przetrwa rytuał wtajemniczenia, wsiada do autokaru razem z nami.
           </p>
         </div>
-      </div>
+      </Kontener>
     </section>
   );
 }

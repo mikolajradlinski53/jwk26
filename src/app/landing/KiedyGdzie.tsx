@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
+import { Kontener } from "./Kontener";
 
 /**
  * Sekcja miejsca. Gdy `miejsceNazwa` albo `miejsceAdres` jest puste (awaria
@@ -25,7 +26,7 @@ export function KiedyGdzie({
 
   return (
     <section id="kiedy-gdzie" className="bg-jesien-tlo mx-auto w-full scroll-mt-20 px-4 py-14">
-      <div className="mx-auto max-w-md">
+      <Kontener wariant="szeroki">
         <SekcjaNaglowek numer="03" nadtytul="Lokalizacja" tytul="Kiedy i gdzie" />
 
         <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg">
@@ -51,7 +52,7 @@ export function KiedyGdzie({
             </a>
           )}
         </div>
-      </div>
+      </Kontener>
     </section>
   );
 }
