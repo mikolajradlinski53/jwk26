@@ -13,7 +13,17 @@ const PROMIEN_ODPYCHANIA = 120; // px — zasięg miękkiego odpychania kursorem
 const SILA_ODPYCHANIA = 900; // px/s² w centrum, zanika liniowo do zera na brzegu
 const PROMIEN_IMPULSU = 260; // px — zasięg impulsu z kliknięcia/dotknięcia
 const SILA_IMPULSU = 320; // px/s dodane w centrum impulsu
-const TLUMIENIE = 0.92; // mnożnik na klatkę — wygasza vx/vy liścia
+/**
+ * Tłumienie prędkości dodatkowej, wyrażone **na sekundę**, nie na klatkę.
+ *
+ * Wartość odpowiada dawnemu mnożnikowi 0,92 przy sześćdziesięciu klatkach
+ * (0,92^60 ≈ 0,0069). Przeliczenie było konieczne: mnożnik stały na klatkę
+ * wygasza impuls dwa razy szybciej przy stu dwudziestu klatkach niż przy
+ * sześćdziesięciu — a sto dwadzieścia ma każdy nowszy iPhone. Odepchnięcie
+ * liści byłoby tam wyraźnie słabsze, i to akurat na sprzęcie, na którym ma
+ * wyglądać najlepiej.
+ */
+const TLUMIENIE_NA_SEKUNDE = 0.0069;
 const MAX_PREDKOSC_DODATKOWA = 260; // px/s — twardy limit |v| po odpychaniu/impulsie
 const MAX_DT = 0.05; // s — przycięcie delty (powrót z tła, spadki FPS)
 
@@ -33,7 +43,7 @@ type Lisc = {
   alfaMax: number;
   kolor: string;
   // Prędkość dodatkowa doładowywana przez interakcję z kursorem/dotykiem,
-  // co klatkę tłumiona przez TLUMIENIE — bez tego liście po kilku kliknięciach
+  // tłumiona wykładniczo w czasie — bez tego liście po kilku kliknięciach
   // wystrzeliłyby poza ekran i już by nie wróciły.
   vx: number;
   vy: number;
@@ -219,8 +229,9 @@ export function Liscie() {
 
         // Tłumienie — bez niego prędkość dodatkowa z odpychania/impulsów
         // rosłaby bez końca.
-        lisc.vx *= TLUMIENIE;
-        lisc.vy *= TLUMIENIE;
+        const tlumienie = Math.pow(TLUMIENIE_NA_SEKUNDE, dt);
+        lisc.vx *= tlumienie;
+        lisc.vy *= tlumienie;
 
         // Limit prędkości dodatkowej, żeby impuls nie wyrzucił liścia poza
         // ekran w jednej klatce.
