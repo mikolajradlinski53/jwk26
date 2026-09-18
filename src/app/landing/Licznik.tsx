@@ -75,29 +75,29 @@ export function Licznik({
     : `${etykieta}: za ${w.dni} dni, ${w.godziny} godzin, ${w.minuty} minut`;
 
   return (
-    <div className="szklo grid gap-3 rounded-lg p-5">
+    <div className="grid gap-3 rounded-lg border border-jesien-kora/15 bg-jesien-karta p-5">
       {/* Opis w ukrytym akapicie, nie w `aria-label` na tym kontenerze:
           `aria-label` na zwykłym `div` bez roli bywa przez czytniki ekranu
           pomijany, bo element nie ma roli, której nazwę dałoby się nadać.
           Ukryty tekst czyta się zawsze i nie zależy od implementacji. */}
       <p className="sr-only">{opis}</p>
 
-      <p className="text-xs uppercase tracking-wide text-dym" aria-hidden="true">
+      <p className="text-xs uppercase tracking-wide text-jesien-kora" aria-hidden="true">
         {etykieta}
       </p>
 
       {w.minelo ? (
-        <p className="font-tytul text-2xl text-krew-jasna" aria-hidden="true">
+        <p className="font-tytul text-2xl text-jesien-rdza" aria-hidden="true">
           {poTerminie}
         </p>
       ) : (
         <div className="flex gap-4" aria-hidden="true">
           {JEDNOSTKI.map(({ klucz, skrot }) => (
             <div key={klucz} className="grid justify-items-center">
-              <span className="font-tytul text-3xl leading-none tabular-nums text-kosc">
+              <span className="font-tytul text-3xl leading-none tabular-nums text-jesien-atrament">
                 {String(w[klucz]).padStart(2, "0")}
               </span>
-              <span className="mt-1 text-[0.6rem] text-dym">{skrot}</span>
+              <span className="mt-1 text-[0.6rem] text-jesien-kora">{skrot}</span>
             </div>
           ))}
         </div>

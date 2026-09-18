@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { bladLogowania } from "@/lib/auth/blad";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
+import { Zaba } from "@/components/Zaba";
 
 const DOMENA = "@samorzad.ue.wroc.pl";
 
@@ -136,7 +137,10 @@ export function Logowanie() {
   return (
     <div className="grid gap-5">
       {bladZPowrotu && (
-        <p className="text-center text-sm text-krew-jasna">{bladZPowrotu}</p>
+        <div className="grid justify-items-center gap-2">
+          <Zaba stan="odmowa" className="size-14 text-krew-jasna" />
+          <p className="text-center text-sm text-krew-jasna">{bladZPowrotu}</p>
+        </div>
       )}
 
       <Button onClick={zalogujGoogle} disabled={czeka || czekaGoogle}>

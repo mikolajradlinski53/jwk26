@@ -14,22 +14,25 @@ export const metadata = {
  */
 export default function RegulaminPage() {
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 pb-16 pt-10">
-      <Link href="/" className="text-sm text-krew-jasna underline underline-offset-2">
+    <main className="jesien mx-auto w-full max-w-2xl px-4 pb-16 pt-10">
+      <Link href="/" className="text-sm text-jesien-rdza underline underline-offset-2">
         ← Wróć na start
       </Link>
 
-      <h1 className="font-tytul mt-6 text-3xl leading-tight text-kosc">Regulamin JWK26</h1>
+      <h1 className="font-tytul mt-6 text-3xl leading-tight text-jesien-atrament">
+        Regulamin JWK26
+      </h1>
 
-      <div className="szklo mt-5 rounded-md p-4 text-sm leading-relaxed text-krew-jasna">
-        <strong>Wersja robocza.</strong> Ten dokument czeka na zatwierdzenie
-        przez zarząd Samorządu Studenckiego i dziś nie ma mocy obowiązującej —
-        traktuj go jako zapowiedź ostatecznych zasad, nie gotowy regulamin.
+      <div className="mt-5 rounded-md border border-jesien-dynia/50 bg-jesien-dynia/10 p-4 text-sm leading-relaxed text-jesien-atrament">
+        <strong className="text-jesien-rdza">Wersja robocza.</strong> Ten
+        dokument czeka na zatwierdzenie przez zarząd Samorządu Studenckiego
+        i dziś nie ma mocy obowiązującej — traktuj go jako zapowiedź
+        ostatecznych zasad, nie gotowy regulamin.
       </div>
 
-      <article className="mt-8 grid max-w-[65ch] gap-8 text-sm leading-relaxed text-dym">
+      <article className="mt-8 grid max-w-[65ch] gap-8 text-sm leading-relaxed text-jesien-kora">
         <section>
-          <h2 className="font-tytul text-lg text-kosc">1. Kto może jechać</h2>
+          <h2 className="font-tytul text-lg text-jesien-atrament">1. Kto może jechać</h2>
           <p className="mt-2">
             Na wyjazd jedzie kadra Komisji Samorządu Studenckiego oraz osoby
             przyjęte w procesie rekrutacji świeżaków. Udział jest dobrowolny
@@ -38,7 +41,7 @@ export default function RegulaminPage() {
         </section>
 
         <section>
-          <h2 className="font-tytul text-lg text-kosc">2. Zgłoszenia i wpłata</h2>
+          <h2 className="font-tytul text-lg text-jesien-atrament">2. Zgłoszenia i wpłata</h2>
           <p className="mt-2">
             Zgłoszenie następuje przez aplikację i wymaga zatwierdzenia.
             Miejsce jest potwierdzone dopiero po wpłacie zaliczki w terminie
@@ -48,7 +51,7 @@ export default function RegulaminPage() {
         </section>
 
         <section>
-          <h2 className="font-tytul text-lg text-kosc">3. Zasady na miejscu</h2>
+          <h2 className="font-tytul text-lg text-jesien-atrament">3. Zasady na miejscu</h2>
           <p className="mt-2">
             Alkohol tylko dla pełnoletnich i z umiarem — stan uniemożliwiający
             udział w programie może skutkować odesłaniem na koszt własny.
@@ -61,7 +64,7 @@ export default function RegulaminPage() {
         </section>
 
         <section>
-          <h2 className="font-tytul text-lg text-kosc">4. Odpowiedzialność</h2>
+          <h2 className="font-tytul text-lg text-jesien-atrament">4. Odpowiedzialność</h2>
           <p className="mt-2">
             Uczestnik odpowiada za własne bezpieczeństwo i mienie oraz za
             szkody, które wyrządzi. Organizatorzy nie ubezpieczają uczestników
@@ -71,7 +74,7 @@ export default function RegulaminPage() {
         </section>
 
         <section>
-          <h2 className="font-tytul text-lg text-kosc">5. Dane osobowe i zdjęcia</h2>
+          <h2 className="font-tytul text-lg text-jesien-atrament">5. Dane osobowe i zdjęcia</h2>
           <p className="mt-2">
             Dane podane w zgłoszeniu służą wyłącznie organizacji wyjazdu
             i nie są udostępniane podmiotom trzecim. Podczas wyjazdu mogą
@@ -82,7 +85,7 @@ export default function RegulaminPage() {
         </section>
 
         <section>
-          <h2 className="font-tytul text-lg text-kosc">6. Postanowienia końcowe</h2>
+          <h2 className="font-tytul text-lg text-jesien-atrament">6. Postanowienia końcowe</h2>
           <p className="mt-2">
             Regulamin obowiązuje od zatwierdzenia przez zarząd Samorządu do
             zakończenia wyjazdu. Organizatorzy zastrzegają sobie prawo do
@@ -94,7 +97,7 @@ export default function RegulaminPage() {
 
       <Link
         href="/"
-        className="mt-10 inline-block text-sm text-krew-jasna underline underline-offset-2"
+        className="mt-10 inline-block text-sm text-jesien-rdza underline underline-offset-2"
       >
         ← Wróć na start
       </Link>

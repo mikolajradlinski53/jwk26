@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { odliczanie } from "@/lib/odliczanie";
+import { Zaba } from "@/components/Zaba";
 import { Licznik } from "./Licznik";
 
 /**
@@ -15,16 +16,11 @@ import { Licznik } from "./Licznik";
 export function Wejscie({ dataJwk }: { dataJwk: string | null }) {
   return (
     <section className="mx-auto grid w-full max-w-md justify-items-center gap-6 px-4 pb-12 pt-10 text-center">
-      {/*
-        Gniazdo na maskotkę. Task 9 wstawia tu `<Zaba stan="powitanie" />`.
-        Rozmiar zarezerwowany już teraz, żeby wejście grafiki nie przesunęło
-        reszty sekcji o wysokość, na którą nikt się nie przygotował.
-      */}
-      <div className="size-24" aria-hidden="true" />
+      <Zaba stan="powitanie" className="size-24 text-jesien-mech" />
 
       <div className="grid gap-2">
-        <p className="text-xs uppercase tracking-[0.2em] text-dym">Jesienny Wyjazd Komisji</p>
-        <h1 className="font-tytul text-4xl leading-none text-kosc">JWK26</h1>
+        <p className="text-xs uppercase tracking-[0.2em] text-jesien-kora">Jesienny Wyjazd Komisji</p>
+        <h1 className="font-tytul text-4xl leading-none text-jesien-atrament">JWK26</h1>
       </div>
 
       <Licznik
@@ -36,11 +32,10 @@ export function Wejscie({ dataJwk }: { dataJwk: string | null }) {
 
       <Link
         href="/wejscie"
-        className="flex min-h-12 w-full items-center justify-center rounded-full border border-white/20
-                   bg-gradient-to-b from-krew/90 to-krew-glab/90 px-5 text-sm font-bold text-white
-                   shadow-[inset_0_1px_0_rgb(255_255_255/0.4),0_10px_26px_rgb(200_16_46/0.32)]
-                   backdrop-blur-md transition hover:brightness-110
-                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
+        className="flex min-h-12 w-full items-center justify-center rounded-full border border-jesien-rdza/40
+                   bg-jesien-rdza px-5 text-sm font-bold text-white
+                   transition hover:brightness-110
+                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jesien-rdza"
       >
         Wejdź do Sekty
       </Link>

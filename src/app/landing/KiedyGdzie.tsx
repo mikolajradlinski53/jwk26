@@ -16,15 +16,15 @@ export function KiedyGdzie({
 
   return (
     <section className="mx-auto w-full max-w-md px-4 py-10">
-      <h2 className="font-tytul text-xl text-kosc">Gdzie</h2>
-      <div className="szklo mt-4 grid gap-1.5 rounded-lg p-5">
-        {miejsceNazwa && <p className="text-sm font-bold text-kosc">{miejsceNazwa}</p>}
+      <h2 className="font-tytul text-xl text-jesien-atrament">Gdzie</h2>
+      <div className="mt-4 grid gap-1.5 rounded-lg border border-jesien-kora/15 bg-jesien-karta p-5">
+        {miejsceNazwa && <p className="text-sm font-bold text-jesien-atrament">{miejsceNazwa}</p>}
         {miejsceAdres && (
           <a
             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(miejsceAdres)}`}
             target="_blank"
             rel="noreferrer"
-            className="text-sm text-krew-jasna underline underline-offset-2"
+            className="text-sm text-jesien-rdza underline underline-offset-2"
           >
             {miejsceAdres}
           </a>

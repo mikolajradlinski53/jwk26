@@ -2,8 +2,8 @@
 export function Opis() {
   return (
     <section className="mx-auto w-full max-w-md px-4 py-10">
-      <h2 className="font-tytul text-xl text-kosc">Czym to jest</h2>
-      <div className="mt-4 grid gap-3 text-sm leading-relaxed text-dym">
+      <h2 className="font-tytul text-xl text-jesien-atrament">Czym to jest</h2>
+      <div className="mt-4 grid gap-3 text-sm leading-relaxed text-jesien-kora">
         <p>
           Raz w roku Komisja znika z uczelni na trzy dni. JWK to nie jest
           szkolenie ani konferencja — to wyjazd, na który się jedzie, żeby

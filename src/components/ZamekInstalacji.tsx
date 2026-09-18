@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { Ekran } from "@/components/Ekran";
 import { PrzyciskKopiuj } from "@/components/PrzyciskKopiuj";
+import { Zaba } from "@/components/Zaba";
 import { system, wbudowanaPrzegladarka, type System } from "@/lib/urzadzenie";
 
 const KROKI: Record<System, string[]> = {
@@ -24,6 +25,7 @@ function Tutorial({ sys, wAplikacji, adres }: { sys: System; wAplikacji: boolean
   if (wAplikacji) {
     return (
       <div className="szklo grid gap-4 rounded-lg p-5">
+        <Zaba stan="tutorial" className="mx-auto size-16 text-kosc" />
         <p className="text-sm text-kosc">
           Otworzyłeś to w przeglądarce Instagrama, a ona nie potrafi dodawać
           aplikacji do ekranu głównego. Otwórz ten adres w Safari albo Chrome.
@@ -35,6 +37,7 @@ function Tutorial({ sys, wAplikacji, adres }: { sys: System; wAplikacji: boolean
 
   return (
     <div className="szklo grid gap-4 rounded-lg p-5">
+      <Zaba stan="tutorial" className="mx-auto size-16 text-kosc" />
       <p className="text-sm text-kosc">
         Sekta mieszka na ekranie głównym, nie w przeglądarce. Przypnij ją,
         a potem otwórz stąd — inaczej nie dostaniesz powiadomień.

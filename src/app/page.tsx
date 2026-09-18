@@ -7,6 +7,7 @@ import { Opis } from "./landing/Opis";
 import { Promocja } from "./landing/Promocja";
 import { KiedyGdzie } from "./landing/KiedyGdzie";
 import { Licznik } from "./landing/Licznik";
+import { Liscie } from "./landing/Liscie";
 import { Stopka } from "./landing/Stopka";
 
 /**
@@ -20,44 +21,53 @@ export default async function Landing() {
   const { dataJwk, dataSwiezakow, miejsceNazwa, miejsceAdres } = await ustawienia();
 
   return (
-    <>
-      <Naglowek />
-      <Wejscie dataJwk={dataJwk} />
-      <Opis />
-      <Promocja />
-      <KiedyGdzie miejsceNazwa={miejsceNazwa} miejsceAdres={miejsceAdres} />
+    <div className="jesien relative">
+      {/*
+        Liście pod treścią, nad tłem: `Liscie` maluje na `fixed inset-0 z-0`,
+        a opakowanie treści poniżej dostaje `relative z-10`, żeby zawsze
+        wygrywało w kolejności malowania niezależnie od kolejności w DOM.
+      */}
+      <Liscie />
 
-      <section className="mx-auto w-full max-w-md px-4 py-10">
-        <h2 className="font-tytul text-xl text-kosc">Przyjęcie świeżaków</h2>
-        <p className="mt-3 text-sm leading-relaxed text-dym">
-          Tydzień przed wyjazdem przyjmujemy nowych członków Samorządu —
-          osobny, krótszy rytuał wtajemniczenia.
-        </p>
-        <div className="mt-4">
-          <Licznik
-            docelowa={dataSwiezakow}
-            etykieta="Do przyjęcia świeżaków"
-            poTerminie="Zakończone"
-            poczatkowe={odliczanie(dataSwiezakow, new Date())}
-          />
-        </div>
-      </section>
+      <div className="relative z-10">
+        <Naglowek />
+        <Wejscie dataJwk={dataJwk} />
+        <Opis />
+        <Promocja />
+        <KiedyGdzie miejsceNazwa={miejsceNazwa} miejsceAdres={miejsceAdres} />
 
-      <section className="mx-auto w-full max-w-md px-4 py-10">
-        <h2 className="font-tytul text-xl text-kosc">Regulamin</h2>
-        <p className="mt-3 text-sm leading-relaxed text-dym">
-          Kto może jechać, jak wygląda zgłoszenie i czego się od Ciebie
-          oczekuje na miejscu — spisane osobno, żeby dało się to zlinkować.
-        </p>
-        <Link
-          href="/regulamin"
-          className="mt-3 inline-block text-sm font-bold text-krew-jasna underline underline-offset-2"
-        >
-          Przeczytaj regulamin
-        </Link>
-      </section>
+        <section className="mx-auto w-full max-w-md px-4 py-10">
+          <h2 className="font-tytul text-xl text-jesien-atrament">Przyjęcie świeżaków</h2>
+          <p className="mt-3 text-sm leading-relaxed text-jesien-kora">
+            Tydzień przed wyjazdem przyjmujemy nowych członków Samorządu —
+            osobny, krótszy rytuał wtajemniczenia.
+          </p>
+          <div className="mt-4">
+            <Licznik
+              docelowa={dataSwiezakow}
+              etykieta="Do przyjęcia świeżaków"
+              poTerminie="Zakończone"
+              poczatkowe={odliczanie(dataSwiezakow, new Date())}
+            />
+          </div>
+        </section>
 
-      <Stopka />
-    </>
+        <section className="mx-auto w-full max-w-md px-4 py-10">
+          <h2 className="font-tytul text-xl text-jesien-atrament">Regulamin</h2>
+          <p className="mt-3 text-sm leading-relaxed text-jesien-kora">
+            Kto może jechać, jak wygląda zgłoszenie i czego się od Ciebie
+            oczekuje na miejscu — spisane osobno, żeby dało się to zlinkować.
+          </p>
+          <Link
+            href="/regulamin"
+            className="mt-3 inline-block text-sm font-bold text-jesien-rdza underline underline-offset-2"
+          >
+            Przeczytaj regulamin
+          </Link>
+        </section>
+
+        <Stopka />
+      </div>
+    </div>
   );
 }
