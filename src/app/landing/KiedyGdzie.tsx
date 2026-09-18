@@ -9,11 +9,10 @@ import { Kontener } from "./Kontener";
  * Gdy nie ma nic, sekcja znika całkiem, zamiast zostawiać martwy nagłówek
  * „Gdzie" nad pustką.
  *
- * Zdjęcie ośrodka: `hero-9` — duża grupa we wspólnej sali ośrodka, w
- * proporcjach zbliżonych do oryginału (1800×1013 ≈ 16:9) — pasuje do
- * poziomej karty nad adresem lepiej niż pionowe `hero-10` przy
- * jednokolumnowym układzie telefonu, i akurat tu pokazuje samo miejsce,
- * nie tylko ludzi.
+ * Wyłącznie zdjęcia samego ośrodka — żadnego zdjęcia grupowego z poprzedniej
+ * edycji. Sekcja o miejscu ma pokazywać miejsce, nie ludzi; zdjęcia z ludźmi
+ * (w tym dawne `hero-9`, które stało tu wcześniej) należą do galerii w
+ * `Promocja.tsx`/`Galeria.tsx`.
  */
 export function KiedyGdzie({
   miejsceNazwa,
@@ -29,16 +28,6 @@ export function KiedyGdzie({
       <Kontener wariant="szeroki">
         <SekcjaNaglowek numer="03" nadtytul="Lokalizacja" tytul="Kiedy i gdzie" />
 
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg">
-          <Image
-            src="/hero/hero-9.jpg"
-            alt="Duża grupa uczestników poprzedniej edycji pozuje razem we wspólnej sali ośrodka"
-            fill
-            sizes="(min-width: 850px) 700px, 100vw"
-            className="object-cover"
-          />
-        </div>
-
         {/*
           Dwa zdjęcia samego ośrodka, obok siebie: `osrodek-1` (1024×768)
           w szerszej kolumnie, `osrodek-2` (516×387 — mały oryginał) w wąskiej.
@@ -46,7 +35,7 @@ export function KiedyGdzie({
           `osrodek-2` przy jego naturalnym rozmiarze zamiast rozciągać go na
           duży kafelek, na którym zmiękłby.
         */}
-        <div className="mt-3 grid grid-cols-[1.7fr_1fr] gap-2.5">
+        <div className="grid grid-cols-[1.7fr_1fr] gap-2.5">
           <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
             <Image
               src="/hero/osrodek-1.jpg"

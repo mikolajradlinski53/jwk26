@@ -1,12 +1,12 @@
 import { Zaba } from "@/components/Zaba";
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
 import { Kontener } from "./Kontener";
-import { TaliaKart } from "./TaliaKart";
+import { Galeria } from "./Galeria";
 
 /**
  * Materiały tej edycji jeszcze nie istnieją — właściciel dopiero je nagra.
- * Zamiast pustego stanu sekcja pokazuje interaktywną talię zdjęć z poprzednich
- * edycji (`TaliaKart`) i wyraźną ramkę-miejsce na film promocyjny tej edycji,
+ * Zamiast pustego stanu sekcja pokazuje galerię zdjęć z poprzednich edycji
+ * (`Galeria`) i wyraźną ramkę-miejsce na film promocyjny tej edycji,
  * proporcje 16:9. Ramka jest ważna: właściciel planuje, że maskotka (`Zaba`)
  * będzie ją „trzymać" — stąd pozycjonowanie zachodzące na górny lewy róg ramki.
  */
@@ -22,11 +22,8 @@ export function Promocja() {
         </p>
 
         <div className="mt-6">
-          <TaliaKart />
+          <Galeria />
         </div>
-        <p className="mt-2 text-center text-[11px] text-jesien-kora/80">
-          Zdjęcia z poprzednich edycji — najedź albo dotknij.
-        </p>
 
         <div className="relative mt-10">
           <div
