@@ -6,7 +6,7 @@
  */
 export function Promocja() {
   return (
-    <section className="mx-auto w-full max-w-md px-4 py-10">
+    <section id="promocja" className="mx-auto w-full max-w-md scroll-mt-20 px-4 py-10">
       <h2 className="font-tytul text-xl text-jesien-atrament">Zapowiedź</h2>
       <div className="mt-4 rounded-lg border border-jesien-kora/15 bg-jesien-karta p-8 text-center">
         <p className="text-sm text-jesien-kora">

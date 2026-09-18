@@ -15,7 +15,7 @@ export function KiedyGdzie({
   if (!miejsceNazwa && !miejsceAdres) return null;
 
   return (
-    <section className="mx-auto w-full max-w-md px-4 py-10">
+    <section id="kiedy-gdzie" className="mx-auto w-full max-w-md scroll-mt-20 px-4 py-10">
       <h2 className="font-tytul text-xl text-jesien-atrament">Gdzie</h2>
       <div className="mt-4 grid gap-1.5 rounded-lg border border-jesien-kora/15 bg-jesien-karta p-5">
         {miejsceNazwa && <p className="text-sm font-bold text-jesien-atrament">{miejsceNazwa}</p>}

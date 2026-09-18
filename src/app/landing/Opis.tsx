@@ -1,7 +1,7 @@
 /** Krótki opis wydarzenia — czym jest JWK, bez lania wody. */
 export function Opis() {
   return (
-    <section className="mx-auto w-full max-w-md px-4 py-10">
+    <section id="o-wyjezdzie" className="mx-auto w-full max-w-md scroll-mt-20 px-4 py-10">
       <h2 className="font-tytul text-xl text-jesien-atrament">Czym to jest</h2>
       <div className="mt-4 grid gap-3 text-sm leading-relaxed text-jesien-kora">
         <p>
