@@ -4,7 +4,7 @@ import { Kontener } from "./Kontener";
 /** Krótki opis wydarzenia — czym jest JWK, bez lania wody. */
 export function Opis() {
   return (
-    <section id="o-wyjezdzie" className="bg-jesien-tlo mx-auto w-full scroll-mt-20 px-4 py-14">
+    <section id="o-wyjezdzie" className="bg-jesien-tlo/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener>
         <SekcjaNaglowek numer="01" nadtytul="Wyjazd" tytul="Czym to jest" />
         <div className="grid gap-3 text-sm leading-relaxed text-jesien-kora">
@@ -16,8 +16,8 @@ export function Opis() {
           </p>
           <p>
             Nikt nie jedzie sam. Drużyny, gry, ognisko, plan, który i tak się
-            rozjedzie. Tydzień wcześniej przyjmujemy też świeżaków — kto
-            przetrwa rytuał wtajemniczenia, wsiada do autokaru razem z nami.
+            rozjedzie. Tydzień wcześniej przyjmujemy też świeżaków — kto się
+            załapie, wsiada do autokaru razem z nami.
           </p>
         </div>
       </Kontener>

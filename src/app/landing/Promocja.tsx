@@ -1,43 +1,18 @@
-import Image from "next/image";
 import { Zaba } from "@/components/Zaba";
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
 import { Kontener } from "./Kontener";
+import { TaliaKart } from "./TaliaKart";
 
 /**
  * Materiały tej edycji jeszcze nie istnieją — właściciel dopiero je nagra.
- * Zamiast pustego stanu sekcja pokazuje galerię zdjęć z poprzednich edycji
- * (podpisaną jako taka) i wyraźną ramkę-miejsce na film promocyjnej tej
- * edycji, proporcje 16:9. Ramka jest ważna: właściciel planuje, że maskotka
- * (`Zaba`) będzie ją „trzymać" — stąd pozycjonowanie zachodzące na górny
- * lewy róg ramki.
+ * Zamiast pustego stanu sekcja pokazuje interaktywną talię zdjęć z poprzednich
+ * edycji (`TaliaKart`) i wyraźną ramkę-miejsce na film promocyjny tej edycji,
+ * proporcje 16:9. Ramka jest ważna: właściciel planuje, że maskotka (`Zaba`)
+ * będzie ją „trzymać" — stąd pozycjonowanie zachodzące na górny lewy róg ramki.
  */
-const GALERIA: { plik: string; alt: string; szeroka?: boolean }[] = [
-  {
-    plik: "hero-1",
-    alt: "Grupowe zdjęcie uczestników na trawie z poprzedniej edycji wyjazdu",
-    szeroka: true,
-  },
-  {
-    plik: "hero-2",
-    alt: "Trzy uczestniczki poprzedniej edycji w kurtkach z kapturami, wieczorem przed ośrodkiem",
-  },
-  {
-    plik: "hero-3",
-    alt: "Troje uczestników poprzedniej edycji pozuje razem nocą, zdjęcie z lampą błyskową",
-  },
-  {
-    plik: "hero-4",
-    alt: "Troje uczestników poprzedniej edycji pozuje razem nocą, zdjęcie z lampą błyskową",
-  },
-  {
-    plik: "hero-10",
-    alt: "Uczestnicy poprzedniej edycji pozują do zdjęcia podczas wieczornej zabawy w sali ośrodka",
-  },
-];
-
 export function Promocja() {
   return (
-    <section id="promocja" className="bg-jesien-karta mx-auto w-full scroll-mt-20 px-4 py-14">
+    <section id="promocja" className="bg-jesien-karta/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener wariant="szeroki">
         <SekcjaNaglowek numer="02" nadtytul="Materiały" tytul="Zapowiedź" />
 
@@ -46,25 +21,12 @@ export function Promocja() {
           Na razie — jak było poprzednim razem.
         </p>
 
-        <div className="mt-5 grid grid-cols-2 gap-2">
-          {GALERIA.map((zdjecie) => (
-            <div
-              key={zdjecie.plik}
-              className={`relative overflow-hidden rounded-md bg-jesien-tlo ${
-                zdjecie.szeroka ? "col-span-2 aspect-[16/9]" : "aspect-square"
-              }`}
-            >
-              <Image
-                src={`/hero/${zdjecie.plik}.jpg`}
-                alt={zdjecie.alt}
-                fill
-                sizes="(min-width: 600px) 340px, 50vw"
-                className="object-cover"
-              />
-            </div>
-          ))}
+        <div className="mt-6">
+          <TaliaKart />
         </div>
-        <p className="mt-2 text-[11px] text-jesien-kora/80">Zdjęcia z poprzednich edycji.</p>
+        <p className="mt-2 text-center text-[11px] text-jesien-kora/80">
+          Zdjęcia z poprzednich edycji — najedź albo dotknij.
+        </p>
 
         <div className="relative mt-10">
           <div

@@ -53,7 +53,8 @@ export function Wejscie({ dataJwk }: { dataJwk: string | null }) {
             alt="Jesienny Wyjazd Komisji"
             width={1600}
             height={597}
-            className="h-9 w-auto drop-shadow-[0_2px_10px_rgb(0_0_0/0.45)] min-[600px]:h-11"
+            preload
+            className="h-auto w-[clamp(220px,80%,620px)] drop-shadow-[0_2px_10px_rgb(0_0_0/0.45)]"
           />
 
           <div className="grid justify-items-center gap-6">
@@ -62,6 +63,7 @@ export function Wejscie({ dataJwk }: { dataJwk: string | null }) {
               etykieta="Do wyjazdu"
               poTerminie="Trwa"
               poczatkowe={odliczanie(dataJwk, new Date())}
+              rozmiar="duzy"
             />
 
             <Link
@@ -71,7 +73,7 @@ export function Wejscie({ dataJwk }: { dataJwk: string | null }) {
                          shadow-[0_14px_30px_-12px_rgb(12_7_9/0.6)] transition hover:brightness-110
                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              Wejdź do Sekty
+              Zapisz się
             </Link>
           </div>
         </div>

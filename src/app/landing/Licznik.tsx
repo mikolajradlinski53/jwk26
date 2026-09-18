@@ -47,6 +47,7 @@ export function Licznik({
   etykieta,
   poTerminie,
   poczatkowe,
+  rozmiar = "zwykly",
 }: {
   docelowa: string | null;
   etykieta: string;
@@ -66,6 +67,13 @@ export function Licznik({
    * za pokazanie prawdziwej liczby dni od razu.
    */
   poczatkowe: Odliczanie;
+  /**
+   * `"duzy"` to wariant sekcji wejściowej: cyfry mają być pierwszą rzeczą,
+   * którą widać po logo, więc rosną z `text-3xl` do `text-6xl`, a karta
+   * dostaje więcej powietrza. Reszta landingu (licznik przyjęcia świeżaków)
+   * zostaje przy `"zwykly"`, żeby nie konkurował z hero.
+   */
+  rozmiar?: "zwykly" | "duzy";
 }) {
   const teraz = useSyncExternalStore(subskrybuj, terazMs, terazNaSerwerze);
   const w = teraz === null ? poczatkowe : odliczanie(docelowa, new Date(teraz));
@@ -74,30 +82,50 @@ export function Licznik({
     ? `${etykieta}: ${poTerminie}`
     : `${etykieta}: za ${w.dni} dni, ${w.godziny} godzin, ${w.minuty} minut`;
 
+  const duzy = rozmiar === "duzy";
+
   return (
-    <div className="grid gap-3 rounded-lg border border-jesien-kora/15 bg-jesien-karta p-5">
+    <div
+      className={`grid gap-3 rounded-lg border border-jesien-kora/15 bg-jesien-karta p-5 ${
+        duzy ? "min-[600px]:p-7" : ""
+      }`}
+    >
       {/* Opis w ukrytym akapicie, nie w `aria-label` na tym kontenerze:
           `aria-label` na zwykłym `div` bez roli bywa przez czytniki ekranu
           pomijany, bo element nie ma roli, której nazwę dałoby się nadać.
           Ukryty tekst czyta się zawsze i nie zależy od implementacji. */}
       <p className="sr-only">{opis}</p>
 
-      <p className="text-xs uppercase tracking-wide text-jesien-kora" aria-hidden="true">
+      <p
+        className={`text-xs uppercase tracking-wide text-jesien-kora ${duzy ? "min-[600px]:text-sm" : ""}`}
+        aria-hidden="true"
+      >
         {etykieta}
       </p>
 
       {w.minelo ? (
-        <p className="font-tytul text-2xl text-jesien-rdza" aria-hidden="true">
+        <p
+          className={`font-tytul text-jesien-rdza ${duzy ? "text-4xl min-[600px]:text-5xl" : "text-2xl"}`}
+          aria-hidden="true"
+        >
           {poTerminie}
         </p>
       ) : (
-        <div className="flex gap-4" aria-hidden="true">
+        <div className={duzy ? "flex gap-3 min-[600px]:gap-6" : "flex gap-4"} aria-hidden="true">
           {JEDNOSTKI.map(({ klucz, skrot }) => (
             <div key={klucz} className="grid justify-items-center">
-              <span className="font-tytul text-3xl leading-none tabular-nums text-jesien-atrament">
+              <span
+                className={`font-tytul leading-none tabular-nums text-jesien-atrament ${
+                  duzy ? "text-4xl min-[400px]:text-5xl min-[600px]:text-6xl" : "text-3xl"
+                }`}
+              >
                 {String(w[klucz]).padStart(2, "0")}
               </span>
-              <span className="mt-1 text-[0.6rem] text-jesien-kora">{skrot}</span>
+              <span
+                className={`mt-1 text-jesien-kora ${duzy ? "text-[0.65rem] min-[600px]:text-xs" : "text-[0.6rem]"}`}
+              >
+                {skrot}
+              </span>
             </div>
           ))}
         </div>

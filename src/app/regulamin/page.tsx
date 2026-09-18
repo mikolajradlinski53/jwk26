@@ -1,7 +1,15 @@
 import Link from "next/link";
 
+// `description` nadpisany osobno — bez tego strona dziedziczyłaby po
+// `layout.tsx` opis napisany z myślą o mrocznej apce ("Rytuał trwa."),
+// a to jest publiczna, jasna strona regulaminu.
 export const metadata = {
   title: "Regulamin — JWK26",
+  description: "Zasady udziału w Jesiennym Wyjeździe Komisji 2026.",
+};
+
+export const viewport = {
+  themeColor: "#fbf3e7",
 };
 
 /**

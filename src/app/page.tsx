@@ -1,3 +1,4 @@
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { ustawienia } from "@/lib/ustawienia";
 import { odliczanie } from "@/lib/odliczanie";
@@ -12,6 +13,25 @@ import { Stopka } from "./landing/Stopka";
 import { SekcjaNaglowek } from "./landing/SekcjaNaglowek";
 import { DzielnikFala, DzielnikSzewron, DzielnikSkos, DzielnikLisc } from "./landing/Dzielniki";
 import { Kontener } from "./landing/Kontener";
+
+/**
+ * Tytuł i opis strony (karta tabu, podgląd linku na Instagramie/Messengerze)
+ * nadpisują tu domyślne metadane z `layout.tsx` — te są napisane z myślą
+ * o mrocznej apce ("Sekta Wyjazdowa" / "Rytuał trwa.") i landing nie może
+ * ich zdradzić, nawet w miejscu, którego nikt nie czyta na oczy.
+ * `themeColor` z layoutu jest z tego samego powodu ciemny — landing nadpisuje
+ * go jasnym odcieniem tła, żeby pasek przeglądarki na telefonie nie był czarny.
+ */
+export const metadata: Metadata = {
+  title: "Jesienny Wyjazd Komisji 2026",
+  description:
+    "23 października, Karpacz. Wyjazd integracyjny Samorządu Studenckiego UE Wrocław — zapisz się.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#fbf3e7",
+  viewportFit: "cover",
+};
 
 /**
  * Landing wydarzenia. Publiczny, bez zamka instalacji — to jedyna trasa,
@@ -29,6 +49,15 @@ export default async function Landing() {
         Liście pod treścią, nad tłem: `Liscie` maluje na `fixed inset-0 z-0`,
         a opakowanie treści poniżej dostaje `relative z-10`, żeby zawsze
         wygrywało w kolejności malowania niezależnie od kolejności w DOM.
+
+        Sekcje (tu i w `Opis.tsx`/`Promocja.tsx`/`KiedyGdzie.tsx`) mają tła
+        na 70% krycia (`bg-jesien-tlo/70`, `bg-jesien-karta/70`), nie pełne —
+        inaczej zasłaniałyby liście wszędzie poza wąskimi paskami dzielników.
+        70% to najgorszy bezpieczny przypadek: tekst w `jesien-kora` (ten sam
+        odcień co liść) nad miejscem, gdzie liść w kryciu 0,65 akurat mija się
+        z sekcją, daje ~4,9:1 (sekcja `karta`) i ~5,35:1 (sekcja `tlo`) —
+        nadal nad progiem 4,5:1. Policzone przez blend alfa: liść na
+        nieprzezroczystym `jesien-tlo` pod spodem, potem sekcja na to.
       */}
       <Liscie />
 
@@ -50,12 +79,12 @@ export default async function Landing() {
         <KiedyGdzie miejsceNazwa={miejsceNazwa} miejsceAdres={miejsceAdres} />
         <DzielnikLisc />
 
-        <section className="bg-jesien-karta mx-auto w-full px-4 py-14">
+        <section className="bg-jesien-karta/70 mx-auto w-full px-4 py-14">
           <Kontener>
             <SekcjaNaglowek numer="04" nadtytul="Rekrutacja" tytul="Przyjęcie świeżaków" />
             <p className="text-sm leading-relaxed text-jesien-kora">
               Tydzień przed wyjazdem przyjmujemy nowych członków Samorządu —
-              osobny, krótszy rytuał wtajemniczenia.
+              osobny, krótszy proces rekrutacyjny.
             </p>
             <div className="mt-4">
               <Licznik
@@ -70,7 +99,7 @@ export default async function Landing() {
 
         <DzielnikSzewron />
 
-        <section className="bg-jesien-tlo mx-auto w-full px-4 py-14">
+        <section className="bg-jesien-tlo/70 mx-auto w-full px-4 py-14">
           <Kontener>
             <SekcjaNaglowek numer="05" nadtytul="Zasady" tytul="Regulamin" />
             <p className="text-sm leading-relaxed text-jesien-kora">

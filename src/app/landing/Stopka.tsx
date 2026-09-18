@@ -35,7 +35,7 @@ const NAWIGACJA_WYJAZD: Odnosnik[] = [
 // dopychać ją wymyśloną treścią, Kontakt dołącza do „Zgłoszenia” i prawa
 // strona zostaje dwiema kolumnami, nie trzema.
 const NAWIGACJA_ZGLOSZENIE: Odnosnik[] = [
-  { etykieta: "Wejdź do Sekty", href: "/wejscie" },
+  { etykieta: "Zapisz się", href: "/wejscie" },
   { etykieta: "Kontakt", href: `mailto:${KONTAKT_MAIL}` },
   { etykieta: "Regulamin", href: "/regulamin" },
 ];

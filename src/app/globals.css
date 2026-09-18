@@ -177,17 +177,39 @@ body {
    */
 
   /*
-   * Tło panelu: reflektor świecący w dół na czarną powierzchnię. Jasna plama
-   * u samej góry (częściowo poza panelem — tylko dolny łuk jest widoczny),
-   * domieszka `krew-glab` w środkowej strefie, czysta czerń na dole.
+   * Tło panelu — jesienny gradient, nie czerń: `dynia` (jasna, ciepła) u góry
+   * za logo, przez `rdza` i `kora` w dół do `atrament` na samym dole.
+   *
+   * Kontrast policzony (WCAG, na kanałach po zblendowaniu, nie „na oko"):
+   *   - Biel na samej `dynia` to tylko 3,1:1 — dlatego tekst (`h2`/`p`) nigdy
+   *     tam nie siedzi: pierwszy stop trzyma `dynia` tylko w górnej ćwiartce
+   *     panelu, gdzie jest logo (patrz niżej — logo dlatego nie jest białe),
+   *     a treść zaczyna się dopiero w strefie `rdza`/`kora`.
+   *   - Biel na `rdza` (6,1:1) i `kora` (7,9:1) ma zapas, ale plamy/poświata
+   *     kursora lokalnie rozjaśniają tło, więc zapas trzeba liczyć z tym
+   *     naddatkiem doliczonym, nie samym kolorem bazowym. Przy efektywnym
+   *     kryciu rozjaśnienia do 0,15 (jasna plama + kursor naraz, w tym samym
+   *     miejscu) `rdza` spada do 4,52:1, `kora` do 5,36:1 — nadal nad progiem
+   *     4,5:1. Dlatego plamy i poświata kursora w tej wersji są wyraźnie
+   *     przygaszone względem oryginału (patrz alfa niżej): niezależnie ich
+   *     krycie nie przekracza wartości, które dawałyby więcej niż ~0,15
+   *     łącznego rozjaśnienia w jednym punkcie.
+   *   - `atrament` na dole (15,5:1 dla bieli) ma ogromny zapas — tam może
+   *     się rozjaśnić dowolnie i nadal zostanie czytelne.
    */
   .stopka-panel {
     --mysz-x: 50%;
     --mysz-y: 0%;
     background:
-      radial-gradient(ellipse 140% 55% at 50% -25%, rgb(226 220 216 / 0.4), transparent 55%),
-      radial-gradient(ellipse 120% 65% at 50% 38%, rgb(110 10 26 / 0.3), transparent 62%),
-      linear-gradient(to bottom, var(--color-noc) 0%, var(--color-noc-glab) 55%, #000000 100%);
+      radial-gradient(ellipse 140% 55% at 50% -25%, rgb(255 255 255 / 0.22), transparent 55%),
+      radial-gradient(ellipse 120% 65% at 50% 38%, rgb(107 74 47 / 0.28), transparent 62%),
+      linear-gradient(
+        to bottom,
+        var(--color-jesien-dynia) 0%,
+        var(--color-jesien-rdza) 24%,
+        var(--color-jesien-kora) 45%,
+        var(--color-jesien-atrament) 100%
+      );
   }
 
   .stopka-oddech {
@@ -197,7 +219,7 @@ body {
     width: 70%;
     height: 55%;
     border-radius: 9999px;
-    background: radial-gradient(circle, rgb(255 255 255 / 0.16), transparent 65%);
+    background: radial-gradient(circle, rgb(255 255 255 / 0.12), transparent 65%);
     filter: blur(50px);
     animation: stopka-oddech-klatki 10s ease-in-out infinite alternate;
     pointer-events: none;
@@ -216,22 +238,28 @@ body {
 
   .stopka-blob-lewy {
     left: -18%;
-    background: radial-gradient(circle, rgb(230 225 222 / 0.22), transparent 70%);
+    background: radial-gradient(circle, rgb(255 255 255 / 0.14), transparent 70%);
     animation: stopka-dryf-lewo 11s ease-in-out infinite alternate;
   }
 
+  /* Ciemniejszy akcent (dawniej `krew-glab`), nie jaśniejszy — rozjaśniające
+     plamy już mają swój budżet krycia wyżej; ta zostaje ciemna, więc tylko
+     dokłada głębi i nigdy nie zagraża kontrastowi tekstu. */
   .stopka-blob-prawy {
     right: -18%;
-    background: radial-gradient(circle, rgb(110 10 26 / 0.32), transparent 70%);
+    background: radial-gradient(circle, rgb(47 33 24 / 0.35), transparent 70%);
     animation: stopka-dryf-prawo 12s ease-in-out infinite alternate;
   }
 
-  /* Poświata za kursorem — pozycja z `--mysz-x/--mysz-y`, ustawianych z JS wprost na elemencie. */
+  /* Poświata za kursorem — pozycja z `--mysz-x/--mysz-y`, ustawianych z JS wprost na elemencie.
+     Krycie niższe niż w mrocznym pierwowzorze (0.18 → 0.10): tu tło pod spodem
+     jest dużo jaśniejsze niż `noc`, więc ten sam dodatek światła zjadałby
+     więcej kontrastu tekstu — patrz wyliczenia przy `.stopka-panel`. */
   .stopka-cursor-glow {
     position: absolute;
     inset: -25% -10% auto -10%;
     height: 75%;
-    background: radial-gradient(circle at var(--mysz-x) var(--mysz-y), rgb(255 255 255 / 0.18), transparent 60%);
+    background: radial-gradient(circle at var(--mysz-x) var(--mysz-y), rgb(255 255 255 / 0.1), transparent 60%);
     filter: blur(45px);
     pointer-events: none;
   }
@@ -384,6 +412,65 @@ body {
 
   .dzielnik-skos-lustro {
     clip-path: polygon(0 0, 100% 100%, 0 100%);
+  }
+
+  /*
+   * Talia zdjęć (`TaliaKart.tsx`) — pozycja karty i sama karta w dwóch
+   * warstwach: `.talia-karta-pozycja` dostaje wyłącznie `translate3d`
+   * (rozsunięcie/uniesienie/głębia) z pętli rAF, `.talia-karta` (przycisk
+   * w środku) dostaje `rotateX/rotateY/rotateZ/scale`. Rozdzielone, żeby
+   * plakietka — dziecko tej pierwszej, nie drugiej — dziedziczyła pozycję
+   * karty, ale nie jej obrót w 3D (inaczej pigułka z tekstem wyglądałaby
+   * jak skrzywiona w perspektywie razem z kartą).
+   *
+   * `touch-action: none` i blokada zaznaczania/przeciągania: talia reaguje
+   * na dotyk sama (patrz `onPointerEnter`/`onClick` w komponencie), więc
+   * domyślne gesty przeglądarki (przewijanie, zaznaczanie tekstu, drag obrazka,
+   * niebieska/szara plama podświetlenia dotyku) tylko przeszkadzają.
+   */
+  .talia-karta-pozycja {
+    transform-origin: center center;
+  }
+
+  .talia-karta {
+    transform-origin: center center;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* Plakietka nad aktywną kartą — pigułka jasna niezależnie od reszty
+     landingu (kontrast policzony wprost: prawie czarny tekst na #f6f6f2). */
+  .talia-plakietka {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    z-index: 40;
+    transform: translate(-50%, calc(-100% - 10px));
+    white-space: nowrap;
+    border-radius: 9999px;
+    background: #f6f6f2;
+    color: #161412;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 6px 14px;
+    box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.35);
+    pointer-events: none;
+    animation: talia-plakietka-wjazd 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@keyframes talia-plakietka-wjazd {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 4px)) scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, calc(-100% - 10px)) scale(1);
   }
 }
 
