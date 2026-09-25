@@ -340,3 +340,238 @@ describe("zakup pozycji fizycznej", () => {
     expect(poz!.stock).toBe(0);
   });
 });
+
+describe("klątwa i tarcza", () => {
+  it("klątwa zabiera punkty wskazanej drużynie", async () => {
+    await dosypPunkty(mojaDruzyna, 500);
+    await dosypPunkty(obcaDruzyna, 300);
+    const itemId = await nowaPozycja({
+      name: "Test Klatwa",
+      kind: "digital",
+      price: 200,
+      effect_key: "klatwa",
+      effect_value: 50,
+      requires_target: true,
+    });
+
+    const { data: orderId, error } = await kapitanClient.rpc("kup_z_polki", {
+      p_item_id: itemId,
+      p_target_team: obcaDruzyna,
+    });
+    expect(error).toBeNull();
+
+    expect(await saldoDruzyny(mojaDruzyna)).toBe(300);
+    expect(await saldoDruzyny(obcaDruzyna)).toBe(250);
+
+    // Efekt jest natychmiastowy, więc zamówienie nie czeka w kolejce.
+    const { data: zam } = await admin
+      .from("shop_orders")
+      .select("status, target_team_id, note")
+      .eq("id", orderId)
+      .single();
+    expect(zam!.status).toBe("fulfilled");
+    expect(zam!.target_team_id).toBe(obcaDruzyna);
+    expect(zam!.note).toBeNull();
+
+    // Ofiara ma się dowiedzieć, kto rzucił — księga jest jawna.
+    const { data: wpis } = await admin
+      .from("points_ledger")
+      .select("delta, reason, team_id")
+      .eq("category", "klatwa")
+      .single();
+    expect(wpis!.delta).toBe(-50);
+    expect(wpis!.team_id).toBe(obcaDruzyna);
+    expect(wpis!.reason).toMatch(/Klatwa od druzyny/);
+  });
+
+  it("klątwa na własną drużynę odbija się", async () => {
+    await dosypPunkty(mojaDruzyna, 500);
+    const itemId = await nowaPozycja({
+      name: "Test Samobojstwo",
+      kind: "digital",
+      price: 200,
+      effect_key: "klatwa",
+      effect_value: 50,
+      requires_target: true,
+    });
+
+    const { error } = await kapitanClient.rpc("kup_z_polki", {
+      p_item_id: itemId,
+      p_target_team: mojaDruzyna,
+    });
+
+    expect(error).not.toBeNull();
+    expect(error!.message).toMatch(/wlasnej druzyny/i);
+    expect(await saldoDruzyny(mojaDruzyna)).toBe(500);
+  });
+
+  it("klątwa bez celu odbija się", async () => {
+    await dosypPunkty(mojaDruzyna, 500);
+    const itemId = await nowaPozycja({
+      name: "Test Bezcelu",
+      kind: "digital",
+      price: 200,
+      effect_key: "klatwa",
+      effect_value: 50,
+      requires_target: true,
+    });
+
+    const { error } = await kapitanClient.rpc("kup_z_polki", { p_item_id: itemId });
+
+    expect(error).not.toBeNull();
+    expect(error!.message).toMatch(/wskazania druzyny/i);
+  });
+
+  it("pozycja bez celu nie przyjmuje celu", async () => {
+    await dosypPunkty(mojaDruzyna, 500);
+    const itemId = await nowaPozycja({ name: "Test Zwykla", kind: "physical", price: 40 });
+
+    const { error } = await kapitanClient.rpc("kup_z_polki", {
+      p_item_id: itemId,
+      p_target_team: obcaDruzyna,
+    });
+
+    expect(error).not.toBeNull();
+    expect(error!.message).toMatch(/nie przyjmuje celu/i);
+  });
+
+  it("tarcza zapisuje się jako efekt drużyny", async () => {
+    await dosypPunkty(mojaDruzyna, 500);
+    const itemId = await nowaPozycja({
+      name: "Test Tarcza",
+      kind: "digital",
+      price: 150,
+      effect_key: "tarcza",
+    });
+
+    const { data: orderId, error } = await kapitanClient.rpc("kup_z_polki", {
+      p_item_id: itemId,
+    });
+    expect(error).toBeNull();
+
+    const { data: efekt } = await admin
+      .from("active_effects")
+      .select("scope, subject_id, effect_key, expires_at, consumed_at, order_id")
+      .eq("effect_key", "tarcza")
+      .single();
+    expect(efekt!.scope).toBe("team");
+    expect(efekt!.subject_id).toBe(mojaDruzyna);
+    // Tarcza trwa, aż ją coś zużyje — stąd brak terminu.
+    expect(efekt!.expires_at).toBeNull();
+    expect(efekt!.consumed_at).toBeNull();
+    expect(efekt!.order_id).toBe(orderId);
+  });
+
+  it("tarcza pochłania klątwę i nie oddaje punktów", async () => {
+    await dosypPunkty(mojaDruzyna, 500);
+    await dosypPunkty(obcaDruzyna, 300);
+
+    // Ofiara ma tarczę — wstawiamy ją wprost, bo kapitanem obcej drużyny nikt
+    // tu nie jest, a testujemy konsumpcję, nie zakup.
+    const { data: tarcza } = await admin
+      .from("active_effects")
+      .insert({
+        scope: "team",
+        subject_id: obcaDruzyna,
+        effect_key: "tarcza",
+      })
+      .select("id")
+      .single();
+
+    const itemId = await nowaPozycja({
+      name: "Test Klatwa w tarcze",
+      kind: "digital",
+      price: 200,
+      effect_key: "klatwa",
+      effect_value: 50,
+      requires_target: true,
+    });
+
+    const { data: orderId, error } = await kapitanClient.rpc("kup_z_polki", {
+      p_item_id: itemId,
+      p_target_team: obcaDruzyna,
+    });
+    expect(error).toBeNull();
+
+    // Ofiara nie traci nic, kupujący traci wszystko.
+    expect(await saldoDruzyny(obcaDruzyna)).toBe(300);
+    expect(await saldoDruzyny(mojaDruzyna)).toBe(300);
+
+    const { data: po } = await admin
+      .from("active_effects")
+      .select("consumed_at")
+      .eq("id", tarcza!.id)
+      .single();
+    expect(po!.consumed_at).not.toBeNull();
+
+    const { data: zam } = await admin
+      .from("shop_orders")
+      .select("note")
+      .eq("id", orderId)
+      .single();
+    expect(zam!.note).toMatch(/Tarcza/i);
+
+    const { data: wpisy } = await admin
+      .from("points_ledger")
+      .select("id")
+      .eq("category", "klatwa");
+    expect(wpisy ?? []).toEqual([]);
+  });
+
+  it("zużyta tarcza nie chroni drugi raz", async () => {
+    await dosypPunkty(mojaDruzyna, 900);
+    await dosypPunkty(obcaDruzyna, 300);
+
+    await admin.from("active_effects").insert({
+      scope: "team",
+      subject_id: obcaDruzyna,
+      effect_key: "tarcza",
+      consumed_at: new Date().toISOString(),
+    });
+
+    const itemId = await nowaPozycja({
+      name: "Test Klatwa po tarczy",
+      kind: "digital",
+      price: 200,
+      effect_key: "klatwa",
+      effect_value: 50,
+      requires_target: true,
+    });
+
+    const { error } = await kapitanClient.rpc("kup_z_polki", {
+      p_item_id: itemId,
+      p_target_team: obcaDruzyna,
+    });
+    expect(error).toBeNull();
+
+    expect(await saldoDruzyny(obcaDruzyna)).toBe(250);
+  });
+
+  it("klątwa dopisuje ofierze wiersz w outboxie", async () => {
+    await dosypPunkty(mojaDruzyna, 500);
+    await dosypPunkty(obcaDruzyna, 300);
+    const itemId = await nowaPozycja({
+      name: "Test Klatwa outbox",
+      kind: "digital",
+      price: 200,
+      effect_key: "klatwa",
+      effect_value: 50,
+      requires_target: true,
+    });
+
+    const { data: orderId } = await kapitanClient.rpc("kup_z_polki", {
+      p_item_id: itemId,
+      p_target_team: obcaDruzyna,
+    });
+
+    const { data: p } = await admin
+      .from("powiadomienia")
+      .select("adresat, adresat_id")
+      .eq("ref_id", orderId)
+      .order("adresat");
+    expect(p).toHaveLength(2);
+    expect(p![0].adresat).toBe("admin");
+    expect(p![1].adresat).toBe("team");
+    expect(p![1].adresat_id).toBe(obcaDruzyna);
+  });
+});
