@@ -80,3 +80,68 @@ export type Registration = {
   review_note: string | null;
   created_at: string;
 };
+
+export type ShopKind = "digital" | "physical";
+export type ShopOrderStatus = "pending" | "fulfilled" | "cancelled";
+
+export type ShopItem = {
+  id: string;
+  name: string;
+  description: string;
+  kind: ShopKind;
+  price: number;
+  /** NULL znaczy bez limitu. */
+  stock: number | null;
+  active: boolean;
+  effect_key: string | null;
+  effect_value: number | null;
+  effect_hours: number | null;
+  /**
+   * Czy zakup wymaga wskazania drużyny. Kolumna, nie reguła w kodzie klienta:
+   * front-end pokazuje wybór celu, bo pozycja tak mówi, a nie bo ktoś zaszył
+   * w komponencie, że klątwa jest szczególna.
+   */
+  requires_target: boolean;
+  position: number;
+};
+
+export type ShopOrder = {
+  id: string;
+  team_id: string;
+  item_id: string;
+  price_paid: number;
+  ordered_by: string | null;
+  target_team_id: string | null;
+  status: ShopOrderStatus;
+  fulfilled_by: string | null;
+  fulfilled_at: string | null;
+  note: string | null;
+  created_at: string;
+};
+
+export type ActiveEffect = {
+  id: string;
+  scope: "user" | "team";
+  subject_id: string;
+  effect_key: string;
+  effect_value: number | null;
+  expires_at: string | null;
+  consumed_at: string | null;
+  order_id: string | null;
+  created_at: string;
+};
+
+/** Wiersz widoku `kronika_sklepiku` — nazwy rozwiązane po stronie bazy. */
+export type WpisKroniki = {
+  id: string;
+  created_at: string;
+  status: ShopOrderStatus;
+  price_paid: number;
+  note: string | null;
+  item_name: string;
+  item_kind: ShopKind;
+  team_name: string;
+  team_color: string;
+  target_team_name: string | null;
+  ordered_by_name: string | null;
+};
