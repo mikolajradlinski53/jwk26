@@ -6,6 +6,7 @@ import {
   anonimowy,
   createUser,
   deleteUser,
+  makeAdmin,
   idDruzyn,
   ustawKapitana,
   ustawJakoZaakceptowany,
@@ -23,8 +24,10 @@ const { nowyUzytkownik, posprzataj } = sprzatanieUzytkownikow();
 // Projekt testowy dopuszcza 30 logowań na 5 minut, a testów tu kilkanaście.
 let kapitan: TestUser;
 let szeregowy: TestUser;
+let szef: TestUser;
 let kapitanClient: SupabaseClient;
 let szeregowyClient: SupabaseClient;
+let szefClient: SupabaseClient;
 let mojaDruzyna: string;
 let obcaDruzyna: string;
 
@@ -41,6 +44,10 @@ beforeAll(async () => {
 
   kapitanClient = await signIn(kapitan);
   szeregowyClient = await signIn(szeregowy);
+
+  szef = await createUser("kaplan-sklep");
+  await makeAdmin(szef);
+  szefClient = await signIn(szef);
 });
 
 afterAll(async () => {
@@ -49,6 +56,7 @@ afterAll(async () => {
   // użytkownika zdejmie go dopiero po tym, jak inny plik zdąży już zobaczyć
   // drużynę z kapitanem, którego nie zna.
   await ustawKapitana(mojaDruzyna, null);
+  await deleteUser(szef);
   await deleteUser(kapitan);
   await deleteUser(szeregowy);
 });
@@ -573,5 +581,137 @@ describe("klątwa i tarcza", () => {
     expect(p![0].adresat).toBe("admin");
     expect(p![1].adresat).toBe("team");
     expect(p![1].adresat_id).toBe(obcaDruzyna);
+  });
+});
+
+describe("wydanie i anulowanie", () => {
+  async function kupFizyczna(cena = 40, stan: number | null = 5) {
+    await dosypPunkty(mojaDruzyna, 500);
+    const itemId = await nowaPozycja({
+      name: `Test Wydanie ${Math.random().toString(36).slice(2, 8)}`,
+      kind: "physical",
+      price: cena,
+      stock: stan,
+    });
+    const { data: orderId, error } = await kapitanClient.rpc("kup_z_polki", {
+      p_item_id: itemId,
+    });
+    if (error) throw error;
+    return { itemId, orderId: orderId as string };
+  }
+
+  it("admin wydaje zamówienie", async () => {
+    const { orderId } = await kupFizyczna();
+
+    const { error } = await szefClient.rpc("wydaj_zamowienie", { p_order_id: orderId });
+    expect(error).toBeNull();
+
+    const { data } = await admin
+      .from("shop_orders")
+      .select("status, fulfilled_by, fulfilled_at")
+      .eq("id", orderId)
+      .single();
+    expect(data!.status).toBe("fulfilled");
+    expect(data!.fulfilled_by).toBe(szef.id);
+    expect(data!.fulfilled_at).not.toBeNull();
+  });
+
+  it("kapitan nie wyda własnego zamówienia", async () => {
+    const { orderId } = await kupFizyczna();
+
+    const { error } = await kapitanClient.rpc("wydaj_zamowienie", { p_order_id: orderId });
+
+    expect(error).not.toBeNull();
+    expect(error!.message).toMatch(/admin/i);
+  });
+
+  it("wydane zamówienie nie da się wydać drugi raz", async () => {
+    const { orderId } = await kupFizyczna();
+    await szefClient.rpc("wydaj_zamowienie", { p_order_id: orderId });
+
+    const { error } = await szefClient.rpc("wydaj_zamowienie", { p_order_id: orderId });
+    expect(error).not.toBeNull();
+  });
+
+  it("anulowanie zwraca punkty i stan", async () => {
+    const { itemId, orderId } = await kupFizyczna(40, 5);
+    const poZakupie = await saldoDruzyny(mojaDruzyna);
+
+    const { error } = await szefClient.rpc("anuluj_zamowienie", {
+      p_order_id: orderId,
+      p_note: "Nie ma na stanie fizycznie",
+    });
+    expect(error).toBeNull();
+
+    // Zwrot idzie dodatnim wierszem, nie usunięciem wpisu — księga jest tylko
+    // do dopisywania, więc oba zdarzenia zostają widoczne.
+    expect(await saldoDruzyny(mojaDruzyna)).toBe(poZakupie + 40);
+
+    const { data: zwrot } = await admin
+      .from("points_ledger")
+      .select("delta, ref_id")
+      .eq("category", "sklepik_zwrot")
+      .single();
+    expect(zwrot!.delta).toBe(40);
+    expect(zwrot!.ref_id).toBe(orderId);
+
+    const { data: poz } = await admin
+      .from("shop_items")
+      .select("stock")
+      .eq("id", itemId)
+      .single();
+    expect(poz!.stock).toBe(5);
+
+    const { data: zam } = await admin
+      .from("shop_orders")
+      .select("status, note")
+      .eq("id", orderId)
+      .single();
+    expect(zam!.status).toBe("cancelled");
+    expect(zam!.note).toBe("Nie ma na stanie fizycznie");
+  });
+
+  it("anulowanie pozycji bez limitu nie rusza stanu", async () => {
+    const { itemId, orderId } = await kupFizyczna(40, null);
+
+    await szefClient.rpc("anuluj_zamowienie", { p_order_id: orderId, p_note: "test" });
+
+    const { data: poz } = await admin
+      .from("shop_items")
+      .select("stock")
+      .eq("id", itemId)
+      .single();
+    expect(poz!.stock).toBeNull();
+  });
+
+  it("efektu cyfrowego nie da się anulować", async () => {
+    await dosypPunkty(mojaDruzyna, 500);
+    const itemId = await nowaPozycja({
+      name: "Test Tarcza niecofalna",
+      kind: "digital",
+      price: 150,
+      effect_key: "tarcza",
+    });
+    const { data: orderId } = await kapitanClient.rpc("kup_z_polki", { p_item_id: itemId });
+
+    const { error } = await szefClient.rpc("anuluj_zamowienie", {
+      p_order_id: orderId,
+      p_note: "rozmyślili się",
+    });
+
+    expect(error).not.toBeNull();
+    expect(error!.message).toMatch(/cyfrow/i);
+  });
+
+  it("wydanego zamówienia nie da się anulować", async () => {
+    const { orderId } = await kupFizyczna();
+    await szefClient.rpc("wydaj_zamowienie", { p_order_id: orderId });
+
+    const { error } = await szefClient.rpc("anuluj_zamowienie", {
+      p_order_id: orderId,
+      p_note: "za późno",
+    });
+    expect(error).not.toBeNull();
+    expect(error!.message).toMatch(/oczekuj/i);
   });
 });
