@@ -14,12 +14,14 @@ import {
   saldoDruzyny,
   nowaPozycja,
   sprzatnijSklepik,
-  sprzatanieUzytkownikow,
   type TestUser,
 } from "../helpers/supabase";
 
-const { nowyUzytkownik, posprzataj } = sprzatanieUzytkownikow();
-
+// Ten plik nie używa `sprzatanieUzytkownikow`: wszyscy trzej uczestnicy powstają
+// raz w beforeAll i są kasowani w afterAll, bo logowanie jest drogie (30 na pięć
+// minut na cały projekt testowy). Rejestr do sprzątania po każdym teście miałby
+// tu zawsze pustą kolejkę.
+//
 // Kapitan i szeregowy członek tej samej drużyny, zalogowani raz na cały plik.
 // Projekt testowy dopuszcza 30 logowań na 5 minut, a testów tu kilkanaście.
 let kapitan: TestUser;
@@ -63,7 +65,6 @@ afterAll(async () => {
 
 afterEach(async () => {
   await sprzatnijSklepik();
-  await posprzataj();
 });
 
 describe("półka", () => {
