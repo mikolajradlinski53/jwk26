@@ -327,5 +327,18 @@ trzecie miejsce, które potrzebuje rysowanych konturów.
 9. Para nie zostawia wpisu w księdze, ale zostawia wiersz w `game_sessions`.
 10. `select state from game_sessions` z klucza `anon` i z sesji gracza pada.
 11. Gracz nie widzi cudzych spinów.
-12. Rozkład jest jednostajny — dziesięć tysięcy losowań w bazie mieści się
-    w granicach oczekiwanych dla 1/216 i 90/216.
+12. `losuj_bebny()` losuje **trzy razy niezależnie** i nie wychodzi z zakresu
+    tablicy symboli.
+
+    Kryterium celuje w te dwie awarie, a nie w jednostajność `random()` — ta jest
+    własnością Postgresa i nie ma sensu jej sprawdzać. Zepsuć można natomiast
+    indeksowanie (tablice w Postgresie liczą się od jedynki, więc `floor(random()*6)`
+    bez `+1` zwraca `NULL` dla zera) albo użyć jednego losowania do trzech bębnów
+    (wtedy **każdy** spin jest trójką, co przy RTP 88% oznacza automat wypłacający
+    kilkanaście razy stawkę).
+
+    Sprawdzenie: 60 losowań równolegle. Żaden element nie jest `NULL`, każdy należy
+    do zbioru sześciu symboli, w 180 pozycjach pojawiają się wszystkie sześć,
+    i **co najmniej jedno losowanie nie jest trójką**. Ten ostatni warunek jest
+    całym rozróżnieniem między poprawnym kodem i pomyłką z jednym losowaniem:
+    przy błędzie trójek byłoby 60 z 60.
