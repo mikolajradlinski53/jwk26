@@ -207,3 +207,198 @@ describe("bębny", () => {
     expect(nieTrojki.length).toBeGreaterThan(0);
   });
 });
+
+describe("spin", () => {
+  /** Wstawia sesje gry kluczem serwisowym, żeby zapełnić okno obrotu. */
+  async function zapelnijObrot(userId: string, ileSpinow: number, kiedy?: Date) {
+    const wiersze = Array.from({ length: ileSpinow }, () => ({
+      user_id: userId,
+      game: "sloty",
+      stake: 10,
+      payout: 0,
+      state: { bebny: ["oko", "swieca", "klucz"] },
+      ...(kiedy ? { created_at: kiedy.toISOString() } : {}),
+    }));
+    const { error } = await admin.from("game_sessions").insert(wiersze);
+    if (error) throw error;
+  }
+
+  it("zaakceptowany gracz kręci: sesja, symbole, netto w księdze", async () => {
+    await dosypPunktyOsobie(gracz.id, druzyna, 200);
+
+    const { data, error } = await graczClient.rpc("zakrec_slotami");
+    expect(error).toBeNull();
+
+    const wynik = data as {
+      bebny: string[];
+      wyplata: number;
+      netto: number;
+      obrot: number;
+      limit: number;
+    };
+    expect(wynik.bebny).toHaveLength(3);
+    expect(wynik.obrot).toBe(10);
+    expect(wynik.limit).toBe(300);
+    expect(wynik.netto).toBe(wynik.wyplata - 10);
+
+    const { data: sesje } = await admin
+      .from("game_sessions")
+      .select("user_id, game, stake, payout, status, state");
+    expect(sesje).toHaveLength(1);
+    expect(sesje![0].user_id).toBe(gracz.id);
+    expect(sesje![0].game).toBe("sloty");
+    expect(sesje![0].stake).toBe(10);
+    expect(sesje![0].status).toBe("settled");
+    expect(sesje![0].payout).toBe(wynik.wyplata);
+    expect((sesje![0].state as { bebny: string[] }).bebny).toEqual(wynik.bebny);
+
+    // Jeden wpis netto, i tylko gdy różny od zera (D4). Para zwraca stawkę,
+    // więc 42% spinów nie zostawia w księdze nic.
+    const { data: wpisy } = await admin
+      .from("points_ledger")
+      .select("delta, user_id, team_id, ref_id")
+      .eq("category", "kasyno");
+    if (wynik.netto === 0) {
+      expect(wpisy ?? []).toEqual([]);
+    } else {
+      expect(wpisy).toHaveLength(1);
+      expect(wpisy![0].delta).toBe(wynik.netto);
+      expect(wpisy![0].user_id).toBe(gracz.id);
+      expect(wpisy![0].team_id).toBe(druzyna);
+    }
+  });
+
+  it("niezalogowany nie wywoła funkcji", async () => {
+    const { error } = await anonimowy().rpc("zakrec_slotami");
+    expect(error).not.toBeNull();
+    // Gdyby grant dla anon został, funkcja weszłaby i padła na is_approved() —
+    // komunikatem o akceptacji. Cokolwiek innego dowodzi, że revoke zadziałał.
+    expect(error!.message).not.toMatch(/zaakceptowan/i);
+  });
+
+  it("oczekujący na akceptację nie zakręci", async () => {
+    const petent = await createUser("petent-sloty");
+    try {
+      await admin.from("profiles").update({ team_id: druzyna }).eq("id", petent.id);
+      await dosypPunktyOsobie(petent.id, druzyna, 200);
+      const client = await signIn(petent);
+
+      const { error } = await client.rpc("zakrec_slotami");
+      expect(error).not.toBeNull();
+      expect(error!.message).toMatch(/zaakceptowan/i);
+
+      const { data } = await admin.from("game_sessions").select("id");
+      expect(data ?? []).toEqual([]);
+    } finally {
+      await deleteUser(petent);
+    }
+  });
+
+  it("gracz bez drużyny nie zakręci", async () => {
+    await admin.from("profiles").update({ team_id: null }).eq("id", gracz.id);
+    try {
+      const { error } = await graczClient.rpc("zakrec_slotami");
+      expect(error).not.toBeNull();
+      expect(error!.message).toMatch(/druzyny/i);
+    } finally {
+      await admin.from("profiles").update({ team_id: druzyna }).eq("id", gracz.id);
+    }
+  });
+
+  it("saldo niższe od stawki odbija spin", async () => {
+    await dosypPunktyOsobie(gracz.id, druzyna, 5);
+
+    const { error } = await graczClient.rpc("zakrec_slotami");
+    expect(error).not.toBeNull();
+    expect(error!.message).toMatch(/stawka/i);
+
+    const { data } = await admin.from("game_sessions").select("id");
+    expect(data ?? []).toEqual([]);
+  });
+
+  it("wyczerpany limit obrotu odbija spin", async () => {
+    await dosypPunktyOsobie(gracz.id, druzyna, 5000);
+    // Trzydzieści spinów po dziesięć to dokładnie trzysta punktów obrotu.
+    await zapelnijObrot(gracz.id, 30);
+
+    const { error } = await graczClient.rpc("zakrec_slotami");
+    expect(error).not.toBeNull();
+    expect(error!.message).toMatch(/limit/i);
+  });
+
+  it("obrót starszy niż dobę nie liczy się do limitu", async () => {
+    await dosypPunktyOsobie(gracz.id, druzyna, 5000);
+    // Okno jest ruchome i liczy czas absolutny — świadomie, bo czas letni
+    // kończy się 25 października 2026, w ostatnią noc wyjazdu (D1).
+    const wczoraj = new Date(Date.now() - 25 * 3_600_000);
+    await zapelnijObrot(gracz.id, 30, wczoraj);
+
+    const { error } = await graczClient.rpc("zakrec_slotami");
+    expect(error).toBeNull();
+  });
+
+  it("księga dostaje wpis na każdy spin niezerowy i żadnego na zerowy", async () => {
+    await dosypPunktyOsobie(gracz.id, druzyna, 5000);
+
+    // Dwanaście spinów to 120 punktów obrotu, dobrze poniżej limitu 300.
+    //
+    // Test **nie zakłada, co wypadnie** — porównuje księgę z sesjami, więc jest
+    // rozstrzygający niezależnie od losu. Wcześniejsza wersja sprawdzałaby zwrot
+    // stawki tylko wtedy, gdy para akurat padła, czyli w 42% przebiegów udawała,
+    // że coś weryfikuje.
+    for (let i = 0; i < 12; i++) {
+      const { error } = await graczClient.rpc("zakrec_slotami");
+      expect(error).toBeNull();
+    }
+
+    const { data: sesje } = await admin
+      .from("game_sessions")
+      .select("id, stake, payout");
+    expect(sesje).toHaveLength(12);
+
+    const { data: wpisy } = await admin
+      .from("points_ledger")
+      .select("delta, ref_id")
+      .eq("category", "kasyno");
+
+    const niezerowe = sesje!.filter((x) => x.payout !== x.stake);
+    expect(wpisy ?? []).toHaveLength(niezerowe.length);
+
+    // Każdy wpis wskazuje swoją sesję i niesie dokładnie jej netto.
+    const netto = new Map(
+      niezerowe.map((x) => [
+        x.id as string,
+        (x.payout as number) - (x.stake as number),
+      ]),
+    );
+    for (const w of wpisy ?? []) {
+      expect(netto.get(w.ref_id as string)).toBe(w.delta);
+    }
+  });
+
+  it("dwa równoległe spiny przy saldzie na jeden: jeden przechodzi", async () => {
+    // Stawka to 10, saldo dokładnie 10. Bez blokady wiersza profiles oba
+    // wywołania przeczytają to samo saldo i oba przejdą, a gracz zjedzie pod
+    // zero — księga jest tylko do dopisywania, więc nie ma jak tego cofnąć.
+    await dosypPunktyOsobie(gracz.id, druzyna, 10);
+
+    const [a, b] = await Promise.all([
+      graczClient.rpc("zakrec_slotami"),
+      graczClient.rpc("zakrec_slotami"),
+    ]);
+
+    const udane = [a, b].filter((r) => r.error === null);
+    expect(udane).toHaveLength(1);
+
+    const { data: sesje } = await admin.from("game_sessions").select("id");
+    expect(sesje).toHaveLength(1);
+
+    // Saldo gracza nie może być ujemne.
+    const { data: wynik } = await admin
+      .from("user_scores")
+      .select("score")
+      .eq("user_id", gracz.id)
+      .single();
+    expect(wynik!.score).toBeGreaterThanOrEqual(0);
+  });
+});
