@@ -231,6 +231,22 @@ export async function dosypPunkty(teamId: string, delta: number): Promise<void> 
   if (error) throw error;
 }
 
+/**
+ * Dosypuje punkty konkretnej osobie. Różnica wobec `dosypPunkty` jest istotna:
+ * tam `user_id` jest NULL (wydatek drużynowy), a kasyno liczy saldo po
+ * `user_id`, więc wpis drużynowy nie daje graczowi na co grać.
+ */
+export async function dosypPunktyOsobie(
+  userId: string,
+  teamId: string,
+  delta: number,
+): Promise<void> {
+  const { error } = await admin
+    .from("points_ledger")
+    .insert({ user_id: userId, team_id: teamId, delta, category: "zasiew_testowy" });
+  if (error) throw error;
+}
+
 export async function saldoDruzyny(teamId: string): Promise<number> {
   const { data, error } = await admin
     .from("team_scores")
