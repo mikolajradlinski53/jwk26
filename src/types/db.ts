@@ -103,6 +103,12 @@ export type ShopItem = {
    */
   requires_target: boolean;
   position: number;
+  /**
+   * Klucz kształtu dla `IkonaPozycji`. NULL albo klucz nieznany komponentowi
+   * daje neutralny znak, więc pozycja dołożona zapytaniem nigdy nie rozsypie
+   * półki.
+   */
+  ikona: string | null;
 };
 
 export type ShopOrder = {

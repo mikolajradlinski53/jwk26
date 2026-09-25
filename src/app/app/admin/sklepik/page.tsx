@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { DecyzjaZamowienia } from "./DecyzjaZamowienia";
 import { StanPozycji } from "./StanPozycji";
+import { IkonaPozycji } from "../../sklep/Ikona";
 import type { ShopItem, WpisKroniki } from "@/types/db";
 
 export default async function AdminSklepikPage() {
@@ -54,8 +55,9 @@ export default async function AdminSklepikPage() {
       <ul className="grid gap-2">
         {((pozycje ?? []) as ShopItem[]).map((p) => (
           <li key={p.id} className="szklo rounded-md px-3.5 py-3">
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="min-w-0 text-sm font-bold">{p.name}</span>
+            <div className="flex items-center gap-3">
+              <IkonaPozycji ikona={p.ikona} className="text-dym" />
+              <span className="min-w-0 flex-1 text-sm font-bold">{p.name}</span>
               <span className="flex-none font-tytul text-sm tabular-nums text-dym">
                 {p.price}
               </span>

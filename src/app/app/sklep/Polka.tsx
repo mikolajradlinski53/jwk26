@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
+import { IkonaPozycji } from "./Ikona";
 import type { ShopItem, Team } from "@/types/db";
 
 export function Polka({
@@ -85,19 +86,31 @@ export function Polka({
 
         return (
           <div key={p.id} className="szklo rounded-md px-3.5 py-3.5">
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="min-w-0 text-sm font-bold">{p.name}</span>
-              <span className="flex-none font-tytul text-lg leading-none tabular-nums">
-                {p.price}
-              </span>
-            </div>
-            <p className="mt-1 text-xs leading-relaxed text-dym">{p.description}</p>
+            <div className="flex gap-3">
+              {/* Ikona świeci na czerwono tylko przy pozycjach cyfrowych: one
+                  robią coś od razu, fizyczne trzeba odebrać od Kapłana. */}
+              <IkonaPozycji
+                ikona={p.ikona}
+                className={
+                  "mt-0.5 " + (p.kind === "digital" ? "text-krew-jasna" : "text-dym")
+                }
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="min-w-0 text-sm font-bold">{p.name}</span>
+                  <span className="flex-none font-tytul text-lg leading-none tabular-nums">
+                    {p.price}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-dym">{p.description}</p>
 
-            {p.stock !== null && (
-              <p className="mt-1 text-[0.62rem] uppercase tracking-[0.14em] text-dym">
-                {wyczerpane ? "wyczerpane" : `zostało ${p.stock}`}
-              </p>
-            )}
+                {p.stock !== null && (
+                  <p className="mt-1 text-[0.62rem] uppercase tracking-[0.14em] text-dym">
+                    {wyczerpane ? "wyczerpane" : `zostało ${p.stock}`}
+                  </p>
+                )}
+              </div>
+            </div>
 
             {!jestKapitanem && (
               <p className="mt-2.5 text-xs text-dym">

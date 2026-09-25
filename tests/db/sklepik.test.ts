@@ -89,6 +89,18 @@ describe("półka", () => {
     expect(fizyczne.every((i) => i.effect_key === null)).toBe(true);
   });
 
+  it("każda zasiana pozycja ma ikonę", async () => {
+    const { data } = await admin
+      .from("shop_items")
+      .select("name, ikona")
+      .neq("description", "pozycja testowa");
+
+    // Kolumna jest nullowalna, żeby pozycja dołożona zapytaniem nie wymagała
+    // ikony — ale zasiew ma być kompletny, bo to on trafia do rąk uczestników.
+    const bezIkony = (data ?? []).filter((i) => i.ikona === null);
+    expect(bezIkony.map((i) => i.name)).toEqual([]);
+  });
+
   it("zaakceptowany widzi półkę, niezalogowany nie", async () => {
     const { data: widziane } = await kapitanClient.from("shop_items").select("id");
     expect((widziane ?? []).length).toBeGreaterThan(0);
