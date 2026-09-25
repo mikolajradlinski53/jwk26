@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { DecyzjaZamowienia } from "./DecyzjaZamowienia";
 import { StanPozycji } from "./StanPozycji";
-import { IkonaPozycji } from "../../sklep/Ikona";
+import { IkonaPozycji } from "@/components/IkonaPozycji";
 import type { ShopItem, WpisKroniki } from "@/types/db";
 
 export default async function AdminSklepikPage() {

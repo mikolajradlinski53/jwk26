@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
-import { IkonaPozycji } from "./Ikona";
+import { IkonaPozycji } from "@/components/IkonaPozycji";
 import type { ShopItem, Team } from "@/types/db";
 
 export function Polka({
