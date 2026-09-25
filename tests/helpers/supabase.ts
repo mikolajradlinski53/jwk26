@@ -197,3 +197,101 @@ export function sprzatanieUzytkownikow() {
 
   return { nowyUzytkownik, nowyAdmin, posprzataj };
 }
+
+/** Identyfikatory zasianych drużyn, w kolejności po nazwie. */
+export async function idDruzyn(): Promise<string[]> {
+  const { data, error } = await admin.from("teams").select("id").order("name");
+  if (error) throw error;
+  return (data ?? []).map((d) => d.id as string);
+}
+
+/** Ustawia kapitana drużyny kluczem serwisowym, omijając panel admina. */
+export async function ustawKapitana(
+  teamId: string,
+  userId: string | null,
+): Promise<void> {
+  const { error } = await admin
+    .from("teams")
+    .update({ captain_id: userId })
+    .eq("id", teamId);
+  if (error) throw error;
+}
+
+/**
+ * Dosypuje drużynie punkty wprost do księgi, żeby miała za co kupować.
+ *
+ * Kategoria jest osobna (`zasiew_testowy`) i nieużywana przez aplikację —
+ * dzięki temu sprzątanie po tym pliku nie dotknie wpisów, które zostawił inny.
+ * Drużyny są zasiane na stałe i współdzielone między plikami testowymi.
+ */
+export async function dosypPunkty(teamId: string, delta: number): Promise<void> {
+  const { error } = await admin
+    .from("points_ledger")
+    .insert({ team_id: teamId, user_id: null, delta, category: "zasiew_testowy" });
+  if (error) throw error;
+}
+
+export async function saldoDruzyny(teamId: string): Promise<number> {
+  const { data, error } = await admin
+    .from("team_scores")
+    .select("score")
+    .eq("team_id", teamId)
+    .single();
+  if (error) throw error;
+  return data.score as number;
+}
+
+type NowaPozycja = {
+  name: string;
+  kind: "digital" | "physical";
+  price: number;
+  stock?: number | null;
+  effect_key?: string | null;
+  effect_value?: number | null;
+  effect_hours?: number | null;
+  requires_target?: boolean;
+};
+
+/**
+ * Zakłada własną pozycję na półce i zwraca jej id.
+ *
+ * Testy nie ruszają pozycji zasianych migracją, i to jest celowe: `stock`
+ * schodzi w dół przy każdym zakupie i **nie wraca**. Test kupujący zasianego
+ * „Kielicha" po czterdziestu przebiegach zostawiłby półkę wyczyszczoną, a kolejny
+ * przebieg padłby na „ostatnia sztuka już poszła" bez żadnej zmiany w kodzie.
+ */
+export async function nowaPozycja(p: NowaPozycja): Promise<string> {
+  const { data, error } = await admin
+    .from("shop_items")
+    .insert({
+      name: p.name,
+      description: "pozycja testowa",
+      kind: p.kind,
+      price: p.price,
+      stock: p.stock === undefined ? null : p.stock,
+      effect_key: p.effect_key ?? null,
+      effect_value: p.effect_value ?? null,
+      effect_hours: p.effect_hours ?? null,
+      requires_target: p.requires_target ?? false,
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return data.id as string;
+}
+
+/**
+ * Sprząta po testach sklepiku. Kolejność jest wymuszona przez klucze obce:
+ * `shop_orders.item_id` ma `on delete restrict`, więc pozycji nie da się usunąć,
+ * dopóki istnieje zamówienie, które ją wskazuje.
+ */
+export async function sprzatnijSklepik(): Promise<void> {
+  await admin.from("powiadomienia").delete().not("id", "is", null);
+  await admin.from("active_effects").delete().not("id", "is", null);
+  await admin.from("shop_orders").delete().not("id", "is", null);
+  await admin.from("shop_items").delete().eq("description", "pozycja testowa");
+  await admin
+    .from("points_ledger")
+    .delete()
+    .in("category", ["zasiew_testowy", "sklepik", "sklepik_zwrot", "klatwa"]);
+}
