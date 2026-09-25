@@ -139,3 +139,71 @@ describe("fundament kasyna", () => {
     expect(data ?? []).toEqual([]);
   });
 });
+
+describe("bębny", () => {
+  /** Wycena podanych bębnów — bez losowania i bez grosza obrotu. */
+  async function wycen(bebny: string[]): Promise<number> {
+    const { data, error } = await graczClient.rpc("rozstrzygnij_bebny", {
+      p_bebny: bebny,
+    });
+    if (error) throw error;
+    return data as number;
+  }
+
+  it("trójka Oka płaci czterysta", async () => {
+    expect(await wycen(["oko", "oko", "oko"])).toBe(400);
+  });
+
+  it("inna trójka płaci sto dwadzieścia", async () => {
+    expect(await wycen(["swieca", "swieca", "swieca"])).toBe(120);
+    expect(await wycen(["klucz", "klucz", "klucz"])).toBe(120);
+  });
+
+  it("para zwraca stawkę, niezależnie od pozycji", async () => {
+    // Trzy układy pary: pierwsze dwa, ostatnie dwa, skrajne. Wszystkie muszą
+    // płacić tyle samo — pomyłka w warunku łapie zwykle tylko dwa z trzech.
+    expect(await wycen(["oko", "oko", "klucz"])).toBe(10);
+    expect(await wycen(["klucz", "oko", "oko"])).toBe(10);
+    expect(await wycen(["oko", "klucz", "oko"])).toBe(10);
+  });
+
+  it("trzy różne nie płacą nic", async () => {
+    expect(await wycen(["oko", "swieca", "klucz"])).toBe(0);
+  });
+
+  it("zła liczba bębnów odbija się", async () => {
+    await expect(wycen(["oko", "oko"])).rejects.toThrow();
+  });
+
+  it("losuje trzy razy niezależnie i nie wychodzi z zakresu", async () => {
+    const SYMBOLE = ["oko", "swieca", "kielich", "sztylet", "pieczec", "klucz"];
+
+    // Sześćdziesiąt losowań równolegle. Kryterium nie sprawdza jednostajności
+    // random() — to własność Postgresa. Celuje w dwie awarie mojego kodu:
+    // indeksowanie od zera (tablice w Postgresie liczą od jedynki, więc bez `+1`
+    // wychodzi NULL) i użycie jednego losowania do trzech bębnów.
+    const losowania = await Promise.all(
+      Array.from({ length: 60 }, () => graczClient.rpc("losuj_bebny")),
+    );
+
+    const bebny = losowania.map((r) => {
+      expect(r.error).toBeNull();
+      return r.data as string[];
+    });
+
+    for (const b of bebny) {
+      expect(b).toHaveLength(3);
+      for (const s of b) expect(SYMBOLE).toContain(s);
+    }
+
+    // W 180 pozycjach każdy z sześciu symboli powinien wypaść choć raz:
+    // szansa pominięcia to (5/6)^180, czyli rząd 1e-14.
+    const widziane = new Set(bebny.flat());
+    expect([...widziane].sort()).toEqual([...SYMBOLE].sort());
+
+    // Całe rozróżnienie między poprawnym kodem i jednym losowaniem użytym
+    // trzykrotnie: przy tej pomyłce trójek byłoby 60 z 60.
+    const nieTrojki = bebny.filter((b) => !(b[0] === b[1] && b[1] === b[2]));
+    expect(nieTrojki.length).toBeGreaterThan(0);
+  });
+});
