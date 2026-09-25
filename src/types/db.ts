@@ -137,6 +137,26 @@ export type ActiveEffect = {
   created_at: string;
 };
 
+/** Co zwraca `zakrec_slotami`. */
+export type WynikSpinu = {
+  bebny: string[];
+  wyplata: number;
+  netto: number;
+  obrot: number;
+  limit: number;
+};
+
+/** Wiersz widoku `moje_spiny`. */
+export type Spin = {
+  id: string;
+  game: string;
+  stake: number;
+  payout: number;
+  status: string;
+  created_at: string;
+  bebny: string[] | null;
+};
+
 /** Wiersz widoku `kronika_sklepiku` — nazwy rozwiązane po stronie bazy. */
 export type WpisKroniki = {
   id: string;
