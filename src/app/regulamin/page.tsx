@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { OSWIADCZENIE_SZKODY, WERSJA_ZGOD } from "@/lib/zapisy/zgody";
 
 // `description` nadpisany osobno — bez tego strona dziedziczyłaby po
-// `layout.tsx` opis napisany z myślą o mrocznej apce ("Rytuał trwa."),
-// a to jest publiczna, jasna strona regulaminu.
+// `layout.tsx` opis napisany z myślą o mrocznej apce.
 export const metadata = {
   title: "Regulamin — JWK26",
   description: "Zasady udziału w Jesiennym Wyjeździe Komisji 2026.",
@@ -14,13 +15,22 @@ export const viewport = {
 
 /**
  * Regulamin wyjazdu. Trasa publiczna i osobna od landingu, żeby dało się ją
- * zlinkować wprost — komuś, kto zgłasza się na wyjazd, albo rodzicowi, który
- * pyta, na co dziecko się pisze.
+ * zlinkować wprost — z formularza zapisów albo komuś, kto pyta, na co się pisze.
  *
- * Treść napisana przez program, nie przez zarząd — stąd baner na górze.
- * Bez niego strona wyglądałaby na dokument o mocy prawnej, a nim nie jest.
+ * Baner „wersja robocza" zależy od `regulamin_zatwierdzony` w app_settings
+ * (D8 speca zapisów). Anonim czyta tę flagę dzięki polityce settings_read_public.
+ * Błąd odczytu zostawia baner: lepiej pokazać ostrzeżenie za dużo niż
+ * udawać moc obowiązującą, której nie ma.
  */
-export default function RegulaminPage() {
+export default async function RegulaminPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("app_settings")
+    .select("value")
+    .eq("key", "regulamin_zatwierdzony")
+    .maybeSingle();
+  const zatwierdzony = data?.value === true;
+
   return (
     <main className="jesien mx-auto w-full max-w-2xl px-4 pb-16 pt-10">
       <Link href="/" className="text-sm text-jesien-rdza underline underline-offset-2">
@@ -30,70 +40,82 @@ export default function RegulaminPage() {
       <h1 className="font-tytul mt-6 text-3xl leading-tight text-jesien-atrament">
         Regulamin JWK26
       </h1>
+      <p className="mt-1 text-xs text-jesien-kora">Wersja z {WERSJA_ZGOD}</p>
 
-      <div className="mt-5 rounded-md border border-jesien-dynia/50 bg-jesien-dynia/10 p-4 text-sm leading-relaxed text-jesien-atrament">
-        <strong className="text-jesien-rdza">Wersja robocza.</strong> Ten
-        dokument czeka na zatwierdzenie przez zarząd Samorządu Studenckiego
-        i dziś nie ma mocy obowiązującej — traktuj go jako zapowiedź
-        ostatecznych zasad, nie gotowy regulamin.
-      </div>
+      {!zatwierdzony && (
+        <div className="mt-5 rounded-md border border-jesien-dynia/50 bg-jesien-dynia/10 p-4 text-sm leading-relaxed text-jesien-atrament">
+          <strong className="text-jesien-rdza">Wersja robocza.</strong> Ten
+          dokument czeka na zatwierdzenie przez zarząd Samorządu Studenckiego
+          i dziś nie ma mocy obowiązującej — traktuj go jako zapowiedź
+          ostatecznych zasad, nie gotowy regulamin.
+        </div>
+      )}
 
       <article className="mt-8 grid max-w-[65ch] gap-8 text-sm leading-relaxed text-jesien-kora">
         <section>
           <h2 className="font-tytul text-lg text-jesien-atrament">1. Kto może jechać</h2>
           <p className="mt-2">
-            Na wyjazd jedzie kadra Komisji Samorządu Studenckiego oraz osoby
-            przyjęte w procesie rekrutacji świeżaków. Udział jest dobrowolny
-            i wymaga akceptacji zgłoszenia przez administratora.
+            Na wyjazd jadą Działacze Samorządu Studenckiego, Świeżaki przyjęci
+            w procesie rekrutacji oraz Alumni. Uczestnik musi mieć ukończone
+            18 lat w dniu wyjazdu. Udział jest dobrowolny i wymaga akceptacji
+            zgłoszenia przez organizatora.
           </p>
         </section>
 
         <section>
-          <h2 className="font-tytul text-lg text-jesien-atrament">2. Zgłoszenia i wpłata</h2>
+          <h2 className="font-tytul text-lg text-jesien-atrament">2. Zapisy i wpłata</h2>
           <p className="mt-2">
-            Zgłoszenie następuje przez aplikację i wymaga zatwierdzenia.
-            Miejsce jest potwierdzone dopiero po wpłacie zaliczki w terminie
-            podanym w komunikacie organizatorów — brak wpłaty w terminie
-            oznacza utratę miejsca na rzecz osoby z listy rezerwowej.
+            Zapisy odbywają się przez aplikację w trzech turach otwieranych
+            kolejno: dla Działaczy, Świeżaków i Alumnów. Każda tura ma ustaloną
+            liczbę miejsc. Po jej zapełnieniu można zapisać się na listę
+            rezerwową bez wpłaty; gdy zwolni się miejsce, organizator przesuwa
+            na listę kolejną osobę z rezerwy i prosi ją o wpłatę. Miejsce jest
+            potwierdzone po wpłacie w terminie podanym przez organizatorów
+            i akceptacji zgłoszenia.
           </p>
         </section>
 
         <section>
           <h2 className="font-tytul text-lg text-jesien-atrament">3. Zasady na miejscu</h2>
           <p className="mt-2">
-            Alkohol tylko dla pełnoletnich i z umiarem — stan uniemożliwiający
-            udział w programie może skutkować odesłaniem na koszt własny.
-            Cisza nocna obowiązuje od godziny ustalonej na miejscu przez
-            organizatorów. Każdy odpowiada za kulturalne zachowanie wobec
-            innych uczestników i personelu ośrodka. Celowe niszczenie mienia
-            ośrodka lub cudzej własności jest zabronione, a koszt naprawy
-            ponosi osoba odpowiedzialna.
+            Alkohol tylko z umiarem — stan uniemożliwiający udział w programie
+            może skutkować odesłaniem na koszt własny. Cisza nocna obowiązuje od
+            godziny ustalonej na miejscu przez organizatorów. Każdy odpowiada za
+            kulturalne zachowanie wobec innych uczestników i personelu ośrodka.
           </p>
         </section>
 
         <section>
-          <h2 className="font-tytul text-lg text-jesien-atrament">4. Odpowiedzialność</h2>
+          <h2 className="font-tytul text-lg text-jesien-atrament">4. Szkody</h2>
           <p className="mt-2">
-            Uczestnik odpowiada za własne bezpieczeństwo i mienie oraz za
-            szkody, które wyrządzi. Organizatorzy nie ubezpieczają uczestników
-            indywidualnie — zalecane jest posiadanie własnego ubezpieczenia
-            NNW.
+            Celowe niszczenie mienia ośrodka lub cudzej własności jest
+            zabronione. Każdy uczestnik akceptuje w formularzu zapisów
+            następujące oświadczenie:
           </p>
+          <p className="mt-2 border-l-2 border-jesien-dynia/50 pl-3">{OSWIADCZENIE_SZKODY}</p>
         </section>
 
         <section>
-          <h2 className="font-tytul text-lg text-jesien-atrament">5. Dane osobowe i zdjęcia</h2>
+          <h2 className="font-tytul text-lg text-jesien-atrament">5. Odpowiedzialność</h2>
           <p className="mt-2">
-            Dane podane w zgłoszeniu służą wyłącznie organizacji wyjazdu
-            i nie są udostępniane podmiotom trzecim. Podczas wyjazdu mogą
-            powstawać zdjęcia i filmy wykorzystywane do promocji kolejnych
-            edycji — kto nie chce się na nich znaleźć, zgłasza to
-            organizatorom przed rozpoczęciem wyjazdu.
+            Uczestnik odpowiada za własne bezpieczeństwo i mienie. Organizatorzy
+            nie ubezpieczają uczestników indywidualnie — zalecane jest
+            posiadanie własnego ubezpieczenia NNW.
           </p>
         </section>
 
         <section>
-          <h2 className="font-tytul text-lg text-jesien-atrament">6. Postanowienia końcowe</h2>
+          <h2 className="font-tytul text-lg text-jesien-atrament">6. Dane osobowe i wizerunek</h2>
+          <p className="mt-2">
+            Zasady przetwarzania danych opisuje klauzula informacyjna
+            w formularzu zapisów. Podczas wyjazdu powstają zdjęcia i filmy.
+            Wizerunek uczestnika rozpowszechniamy wyłącznie za zgodą wyrażoną
+            w formularzu; zgodę można w każdej chwili wycofać w aplikacji.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-tytul text-lg text-jesien-atrament">7. Postanowienia końcowe</h2>
           <p className="mt-2">
             Regulamin obowiązuje od zatwierdzenia przez zarząd Samorządu do
             zakończenia wyjazdu. Organizatorzy zastrzegają sobie prawo do

@@ -12,10 +12,11 @@ const KROKI = [
   },
   {
     numer: "02",
-    tytul: "Wypełnij formularz i wgraj potwierdzenie przelewu",
+    tytul: "Wybierz turę i wypełnij formularz",
     opis:
-      "Podaj dane kontaktowe, zaznacz zgodę na SMS-y i dołącz czytelne zdjęcie " +
-      "albo zrzut ekranu potwierdzenia przelewu.",
+      "Wybierz swoją pulę — Działacze, Świeżaki albo Alumni — zaakceptuj zasady, " +
+      "podaj dane i dołącz czytelne zdjęcie albo zrzut ekranu potwierdzenia " +
+      "przelewu. Gdy tura jest pełna, zapiszesz się na listę rezerwową bez wpłaty.",
   },
   {
     numer: "03",
