@@ -171,3 +171,7 @@ export type WpisKroniki = {
   target_team_name: string | null;
   ordered_by_name: string | null;
 };
+
+export type KluczPuli = "dzialacze" | "swiezaki" | "alumni";
+
+export type Dojazd = "autokar_oba" | "autokar_tam" | "autokar_powrot" | "wlasny";
