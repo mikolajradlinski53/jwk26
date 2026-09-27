@@ -456,6 +456,141 @@ describe("składanie zgłoszenia", () => {
   });
 });
 
+describe("rezerwa i akceptacja", () => {
+  /** Ala na jedynym miejscu, Ola pierwsza na rezerwie. Zwraca id obu zgłoszeń. */
+  async function pelnaPulaZRezerwa() {
+    await ustawPule("dzialacze", true, 1);
+    const naMiejscu = await zloz(alaClient, ala);
+    const naRezerwie = await zloz(olaClient, ola, { naRezerwe: true, zdjecie: null });
+    expect(naMiejscu.error).toBeNull();
+    expect(naRezerwie.error).toBeNull();
+    return {
+      alaId: (naMiejscu.data as { id: string }).id,
+      olaId: (naRezerwie.data as { id: string }).id,
+    };
+  }
+
+  it("awans odmawia, gdy pula nie ma wolnego miejsca", async () => {
+    const { olaId } = await pelnaPulaZRezerwa();
+    const { error } = await szefClient.rpc("awansuj_z_rezerwy", { p_registration_id: olaId });
+    expect(error!.message).toMatch(/wolnego miejsca/);
+  });
+
+  it("uczestnik nie awansuje sam siebie", async () => {
+    const { olaId } = await pelnaPulaZRezerwa();
+    await ustawPule("dzialacze", true, 5);
+    const { error } = await olaClient.rpc("awansuj_z_rezerwy", { p_registration_id: olaId });
+    expect(error!.message).toMatch(/admin/i);
+  });
+
+  it("po zwolnieniu miejsca admin awansuje, a przelew dołącza tylko właściciel", async () => {
+    const { alaId, olaId } = await pelnaPulaZRezerwa();
+
+    // Odrzucenie zwalnia miejsce; nikt nie awansuje sam (D3).
+    const odrzucenie = await szefClient.rpc("review_registration", {
+      p_registration_id: alaId,
+      p_approve: false,
+      p_note: "Zła pula",
+    });
+    expect(odrzucenie.error).toBeNull();
+
+    const awans = await szefClient.rpc("awansuj_z_rezerwy", { p_registration_id: olaId });
+    expect(awans.error).toBeNull();
+
+    // Obcy nie ma awansowanego zgłoszenia bez zdjęcia, więc nie ma czego uzupełnić.
+    const cudzy = await obcyClient.rpc("dolacz_przelew", {
+      p_proof_path: `${obcy.id}/dowod.jpg`,
+    });
+    expect(cudzy.error).not.toBeNull();
+
+    const swoj = await olaClient.rpc("dolacz_przelew", {
+      p_proof_path: `${ola.id}/dowod.jpg`,
+      p_ocr_confidence: 0.8,
+      p_ocr_keywords_hit: 3,
+    });
+    expect(swoj.error).toBeNull();
+
+    const { data } = await admin
+      .from("registrations")
+      .select("rezerwa, proof_path, ocr_keywords_hit")
+      .eq("id", olaId)
+      .single();
+    expect(data).toEqual({ rezerwa: false, proof_path: `${ola.id}/dowod.jpg`, ocr_keywords_hit: 3 });
+  });
+
+  it("akceptacja odmawia rezerwie i zgłoszeniu bez przelewu", async () => {
+    const teamId = await firstTeamId();
+    const { olaId } = await pelnaPulaZRezerwa();
+
+    const rezerwa = await szefClient.rpc("review_registration", {
+      p_registration_id: olaId,
+      p_approve: true,
+      p_team_id: teamId,
+    });
+    expect(rezerwa.error!.message).toMatch(/rezerwie|przelewu/);
+
+    // Awansowana, ale jeszcze bez zdjęcia.
+    await ustawPule("dzialacze", true, 5);
+    expect((await szefClient.rpc("awansuj_z_rezerwy", { p_registration_id: olaId })).error).toBeNull();
+
+    const bezPrzelewu = await szefClient.rpc("review_registration", {
+      p_registration_id: olaId,
+      p_approve: true,
+      p_team_id: teamId,
+    });
+    expect(bezPrzelewu.error!.message).toMatch(/rezerwie|przelewu/);
+  });
+
+  it("odrzucenie dodatkowego zgłoszenia nie wyrzuca osoby już przyjętej", async () => {
+    // Wyścig: admin przyjmuje pierwsze zgłoszenie, gdy drugie jest w drodze.
+    // Odtwarzamy stan po nim kluczem serwisowym — ułożenie wyścigu na żywo
+    // byłoby testem na szczęście.
+    const teamId = await firstTeamId();
+    await ustawJakoZaakceptowany(ala, teamId);
+    const { data, error: bladZapisu } = await admin
+      .from("registrations")
+      .insert({ user_id: ala.id, full_name: "Brat Testowy", proof_path: `${ala.id}/dowod.jpg` })
+      .select("id")
+      .single();
+    expect(bladZapisu).toBeNull();
+
+    const { error } = await szefClient.rpc("review_registration", {
+      p_registration_id: data!.id,
+      p_approve: false,
+      p_note: "Dubel",
+    });
+    expect(error).toBeNull();
+
+    const { data: profil } = await admin
+      .from("profiles")
+      .select("status, team_id")
+      .eq("id", ala.id)
+      .single();
+    expect(profil).toEqual({ status: "approved", team_id: teamId });
+  });
+
+  it("przyjęcie nadaje ksywkę jako nazwę w apce", async () => {
+    const teamId = await firstTeamId();
+    await ustawPule("dzialacze", true, 5);
+    const { data } = await zloz(alaClient, ala, { dane: { ksywka: "Siostra Popiół" } });
+
+    const { error } = await szefClient.rpc("review_registration", {
+      p_registration_id: (data as { id: string }).id,
+      p_approve: true,
+      p_team_id: teamId,
+    });
+    expect(error).toBeNull();
+
+    // D11: ranking i feed pokazują to, co ludzie sami chcą nosić na piersi.
+    const { data: profil } = await admin
+      .from("profiles")
+      .select("status, display_name")
+      .eq("id", ala.id)
+      .single();
+    expect(profil).toEqual({ status: "approved", display_name: "Siostra Popiół" });
+  });
+});
+
 /** Składa zgłoszenie tak, jak robi to formularz. */
 function zloz(
   client: SupabaseClient,
