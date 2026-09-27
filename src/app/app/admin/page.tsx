@@ -4,6 +4,7 @@ import { Ekran } from "@/components/Ekran";
 import { LicznikZamowien } from "./LicznikZamowien";
 
 const WEJSCIA = [
+  { href: "/app/admin/zapisy", nazwa: "Zapisy", opis: "Tury, miejsca i rezerwa" },
   { href: "/app/admin/rejestracje", nazwa: "Zgłoszenia", opis: "Kolejka oczekujących" },
   { href: "/app/admin/bingo", nazwa: "Bingo", opis: "Kolejka zdjęć z planszy" },
   { href: "/app/admin/sklepik", nazwa: "Sklepik", opis: "Kolejka wydań i stan półki" },
