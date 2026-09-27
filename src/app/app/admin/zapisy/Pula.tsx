@@ -22,16 +22,22 @@ export function Pula({
   const [czeka, setCzeka] = useState(false);
   const wToku = useRef(false);
 
-  const zmieniona = otwarta !== pula.otwarta || miejsca !== String(pula.miejsca);
   // Zamkniętej puli nie da się otworzyć przy roboczym regulaminie; otwartą
   // da się zamknąć zawsze.
   const zablokowana = !regulaminZatwierdzony && !pula.otwarta;
+  // Zablokowany checkbox ma pokazywać stan z serwera, nie ostatnie kliknięcie
+  // sprzed zablokowania — inaczej wyglądałby na odznaczony, choć pula wciąż
+  // jest otwarta.
+  const otwartaEfektywnie = zablokowana ? pula.otwarta : otwarta;
+  const zmieniona = otwartaEfektywnie !== pula.otwarta || miejsca !== String(pula.miejsca);
 
   async function zapisz() {
     if (wToku.current) return;
     const liczba = Number(miejsca);
-    if (!Number.isInteger(liczba) || liczba < 0) {
-      setBlad("Liczba miejsc to liczba całkowita od zera w górę");
+    // Number("") daje 0, więc puste pole bez tej sprawdzki ciche wpisałoby
+    // zero miejsc zamiast zgłosić błąd.
+    if (miejsca.trim() === "" || !Number.isInteger(liczba) || liczba < 0 || liczba > 10000) {
+      setBlad("Liczba miejsc to liczba całkowita od 0 do 10 000");
       return;
     }
 
@@ -68,7 +74,7 @@ export function Pula({
       <label className="flex min-h-11 items-center gap-3 text-sm">
         <input
           type="checkbox"
-          checked={otwarta}
+          checked={otwartaEfektywnie}
           disabled={zablokowana}
           onChange={(e) => setOtwarta(e.target.checked)}
           className="size-6 shrink-0 accent-[var(--color-krew)]"

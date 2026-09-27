@@ -18,7 +18,11 @@ type WpisRezerwy = {
 export default async function ZapisyPage() {
   const supabase = await createClient();
 
-  const [{ data: pule, error }, { data: rezerwa }, { data: flaga }] = await Promise.all([
+  const [
+    { data: pule, error },
+    { data: rezerwa, error: bladRezerwy },
+    { data: flaga, error: bladFlagi },
+  ] = await Promise.all([
     supabase.rpc("stan_pul"),
     supabase
       .from("registrations")
@@ -39,13 +43,16 @@ export default async function ZapisyPage() {
   );
 
   // Na ekranie admina błąd odczytu ma być widoczny — pusta lista pul
-  // wyglądałaby jak „nie ma tur", a to nieprawda.
-  if (error) {
-    console.error("Nie udało się wczytać pul:", error);
+  // wyglądałaby jak „nie ma tur", a pusta rezerwa jak „nikt nie czeka",
+  // choć oba są nieprawdą. Stąd sprawdzenie wszystkich trzech zapytań, nie
+  // tylko pul.
+  const bladOdczytu = error ?? bladRezerwy ?? bladFlagi;
+  if (bladOdczytu) {
+    console.error("Nie udało się wczytać danych zapisów:", bladOdczytu.code, bladOdczytu.message);
     return (
       <Ekran tytul="Zapisy">
         <p className="szklo rounded-md px-4 py-3.5 text-sm text-krew-jasna">
-          Nie udało się wczytać pul. Odśwież stronę.
+          Nie udało się wczytać danych. Odśwież stronę.
         </p>
         {wroc}
       </Ekran>
@@ -62,7 +69,15 @@ export default async function ZapisyPage() {
 
       <div className="mt-4 grid gap-4">
         {stan.map((p) => (
-          <Pula key={p.klucz} pula={p} regulaminZatwierdzony={zatwierdzony} />
+          // Klucz uwzględnia wartości z serwera, nie tylko p.klucz: karta ma
+          // się zresetować, gdy zmieni je inny admin, ale nie przy każdym
+          // odświeżeniu strony — inaczej niezapisana zmiana w tym oknie
+          // zniknęłaby po cichu.
+          <Pula
+            key={`${p.klucz}:${p.otwarta}:${p.miejsca}:${zatwierdzony}`}
+            pula={p}
+            regulaminZatwierdzony={zatwierdzony}
+          />
         ))}
       </div>
 
@@ -99,7 +114,11 @@ export default async function ZapisyPage() {
                       <span className="block text-xs text-dym">Ma już wgrany przelew</span>
                     )}
                   </span>
-                  <Awans id={k.id} wolneMiejsce={wolne} />
+                  <Awans
+                    id={k.id}
+                    wolneMiejsce={wolne}
+                    kto={`${k.imie ?? ""} ${k.nazwisko ?? ""}`.trim()}
+                  />
                 </li>
               ))}
             </ol>
