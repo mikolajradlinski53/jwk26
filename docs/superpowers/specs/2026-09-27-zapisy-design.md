@@ -122,7 +122,7 @@ odliczaniem na landingu, a dwie kopie tej samej daty to dwie prawdy.
 ### D8. Zgody wersjonowane w kodzie, regulamin musi być zatwierdzony
 
 Teksty klauzuli, oświadczenia i zgody na wizerunek żyją w jednym pliku
-`src/lib/zgody.ts` razem ze stałą `WERSJA_ZGOD`. Zgłoszenie zapisuje wersję,
+`src/lib/zapisy/zgody.ts` razem ze stałą `WERSJA_ZGOD`. Zgłoszenie zapisuje wersję,
 którą uczestnik zobaczył. Zmiana treści bez podbicia wersji jest błędem
 przeglądu kodu, nie czymś, co wyłapie baza.
 
