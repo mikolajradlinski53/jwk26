@@ -9,9 +9,15 @@ import type { Team } from "@/types/db";
 export function PrzyciskiDecyzji({
   zgloszenieId,
   druzyny,
+  mozePrzyjac,
 }: {
   zgloszenieId: string;
   druzyny: Team[];
+  /**
+   * Fałsz, gdy zgłoszenie po awansie z rezerwy czeka jeszcze na przelew.
+   * Funkcja i tak by odmówiła; tu chodzi o to, żeby przycisk nie kusił.
+   */
+  mozePrzyjac: boolean;
 }) {
   const router = useRouter();
   const [teamId, setTeamId] = useState(druzyny[0]?.id ?? "");
@@ -78,7 +84,7 @@ export function PrzyciskiDecyzji({
       {blad && <p className="text-sm text-krew-jasna">{blad}</p>}
 
       <div className="grid grid-cols-2 gap-3">
-        <Button onClick={() => rozpatrz(true)} disabled={czeka || !teamId}>
+        <Button onClick={() => rozpatrz(true)} disabled={czeka || !teamId || !mozePrzyjac}>
           Przyjmij
         </Button>
         <Button variant="szklo" onClick={() => rozpatrz(false)} disabled={czeka}>

@@ -66,11 +66,14 @@ export type BingoSubmission = {
 export type Registration = {
   id: string;
   user_id: string;
+  /** Wypełniane przez zloz_zgloszenie jako „imię nazwisko". */
   full_name: string;
   phone: string | null;
   sms_consent: boolean;
+  /** Tylko zgłoszenia sprzed planu 08. Nowe trzymają dietę w dane_wrazliwe. */
   diet_notes: string | null;
-  proof_path: string;
+  /** NULL przy rezerwie i po awansie, dopóki osoba nie dołączy przelewu. */
+  proof_path: string | null;
   ocr_text: string | null;
   ocr_confidence: number | null;
   ocr_keywords_hit: number;
@@ -79,6 +82,21 @@ export type Registration = {
   reviewed_at: string | null;
   review_note: string | null;
   created_at: string;
+  /** NULL wyłącznie w zgłoszeniach sprzed tur. */
+  pula: KluczPuli | null;
+  imie: string | null;
+  nazwisko: string | null;
+  nr_indeksu: string | null;
+  data_urodzenia: string | null;
+  dojazd: Dojazd | null;
+  ksywka: string | null;
+  piosenka: string | null;
+  uwagi: string | null;
+  wersja_zgod: string | null;
+  zgoda_wizerunek: boolean;
+  zgoda_wizerunek_wycofana_at: string | null;
+  rezerwa: boolean;
+  kolejnosc_rezerwy: number | null;
 };
 
 export type ShopKind = "digital" | "physical";
@@ -175,3 +193,27 @@ export type WpisKroniki = {
 export type KluczPuli = "dzialacze" | "swiezaki" | "alumni";
 
 export type Dojazd = "autokar_oba" | "autokar_tam" | "autokar_powrot" | "wlasny";
+
+/** Wiersz `stan_pul()` — liczby bez nazwisk, czytelne dla uczestnika. */
+export type StanPuli = {
+  klucz: KluczPuli;
+  nazwa: string;
+  otwarta: boolean;
+  miejsca: number;
+  zajete: number;
+  w_rezerwie: number;
+  kolejnosc: number;
+};
+
+/** Wiersz `dane_wrazliwe` — widzi go właściciel i admin, nikt więcej. */
+export type DaneWrazliwe = {
+  registration_id: string;
+  ice_imie: string | null;
+  ice_telefon: string | null;
+  ice_poinformowany: boolean;
+  dieta: string | null;
+  alergie: string | null;
+  choroby_leki: string | null;
+  zgoda_art9_at: string | null;
+  created_at: string;
+};
