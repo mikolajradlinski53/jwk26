@@ -380,25 +380,46 @@ describe("spin", () => {
     // Stawka to 10, saldo dokładnie 10. Bez blokady wiersza profiles oba
     // wywołania przeczytają to samo saldo i oba przejdą, a gracz zjedzie pod
     // zero — księga jest tylko do dopisywania, więc nie ma jak tego cofnąć.
-    await dosypPunktyOsobie(gracz.id, druzyna, 10);
-
-    const [a, b] = await Promise.all([
-      graczClient.rpc("zakrec_slotami"),
-      graczClient.rpc("zakrec_slotami"),
-    ]);
-
-    const udane = [a, b].filter((r) => r.error === null);
-    expect(udane).toHaveLength(1);
-
-    const { data: sesje } = await admin.from("game_sessions").select("id");
-    expect(sesje).toHaveLength(1);
-
-    // Saldo gracza nie może być ujemne.
-    const { data: wynik } = await admin
-      .from("user_scores")
-      .select("score")
-      .eq("user_id", gracz.id)
+    //
+    // Wypłaty zerujemy na czas testu. Bez tego wynik zależał od losu: para
+    // (42% spinów) zwraca stawkę, saldo zostaje 10 i drugi spin słusznie
+    // przechodzi — test padał wtedy mimo działającej blokady.
+    const { data: ustawienie } = await admin
+      .from("app_settings")
+      .select("value")
+      .eq("key", "slots_wyplaty")
       .single();
-    expect(wynik!.score).toBeGreaterThanOrEqual(0);
+    await admin
+      .from("app_settings")
+      .update({ value: { trojka_oko: 0, trojka: 0, para: 0 } })
+      .eq("key", "slots_wyplaty");
+
+    try {
+      await dosypPunktyOsobie(gracz.id, druzyna, 10);
+
+      const [a, b] = await Promise.all([
+        graczClient.rpc("zakrec_slotami"),
+        graczClient.rpc("zakrec_slotami"),
+      ]);
+
+      const udane = [a, b].filter((r) => r.error === null);
+      expect(udane).toHaveLength(1);
+
+      const { data: sesje } = await admin.from("game_sessions").select("id");
+      expect(sesje).toHaveLength(1);
+
+      // Saldo gracza nie może być ujemne.
+      const { data: wynik } = await admin
+        .from("user_scores")
+        .select("score")
+        .eq("user_id", gracz.id)
+        .single();
+      expect(wynik!.score).toBeGreaterThanOrEqual(0);
+    } finally {
+      await admin
+        .from("app_settings")
+        .update({ value: ustawienie!.value })
+        .eq("key", "slots_wyplaty");
+    }
   });
 });
