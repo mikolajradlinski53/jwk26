@@ -35,7 +35,14 @@ export async function wgrajDowod(
   if (error) throw error;
 
   etap("Odczytuję przelew...");
-  const ocr = await przeczytajDowod(zmniejszone);
+  // OCR to tylko podpowiedź dla admina (D4) — zdjęcie już wisi w buckecie, więc
+  // nie może zablokować zgłoszenia. Przy słabym sygnale ściąganie modelu
+  // Tesseracta potrafi wisieć bez końca; po 45 s formularz jedzie dalej bez
+  // wyniku, tak jakby OCR się nie udał.
+  const ocr = await Promise.race([
+    przeczytajDowod(zmniejszone),
+    new Promise<null>((resolve) => setTimeout(() => resolve(null), 45_000)),
+  ]);
 
   return { sciezka, ocr };
 }
@@ -43,7 +50,10 @@ export async function wgrajDowod(
 /** Pola OCR w kształcie parametrów zloz_zgloszenie i dolacz_przelew. */
 export function polaOcr(d: WgranyDowod | null) {
   return {
-    p_ocr_text: d?.ocr?.tekst ?? null,
+    // Limit zgodny z CHECK-iem `registrations_ocr_text_dlugosc` w bazie. Bez
+    // przycięcia zapis raz odrzucony z tego powodu odbijałby się identycznie
+    // przy każdej kolejnej próbie — zdjęcie (i jego OCR) jest już wgrane.
+    p_ocr_text: d?.ocr?.tekst?.slice(0, 20000) ?? null,
     p_ocr_confidence: d?.ocr?.pewnosc ?? null,
     p_ocr_keywords_hit: d?.ocr?.trafienia.length ?? 0,
   };

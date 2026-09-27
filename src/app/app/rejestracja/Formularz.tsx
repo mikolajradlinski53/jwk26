@@ -53,17 +53,48 @@ export function Formularz({ pule, dataJwk }: { pule: StanPuli[]; dataJwk: string
   // Raz wgrane zdjęcie. Ponowna próba po błędzie albo przejście na rezerwę nie
   // wgrywają go drugi raz — przy rezerwie zostaje przy zgłoszeniu (D3).
   const wgrane = useRef<WgranyDowod | null>(null);
+  // Tytuł bieżącego kroku — cel skupienia po zmianie kroku, żeby czytnik
+  // ekranu i klawiatura zaczynały od nagłówka, nie od miejsca sprzed kliknięcia.
+  const tytulRef = useRef<HTMLParagraphElement>(null);
 
   const wybrana = pule.find((p) => p.klucz === dane.pula);
   const naRezerwe = wybrana ? wybrana.zajete >= wybrana.miejsca : false;
   const lista = kroki(naRezerwe);
-  const krok = lista[Math.min(indeks, lista.length - 1)];
-  const ostatni = indeks >= lista.length - 1;
+  // `indeks` może wskazywać poza listę, jeśli zmiana puli skróciła kroki
+  // (rezerwa nie ma przelewu) — jedno miejsce klamrujące zamiast powtarzania
+  // tego samego `Math.min` w czterech miejscach.
+  const pozycja = Math.min(indeks, lista.length - 1);
+  const krok = lista[pozycja];
+  const ostatni = pozycja >= lista.length - 1;
   const czeka = etap !== null;
+
+  /**
+   * Po nieudanej walidacji: przewija i skupia pierwsze pole z błędem. Na
+   * `requestAnimationFrame`, bo DOM z nowym `aria-invalid`/`data-blad`
+   * pojawia się dopiero po przemalowaniu, które React planuje po tym wywołaniu.
+   */
+  function skupNaBledzie() {
+    requestAnimationFrame(() => {
+      const el = document.querySelector<HTMLElement>('[aria-invalid="true"], [data-blad]');
+      el?.scrollIntoView({ block: "center" });
+      el?.focus();
+    });
+  }
+
+  /** Po udanej zmianie kroku: powrót na górę i skupienie tytułu kroku. */
+  function skupTytulKroku() {
+    window.scrollTo({ top: 0 });
+    requestAnimationFrame(() => {
+      tytulRef.current?.focus();
+    });
+  }
 
   function zmien<K extends keyof DaneFormularza>(pole: K, wartosc: DaneFormularza[K]) {
     setDane((d) => ({ ...d, [pole]: wartosc }));
     setBledy((b) => ({ ...b, [pole]: undefined }));
+    // Inna pula ma inny stan zajętości — propozycja rezerwy z poprzedniej
+    // próby nic już nie mówi o nowo wybranej puli.
+    if (pole === "pula") setPropozycjaRezerwy(false);
   }
 
   /** Waliduje bieżący krok; zwraca, czy można iść dalej. */
@@ -73,20 +104,55 @@ export function Formularz({ pule, dataJwk }: { pule: StanPuli[]; dataJwk: string
     return Object.keys(b).length === 0;
   }
 
+  /**
+   * Pierwszy krok (poza przelewem — plik nie jest częścią `DaneFormularza`),
+   * który nie przechodzi walidacji przy aktualnym stanie `dane`. Wychwytuje
+   * przypadek, w którym ktoś cofnął się, zmienił coś wcześniej i doszedł do
+   * końca bez ponownego sprawdzenia — bez tego RPC odrzuciłby zgłoszenie
+   * dopiero po wgraniu zdjęcia, co wygląda jak błąd bez wytłumaczenia.
+   */
+  function pierwszyBlednyKrok(): { indeks: number; bledy: Bledy } | null {
+    for (let i = 0; i < lista.length; i++) {
+      const k = lista[i];
+      if (k === "przelew") continue;
+      const b = waliduj(k, dane, dataJwk);
+      if (Object.keys(b).length > 0) return { indeks: i, bledy: b };
+    }
+    return null;
+  }
+
   function dalej() {
-    if (!sprawdz()) return;
+    if (!sprawdz()) {
+      skupNaBledzie();
+      return;
+    }
+    setPropozycjaRezerwy(false);
     setIndeks((i) => i + 1);
-    window.scrollTo({ top: 0 });
+    skupTytulKroku();
   }
 
   function wstecz() {
     setBlad(null);
+    setPropozycjaRezerwy(false);
     setIndeks((i) => Math.max(0, i - 1));
+    skupTytulKroku();
   }
 
   async function wyslij(wymusRezerwe: boolean) {
     if (wToku.current) return;
     setBlad(null);
+
+    // Ostatnia deska ratunku przed zapisem: krok mógł przejść walidację, gdy
+    // ktoś go widział, a potem coś zmienić i wrócić na koniec bez przejścia
+    // przez `dalej()` jeszcze raz.
+    const zlyKrok = pierwszyBlednyKrok();
+    if (zlyKrok) {
+      setIndeks(zlyKrok.indeks);
+      setBledy(zlyKrok.bledy);
+      setPropozycjaRezerwy(false);
+      skupNaBledzie();
+      return;
+    }
 
     const doRezerwy = naRezerwe || wymusRezerwe;
     if (!doRezerwy && !plik && !wgrane.current) {
@@ -117,26 +183,49 @@ export function Formularz({ pule, dataJwk }: { pule: StanPuli[]; dataJwk: string
       // na poczekalnię.
       router.refresh();
     } catch (e) {
-      console.error("Zgłoszenie nie przeszło:", e);
       const tekst = tekstBledu(e);
+      // Surowy błąd (zwłaszcza `details` naruszenia CHECK) potrafi zawierać
+      // cały wiersz łącznie z danymi zdrowotnymi (art. 9 RODO) — do konsoli
+      // idzie wyłącznie kod i komunikat, nigdy cały obiekt błędu.
+      const zapis = { code: (e as { code?: string } | null)?.code, message: tekst };
+
+      // PWA na iOS bez przeładowania: zawieszony `fetch` potrafi zgubić samą
+      // odpowiedź, mimo że zapis po drugiej stronie przeszedł. Drugie
+      // kliknięcie odbiłoby się o ten sam unikalny indeks — więc traktujemy to
+      // jak sukces i NIE zwalniamy rygla, żeby nie pokazać pustego formularza
+      // tuż przed tym, jak serwer podmieni go na poczekalnię.
+      if (/one_pending|duplicate key|juz zaakceptowane/i.test(tekst)) {
+        console.error("Zgłoszenie nie przeszło (odpowiedź zgubiona, zapis prawdopodobnie doszedł):", zapis);
+        router.refresh();
+        return;
+      }
+
+      console.error("Zgłoszenie nie przeszło:", zapis);
+
       if (/PULA_PELNA/.test(tekst)) {
         setPropozycjaRezerwy(true);
+        // Inni w tym czasie też się zapisywali — kafelki puli w tle są
+        // nieaktualne dokładnie w chwili, gdy pokazujemy propozycję rezerwy.
+        router.refresh();
       } else {
         setBlad(komunikat(e));
-        // Formularz szedł na rezerwę, a miejsce zwolniło się w międzyczasie.
-        // Świeży stan pul z serwera dołoży krok przelewu; stan formularza
-        // (komponent kliencki) przeżywa odświeżenie.
-        if (/PRZELEW_WYMAGANY/.test(tekst)) router.refresh();
+        // Pula zwolniła miejsce (PRZELEW_WYMAGANY) albo się właśnie zamknęła
+        // (PULA_ZAMKNIETA) — w obu przypadkach stan pul z serwera się zmienił;
+        // stan formularza (komponent kliencki) przeżywa odświeżenie.
+        if (/PRZELEW_WYMAGANY|PULA_ZAMKNIETA/.test(tekst)) router.refresh();
       }
-      // Odblokowanie w każdej gałęzi błędu. W trybie aplikacji na iOS nie ma
-      // przeładowania, które by to naprawiło.
+      // Odblokowanie w każdej pozostałej gałęzi błędu. W trybie aplikacji na
+      // iOS nie ma przeładowania, które by to naprawiło.
       setEtap(null);
       wToku.current = false;
     }
   }
 
   function zakoncz() {
-    if (!sprawdz()) return;
+    if (!sprawdz()) {
+      skupNaBledzie();
+      return;
+    }
     void wyslij(false);
   }
 
@@ -145,13 +234,18 @@ export function Formularz({ pule, dataJwk }: { pule: StanPuli[]; dataJwk: string
   return (
     <div className="grid gap-5">
       <div className="grid gap-2">
-        <p className="text-xs uppercase tracking-[0.14em] text-dym" aria-live="polite">
-          Krok {indeks + 1} z {lista.length}: {TYTULY[krok]}
+        <p
+          ref={tytulRef}
+          tabIndex={-1}
+          className="text-xs uppercase tracking-[0.14em] text-dym"
+          aria-live="polite"
+        >
+          Krok {pozycja + 1} z {lista.length}: {TYTULY[krok]}
         </p>
         <div className="h-1 rounded-full bg-white/10">
           <div
             className="h-1 rounded-full bg-krew transition-[width]"
-            style={{ width: `${((indeks + 1) / lista.length) * 100}%` }}
+            style={{ width: `${((pozycja + 1) / lista.length) * 100}%` }}
           />
         </div>
       </div>
@@ -166,6 +260,7 @@ export function Formularz({ pule, dataJwk }: { pule: StanPuli[]; dataJwk: string
         <WyborZdjecia
           plik={plik}
           blad={bladPliku}
+          disabled={czeka}
           onWybor={(f) => {
             setPlik(f);
             setBladPliku(null);
@@ -183,7 +278,9 @@ export function Formularz({ pule, dataJwk }: { pule: StanPuli[]; dataJwk: string
         </p>
       )}
 
-      {propozycjaRezerwy && (
+      {/* Tylko na ostatnim kroku — `propozycjaRezerwy` gasi się przy każdej
+          zmianie kroku i puli, ale klamra zostaje na wypadek stanów brzegowych. */}
+      {ostatni && propozycjaRezerwy && (
         <div className="szklo grid gap-3 rounded-md px-4 py-3.5 text-sm">
           <p className="text-kosc">Pula zapełniła się w trakcie wypełniania formularza.</p>
           <p className="text-dym">

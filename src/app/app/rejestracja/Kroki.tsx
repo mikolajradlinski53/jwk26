@@ -30,7 +30,14 @@ const ETYKIETA =
   "mb-1.5 block pl-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-dym";
 
 function Blad({ tresc }: { tresc?: string }) {
-  return tresc ? <span className="mt-1.5 block text-sm text-krew-jasna">{tresc}</span> : null;
+  // `data-blad` obok `aria-invalid`: grupy radiowe (pula, dojazd) nie mają
+  // jednego pola do oznaczenia jako niepoprawne, ale ten span zawsze stoi
+  // tuż przy nich — po nim formularz odnajduje, gdzie przewinąć po błędzie.
+  return tresc ? (
+    <span data-blad className="mt-1.5 block text-sm text-krew-jasna">
+      {tresc}
+    </span>
+  ) : null;
 }
 
 /** Checkbox z celem dotykowym na całą etykietę (44 px). */
