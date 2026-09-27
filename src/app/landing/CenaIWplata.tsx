@@ -18,12 +18,12 @@ export function CenaIWplata() {
 
         <p className="font-tytul text-5xl text-jesien-rdza min-[600px]:text-6xl">320 zł</p>
         <p className="mt-2 text-sm font-bold text-jesien-atrament">
-          Wpłaty przyjmujemy od 12 do 22 października 2026.
+          Wpłaty przyjmujemy od 12 do 20 października 2026.
         </p>
 
         <p className="mt-4 text-sm leading-relaxed text-jesien-kora">
           Cena obejmuje nocleg i wyżywienie w ośrodku, transport oraz program
-          wyjazdu — dokładny zakres poda organizator bliżej terminu.
+          wyjazdu - dokładny zakres poda organizator bliżej terminu.
         </p>
         <p className="mt-3 text-sm leading-relaxed text-jesien-kora">
           Potwierdzenie przelewu wgrywa się w formularzu zgłoszeniowym —
