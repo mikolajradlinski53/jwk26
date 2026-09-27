@@ -210,6 +210,24 @@ describe("pule", () => {
     expect(data).toEqual({ otwarta: true, miejsca: 7 });
   });
 
+  it("przy roboczym regulaminie otwarta tura przyjmuje zmianę liczby miejsc", async () => {
+    // Blokada dotyczy wyłącznie otwierania zamkniętej puli — już otwartej
+    // admin musi móc dosunąć miejsca, nawet gdy zarząd cofnął regulamin do
+    // wersji roboczej.
+    await ustawPule("alumni", true, 5);
+    await ustawUstawienie("regulamin_zatwierdzony", false);
+
+    const { error } = await szefClient.rpc("ustaw_pule", {
+      p_klucz: "alumni",
+      p_otwarta: true,
+      p_miejsca: 8,
+    });
+    expect(error).toBeNull();
+
+    const { data } = await admin.from("pule").select("otwarta, miejsca").eq("klucz", "alumni").single();
+    expect(data).toEqual({ otwarta: true, miejsca: 8 });
+  });
+
   it("pozycja w rezerwie liczy tylko czekających przed tobą", async () => {
     const { error: bladZapisu } = await admin.from("registrations").insert([
       { user_id: ala.id, full_name: "A", pula: "dzialacze", rezerwa: true, kolejnosc_rezerwy: 10 },
