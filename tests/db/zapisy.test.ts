@@ -678,6 +678,174 @@ describe("rezerwa i akceptacja", () => {
   });
 });
 
+describe("wycofanie zgód", () => {
+  it("usunięcie danych zdrowotnych zostawia kontakt ICE", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { data } = await zloz(alaClient, ala, {
+      wrazliwe: {
+        ice_imie: "Mama",
+        ice_telefon: "600200300",
+        ice_poinformowany: true,
+        dieta: "bez glutenu",
+        zgoda_art9: true,
+      },
+    });
+    const id = (data as { id: string }).id;
+
+    expect((await alaClient.rpc("wycofaj_zgode_zdrowie")).error).toBeNull();
+
+    // ICE nie stoi na zgodzie, tylko na uzasadnionym interesie — wycofanie
+    // zgody z art. 9 nie ma prawa go zabrać.
+    const { data: w } = await admin.from("dane_wrazliwe").select("*").eq("registration_id", id).single();
+    expect(w).toMatchObject({
+      dieta: null,
+      alergie: null,
+      choroby_leki: null,
+      zgoda_art9_at: null,
+      ice_telefon: "600200300",
+    });
+  });
+
+  it("bez ICE usunięcie danych zdrowotnych kasuje cały wiersz", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { data } = await zloz(alaClient, ala, { wrazliwe: { alergie: "orzechy", zgoda_art9: true } });
+
+    await alaClient.rpc("wycofaj_zgode_zdrowie");
+
+    const { data: w } = await admin
+      .from("dane_wrazliwe")
+      .select("registration_id")
+      .eq("registration_id", (data as { id: string }).id);
+    expect(w).toEqual([]);
+  });
+
+  it("wycofanie nie dotyka cudzych danych", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { data } = await zloz(olaClient, ola, { wrazliwe: { dieta: "wegańska", zgoda_art9: true } });
+
+    await alaClient.rpc("wycofaj_zgode_zdrowie");
+
+    const { data: w } = await admin
+      .from("dane_wrazliwe")
+      .select("dieta")
+      .eq("registration_id", (data as { id: string }).id)
+      .single();
+    expect(w!.dieta).toBe("wegańska");
+  });
+
+  it("wycofanie zgody na wizerunek zostawia ślad czasu", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { data } = await zloz(alaClient, ala, { dane: { zgoda_wizerunek: true } });
+
+    expect((await alaClient.rpc("wycofaj_zgode_wizerunek")).error).toBeNull();
+
+    const { data: z } = await admin
+      .from("registrations")
+      .select("zgoda_wizerunek, zgoda_wizerunek_wycofana_at")
+      .eq("id", (data as { id: string }).id)
+      .single();
+    expect(z!.zgoda_wizerunek).toBe(false);
+    // Stempel mówi, od kiedy zdjęć tej osoby nie wolno publikować — zdjęcie
+    // sprzed wycofania wydrukowane w ulotce nie jest naruszeniem.
+    expect(z!.zgoda_wizerunek_wycofana_at).not.toBeNull();
+  });
+
+  it("wycofanie zgody na SMS-y zdejmuje ją z profilu i zgłoszenia", async () => {
+    // Klauzula obiecuje, że każdą zgodę da się wycofać w aplikacji — także tę.
+    await ustawPule("dzialacze", true, 10);
+    const { data } = await zloz(alaClient, ala, { dane: { sms_consent: true } });
+
+    expect((await alaClient.rpc("wycofaj_zgode_sms")).error).toBeNull();
+
+    const { data: p } = await admin.from("profiles").select("sms_consent").eq("id", ala.id).single();
+    expect(p!.sms_consent).toBe(false);
+    const { data: z } = await admin
+      .from("registrations")
+      .select("sms_consent")
+      .eq("id", (data as { id: string }).id)
+      .single();
+    expect(z!.sms_consent).toBe(false);
+  });
+});
+
+describe("retencja", () => {
+  afterEach(async () => {
+    await ustawUstawienie("data_konca_jwk", "2026-10-25");
+    await ustawUstawienie("data_retencji_zgloszen", "2027-12-31");
+  });
+
+  async function zgloszenieZDieta(): Promise<string> {
+    await ustawPule("dzialacze", true, 10);
+    const { data, error } = await zloz(alaClient, ala, { wrazliwe: { dieta: "bez laktozy", zgoda_art9: true } });
+    if (error) throw error;
+    return (data as { id: string }).id;
+  }
+
+  it("przed terminem nic nie znika", async () => {
+    // Daty w przyszłości wprost, nie domyślne: 25.10.2026 + 14 dni minie
+    // w listopadzie i ten test zacząłby wtedy kłamać.
+    await ustawUstawienie("data_konca_jwk", "2099-01-01");
+    await ustawUstawienie("data_retencji_zgloszen", "2099-12-31");
+    const id = await zgloszenieZDieta();
+
+    expect((await admin.rpc("sprzataj_dane")).error).toBeNull();
+
+    const { data } = await admin.from("dane_wrazliwe").select("dieta").eq("registration_id", id);
+    expect(data).toEqual([{ dieta: "bez laktozy" }]);
+  });
+
+  it("14 dni po wyjeździe znikają dane wrażliwe, zgłoszenie zostaje", async () => {
+    await ustawUstawienie("data_konca_jwk", "2020-01-01");
+    await ustawUstawienie("data_retencji_zgloszen", "2099-12-31");
+    const id = await zgloszenieZDieta();
+    // Dieta w starej kolumnie z planu 02 — ta sama kategoria danych.
+    await admin.from("registrations").update({ diet_notes: "bez glutenu" }).eq("id", id);
+
+    expect((await admin.rpc("sprzataj_dane")).error).toBeNull();
+
+    const { data: w } = await admin.from("dane_wrazliwe").select("registration_id").eq("registration_id", id);
+    expect(w).toEqual([]);
+
+    // Oświadczenie o szkodach musi przetrwać dłużej niż dieta (D10).
+    const { data: z } = await admin
+      .from("registrations")
+      .select("imie, wersja_zgod, diet_notes")
+      .eq("id", id)
+      .single();
+    expect(z).toEqual({ imie: "Brat", wersja_zgod: "test", diet_notes: null });
+  });
+
+  it("po terminie retencji zgłoszenie traci dane identyfikacyjne", async () => {
+    await ustawUstawienie("data_konca_jwk", "2020-01-01");
+    await ustawUstawienie("data_retencji_zgloszen", "2020-12-31");
+    const id = await zgloszenieZDieta();
+
+    expect((await admin.rpc("sprzataj_dane")).error).toBeNull();
+
+    const { data: z } = await admin
+      .from("registrations")
+      .select("imie, nazwisko, nr_indeksu, data_urodzenia, phone, full_name")
+      .eq("id", id)
+      .single();
+    expect(z).toEqual({
+      imie: null,
+      nazwisko: null,
+      nr_indeksu: null,
+      data_urodzenia: null,
+      phone: null,
+      full_name: "(usunieto)",
+    });
+
+    const { data: p } = await admin.from("profiles").select("phone").eq("id", ala.id).single();
+    expect(p!.phone).toBeNull();
+  });
+
+  it("uczestnik nie wywoła sprzątania", async () => {
+    const { error } = await alaClient.rpc("sprzataj_dane");
+    expect(error).not.toBeNull();
+  });
+});
+
 /** Składa zgłoszenie tak, jak robi to formularz. */
 function zloz(
   client: SupabaseClient,
