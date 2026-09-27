@@ -694,6 +694,28 @@ describe("rezerwa i akceptacja", () => {
       .single();
     expect(profil).toEqual({ status: "approved", display_name: "Siostra Popiół" });
   });
+
+  it("odrzucenie nie nadaje ksywki", async () => {
+    await ustawPule("dzialacze", true, 5);
+    const { data } = await zloz(alaClient, ala, { dane: { ksywka: "Odrzucona Ksywka" } });
+
+    const { error } = await szefClient.rpc("review_registration", {
+      p_registration_id: (data as { id: string }).id,
+      p_approve: false,
+      p_note: "Zła pula",
+    });
+    expect(error).toBeNull();
+
+    // Bez tej migracji odrzucenie i tak nadałoby ksywkę: kolejne, przyjęte
+    // zgłoszenie tej samej osoby trafiłoby na już wypełnione display_name,
+    // a coalesce zostawiłby ksywkę z odrzuconej próby zamiast nowej (D11).
+    const { data: profil } = await admin
+      .from("profiles")
+      .select("display_name")
+      .eq("id", ala.id)
+      .single();
+    expect(profil!.display_name).toBeNull();
+  });
 });
 
 describe("wycofanie zgód", () => {
