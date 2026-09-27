@@ -417,14 +417,21 @@ describe("składanie zgłoszenia", () => {
     await ustawPule("dzialacze", true, 10);
 
     const cudza = await zloz(alaClient, ala, { zdjecie: `${obcy.id}/dowod.jpg` });
-    expect(cudza.error).not.toBeNull();
+    expect(cudza.error!.message).toMatch(/sciezka/);
 
     // `like 'uuid/%'` sam to przepuszcza, a klient Storage normalizuje `..`
     // przy budowaniu URL-a — admin oglądałby cudzy dowód.
     const wyjscie = await zloz(alaClient, ala, {
       zdjecie: `${ala.id}/../${obcy.id}/dowod.jpg`,
     });
-    expect(wyjscie.error).not.toBeNull();
+    expect(wyjscie.error!.message).toMatch(/sciezka/);
+
+    // Parser URL zamienia `%2e%2e` na `..`, a storage-js ścieżki nie koduje —
+    // to samo obejście bramy, tylko zapisane inaczej.
+    const zakodowana = await zloz(alaClient, ala, {
+      zdjecie: `${ala.id}/%2e%2e/${obcy.id}/dowod.jpg`,
+    });
+    expect(zakodowana.error!.message).toMatch(/sciezka/);
   });
 
   it("cudze dane wrażliwe są niewidoczne, własne widoczne", async () => {
