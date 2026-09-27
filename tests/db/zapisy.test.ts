@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach, beforeEach } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   admin,
@@ -58,6 +58,12 @@ afterAll(async () => {
   for (const k of ["dzialacze", "swiezaki", "alumni"]) await ustawPule(k, false, 0);
   await ustawUstawienie("regulamin_zatwierdzony", false);
   await Promise.all([ala, ola, obcy, szef].map(deleteUser));
+});
+
+beforeEach(async () => {
+  // Testy, które badają roboczy regulamin, przestawiają flagę same.
+  // afterAll i tak zostawia ją na false.
+  await ustawUstawienie("regulamin_zatwierdzony", true);
 });
 
 describe("schemat zapisów", () => {
@@ -217,3 +223,248 @@ describe("pule", () => {
     expect((await olaClient.rpc("pozycja_w_rezerwie")).data).toBeNull();
   });
 });
+
+describe("składanie zgłoszenia", () => {
+  it("zapisuje na miejsce, a dane zdrowotne osobno", async () => {
+    await ustawPule("dzialacze", true, 10);
+
+    const { data, error } = await zloz(alaClient, ala, {
+      wrazliwe: { dieta: "wegetariańska", zgoda_art9: true },
+    });
+    expect(error).toBeNull();
+    expect(data).toMatchObject({ rezerwa: false });
+
+    const { data: z } = await admin
+      .from("registrations")
+      .select("*")
+      .eq("user_id", ala.id)
+      .single();
+    expect(z).toMatchObject({
+      pula: "dzialacze",
+      imie: "Brat",
+      nazwisko: "Testowy",
+      full_name: "Brat Testowy",
+      status: "pending",
+      rezerwa: false,
+      dojazd: "autokar_oba",
+      wersja_zgod: "test",
+      proof_path: `${ala.id}/dowod.jpg`,
+    });
+    // Dieta nie ma czego szukać w tabeli, którą czyta każdy select("*").
+    expect(z!.diet_notes).toBeNull();
+
+    const { data: w } = await admin
+      .from("dane_wrazliwe")
+      .select("dieta, zgoda_art9_at")
+      .eq("registration_id", z!.id)
+      .single();
+    expect(w!.dieta).toBe("wegetariańska");
+    expect(w!.zgoda_art9_at).not.toBeNull();
+  });
+
+  it("bez danych dobrowolnych nie zakłada wiersza wrażliwego", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { data, error } = await zloz(alaClient, ala);
+    expect(error).toBeNull();
+
+    const { data: w } = await admin
+      .from("dane_wrazliwe")
+      .select("registration_id")
+      .eq("registration_id", (data as { id: string }).id);
+    expect(w).toEqual([]);
+  });
+
+  it("zamknięta pula odbija zapis", async () => {
+    await ustawPule("dzialacze", false, 10);
+    const { error } = await zloz(alaClient, ala);
+    expect(error!.message).toMatch(/PULA_ZAMKNIETA/);
+  });
+
+  it("roboczy regulamin odbija zapis nawet w otwartej puli", async () => {
+    // Otwarta wcześniej tura nie może przyjmować zapisów po cofnięciu
+    // regulaminu do wersji roboczej (D8).
+    await ustawPule("dzialacze", true, 10);
+    await ustawUstawienie("regulamin_zatwierdzony", false);
+    const { error } = await zloz(alaClient, ala);
+    expect(error!.message).toMatch(/PULA_ZAMKNIETA/);
+  });
+
+  it("pełna pula: bez zgody na rezerwę PULA_PELNA, z nią kolejny numer w kolejce", async () => {
+    await ustawPule("dzialacze", true, 1);
+    expect((await zloz(alaClient, ala)).error).toBeNull();
+
+    const odbite = await zloz(olaClient, ola);
+    expect(odbite.error!.message).toMatch(/PULA_PELNA/);
+
+    const pierwsza = await zloz(olaClient, ola, { naRezerwe: true, zdjecie: null });
+    expect(pierwsza.error).toBeNull();
+    expect(pierwsza.data).toMatchObject({ rezerwa: true });
+
+    const druga = await zloz(obcyClient, obcy, { naRezerwe: true, zdjecie: null });
+    expect(druga.error).toBeNull();
+
+    const { data } = await admin
+      .from("registrations")
+      .select("user_id, kolejnosc_rezerwy")
+      .eq("rezerwa", true)
+      .in("user_id", [ola.id, obcy.id])
+      .order("kolejnosc_rezerwy");
+    // Numery rosną przez cały czas życia puli, więc sprawdzamy kolejność
+    // i odstęp, nie wartość bezwzględną.
+    expect(data!.map((x) => x.user_id)).toEqual([ola.id, obcy.id]);
+    expect(data![1].kolejnosc_rezerwy).toBe(data![0].kolejnosc_rezerwy + 1);
+  });
+
+  it("dwa równoczesne zapisy na ostatnie miejsce: jeden wchodzi, drugi odbity", async () => {
+    // Bez blokady wiersza puli oba wywołania policzą zero zajętych i oba
+    // wejdą — 41. osoba na 40 miejsc przy otwarciu tury.
+    await ustawPule("dzialacze", true, 1);
+
+    const [a, b] = await Promise.all([zloz(alaClient, ala), zloz(olaClient, ola)]);
+    const udane = [a, b].filter((r) => r.error === null);
+    const odbite = [a, b].filter((r) => r.error !== null);
+    expect(udane).toHaveLength(1);
+    expect(odbite[0].error!.message).toMatch(/PULA_PELNA/);
+
+    const { data } = await admin
+      .from("registrations")
+      .select("id")
+      .eq("pula", "dzialacze")
+      .eq("rezerwa", false)
+      .in("user_id", [ala.id, ola.id]);
+    expect(data).toHaveLength(1);
+  });
+
+  it("miejsce w wolnej puli wymaga zdjęcia przelewu", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { error } = await zloz(alaClient, ala, { zdjecie: null });
+    expect(error!.message).toMatch(/PRZELEW_WYMAGANY/);
+  });
+
+  it("urodzony 23.10.2008 przechodzi, 24.10.2008 nie", async () => {
+    await ustawPule("dzialacze", true, 10);
+
+    const wDniuProgu = await zloz(alaClient, ala, { dane: { data_urodzenia: "2008-10-23" } });
+    expect(wDniuProgu.error).toBeNull();
+
+    const dzienPozniej = await zloz(olaClient, ola, { dane: { data_urodzenia: "2008-10-24" } });
+    expect(dzienPozniej.error!.message).toMatch(/NIEPELNOLETNI/);
+  });
+
+  it("numer indeksu wymagany poza pulą Alumni", async () => {
+    await ustawPule("dzialacze", true, 10);
+    await ustawPule("alumni", true, 10);
+
+    const dzialacz = await zloz(alaClient, ala, { dane: { nr_indeksu: null } });
+    expect(dzialacz.error!.message).toMatch(/indeksu/);
+
+    const alumn = await zloz(olaClient, ola, { dane: { pula: "alumni", nr_indeksu: null } });
+    expect(alumn.error).toBeNull();
+  });
+
+  it("kontakt ICE bez potwierdzenia jest odbity", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { error } = await zloz(alaClient, ala, {
+      wrazliwe: { ice_imie: "Mama", ice_telefon: "600200300" },
+    });
+    expect(error!.message).toMatch(/ICE/);
+  });
+
+  it("dane o zdrowiu bez zgody są odbite", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { error } = await zloz(alaClient, ala, { wrazliwe: { alergie: "orzechy" } });
+    expect(error!.message).toMatch(/zdrowiu/);
+  });
+
+  it("brak akceptacji regulaminu jest odbity", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { error } = await zloz(alaClient, ala, { dane: { akceptuje_regulamin: false } });
+    expect(error!.message).toMatch(/akceptacji/);
+  });
+
+  it("osoba już zaakceptowana nie złoży nowego zgłoszenia", async () => {
+    // Odrzucenie takiego zgłoszenia zbiłoby jej status na 'rejected'
+    // i wyrzuciło ją z aplikacji, choć była już w drużynie.
+    await ustawPule("dzialacze", true, 10);
+    await ustawJakoZaakceptowany(ala);
+    const { error } = await zloz(alaClient, ala);
+    expect(error!.message).toMatch(/zaakceptowane/);
+  });
+
+  it("drugie zgłoszenie w toku jest odbite", async () => {
+    await ustawPule("dzialacze", true, 10);
+    expect((await zloz(alaClient, ala)).error).toBeNull();
+    // Rezerwa też ma status pending, więc ten sam indeks nie pozwoli zapisać
+    // się jednocześnie na miejsce i na rezerwę ani do dwóch pul. Asercja na
+    // treść, bo „jakikolwiek błąd" przeszedłby też z powodu walidacji.
+    const drugie = await zloz(alaClient, ala);
+    expect(drugie.error!.message).toMatch(/one_pending|duplicate key/);
+  });
+
+  it("po odrzuceniu można złożyć zgłoszenie ponownie", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { data } = await zloz(alaClient, ala);
+    await admin
+      .from("registrations")
+      .update({ status: "rejected" })
+      .eq("id", (data as { id: string }).id);
+
+    const ponownie = await zloz(alaClient, ala);
+    expect(ponownie.error).toBeNull();
+  });
+
+  it("ścieżka zdjęcia spoza własnego folderu jest odbita", async () => {
+    await ustawPule("dzialacze", true, 10);
+
+    const cudza = await zloz(alaClient, ala, { zdjecie: `${obcy.id}/dowod.jpg` });
+    expect(cudza.error).not.toBeNull();
+
+    // `like 'uuid/%'` sam to przepuszcza, a klient Storage normalizuje `..`
+    // przy budowaniu URL-a — admin oglądałby cudzy dowód.
+    const wyjscie = await zloz(alaClient, ala, {
+      zdjecie: `${ala.id}/../${obcy.id}/dowod.jpg`,
+    });
+    expect(wyjscie.error).not.toBeNull();
+  });
+
+  it("cudze dane wrażliwe są niewidoczne, własne widoczne", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { data } = await zloz(alaClient, ala, {
+      wrazliwe: { choroby_leki: "astma, inhalator", zgoda_art9: true },
+    });
+    const id = (data as { id: string }).id;
+
+    const { data: swoje } = await alaClient.from("dane_wrazliwe").select("choroby_leki").eq("registration_id", id);
+    expect(swoje).toEqual([{ choroby_leki: "astma, inhalator" }]);
+
+    const { data: cudze } = await obcyClient.from("dane_wrazliwe").select("choroby_leki").eq("registration_id", id);
+    expect(cudze).toEqual([]);
+
+    // Zapis mimo braku polityki odbija się już na grancie.
+    const { error } = await alaClient
+      .from("dane_wrazliwe")
+      .update({ choroby_leki: "nic" })
+      .eq("registration_id", id);
+    expect(error).not.toBeNull();
+  });
+});
+
+/** Składa zgłoszenie tak, jak robi to formularz. */
+function zloz(
+  client: SupabaseClient,
+  user: TestUser,
+  opcje: {
+    dane?: Record<string, unknown>;
+    wrazliwe?: Record<string, unknown> | null;
+    /** `undefined` = poprawna ścieżka we własnym folderze, `null` = bez zdjęcia. */
+    zdjecie?: string | null;
+    naRezerwe?: boolean;
+  } = {},
+) {
+  return client.rpc("zloz_zgloszenie", {
+    p_dane: daneZapisu(opcje.dane),
+    p_wrazliwe: opcje.wrazliwe ?? null,
+    p_proof_path: opcje.zdjecie === undefined ? `${user.id}/dowod.jpg` : opcje.zdjecie,
+    p_na_rezerwe: opcje.naRezerwe ?? false,
+  });
+}
