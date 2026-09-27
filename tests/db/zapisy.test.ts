@@ -518,6 +518,53 @@ describe("rezerwa i akceptacja", () => {
     expect(data).toEqual({ rezerwa: false, proof_path: `${ola.id}/dowod.jpg`, ocr_keywords_hit: 3 });
   });
 
+  it("przelew dołącza się raz, tylko po awansie i tylko do własnego folderu", async () => {
+    const { alaId, olaId } = await pelnaPulaZRezerwa();
+
+    // Ola wciąż na rezerwie — dolacz_przelew wymaga `not rezerwa`, więc
+    // zgłoszenie jeszcze nie pasuje do warunku WHERE.
+    const zaWczesnie = await olaClient.rpc("dolacz_przelew", {
+      p_proof_path: `${ola.id}/dowod.jpg`,
+    });
+    expect(zaWczesnie.error!.message).toMatch(/czekajacego na przelew/);
+
+    const odrzucenie = await szefClient.rpc("review_registration", {
+      p_registration_id: alaId,
+      p_approve: false,
+      p_note: "Zła pula",
+    });
+    expect(odrzucenie.error).toBeNull();
+
+    const awans = await szefClient.rpc("awansuj_z_rezerwy", { p_registration_id: olaId });
+    expect(awans.error).toBeNull();
+
+    // Cudzy folder odbija się na sciezka_dowodu_ok, mimo że zgłoszenie już
+    // czeka na przelew.
+    const cudzyFolder = await olaClient.rpc("dolacz_przelew", {
+      p_proof_path: `${ala.id}/dowod.jpg`,
+    });
+    expect(cudzyFolder.error!.message).toMatch(/sciezka/);
+
+    const pierwszy = await olaClient.rpc("dolacz_przelew", {
+      p_proof_path: `${ola.id}/pierwszy.jpg`,
+    });
+    expect(pierwszy.error).toBeNull();
+
+    // Warunek `proof_path is null` w WHERE nie pozwala podmienić dowodu po
+    // fakcie — drugie wywołanie nie trafia w żaden wiersz.
+    const drugi = await olaClient.rpc("dolacz_przelew", {
+      p_proof_path: `${ola.id}/drugi.jpg`,
+    });
+    expect(drugi.error!.message).toMatch(/czekajacego na przelew/);
+
+    const { data } = await admin
+      .from("registrations")
+      .select("proof_path")
+      .eq("id", olaId)
+      .single();
+    expect(data).toEqual({ proof_path: `${ola.id}/pierwszy.jpg` });
+  });
+
   it("akceptacja odmawia rezerwie i zgłoszeniu bez przelewu", async () => {
     const teamId = await firstTeamId();
     const { olaId } = await pelnaPulaZRezerwa();
@@ -539,6 +586,46 @@ describe("rezerwa i akceptacja", () => {
       p_team_id: teamId,
     });
     expect(bezPrzelewu.error!.message).toMatch(/rezerwie|przelewu/);
+  });
+
+  it("akceptacja odmawia rezerwie ze zdjęciem; po awansie przyjmuje bez ponownego uploadu", async () => {
+    // Bez `v_rezerwa or` w warunku review_registration samo zdjęcie by
+    // wystarczyło do przyjęcia — rezerwa ze zdjęciem przeszłaby ponad limit
+    // miejsc puli.
+    const teamId = await firstTeamId();
+    await ustawPule("dzialacze", true, 1);
+    const naMiejscu = await zloz(alaClient, ala);
+    const naRezerwie = await zloz(olaClient, ola, { naRezerwe: true });
+    expect(naMiejscu.error).toBeNull();
+    expect(naRezerwie.error).toBeNull();
+    expect((naRezerwie.data as { rezerwa: boolean }).rezerwa).toBe(true);
+    const olaId = (naRezerwie.data as { id: string }).id;
+
+    const rezerwa = await szefClient.rpc("review_registration", {
+      p_registration_id: olaId,
+      p_approve: true,
+      p_team_id: teamId,
+    });
+    expect(rezerwa.error!.message).toMatch(/rezerwie/);
+
+    const odrzucenie = await szefClient.rpc("review_registration", {
+      p_registration_id: (naMiejscu.data as { id: string }).id,
+      p_approve: false,
+      p_note: "Zła pula",
+    });
+    expect(odrzucenie.error).toBeNull();
+
+    const awans = await szefClient.rpc("awansuj_z_rezerwy", { p_registration_id: olaId });
+    expect(awans.error).toBeNull();
+
+    // Zdjęcie zostało złożone razem ze zgłoszeniem rezerwowym — po awansie
+    // nie trzeba wgrywać go drugi raz (D3).
+    const przyjecie = await szefClient.rpc("review_registration", {
+      p_registration_id: olaId,
+      p_approve: true,
+      p_team_id: teamId,
+    });
+    expect(przyjecie.error).toBeNull();
   });
 
   it("odrzucenie dodatkowego zgłoszenia nie wyrzuca osoby już przyjętej", async () => {
