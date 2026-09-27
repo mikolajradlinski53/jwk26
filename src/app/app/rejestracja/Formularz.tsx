@@ -134,7 +134,11 @@ export function Formularz({ pule, dataJwk }: { pule: StanPuli[]; dataJwk: string
   function wstecz() {
     setBlad(null);
     setPropozycjaRezerwy(false);
-    setIndeks((i) => Math.max(0, i - 1));
+    // Najpierw klamra do bieżącej długości listy: gdy odświeżenie skróciło
+    // kroki (np. pula przestała być pełna i zniknął krok rezerwy), `indeks`
+    // sprzed odświeżenia bywa większy niż `lista.length - 1`, a odjęcie
+    // jedynki od takiej wartości nie cofa widocznego kroku.
+    setIndeks((i) => Math.max(0, Math.min(i, lista.length - 1) - 1));
     skupTytulKroku();
   }
 

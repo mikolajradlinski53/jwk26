@@ -4,6 +4,7 @@ import { Ekran } from "@/components/Ekran";
 import { Regulamin } from "./Regulamin";
 import { Pula } from "./Pula";
 import { Awans } from "./Awans";
+import { Odrzuc } from "./Odrzuc";
 import type { KluczPuli, StanPuli } from "@/types/db";
 
 type WpisRezerwy = {
@@ -101,26 +102,28 @@ export default async function ZapisyPage() {
               </span>
             </h3>
             <ol className="grid gap-1.5">
-              {wpisy.map((k, i) => (
-                <li
-                  key={k.id}
-                  className="szklo flex items-center justify-between gap-3 rounded-md px-3.5 py-2.5"
-                >
-                  <span className="min-w-0 text-sm">
-                    <span className="tabular-nums text-dym">{i + 1}.</span>{" "}
-                    {k.imie} {k.nazwisko}
-                    {k.ksywka && <span className="text-dym"> · {k.ksywka}</span>}
-                    {k.proof_path && (
-                      <span className="block text-xs text-dym">Ma już wgrany przelew</span>
-                    )}
-                  </span>
-                  <Awans
-                    id={k.id}
-                    wolneMiejsce={wolne}
-                    kto={`${k.imie ?? ""} ${k.nazwisko ?? ""}`.trim()}
-                  />
-                </li>
-              ))}
+              {wpisy.map((k, i) => {
+                const kto = `${k.imie ?? ""} ${k.nazwisko ?? ""}`.trim();
+                return (
+                  <li
+                    key={k.id}
+                    className="szklo flex flex-col gap-3 rounded-md px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <span className="min-w-0 text-sm">
+                      <span className="tabular-nums text-dym">{i + 1}.</span>{" "}
+                      {k.imie} {k.nazwisko}
+                      {k.ksywka && <span className="text-dym"> · {k.ksywka}</span>}
+                      {k.proof_path && (
+                        <span className="block text-xs text-dym">Ma już wgrany przelew</span>
+                      )}
+                    </span>
+                    <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
+                      <Odrzuc id={k.id} kto={kto} />
+                      <Awans id={k.id} wolneMiejsce={wolne} kto={kto} />
+                    </div>
+                  </li>
+                );
+              })}
             </ol>
           </section>
         );

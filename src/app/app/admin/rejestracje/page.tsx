@@ -11,7 +11,7 @@ export default async function KolejkaRejestracji() {
   const supabase = await createClient();
 
   // Rezerwa ma własną kolejkę w /app/admin/zapisy — tu tylko osoby na miejscu.
-  const [{ data: zgloszeniaRaw }, { data: druzynyRaw }] = await Promise.all([
+  const [{ data: zgloszeniaRaw, error: zgloszeniaError }, { data: druzynyRaw }] = await Promise.all([
     supabase
       .from("registrations")
       .select("*")
@@ -52,6 +52,9 @@ export default async function KolejkaRejestracji() {
   if (wrazliweError) {
     console.error("Nie udało się wczytać danych wrażliwych:", wrazliweError);
   }
+  if (zgloszeniaError) {
+    console.error("Nie udało się wczytać zgłoszeń:", zgloszeniaError.code, zgloszeniaError.message);
+  }
 
   return (
     <Ekran tytul="Zgłoszenia">
@@ -61,7 +64,15 @@ export default async function KolejkaRejestracji() {
           nie wczytają — odśwież stronę.
         </p>
       )}
-      {zgloszenia.length === 0 && <p className="text-center text-dym">Kolejka pusta.</p>}
+      {/* Błąd odczytu wygląda jak pusta kolejka, gdyby go tu nie rozróżnić —
+          admin uznałby, że nie ma kogo rozpatrywać, choć zgłoszenia czekają. */}
+      {zgloszeniaError ? (
+        <p className="szklo rounded-md px-4 py-3.5 text-center text-sm text-krew-jasna">
+          Nie udało się wczytać zgłoszeń. Odśwież stronę.
+        </p>
+      ) : (
+        zgloszenia.length === 0 && <p className="text-center text-dym">Kolejka pusta.</p>
+      )}
 
       <ul className="grid gap-8">
         {zgloszenia.map((z) => {
