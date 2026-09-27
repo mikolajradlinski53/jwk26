@@ -1,7 +1,7 @@
 # Zapisy — spec projektowy
 
 Data: 2026-09-27
-Status: zatwierdzony w rozmowie, czeka na przegląd pliku
+Status: zatwierdzony do implementacji
 Poprzedza: plan 08
 
 ## 1. Czym to jest
@@ -215,9 +215,8 @@ IOD i dział prawny UEW.** Autor tych tekstów nie jest prawnikiem.
 
 - Administrator: Uniwersytet Ekonomiczny we Wrocławiu, ul. Komandorska 118/120,
   53-345 Wrocław.
-- Kontakt z Inspektorem Ochrony Danych: **do uzupełnienia adresem od IOD UEW**.
-  Stała w `zgody.ts` startuje pusta; test jednostkowy pada, dopóki jest pusta,
-  a formularz w miejscu adresu pokazuje wyraźne „brak kontaktu do IOD".
+- Kontakt z Inspektorem Ochrony Danych: `iod@ue.wroc.pl`. Stała w `zgody.ts`;
+  test jednostkowy pilnuje, żeby nie była pusta.
 - Cele i podstawy:
   - organizacja wyjazdu i weryfikacja warunku pełnoletności (imię, nazwisko,
     indeks, data urodzenia, telefon, dojazd, ksywka) — art. 6 ust. 1 lit. b,
@@ -382,7 +381,7 @@ INSERT-em. Po D5 przechodzą na `zloz_zgloszenie()` albo na klucz serwisowy
 
 | Ryzyko | Mitygacja |
 |---|---|
-| Teksty prawne nieprzejrzane do 12.10 | D8: tury nie otworzą się przy roboczym regulaminie; pusty kontakt do IOD wywraca testy |
+| Teksty prawne nieprzejrzane do 12.10 | D8: tury nie otworzą się przy roboczym regulaminie |
 | Tłok przy otwarciu tury przebija limit | D5, test równoczesności |
 | Dane zdrowotne wyciekają do arkusza lub realtime | D6, osobny spec GAS zaczyna od listy dozwolonych kolumn |
 | Retencja nigdy się nie wykonuje | D10, `pg_cron` + test funkcji; sprawdzenie w planie, że zadanie jest zarejestrowane na produkcji |
