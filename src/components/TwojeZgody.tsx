@@ -83,7 +83,9 @@ export function TwojeZgody({ maDaneZdrowotne, zgodaWizerunek, zgodaSms }: StanZg
           <p className="text-sm text-dym">{OPIS[co].stan}</p>
           {pyta === co ? (
             <>
-              <p className="text-sm text-kosc">{OPIS[co].pytanie}</p>
+              <p className="text-sm text-kosc" aria-live="polite">
+                {OPIS[co].pytanie}
+              </p>
               <div className="grid grid-cols-2 gap-3">
                 <Button variant="szklo" onClick={() => setPyta(null)} disabled={czeka}>
                   Zostaw
@@ -94,7 +96,7 @@ export function TwojeZgody({ maDaneZdrowotne, zgodaWizerunek, zgodaSms }: StanZg
               </div>
             </>
           ) : (
-            <Button variant="szklo" onClick={() => setPyta(co)}>
+            <Button variant="szklo" onClick={() => setPyta(co)} disabled={czeka}>
               {OPIS[co].akcja}
             </Button>
           )}
