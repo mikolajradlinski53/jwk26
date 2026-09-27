@@ -311,3 +311,50 @@ export async function sprzatnijSklepik(): Promise<void> {
     .delete()
     .in("category", ["zasiew_testowy", "sklepik", "sklepik_zwrot", "klatwa"]);
 }
+
+/**
+ * Pole `p_dane` zgłoszenia, które przechodzi całą walidację zloz_zgloszenie().
+ * Testy nadpisują jedno pole naraz, żeby porażka wskazywała jedną regułę.
+ */
+export function daneZapisu(nadpisz: Record<string, unknown> = {}) {
+  return {
+    pula: "dzialacze",
+    imie: "Brat",
+    nazwisko: "Testowy",
+    nr_indeksu: "123456",
+    data_urodzenia: "2000-01-01",
+    telefon: "600100200",
+    sms_consent: false,
+    dojazd: "autokar_oba",
+    ksywka: "Brat Popiół",
+    piosenka: null,
+    uwagi: null,
+    zgoda_wizerunek: false,
+    wersja_zgod: "test",
+    akceptuje_klauzule: true,
+    akceptuje_regulamin: true,
+    akceptuje_szkody: true,
+    ...nadpisz,
+  };
+}
+
+/**
+ * Ustawia pulę kluczem serwisowym, z pominięciem ustaw_pule() i blokady
+ * regulaminu. Pule są globalne dla projektu testowego — plik, który je
+ * otwiera, zamyka je w afterAll.
+ */
+export async function ustawPule(
+  klucz: string,
+  otwarta: boolean,
+  miejsca: number,
+): Promise<void> {
+  const { error } = await admin.from("pule").update({ otwarta, miejsca }).eq("klucz", klucz);
+  if (error) throw error;
+}
+
+export async function ustawUstawienie(key: string, value: unknown): Promise<void> {
+  const { error } = await admin
+    .from("app_settings")
+    .upsert({ key, value }, { onConflict: "key" });
+  if (error) throw error;
+}
