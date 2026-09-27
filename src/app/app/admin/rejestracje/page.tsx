@@ -26,7 +26,7 @@ export default async function KolejkaRejestracji() {
 
   // Podpisane URL-e żyją godzinę; równolegle, bo przy kilkudziesięciu
   // zgłoszeniach sekwencyjne podpisywanie widać gołym okiem.
-  const [podpisy, { data: wrazliweRaw }] = await Promise.all([
+  const [podpisy, { data: wrazliweRaw, error: wrazliweError }] = await Promise.all([
     Promise.all(
       zgloszenia.map(async (z) => {
         if (!z.proof_path) return [z.id, null] as const;
@@ -49,8 +49,18 @@ export default async function KolejkaRejestracji() {
     ((wrazliweRaw ?? []) as DaneWrazliwe[]).map((w) => [w.registration_id, w]),
   );
 
+  if (wrazliweError) {
+    console.error("Nie udało się wczytać danych wrażliwych:", wrazliweError);
+  }
+
   return (
     <Ekran tytul="Zgłoszenia">
+      {wrazliweError && (
+        <p className="szklo mb-5 rounded-md px-4 py-3.5 text-sm text-krew-jasna">
+          Nie udało się wczytać danych wrażliwych (ICE, zdrowie). Nie przyjmuj zgłoszeń, dopóki się
+          nie wczytają — odśwież stronę.
+        </p>
+      )}
       {zgloszenia.length === 0 && <p className="text-center text-dym">Kolejka pusta.</p>}
 
       <ul className="grid gap-8">
@@ -102,7 +112,7 @@ export default async function KolejkaRejestracji() {
 
               {/* Na wierzchu, bo tę informację musi zobaczyć każdy, kto
                   wybiera zdjęcia do publikacji (D9). */}
-              {z.pula && !z.zgoda_wizerunek && (
+              {!z.zgoda_wizerunek && (
                 <p className="mt-2 inline-block rounded-sm border border-krew/50 px-2 py-1 text-xs font-bold text-krew-jasna">
                   Bez zgody na wizerunek
                 </p>
@@ -110,13 +120,13 @@ export default async function KolejkaRejestracji() {
 
               {/* Dane z art. 9 pod przyciskiem, nie na wierzchu: kolejkę
                   przegląda się też na telefonie w miejscach publicznych. */}
-              {w && (
+              {(w || z.diet_notes) && (
                 <details className="mt-2">
                   <summary className="cursor-pointer text-xs text-dym">
                     Dane wrażliwe (ICE, zdrowie)
                   </summary>
                   <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-                    {w.ice_telefon && (
+                    {w?.ice_telefon && (
                       <>
                         <dt className="text-dym">ICE</dt>
                         <dd className="text-kosc">
@@ -124,19 +134,25 @@ export default async function KolejkaRejestracji() {
                         </dd>
                       </>
                     )}
-                    {w.dieta && (
+                    {w?.dieta && (
                       <>
                         <dt className="text-dym">Dieta</dt>
                         <dd className="text-kosc">{w.dieta}</dd>
                       </>
                     )}
-                    {w.alergie && (
+                    {z.diet_notes && (
+                      <>
+                        <dt className="text-dym">Dieta (stare zgłoszenie)</dt>
+                        <dd className="text-kosc">{z.diet_notes}</dd>
+                      </>
+                    )}
+                    {w?.alergie && (
                       <>
                         <dt className="text-dym">Alergie</dt>
                         <dd className="text-kosc">{w.alergie}</dd>
                       </>
                     )}
-                    {w.choroby_leki && (
+                    {w?.choroby_leki && (
                       <>
                         <dt className="text-dym">Choroby, leki</dt>
                         <dd className="text-kosc">{w.choroby_leki}</dd>
@@ -145,8 +161,6 @@ export default async function KolejkaRejestracji() {
                   </dl>
                 </details>
               )}
-
-              {z.diet_notes && <p className="mt-2 text-sm text-kosc">Dieta: {z.diet_notes}</p>}
 
               {!z.proof_path ? (
                 <p className="mt-3 text-sm text-dym">
