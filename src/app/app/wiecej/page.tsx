@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Button } from "@/components/ui/Button";
+import { TwojeZgody } from "@/components/TwojeZgody";
+import { stanZgod } from "@/lib/zapisy/stanZgod";
 import type { UserScore } from "@/types/db";
 
 export default async function WiecejPage() {
@@ -13,10 +15,23 @@ export default async function WiecejPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/wejscie");
 
-  const [{ data: profil }, { data: wynik }] = await Promise.all([
+  const [{ data: profil }, { data: wynik }, { data: zgloszenie }] = await Promise.all([
     supabase.from("profiles").select("display_name, role").eq("id", user.id).maybeSingle(),
     supabase.from("user_scores").select("*").eq("user_id", user.id).maybeSingle(),
+    // Przyjęte zgłoszenie, nie ostatnie: tylko jego zgody obowiązują.
+    supabase
+      .from("registrations")
+      .select("zgoda_wizerunek, sms_consent")
+      .eq("user_id", user.id)
+      .eq("status", "approved")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
+
+  // Dane zdrowotne stanZgod sprawdza we wszystkich zgłoszeniach osoby
+  // (także starych, odrzuconych); zgody na wizerunek i SMS — w przyjętym.
+  const zgody = await stanZgod(supabase, user.id, zgloszenie);
 
   const mojWynik = wynik as UserScore | null;
   const jestAdminem = profil?.role === "admin";
@@ -53,6 +68,8 @@ export default async function WiecejPage() {
           Gossipy zamieszkają tutaj, kiedy powstaną.
         </p>
       </nav>
+
+      <TwojeZgody {...zgody} />
 
       <form action="/auth/signout" method="post" className="mt-8">
         <Button variant="cichy" type="submit">
