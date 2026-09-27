@@ -18,6 +18,7 @@ export function komunikat(e: unknown): string {
   if (/PULA_ZAMKNIETA/.test(t)) {
     return "Ta tura jest zamknięta. Wróć do pierwszego kroku i sprawdź, które są otwarte.";
   }
+  if (/PRZELEW_WYMAGANY/.test(t)) return "W tej puli zwolniło się miejsce — dołącz potwierdzenie przelewu.";
   if (/NIEPELNOLETNI/.test(t)) {
     return "Na JWK26 jadą osoby, które w dniu wyjazdu mają skończone 18 lat.";
   }
@@ -29,13 +30,13 @@ export function komunikat(e: unknown): string {
   if (/wolnego miejsca/i.test(t)) {
     return "W tej puli nie ma wolnego miejsca. Zwiększ liczbę miejsc albo najpierw kogoś odrzuć.";
   }
-  if (/row-level security|jwt|expired|401|Brak sesji/i.test(t)) {
+  if (/jwt|expired|401|Brak sesji/i.test(t)) {
     return "Sesja wygasła. Zaloguj się ponownie.";
   }
   if (/mime type|not supported/i.test(t)) {
     return "Ten format zdjęcia nie przechodzi. Zrób zrzut ekranu i spróbuj ponownie.";
   }
-  if (/failed to fetch|networkerror|network/i.test(t)) {
+  if (/failed to fetch|networkerror|network|load failed/i.test(t)) {
     return "Zerwało połączenie. Sprawdź zasięg i spróbuj jeszcze raz.";
   }
   if (/image|decode|canvas/i.test(t)) {

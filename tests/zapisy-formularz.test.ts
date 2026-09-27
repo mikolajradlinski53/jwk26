@@ -54,6 +54,13 @@ describe("walidacja kroków", () => {
     ).toBe(komunikatWieku(JWK));
   });
 
+  it("data urodzenia sprzed 1900 roku jest odrzucana, sam 1900-01-01 przechodzi", () => {
+    expect(
+      waliduj("dane", { ...pelne, dataUrodzenia: "1899-12-31" }, JWK).dataUrodzenia,
+    ).toBe("Podaj datę urodzenia");
+    expect(waliduj("dane", { ...pelne, dataUrodzenia: "1900-01-01" }, JWK)).toEqual({});
+  });
+
   it("numer indeksu jest opcjonalny tylko w puli Alumni", () => {
     const bezIndeksu = { ...pelne, nrIndeksu: "" };
     expect(waliduj("dane", bezIndeksu, JWK).nrIndeksu).toBeDefined();
@@ -144,5 +151,7 @@ describe("zgody i komunikaty", () => {
       komunikat({ message: 'duplicate key value violates unique constraint "registrations_one_pending_idx"' }),
     ).toMatch(/czeka na rozpatrzenie/);
     expect(komunikat(new Error("cos zupelnie innego"))).toMatch(/Spróbuj jeszcze raz/);
+    expect(komunikat({ message: "PRZELEW_WYMAGANY" })).toMatch(/dołącz potwierdzenie/);
+    expect(komunikat(new TypeError("Load failed"))).toMatch(/połączenie/);
   });
 });

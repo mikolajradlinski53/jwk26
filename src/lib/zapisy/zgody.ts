@@ -7,6 +7,9 @@
  *
  * Wersja robocza, do przejrzenia przez IOD i dział prawny UEW przed otwarciem
  * pierwszej tury. Autor nie jest prawnikiem.
+ *
+ * Zmiana treści regulaminu (src/app/regulamin/page.tsx) też wymaga podbicia
+ * WERSJA_ZGOD, bo strona regulaminu pokazuje tę wersję.
  */
 export const WERSJA_ZGOD = "2026-09-27";
 
@@ -24,6 +27,9 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
     "Wyjazd Komisji 2026 (JWK26), na podstawie art. 6 ust. 1 lit. b RODO — " +
     "bierzesz w nim udział na własny wniosek. Datę urodzenia wykorzystujemy " +
     "także do sprawdzenia, czy w dniu wyjazdu masz ukończone 18 lat.",
+  "Adres e-mail, którym logujesz się do aplikacji, oraz zdjęcie potwierdzenia " +
+    "przelewu razem z odczytanym z niego tekstem przetwarzamy, żeby potwierdzić " +
+    "Twój udział i rozliczyć wpłatę — na podstawie art. 6 ust. 1 lit. b RODO.",
   "Akceptację oświadczenia o odpowiedzialności za szkody i dane potrzebne do " +
     "dochodzenia roszczeń przetwarzamy na podstawie art. 6 ust. 1 lit. f RODO, " +
     "czyli prawnie uzasadnionego interesu organizatora.",
@@ -39,10 +45,14 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
     "również jest dobrowolna.",
   "Dane widzą organizatorzy wyjazdu. Ośrodek otrzymuje wyłącznie informacje " +
     "o diecie i alergiach. Dane są przechowywane u dostawców infrastruktury " +
-    "(Supabase, Vercel), którzy przetwarzają je na nasze zlecenie.",
+    "(Supabase, Vercel), którzy przetwarzają je na nasze zlecenie. Dostawcy ci " +
+    "mogą przetwarzać dane także poza Europejskim Obszarem Gospodarczym — " +
+    "wyłącznie na podstawie standardowych klauzul umownych zatwierdzonych " +
+    "przez Komisję Europejską.",
   "Informacje o zdrowiu i dane osoby ICE usuwamy 14 dni po zakończeniu " +
-    "wyjazdu. Pozostałe dane ze zgłoszenia przechowujemy do 31 grudnia 2027 " +
-    "roku, żeby móc rozliczyć ewentualne szkody z ośrodkiem.",
+    "wyjazdu. Pozostałe dane ze zgłoszenia, w tym zdjęcie potwierdzenia " +
+    "przelewu, przechowujemy do 31 grudnia 2027 roku, żeby móc rozliczyć " +
+    "ewentualne szkody z ośrodkiem.",
   "Masz prawo dostępu do swoich danych, ich sprostowania, usunięcia, " +
     "ograniczenia przetwarzania i wniesienia sprzeciwu, a także prawo " +
     "wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych. Każdą zgodę " +

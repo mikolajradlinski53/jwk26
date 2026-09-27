@@ -87,12 +87,16 @@ const DATA = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Dzień wyjazdu w Warszawie jako `YYYY-MM-DD`. */
 function dzienWyjazdu(dataJwkIso: string): string {
-  return new Intl.DateTimeFormat("en-CA", {
+  // formatToParts zamiast format(): dane locale en-CA mogłyby kiedyś zmienić
+  // separator w wyniku format() (tak samo liczy admin/ustawienia/Formularz.tsx).
+  const czesci = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Warsaw",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).format(new Date(dataJwkIso));
+  }).formatToParts(new Date(dataJwkIso));
+  const wez = (typ: string) => czesci.find((cz) => cz.type === typ)?.value ?? "";
+  return `${wez("year")}-${wez("month")}-${wez("day")}`;
 }
 
 /**
@@ -153,8 +157,9 @@ export function waliduj(krok: Krok, d: DaneFormularza, dataJwkIso: string): Bled
         b.nrIndeksu = "Numer indeksu to od 4 do 10 cyfr";
       }
 
-      if (!DATA.test(d.dataUrodzenia)) b.dataUrodzenia = "Podaj datę urodzenia";
-      else if (d.dataUrodzenia > progPelnoletnosci(dataJwkIso)) {
+      if (!DATA.test(d.dataUrodzenia) || d.dataUrodzenia < "1900-01-01") {
+        b.dataUrodzenia = "Podaj datę urodzenia";
+      } else if (d.dataUrodzenia > progPelnoletnosci(dataJwkIso)) {
         b.dataUrodzenia = komunikatWieku(dataJwkIso);
       }
 
