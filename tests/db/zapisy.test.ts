@@ -98,7 +98,9 @@ describe("schemat zapisów", () => {
   });
 
   it("anonim nie czyta danych wrażliwych", async () => {
-    const { data } = await anonimowy().from("dane_wrazliwe").select("registration_id");
-    expect(data ?? []).toEqual([]);
+    // Pusta tabela dałaby [] także bez zabezpieczeń — trzeba sprawdzić błąd, nie dane.
+    const { data, error } = await anonimowy().from("dane_wrazliwe").select("registration_id");
+    expect(error?.code).toBe("42501");
+    expect(data).toBeNull();
   });
 });
