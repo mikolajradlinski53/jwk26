@@ -17,6 +17,8 @@ import { komunikat, tekstBledu } from "@/lib/zapisy/bledy";
 import { wgrajDowod, polaOcr, type WgranyDowod } from "@/lib/zapisy/przelew";
 import { KrokPula, KrokZasady, KrokDane, KrokIce, KrokZdrowie, KrokOTobie } from "./Kroki";
 import { WyborZdjecia } from "./WyborZdjecia";
+import { DanePrzelewu } from "@/components/DanePrzelewu";
+import { tytulPrzelewu, type DanePrzelewu as DanePrzelewuTyp } from "@/lib/zapisy/qrPrzelewu";
 import type { StanPuli } from "@/types/db";
 
 const TYTULY: Record<Krok, string> = {
@@ -36,7 +38,16 @@ const TYTULY: Record<Krok, string> = {
  * `pule` to stan z chwili renderu. Mógł się zmienić, zanim ktoś doszedł do
  * końca; rozstrzyga funkcja, a formularz reaguje na PULA_PELNA (D3).
  */
-export function Formularz({ pule, dataJwk }: { pule: StanPuli[]; dataJwk: string }) {
+export function Formularz({
+  pule,
+  dataJwk,
+  przelew,
+}: {
+  pule: StanPuli[];
+  dataJwk: string;
+  /** `null`, dopóki admin nie poda numeru konta — krok pokazuje wtedy „wkrótce". */
+  przelew: DanePrzelewuTyp | null;
+}) {
   const router = useRouter();
   const [dane, setDane] = useState<DaneFormularza>(PUSTY_FORMULARZ);
   const [bledy, setBledy] = useState<Bledy>({});
@@ -261,17 +272,20 @@ export function Formularz({ pule, dataJwk }: { pule: StanPuli[]; dataJwk: string
       {krok === "zdrowie" && <KrokZdrowie {...wspolne} />}
       {krok === "oTobie" && <KrokOTobie {...wspolne} />}
       {krok === "przelew" && (
-        <WyborZdjecia
-          plik={plik}
-          blad={bladPliku}
-          disabled={czeka}
-          onWybor={(f) => {
-            setPlik(f);
-            setBladPliku(null);
-            // Nowy plik unieważnia poprzedni upload.
-            wgrane.current = null;
-          }}
-        />
+        <>
+          <DanePrzelewu dane={przelew} tytul={tytulPrzelewu(dane.imie, dane.nazwisko)} />
+          <WyborZdjecia
+            plik={plik}
+            blad={bladPliku}
+            disabled={czeka}
+            onWybor={(f) => {
+              setPlik(f);
+              setBladPliku(null);
+              // Nowy plik unieważnia poprzedni upload.
+              wgrane.current = null;
+            }}
+          />
+        </>
       )}
 
       {krok === "oTobie" && naRezerwe && (

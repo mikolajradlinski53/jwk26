@@ -156,7 +156,8 @@ export default async function KolejkaRejestracji() {
                       <>
                         <dt className="text-dym">ICE</dt>
                         <dd className="text-kosc">
-                          {w.ice_imie}, {w.ice_telefon}
+                          {w.ice_imie}
+                          {w.ice_relacja && ` (${w.ice_relacja})`}, {w.ice_telefon}
                         </dd>
                       </>
                     )}

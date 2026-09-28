@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Formularz } from "./Formularz";
+import { FormularzPrzelewu } from "./FormularzPrzelewu";
 import type { Ustawienia } from "@/lib/ustawienia";
 
 const WroccLink = (
@@ -22,7 +23,15 @@ export default async function UstawieniaPage() {
   const { data, error } = await supabase
     .from("app_settings")
     .select("key, value")
-    .in("key", ["data_jwk", "data_swiezakow", "miejsce_nazwa", "miejsce_adres"]);
+    .in("key", [
+      "data_jwk",
+      "data_swiezakow",
+      "miejsce_nazwa",
+      "miejsce_adres",
+      "przelew_numer_konta",
+      "przelew_odbiorca",
+      "przelew_kwota",
+    ]);
 
   if (error) {
     console.error("Nie udało się wczytać ustawień wydarzenia (admin):", error);
@@ -44,9 +53,18 @@ export default async function UstawieniaPage() {
     miejsceAdres: mapa.get("miejsce_adres") ?? null,
   };
 
+  const kwota = Number(mapa.get("przelew_kwota"));
+
   return (
     <Ekran tytul="Ustawienia" podtytul="Daty i miejsce wydarzenia">
       <Formularz poczatkowe={poczatkowe} />
+      <FormularzPrzelewu
+        poczatkowe={{
+          konto: String(mapa.get("przelew_numer_konta") ?? ""),
+          odbiorca: String(mapa.get("przelew_odbiorca") ?? ""),
+          kwota: Number.isFinite(kwota) && kwota > 0 ? kwota : null,
+        }}
+      />
       {WroccLink}
     </Ekran>
   );

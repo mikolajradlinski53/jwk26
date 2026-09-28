@@ -209,6 +209,14 @@ ostatnim krokiem.
   złagodzone z „jestem alkoholikiem", żeby odpowiedź nie była deklaracją choroby
   (art. 9 RODO) — dzięki temu pole żyje w `registrations`, nie w `dane_wrazliwe`.
 - Oba pola dopisane do klauzuli informacyjnej (art. 6 ust. 1 lit. b, dobrowolne).
+- Krok ICE: pole „Kim jest dla Ciebie?" (mama, partner…), obowiązkowe razem
+  z resztą ICE, do 40 znaków, w `dane_wrazliwe.ice_relacja`.
+- Krok „Przelew" i dopłata po awansie: karta „Dane do przelewu" — kwota, odbiorca,
+  numer konta i tytuł `JWK26 Imię Nazwisko` z przyciskami „Kopiuj" oraz kod QR
+  w formacie ZBP (aplikacja banku wypełnia przelew sama). Dane w `app_settings`
+  (`przelew_numer_konta`, `przelew_odbiorca`, `przelew_kwota`), ustawiane
+  w `/app/admin/ustawienia`; ta sama karta zastępuje zaślepkę na landingu.
+  Bez numeru konta karta mówi „dane pojawią się wkrótce".
 
 **Walidacja w przeglądarce** powtarza walidację funkcji, żeby błąd pojawiał
 się przy polu, a nie po wysłaniu. Źródłem prawdy jest funkcja.

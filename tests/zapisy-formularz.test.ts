@@ -125,9 +125,22 @@ describe("walidacja kroków", () => {
   it("puste ICE przechodzi, wypełnione wymaga potwierdzenia", () => {
     expect(waliduj("ice", pelne, JWK)).toEqual({});
 
-    const ice = { ...pelne, iceImie: "Mama", iceTelefon: "600200300" };
+    const ice = { ...pelne, iceImie: "Anna", iceRelacja: "mama", iceTelefon: "600200300" };
     expect(waliduj("ice", ice, JWK).icePoinformowany).toBeDefined();
     expect(waliduj("ice", { ...ice, icePoinformowany: true }, JWK)).toEqual({});
+  });
+
+  it("ICE wymaga informacji, kim ta osoba jest dla uczestnika", () => {
+    // W nagłym wypadku „dzwonię do Anny" nic nie mówi — „dzwonię do mamy" tak.
+    const bezRelacji = {
+      ...pelne,
+      iceImie: "Anna",
+      iceTelefon: "600200300",
+      icePoinformowany: true,
+    };
+    expect(waliduj("ice", bezRelacji, JWK).iceRelacja).toBeDefined();
+    // Sama relacja też uruchamia ICE — nie da się jej zostawić bez numeru.
+    expect(waliduj("ice", { ...pelne, iceRelacja: "tata" }, JWK).iceTelefon).toBeDefined();
   });
 
   it("dane zdrowotne bez zgody nie przechodzą", () => {
@@ -168,12 +181,14 @@ describe("mapowanie na wywołanie funkcji", () => {
       ...pelne,
       alergie: " orzechy ",
       zgodaArt9: true,
-      iceImie: "Mama",
+      iceImie: "Anna",
+      iceRelacja: " mama ",
       iceTelefon: "600200300",
       icePoinformowany: true,
     });
     expect(p_wrazliwe).toEqual({
-      ice_imie: "Mama",
+      ice_imie: "Anna",
+      ice_relacja: "mama",
       ice_telefon: "600200300",
       ice_poinformowany: true,
       dieta: null,

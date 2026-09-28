@@ -7,6 +7,8 @@ import { OdswiezPrzyPowrocie } from "@/components/OdswiezPrzyPowrocie";
 import { stanZgod, type StanZgod } from "@/lib/zapisy/stanZgod";
 import { Formularz } from "./Formularz";
 import { DolaczPrzelew } from "./DolaczPrzelew";
+import { wczytajDanePrzelewu } from "@/lib/zapisy/przelewUstawienia";
+import { tytulPrzelewu } from "@/lib/zapisy/qrPrzelewu";
 import type { Registration, StanPuli } from "@/types/db";
 
 // Zapasowa data wyjazdu, gdyby ustawienie zniknęło. Walidacja w przeglądarce
@@ -28,6 +30,7 @@ export default async function RejestracjaPage() {
     { data: pule, error: bladPul },
     { data: ustawienie },
     { data: flaga, error: bladFlagi },
+    przelew,
   ] = await Promise.all([
     supabase
       .from("registrations")
@@ -45,6 +48,9 @@ export default async function RejestracjaPage() {
       .select("value")
       .eq("key", "regulamin_zatwierdzony")
       .maybeSingle(),
+    // Brak danych albo błąd odczytu dają `null` — formularz mówi wtedy
+    // „dane pojawią się wkrótce", co nie blokuje zapisu na rezerwę.
+    wczytajDanePrzelewu(supabase),
   ]);
 
   // Brak zgłoszenia (`data === null`) znaczy po prostu „nowa osoba" — ale
@@ -121,7 +127,10 @@ export default async function RejestracjaPage() {
             za wyjazd i wgraj jego potwierdzenie — dopiero wtedy zgłoszenie trafi
             do akceptacji.
           </p>
-          <DolaczPrzelew />
+          <DolaczPrzelew
+            przelew={przelew}
+            tytul={tytulPrzelewu(ostatnie.imie ?? "", ostatnie.nazwisko ?? "")}
+          />
           <TwojeZgody {...zgody} />
           <Wyloguj />
         </Ekran>
@@ -165,6 +174,7 @@ export default async function RejestracjaPage() {
         <Formularz
           pule={stan}
           dataJwk={(ustawienie?.value as string | undefined) ?? DATA_JWK_ZAPASOWA}
+          przelew={przelew}
         />
       ) : (
         <p className="szklo rounded-md px-4 py-6 text-center text-sm leading-relaxed text-dym">

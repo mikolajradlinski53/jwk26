@@ -78,6 +78,24 @@ html {
   background-color: var(--color-noc);
 }
 
+/*
+ * Rozwinięta lista <select>. Chrome na Windowsie maluje opcje tłem samego
+ * pola — a to jest półprzezroczyste szkło, więc lista wychodziła biała,
+ * a tekst dziedziczył jasną `kosc`: biel na bieli, nic nie widać. Opcje
+ * dostają własne, pełne tło. Poza warstwą, bo Tailwind nie ma utility na
+ * `option`, a nic w apce nie próbuje ich nadpisywać.
+ */
+select option {
+  background-color: var(--color-noc);
+  color: var(--color-kosc);
+}
+
+/* Landing jest jasny — tam opcje w jego kolorach, nie w ciemnych apki. */
+.jesien select option {
+  background-color: var(--color-jesien-tlo);
+  color: var(--color-jesien-atrament);
+}
+
 body {
   color: var(--color-kosc);
   font-family: var(--font-ui);

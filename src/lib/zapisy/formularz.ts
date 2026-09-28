@@ -58,6 +58,8 @@ export type DaneFormularza = {
   telefon: string;
   zgodaSms: boolean;
   iceImie: string;
+  /** Kim ta osoba jest dla uczestnika: mama, partner, współlokatorka… */
+  iceRelacja: string;
   iceTelefon: string;
   icePoinformowany: boolean;
   dieta: string;
@@ -90,6 +92,7 @@ export const PUSTY_FORMULARZ: DaneFormularza = {
   telefon: "",
   zgodaSms: false,
   iceImie: "",
+  iceRelacja: "",
   iceTelefon: "",
   icePoinformowany: false,
   dieta: "",
@@ -163,7 +166,7 @@ export function maDaneZdrowotne(d: DaneFormularza): boolean {
 }
 
 function maIce(d: DaneFormularza): boolean {
-  return !puste(d.iceImie) || !puste(d.iceTelefon);
+  return !puste(d.iceImie) || !puste(d.iceRelacja) || !puste(d.iceTelefon);
 }
 
 /** Błędy jednego kroku. Pusty obiekt znaczy „można dalej". */
@@ -206,6 +209,8 @@ export function waliduj(krok: Krok, d: DaneFormularza, dataJwkIso: string): Bled
     case "ice":
       if (maIce(d)) {
         if (puste(d.iceImie)) b.iceImie = "Podaj imię tej osoby";
+        if (puste(d.iceRelacja)) b.iceRelacja = "Napisz, kim ta osoba jest dla Ciebie";
+        else if (d.iceRelacja.trim().length > 40) b.iceRelacja = "Najwyżej 40 znaków";
         if (!TELEFON.test(d.iceTelefon.trim())) b.iceTelefon = "Podaj numer telefonu tej osoby";
         if (!d.icePoinformowany) b.icePoinformowany = "Potwierdź, że ta osoba wie o podaniu numeru";
       }
@@ -282,6 +287,7 @@ export function doRpc(d: DaneFormularza) {
     ice || zdrowie
       ? {
           ice_imie: ice ? alboNull(d.iceImie) : null,
+          ice_relacja: ice ? alboNull(d.iceRelacja) : null,
           ice_telefon: ice ? alboNull(d.iceTelefon) : null,
           ice_poinformowany: ice && d.icePoinformowany,
           dieta: alboNull(d.dieta),

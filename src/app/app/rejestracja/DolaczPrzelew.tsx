@@ -7,8 +7,16 @@ import { Button } from "@/components/ui/Button";
 import { komunikat, tekstBledu } from "@/lib/zapisy/bledy";
 import { wgrajDowod, polaOcr, type WgranyDowod } from "@/lib/zapisy/przelew";
 import { WyborZdjecia } from "./WyborZdjecia";
+import { DanePrzelewu } from "@/components/DanePrzelewu";
+import type { DanePrzelewu as DanePrzelewuTyp } from "@/lib/zapisy/qrPrzelewu";
 
-export function DolaczPrzelew() {
+export function DolaczPrzelew({
+  przelew,
+  tytul,
+}: {
+  przelew: DanePrzelewuTyp | null;
+  tytul: string;
+}) {
   const router = useRouter();
   const [plik, setPlik] = useState<File | null>(null);
   const [bladPliku, setBladPliku] = useState<string | null>(null);
@@ -60,6 +68,7 @@ export function DolaczPrzelew() {
 
   return (
     <div className="grid gap-5">
+      <DanePrzelewu dane={przelew} tytul={tytul} />
       <WyborZdjecia
         plik={plik}
         blad={bladPliku}

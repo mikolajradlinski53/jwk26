@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { ustawienia } from "@/lib/ustawienia";
+import { createClient } from "@/lib/supabase/server";
+import { wczytajDanePrzelewu } from "@/lib/zapisy/przelewUstawienia";
 import { odliczanie } from "@/lib/odliczanie";
 import { Naglowek } from "./landing/Naglowek";
 import { Wejscie } from "./landing/Wejscie";
@@ -57,7 +59,12 @@ export const viewport: Viewport = {
  * po prostu nie pokażą danych, zamiast strona miała zniknąć.
  */
 export default async function Landing() {
-  const { dataJwk, dataSwiezakow, miejsceNazwa, miejsceAdres } = await ustawienia();
+  const [{ dataJwk, dataSwiezakow, miejsceNazwa, miejsceAdres }, przelew] = await Promise.all([
+    ustawienia(),
+    // Anonim czyta te trzy klucze dzięki polityce settings_read_public.
+    // Awaria daje `null`, czyli kartę „dane pojawią się wkrótce" — jak niżej.
+    createClient().then(wczytajDanePrzelewu),
+  ]);
 
   return (
     <div className="jesien relative">
@@ -102,7 +109,7 @@ export default async function Landing() {
           tutaj, na wyjściu w „Cenę i wpłatę".
         */}
         <DzielnikSkos kolorKlasa="bg-jesien-karta" tloKlasa="bg-jesien-tlo" />
-        <CenaIWplata />
+        <CenaIWplata przelew={przelew} />
         <DzielnikSzewron />
         <JakSieZapisac />
         <DzielnikFala kolorKlasa="text-jesien-karta" tloKlasa="bg-jesien-tlo" />

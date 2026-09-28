@@ -332,6 +332,14 @@ export function KrokIce({ dane, zmien, bledy }: PropsKroku) {
         error={bledy.iceImie}
       />
       <Field
+        label="Kim jest dla Ciebie?"
+        placeholder="np. mama, partner, współlokatorka"
+        value={dane.iceRelacja}
+        maxLength={40}
+        onChange={(e) => zmien("iceRelacja", e.target.value)}
+        error={bledy.iceRelacja}
+      />
+      <Field
         label="Jej telefon"
         type="tel"
         inputMode="tel"

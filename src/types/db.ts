@@ -216,6 +216,8 @@ export type StanPuli = {
 export type DaneWrazliwe = {
   registration_id: string;
   ice_imie: string | null;
+  /** Kim osoba ICE jest dla uczestnika: mama, partner… */
+  ice_relacja: string | null;
   ice_telefon: string | null;
   ice_poinformowany: boolean;
   dieta: string | null;

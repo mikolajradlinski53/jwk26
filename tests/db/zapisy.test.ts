@@ -383,9 +383,33 @@ describe("składanie zgłoszenia", () => {
   it("kontakt ICE bez potwierdzenia jest odbity", async () => {
     await ustawPule("dzialacze", true, 10);
     const { error } = await zloz(alaClient, ala, {
-      wrazliwe: { ice_imie: "Mama", ice_telefon: "600200300" },
+      wrazliwe: { ice_imie: "Anna", ice_relacja: "mama", ice_telefon: "600200300" },
     });
     expect(error!.message).toMatch(/ICE/);
+  });
+
+  it("kontakt ICE bez relacji jest odbity, z relacją zapisany", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const bez = await zloz(alaClient, ala, {
+      wrazliwe: { ice_imie: "Anna", ice_telefon: "600200300", ice_poinformowany: true },
+    });
+    expect(bez.error!.message).toMatch(/ICE/);
+
+    const z = await zloz(alaClient, ala, {
+      wrazliwe: {
+        ice_imie: "Anna",
+        ice_relacja: "mama",
+        ice_telefon: "600200300",
+        ice_poinformowany: true,
+      },
+    });
+    expect(z.error).toBeNull();
+    const { data: w } = await admin
+      .from("dane_wrazliwe")
+      .select("ice_imie, ice_relacja")
+      .eq("registration_id", (z.data as { id: string }).id)
+      .single();
+    expect(w).toEqual({ ice_imie: "Anna", ice_relacja: "mama" });
   });
 
   it("dane o zdrowiu bez zgody są odbite", async () => {
@@ -723,7 +747,8 @@ describe("wycofanie zgód", () => {
     await ustawPule("dzialacze", true, 10);
     const { data } = await zloz(alaClient, ala, {
       wrazliwe: {
-        ice_imie: "Mama",
+        ice_imie: "Anna",
+        ice_relacja: "mama",
         ice_telefon: "600200300",
         ice_poinformowany: true,
         dieta: "bez glutenu",
