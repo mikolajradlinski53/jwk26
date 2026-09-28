@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { readFileSync } from "node:fs";
 import {
   KROK_S,
   KRUK_R,
@@ -91,5 +92,13 @@ describe("kolumny", () => {
     // Minuta lotu: ok. 39 kolumn przy limicie 41.
     expect(s.wynik).toBeGreaterThan(30);
     expect(limitWyniku(s.czas) - s.wynik).toBeLessThanOrEqual(2);
+  });
+});
+
+describe("zgodność z bazą", () => {
+  it("ODSTEP_KOLUMN_S równa się stałej w kruk_wynik()", () => {
+    const sql = readFileSync("supabase/migrations/20260928200000_kruk.sql", "utf8");
+    const m = sql.match(/c_odstep_kolumn_s\s+constant\s+numeric\s*:=\s*([\d.]+)/);
+    expect(Number(m?.[1])).toBe(ODSTEP_KOLUMN_S);
   });
 });
