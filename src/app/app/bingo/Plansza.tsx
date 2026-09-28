@@ -282,8 +282,11 @@ export function Plansza({
         onClick={(e) => {
           if (e.target === dialogRef.current) zamknij();
         }}
-        className="fixed inset-0 m-0 flex h-dvh max-h-none w-full max-w-none items-end
-                   justify-center border-0 bg-noc/80 p-0 backdrop-blur-sm"
+        // `open:flex`, nie `flex`: klasa autora bije regułę przeglądarki
+        // `dialog:not([open]) { display: none }`, więc zamknięty dialog leżał
+        // rozmytą warstwą na całej planszy i zjadał każde dotknięcie.
+        className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none items-end justify-center
+                   border-0 bg-noc/80 p-0 backdrop-blur-sm open:flex"
       >
         {otwarty && (
           <div
