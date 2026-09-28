@@ -7,12 +7,13 @@
  *
  * Wersję 2026-09-27 przejrzeli IOD i radcowie prawni UEW. Wersja 2026-09-28
  * dopisuje do klauzuli dwa pola dodane po tym przeglądzie: zwolnienie
- * rektorskie (z godzinami) i odpowiedź na pytanie o alkohol.
+ * rektorskie (z godzinami) i odpowiedź na pytanie o alkohol. Wersja
+ * 2026-09-28.2 dopisuje Google (arkusz zespołu) jako podmiot przetwarzający.
  *
  * Zmiana treści regulaminu (src/app/regulamin/page.tsx) też wymaga podbicia
  * WERSJA_ZGOD, bo strona regulaminu pokazuje tę wersję.
  */
-export const WERSJA_ZGOD = "2026-09-28";
+export const WERSJA_ZGOD = "2026-09-28.2";
 
 export const KONTAKT_IOD = "iod@ue.wroc.pl";
 
@@ -50,7 +51,12 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
     "również jest dobrowolna.",
   "Dane widzą organizatorzy wyjazdu. Ośrodek otrzymuje wyłącznie informacje " +
     "o diecie i alergiach. Dane są przechowywane u dostawców infrastruktury " +
-    "(Supabase, Vercel), którzy przetwarzają je na nasze zlecenie. Dostawcy ci " +
+    "(Supabase, Vercel), którzy przetwarzają je na nasze zlecenie. Listę zgłoszeń " +
+    "— łącznie z informacjami o diecie, alergiach, chorobach, lekach i kontakcie " +
+    "ICE — prowadzimy też w arkuszu Google (Google Workspace), do którego dostęp " +
+    "mają wyłącznie imiennie wskazani organizatorzy; Google przetwarza te dane na " +
+    "nasze zlecenie, a arkusz odświeża się z aplikacji, więc usunięcie danych " +
+    "w aplikacji usuwa je też z arkusza. Dostawcy ci " +
     "mogą przetwarzać dane także poza Europejskim Obszarem Gospodarczym — " +
     "wyłącznie na podstawie standardowych klauzul umownych zatwierdzonych " +
     "przez Komisję Europejską.",
