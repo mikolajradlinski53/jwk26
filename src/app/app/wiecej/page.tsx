@@ -65,9 +65,13 @@ export default async function WiecejPage() {
         >
           Kasyno
         </Link>
-        <p className="px-1 text-xs leading-relaxed text-dym">
-          Gossipy zamieszkają tutaj, kiedy powstaną.
-        </p>
+        <Link
+          href="/app/gossip"
+          className="szklo flex min-h-12 items-center rounded-md px-4 text-sm font-bold
+                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
+        >
+          Gossipy
+        </Link>
       </nav>
 
       <Powiadomienia />

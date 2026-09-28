@@ -24,6 +24,13 @@ export function komunikat(e: unknown): string {
   }
   if (/REGULAMIN_ROBOCZY/.test(t)) return "Najpierw oznacz regulamin jako zatwierdzony.";
   if (/raz na minute/i.test(t)) return "Próbne powiadomienie możesz wysłać raz na minutę.";
+  // Gossipy
+  if (/na siebie/i.test(t)) return "Nie możesz głosować na siebie.";
+  if (/juz oddany/i.test(t)) return "Twój głos w tej kategorii jest już oddany.";
+  if (/nie jest otwarta/i.test(t)) return "Głosowanie w tej kategorii jest już zamknięte.";
+  const minimum = t.match(/co najmniej (\d+) znakow/i);
+  if (minimum) return `Uzasadnienie musi mieć co najmniej ${minimum[1]} znaków.`;
+  if (/od 2 do 8/i.test(t)) return "Wybierz od 2 do 8 nominowanych spośród przyjętych uczestników.";
   if (/one_pending|duplicate key/i.test(t)) {
     return "Masz już zgłoszenie, które czeka na rozpatrzenie.";
   }
