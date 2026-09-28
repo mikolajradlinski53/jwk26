@@ -56,6 +56,15 @@ export default async function ArcadePage() {
         <span className="text-xs font-normal text-dym">stawka 10 · 20 · 50 →</span>
       </Link>
 
+      <Link
+        href="/app/arcade/kruk"
+        className="szklo mb-4 flex min-h-12 items-center justify-between rounded-md px-4 text-sm font-bold
+                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
+      >
+        <span>Kruk</span>
+        <span className="text-xs font-normal text-dym">ranking, bez punktów →</span>
+      </Link>
+
       <Bebny
         saldo={saldo}
         stawka={stawka}
