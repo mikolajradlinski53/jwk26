@@ -33,6 +33,11 @@ export function komunikat(e: unknown): string {
   if (/Brak reki w toku/i.test(t)) return "Ta ręka jest już rozstrzygnięta.";
   if (/Podwoic mozna/i.test(t)) return "Podwoić można tylko przy 9, 10 albo 11 na dwóch pierwszych kartach.";
   if (/Stawka to 10, 20 albo 50/i.test(t)) return "Stawka to 10, 20 albo 50 pkt.";
+  if (/zaakceptowani uczestnicy/i.test(t)) return "Grać mogą tylko przyjęci uczestnicy.";
+  // Kruk
+  if (/Nie ma takiej gry/i.test(t)) return "Ta gra już nie istnieje — zacznij nowy lot.";
+  if (/juz zapisany/i.test(t)) return "Wynik tego lotu jest już zapisany.";
+  if (/niemozliwy w tym czasie/i.test(t)) return "Serwer nie uznał tego wyniku.";
   // Gossipy
   if (/na siebie/i.test(t)) return "Nie możesz głosować na siebie.";
   if (/juz oddany/i.test(t)) return "Twój głos w tej kategorii jest już oddany.";

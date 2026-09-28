@@ -226,3 +226,13 @@ export type DaneWrazliwe = {
   zgoda_art9_at: string | null;
   created_at: string;
 };
+
+/** Wiersz widoku kruk_ranking — rekord osoby w kruku. */
+export type KrukMiejsce = {
+  user_id: string;
+  display_name: string;
+  team_id: string | null;
+  color: string | null;
+  rekord: number;
+  miejsce: number;
+};
