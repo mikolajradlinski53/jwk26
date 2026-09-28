@@ -46,3 +46,6 @@ next-env.d.ts
 # Stan CLI Supabase: który projekt jest podlinkowany, wersje usług.
 # Zmienia się przy każdym `link` i `db push`, więc zaśmiecał każdy commit z migracją.
 supabase/.temp/
+
+# Makiety z brainstormingu (lokalny podgląd)
+.superpowers/
