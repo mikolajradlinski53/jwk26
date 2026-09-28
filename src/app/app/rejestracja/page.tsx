@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Button } from "@/components/ui/Button";
 import { TwojeZgody } from "@/components/TwojeZgody";
+import { Powiadomienia } from "@/components/Powiadomienia";
 import { OdswiezPrzyPowrocie } from "@/components/OdswiezPrzyPowrocie";
 import { stanZgod, type StanZgod } from "@/lib/zapisy/stanZgod";
 import { Formularz } from "./Formularz";
@@ -107,6 +108,7 @@ export default async function RejestracjaPage() {
                   "zobaczysz tu prośbę o potwierdzenie przelewu."}
             </p>
           </div>
+          <Powiadomienia />
           <TwojeZgody {...zgody} />
           {/* Awans z rezerwy jest ruchem admina, nie czymś, co ta osoba wywoła
               sama — bez odświeżania po powrocie zostałaby tu, nieświadoma,
@@ -131,6 +133,7 @@ export default async function RejestracjaPage() {
             przelew={przelew}
             tytul={tytulPrzelewu(ostatnie.imie ?? "", ostatnie.nazwisko ?? "")}
           />
+          <Powiadomienia />
           <TwojeZgody {...zgody} />
           <Wyloguj />
         </Ekran>
@@ -142,6 +145,7 @@ export default async function RejestracjaPage() {
         <p className="szklo rounded-md px-4 py-6 text-center text-sm leading-relaxed text-dym">
           Twoja ofiara została złożona.
         </p>
+        <Powiadomienia />
         <TwojeZgody {...zgody} />
         {/* Akceptację albo odrzucenie ustawia admin — bez odświeżania po
             powrocie ta osoba czekałaby na wyrok, który już zapadł. */}

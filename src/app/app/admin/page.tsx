@@ -7,6 +7,7 @@ const WEJSCIA = [
   { href: "/app/admin/zapisy", nazwa: "Zapisy", opis: "Tury, miejsca i rezerwa" },
   { href: "/app/admin/rejestracje", nazwa: "Zgłoszenia", opis: "Kolejka oczekujących" },
   { href: "/app/admin/uczestnicy", nazwa: "Uczestnicy", opis: "Przyjęci: diety, ICE, zwolnienia, CSV" },
+  { href: "/app/admin/ogloszenia", nazwa: "Ogłoszenia", opis: "Powiadomienia push do wszystkich, drużyny, puli" },
   { href: "/app/admin/bingo", nazwa: "Bingo", opis: "Kolejka zdjęć z planszy" },
   { href: "/app/admin/sklepik", nazwa: "Sklepik", opis: "Kolejka wydań i stan półki" },
   { href: "/app/admin/punkty", nazwa: "Punkty", opis: "Przyznaj lub odbierz" },

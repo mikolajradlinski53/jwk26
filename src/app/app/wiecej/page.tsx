@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Button } from "@/components/ui/Button";
 import { TwojeZgody } from "@/components/TwojeZgody";
+import { Powiadomienia } from "@/components/Powiadomienia";
 import { stanZgod } from "@/lib/zapisy/stanZgod";
 import type { UserScore } from "@/types/db";
 
@@ -69,6 +70,7 @@ export default async function WiecejPage() {
         </p>
       </nav>
 
+      <Powiadomienia />
       <TwojeZgody {...zgody} />
 
       <form action="/auth/signout" method="post" className="mt-8">
