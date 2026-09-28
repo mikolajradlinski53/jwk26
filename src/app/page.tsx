@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ustawienia } from "@/lib/ustawienia";
 import { createClient } from "@/lib/supabase/server";
 import { wczytajDanePrzelewu } from "@/lib/zapisy/przelewUstawienia";
@@ -58,7 +59,20 @@ export const viewport: Viewport = {
  * Awaria odczytu `ustawienia()` nie wywraca strony: liczniki i miejsce
  * po prostu nie pokażą danych, zamiast strona miała zniknąć.
  */
-export default async function Landing() {
+export default async function Landing({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  // Kod logowania, który wylądował na stronie głównej zamiast na /auth/callback.
+  // Supabase robi tak, gdy adresu powrotu nie ma na liście Redirect URLs —
+  // odsyła wtedy na Site URL. Bez tego przekazania sesja nigdy nie powstaje
+  // i człowiek w kółko wraca do ekranu logowania.
+  const { code } = await searchParams;
+  if (typeof code === "string" && code) {
+    redirect(`/auth/callback?code=${encodeURIComponent(code)}`);
+  }
+
   const [{ dataJwk, dataSwiezakow, miejsceNazwa, miejsceAdres }, przelew] = await Promise.all([
     ustawienia(),
     // Anonim czyta te trzy klucze dzięki polityce settings_read_public.
