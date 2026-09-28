@@ -20,7 +20,9 @@ const PUBLICZNE_EKRANY = new Set(["/", "/wejscie", "/regulamin"]);
  * dane wprost, bez ekranu, więc zapomniany jest groźniejszy niż zapomniana
  * strona: nie widać go w interfejsie, a odpowiada każdemu, kto zna adres.
  */
-const PUBLICZNE_UCHWYTY = new Set(["/auth/callback", "/auth/signout"]);
+// /api/push woła baza (pg_net, pg_cron), nie przeglądarka — bez sesji, za to
+// z sekretem w nagłówku `x-push-sekret`; bez niego trasa odpowiada 401.
+const PUBLICZNE_UCHWYTY = new Set(["/auth/callback", "/auth/signout", "/api/push"]);
 
 type Trasa = { sciezka: string; rodzaj: "ekran" | "uchwyt" };
 
