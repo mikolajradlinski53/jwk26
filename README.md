@@ -4,7 +4,7 @@ Webapp (PWA) dla uczestników wyjazdu samorządu UEW: ranking drużyn, bingo ze
 zdjęciami, sklepik, kasyno i gossipy. Dostęp wyłącznie dla adresów
 `@samorzad.ue.wroc.pl` po potwierdzeniu wpłaty.
 
-- Produkcja: <https://jwk26.vercel.app>
+- Produkcja: <https://jwk26.pl> (poczta z kodami OTP przez Resend, szablony maili w panelu Supabase)
 - Spec: [`docs/superpowers/specs/2026-09-14-sekta-wyjazdowa-design.md`](docs/superpowers/specs/2026-09-14-sekta-wyjazdowa-design.md)
 - Plany: [`docs/superpowers/plans/`](docs/superpowers/plans/)
 - Poprzedni szkielet: gałąź `archive/skeleton`
