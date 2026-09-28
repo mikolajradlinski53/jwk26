@@ -16,6 +16,17 @@ self.addEventListener("push", (event) => {
       icon: "/icon",
       badge: "/icon",
       lang: "pl",
+      // Własny znacznik na każde powiadomienie + `renotify`: każde nowe
+      // ogłoszenie wibruje i wyskakuje osobno, zamiast cicho podmieniać
+      // poprzednie w szufladzie powiadomień.
+      tag: dane.id ? "jwk26-" + dane.id : undefined,
+      renotify: Boolean(dane.id),
+      // Wibracja i dźwięk: Android obudzi ekran i pokaże baner u góry, jeśli
+      // użytkownik nie wyciszył tej strony. iOS ignoruje `vibrate` — tam
+      // o banerze i dźwięku decydują wyłącznie Ustawienia → Powiadomienia.
+      vibrate: [200, 100, 200, 100, 200],
+      silent: false,
+      timestamp: Date.now(),
       data: { link: dane.link || "/app" },
     }),
   );

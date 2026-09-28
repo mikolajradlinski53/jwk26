@@ -23,6 +23,7 @@ export function komunikat(e: unknown): string {
     return "Na JWK26 jadą osoby, które w dniu wyjazdu mają skończone 18 lat.";
   }
   if (/REGULAMIN_ROBOCZY/.test(t)) return "Najpierw oznacz regulamin jako zatwierdzony.";
+  if (/raz na minute/i.test(t)) return "Próbne powiadomienie możesz wysłać raz na minutę.";
   if (/one_pending|duplicate key/i.test(t)) {
     return "Masz już zgłoszenie, które czeka na rozpatrzenie.";
   }

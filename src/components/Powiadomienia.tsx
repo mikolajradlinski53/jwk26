@@ -76,6 +76,7 @@ export function Powiadomienia() {
   const [stan, setStan] = useState<Stan>("sprawdzam");
   const [blad, setBlad] = useState<string | null>(null);
   const [czeka, setCzeka] = useState(false);
+  const [wyslanoProbne, setWyslanoProbne] = useState(false);
   const wToku = useRef(false);
 
   useEffect(() => {
@@ -91,6 +92,25 @@ export function Powiadomienia() {
       aktywny = false;
     };
   }, []);
+
+  /** Próbne powiadomienie do siebie — jedyny sposób, żeby każdy sprawdził,
+   *  czy u niego budzi telefon i wyskakuje u góry. Tego strona nie ustawi. */
+  async function probne() {
+    if (wToku.current) return;
+    wToku.current = true;
+    setCzeka(true);
+    setBlad(null);
+    setWyslanoProbne(false);
+    const { error } = await createClient().rpc("probne_powiadomienie");
+    setCzeka(false);
+    wToku.current = false;
+    if (error) {
+      console.error("Próbne powiadomienie nie przeszło:", { code: error.code, message: error.message });
+      setBlad(komunikat(error));
+      return;
+    }
+    setWyslanoProbne(true);
+  }
 
   async function przelacz(wlacz: boolean) {
     if (wToku.current || !KLUCZ) return;
@@ -142,9 +162,39 @@ export function Powiadomienia() {
           </Button>
         )}
         {stan === "wlaczone" && (
-          <Button variant="szklo" onClick={() => void przelacz(false)} disabled={czeka}>
-            {czeka ? "Wyłączam…" : "Wyłącz na tym urządzeniu"}
-          </Button>
+          <>
+            <Button onClick={() => void probne()} disabled={czeka}>
+              {czeka ? "Wysyłam…" : "Wyślij próbne powiadomienie"}
+            </Button>
+            {wyslanoProbne && (
+              <p role="status" className="text-sm text-kosc">
+                Wysłane — powinno przyjść w ciągu kilku sekund. Zablokuj telefon albo
+                wyjdź z apki, żeby zobaczyć, jak wygląda.
+              </p>
+            )}
+            <details className="text-sm text-dym">
+              <summary className="flex min-h-11 cursor-pointer items-center">
+                Nie wyskakuje u góry ekranu albo nie ma dźwięku?
+              </summary>
+              <div className="grid gap-2 pb-1 leading-relaxed">
+                <p>
+                  <strong className="text-kosc">iPhone:</strong> Ustawienia → Powiadomienia → Sekta
+                  → włącz „Pozwalaj na powiadomienia”, zaznacz „Ekran blokady”, „Centrum powiadomień”
+                  i „Banery”, styl banera „Trwały”, włącz „Dźwięki”. Jeśli używasz trybu Skupienie
+                  albo Podsumowania zaplanowanego, dodaj Sektę do wyjątków.
+                </p>
+                <p>
+                  <strong className="text-kosc">Android:</strong> przytrzymaj powiadomienie JWK26 →
+                  Ustawienia (albo Ustawienia → Aplikacje → Chrome → Powiadomienia → jwk26.pl) →
+                  włącz „Wyskakujące na ekranie” / „Pokazuj u góry ekranu” i dźwięk. Na telefonach
+                  Xiaomi, Huawei i Samsung wyłącz też oszczędzanie baterii dla Chrome.
+                </p>
+              </div>
+            </details>
+            <Button variant="szklo" onClick={() => void przelacz(false)} disabled={czeka}>
+              {czeka ? "Wyłączam…" : "Wyłącz na tym urządzeniu"}
+            </Button>
+          </>
         )}
         {blad && (
           <p role="alert" className="text-sm text-krew-jasna">

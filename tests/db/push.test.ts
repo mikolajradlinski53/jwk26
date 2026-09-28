@@ -229,6 +229,30 @@ describe("wysyłka", () => {
   });
 });
 
+describe("próbne powiadomienie", () => {
+  it("trafia tylko do wysyłającego i można je wysłać raz na minutę", async () => {
+    expect((await alaClient.rpc("probne_powiadomienie")).error).toBeNull();
+
+    const { data: w } = await admin
+      .from("powiadomienia")
+      .select("id, kanal, adresat, adresat_id")
+      .eq("ref_type", "probne")
+      .eq("adresat_id", ala.id);
+    expect(w).toHaveLength(1);
+    nowePowiadomienia.push(w![0].id as number);
+    expect(w![0]).toMatchObject({ kanal: "push", adresat: "user" });
+
+    // Limit chroni przed zasypaniem kolejki wysyłki jednym palcem.
+    const drugie = await alaClient.rpc("probne_powiadomienie");
+    expect(drugie.error!.message).toMatch(/raz na minute/);
+  });
+
+  it("niezalogowany nie wyśle próbnego", async () => {
+    const { error } = await anonimowy().rpc("probne_powiadomienie");
+    expect(error).not.toBeNull();
+  });
+});
+
 describe("automaty", () => {
   it("przyjęcie zgłoszenia powiadamia przyjętą osobę", async () => {
     const { data: z, error } = await admin

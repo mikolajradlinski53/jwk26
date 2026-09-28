@@ -25,9 +25,11 @@ function tenSamSekret(a: string, b: string): boolean {
  * trasa ma tylko klucz anon, jak skrypt arkusza.
  */
 export async function POST(request: Request) {
-  const sekret = process.env.PUSH_SEKRET;
-  const publiczny = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-  const prywatny = process.env.VAPID_PRIVATE_KEY;
+  // `trim()`: wklejony do Vercela sekret łatwo łapie spację albo znak nowej
+  // linii, a wtedy każde wywołanie z bazy kończy się 401 bez żadnej podpowiedzi.
+  const sekret = process.env.PUSH_SEKRET?.trim();
+  const publiczny = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim();
+  const prywatny = process.env.VAPID_PRIVATE_KEY?.trim();
   if (!sekret || !publiczny || !prywatny) {
     return new Response("Wysyłka nieskonfigurowana", { status: 503 });
   }
@@ -56,10 +58,17 @@ export async function POST(request: Request) {
       p.subskrypcje.map((s) =>
         webpush.sendNotification(
           { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
-          JSON.stringify({ tytul: p.tytul, tresc: p.tresc, link: p.link }),
-          // Godzina: powiadomienie o zbiórce sprzed trzech godzin jest gorsze
-          // niż żadne — telefon offline dłużej go już nie dostanie.
-          { TTL: 3600 },
+          JSON.stringify({ id: p.id, tytul: p.tytul, tresc: p.tresc, link: p.link }),
+          {
+            // Godzina: powiadomienie o zbiórce sprzed trzech godzin jest gorsze
+            // niż żadne — telefon offline dłużej go już nie dostanie.
+            TTL: 3600,
+            // Wysoki priorytet: Android nie odkłada wtedy dostarczenia do
+            // wybudzenia z trybu oszczędzania baterii (Doze), tylko budzi
+            // telefon od razu. To jedyna rzecz po stronie serwera, która
+            // decyduje, czy powiadomienie przyjdzie „teraz", czy „kiedyś".
+            urgency: "high",
+          },
         ),
       ),
     );
