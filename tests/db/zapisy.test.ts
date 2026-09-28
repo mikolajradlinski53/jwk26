@@ -886,6 +886,65 @@ describe("retencja", () => {
   });
 });
 
+describe("zwolnienie rektorskie i alkohol", () => {
+  it("zapisuje godziny zwolnienia i odpowiedź o alkohol", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { data, error } = await zloz(alaClient, ala, {
+      dane: { zwolnienie_od: "12:30", zwolnienie_do: "16:00", alkohol: "czasami" },
+    });
+    expect(error).toBeNull();
+
+    const { data: z } = await admin
+      .from("registrations")
+      .select("zwolnienie_od, zwolnienie_do, alkohol")
+      .eq("id", (data as { id: string }).id)
+      .single();
+    expect(z).toEqual({ zwolnienie_od: "12:30:00", zwolnienie_do: "16:00:00", alkohol: "czasami" });
+  });
+
+  it("obie odpowiedzi są dobrowolne", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { data, error } = await zloz(alaClient, ala);
+    expect(error).toBeNull();
+
+    const { data: z } = await admin
+      .from("registrations")
+      .select("zwolnienie_od, zwolnienie_do, alkohol")
+      .eq("id", (data as { id: string }).id)
+      .single();
+    expect(z).toEqual({ zwolnienie_od: null, zwolnienie_do: null, alkohol: null });
+  });
+
+  it("zwolnienie poza 12:00–18:00, nie co pół godziny, odwrócone albo niepełne jest odbite", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const zle = [
+      { zwolnienie_od: "11:30", zwolnienie_do: "14:00" },
+      { zwolnienie_od: "13:00", zwolnienie_do: "18:30" },
+      { zwolnienie_od: "13:15", zwolnienie_do: "15:00" },
+      { zwolnienie_od: "16:00", zwolnienie_do: "14:00" },
+      { zwolnienie_od: "13:00", zwolnienie_do: null },
+    ];
+    for (const dane of zle) {
+      const { error } = await zloz(alaClient, ala, { dane });
+      expect(error?.message, JSON.stringify(dane)).toMatch(/zwolnieni/i);
+    }
+  });
+
+  it("Alumni nie podają zwolnienia rektorskiego", async () => {
+    await ustawPule("alumni", true, 10);
+    const { error } = await zloz(alaClient, ala, {
+      dane: { pula: "alumni", nr_indeksu: null, zwolnienie_od: "13:00", zwolnienie_do: "15:00" },
+    });
+    expect(error!.message).toMatch(/zwolnieni/i);
+  });
+
+  it("nieznana odpowiedź o alkohol jest odbita", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { error } = await zloz(alaClient, ala, { dane: { alkohol: "codziennie" } });
+    expect(error!.message).toMatch(/alkohol/i);
+  });
+});
+
 /** Składa zgłoszenie tak, jak robi to formularz. */
 function zloz(
   client: SupabaseClient,

@@ -185,7 +185,7 @@ ostatnim krokiem.
 | 3 | Dane | imię, nazwisko, numer indeksu, data urodzenia, telefon, zgoda na SMS-y | wszystko poza SMS; indeks opcjonalny w puli Alumni |
 | 4 | ICE | imię osoby, jej telefon, „Ta osoba wie, że podaję jej numer, i zgadza się na kontakt w nagłym wypadku" | nie; jeśli telefon wpisany, potwierdzenie obowiązkowe |
 | 5 | Zdrowie | dieta, alergie, choroby przewlekłe i przyjmowane leki, zgoda z art. 9 | nie; jeśli cokolwiek wpisane, zgoda obowiązkowa |
-| 6 | O tobie | dojazd, ksywka na identyfikator, piosenka, uwagi | dojazd i ksywka tak |
+| 6 | O tobie | dojazd, ksywka na identyfikator, zwolnienie rektorskie (poza Alumni), alkohol, piosenka, uwagi | dojazd i ksywka tak |
 | 7 | Przelew | zdjęcie, OCR | tak, poza rezerwą |
 
 **Brzmienie pytań z kroku 6:**
@@ -198,6 +198,17 @@ ostatnim krokiem.
 - „Jak mamy cię podpisać na identyfikatorze?" (do 24 znaków)
 - „Jaki utwór rozpęta rytuał na parkiecie?"
 - „Chcesz coś dodać od siebie?"
+
+**Dopisane 2026-09-28** (po przeglądzie IOD, wersja zgód `2026-09-28`):
+
+- „Potrzebuję zwolnienia rektorskiego na I dzień wyjazdu, tj. 23.10.2026" —
+  dobrowolne, niewidoczne dla Alumnów. Po zaznaczeniu: godziny od–do co 30 minut
+  w przedziale 12:00–18:00 (wyjazd rusza o 12:00), koniec po początku.
+- „Czy pijasz alkohol?" — dobrowolne: „Nie, jestem abstynentem" / „Czasami :)" /
+  „TAK, i to chętnie ;)" / „Wolę nie odpowiadać". Brzmienie trzeciej odpowiedzi
+  złagodzone z „jestem alkoholikiem", żeby odpowiedź nie była deklaracją choroby
+  (art. 9 RODO) — dzięki temu pole żyje w `registrations`, nie w `dane_wrazliwe`.
+- Oba pola dopisane do klauzuli informacyjnej (art. 6 ust. 1 lit. b, dobrowolne).
 
 **Walidacja w przeglądarce** powtarza walidację funkcji, żeby błąd pojawiał
 się przy polu, a nie po wysłaniu. Źródłem prawdy jest funkcja.

@@ -1,5 +1,5 @@
 import { WERSJA_ZGOD } from "./zgody";
-import type { Dojazd, KluczPuli } from "@/types/db";
+import type { Alkohol, Dojazd, KluczPuli } from "@/types/db";
 
 export const NAZWY_PUL: Record<KluczPuli, string> = {
   dzialacze: "Działacze",
@@ -16,6 +16,32 @@ export const DOJAZDY: { wartosc: Dojazd; etykieta: string }[] = [
 
 export function etykietaDojazdu(d: Dojazd): string {
   return DOJAZDY.find((x) => x.wartosc === d)?.etykieta ?? d;
+}
+
+/**
+ * Godziny zwolnienia rektorskiego na pierwszy dzień wyjazdu, co pół godziny.
+ * Od 12:00, bo wtedy rusza wyjazd — wcześniejsze zajęcia nikomu nie kolidują;
+ * do 18:00, bo później nie ma już czego zwalniać. Ten sam przedział pilnuje
+ * `check` na registrations i zloz_zgloszenie().
+ */
+export const GODZINY_ZWOLNIENIA: string[] = Array.from({ length: 13 }, (_, i) => {
+  const minuty = 12 * 60 + i * 30;
+  return `${String(Math.floor(minuty / 60)).padStart(2, "0")}:${minuty % 60 === 0 ? "00" : "30"}`;
+});
+
+export const ALKOHOL: { wartosc: Alkohol; etykieta: string }[] = [
+  { wartosc: "nie", etykieta: "Nie, jestem abstynentem" },
+  { wartosc: "czasami", etykieta: "Czasami :)" },
+  { wartosc: "tak", etykieta: "TAK, i to chętnie ;)" },
+];
+
+export function etykietaAlkoholu(a: Alkohol): string {
+  return ALKOHOL.find((x) => x.wartosc === a)?.etykieta ?? a;
+}
+
+/** Czy pula w ogóle pyta o zwolnienie — Alumni nie studiują, więc nie. */
+export function pytaOZwolnienie(pula: KluczPuli | null): boolean {
+  return pula !== null && pula !== "alumni";
 }
 
 export type DaneFormularza = {
@@ -40,6 +66,13 @@ export type DaneFormularza = {
   zgodaArt9: boolean;
   dojazd: Dojazd | "";
   ksywka: string;
+  /** Dobrowolne: odznaczone znaczy „nie potrzebuję", a godziny wtedy nie idą do bazy. */
+  zwolnienie: boolean;
+  /** `HH:MM` z GODZINY_ZWOLNIENIA albo pusty łańcuch. */
+  zwolnienieOd: string;
+  zwolnienieDo: string;
+  /** Pusty łańcuch = „wolę nie odpowiadać". */
+  alkohol: Alkohol | "";
   piosenka: string;
   uwagi: string;
 };
@@ -65,6 +98,10 @@ export const PUSTY_FORMULARZ: DaneFormularza = {
   zgodaArt9: false,
   dojazd: "",
   ksywka: "",
+  zwolnienie: false,
+  zwolnienieOd: "",
+  zwolnienieDo: "",
+  alkohol: "",
   piosenka: "",
   uwagi: "",
 };
@@ -184,6 +221,18 @@ export function waliduj(krok: Krok, d: DaneFormularza, dataJwkIso: string): Bled
       if (!d.dojazd) b.dojazd = "Wybierz sposób dojazdu";
       if (puste(d.ksywka)) b.ksywka = "Podaj, jak cię podpisać";
       else if (d.ksywka.trim().length > 24) b.ksywka = "Najwyżej 24 znaki";
+
+      if (d.zwolnienie && pytaOZwolnienie(d.pula)) {
+        if (!GODZINY_ZWOLNIENIA.includes(d.zwolnienieOd)) {
+          b.zwolnienieOd = "Wybierz, od której godziny potrzebujesz zwolnienia";
+        }
+        if (!GODZINY_ZWOLNIENIA.includes(d.zwolnienieDo)) {
+          b.zwolnienieDo = "Wybierz, do której godziny potrzebujesz zwolnienia";
+        } else if (d.zwolnienieOd && d.zwolnienieDo <= d.zwolnienieOd) {
+          // `HH:MM` porównuje się tekstowo tak samo jak czasowo.
+          b.zwolnienieDo = "Koniec musi być później niż początek";
+        }
+      }
       break;
 
     case "przelew":
@@ -198,6 +247,10 @@ const alboNull = (s: string) => (puste(s) ? null : s.trim());
 
 /** Parametry `p_dane` i `p_wrazliwe` dla zloz_zgloszenie(). */
 export function doRpc(d: DaneFormularza) {
+  // Godziny tylko wtedy, gdy zwolnienie jest zaznaczone i pula o nie pyta —
+  // wybrane wcześniej, a potem odznaczone nie mogą przeciec do bazy.
+  const zwolnienie = d.zwolnienie && pytaOZwolnienie(d.pula);
+
   const p_dane = {
     pula: d.pula,
     imie: d.imie.trim(),
@@ -208,6 +261,9 @@ export function doRpc(d: DaneFormularza) {
     sms_consent: d.zgodaSms,
     dojazd: d.dojazd,
     ksywka: d.ksywka.trim(),
+    zwolnienie_od: zwolnienie ? d.zwolnienieOd : null,
+    zwolnienie_do: zwolnienie ? d.zwolnienieDo : null,
+    alkohol: d.alkohol === "" ? null : d.alkohol,
     piosenka: alboNull(d.piosenka),
     uwagi: alboNull(d.uwagi),
     zgoda_wizerunek: d.zgodaWizerunek,

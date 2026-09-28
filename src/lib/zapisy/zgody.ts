@@ -5,13 +5,14 @@
  * którą uczestnik zobaczył, i tylko po niej da się potem ustalić, na co się
  * zgodził. Baza tego nie wyłapie; to reguła przeglądu kodu (D8 speca).
  *
- * Wersja robocza, do przejrzenia przez IOD i dział prawny UEW przed otwarciem
- * pierwszej tury. Autor nie jest prawnikiem.
+ * Wersję 2026-09-27 przejrzeli IOD i radcowie prawni UEW. Wersja 2026-09-28
+ * dopisuje do klauzuli dwa pola dodane po tym przeglądzie: zwolnienie
+ * rektorskie (z godzinami) i odpowiedź na pytanie o alkohol.
  *
  * Zmiana treści regulaminu (src/app/regulamin/page.tsx) też wymaga podbicia
  * WERSJA_ZGOD, bo strona regulaminu pokazuje tę wersję.
  */
-export const WERSJA_ZGOD = "2026-09-27";
+export const WERSJA_ZGOD = "2026-09-28";
 
 export const KONTAKT_IOD = "iod@ue.wroc.pl";
 
@@ -26,7 +27,11 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
     "i podpis na identyfikatorze przetwarzamy, żeby zorganizować Jesienny " +
     "Wyjazd Komisji 2026 (JWK26), na podstawie art. 6 ust. 1 lit. b RODO — " +
     "bierzesz w nim udział na własny wniosek. Datę urodzenia wykorzystujemy " +
-    "także do sprawdzenia, czy w dniu wyjazdu masz ukończone 18 lat.",
+    "także do sprawdzenia, czy w dniu wyjazdu masz ukończone 18 lat. Na tej " +
+    "samej podstawie przetwarzamy informację, czy i w jakich godzinach " +
+    "potrzebujesz zwolnienia rektorskiego na 23 października 2026 roku (żeby " +
+    "je dla Ciebie załatwić), oraz odpowiedź na pytanie o alkohol (żeby " +
+    "zaplanować zakupy i program) — jeśli zdecydujesz się je podać.",
   "Adres e-mail, którym logujesz się do aplikacji, oraz zdjęcie potwierdzenia " +
     "przelewu razem z odczytanym z niego tekstem przetwarzamy, żeby potwierdzić " +
     "Twój udział i rozliczyć wpłatę — na podstawie art. 6 ust. 1 lit. b RODO.",
@@ -59,8 +64,9 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
     "możesz wycofać w dowolnym momencie w aplikacji; wycofanie nie wpływa na " +
     "zgodność z prawem przetwarzania sprzed wycofania.",
   "Podanie danych z kroków „Dane” i „O tobie” jest warunkiem udziału " +
-    "w wyjeździe. Kontakt ICE, informacje o zdrowiu i zgoda na wizerunek są " +
-    "dobrowolne — bez nich też pojedziesz.",
+    "w wyjeździe, z wyjątkiem zwolnienia rektorskiego i pytania o alkohol. " +
+    "Te dwie odpowiedzi, kontakt ICE, informacje o zdrowiu i zgoda na " +
+    "wizerunek są dobrowolne — bez nich też pojedziesz.",
 ];
 
 export const OSWIADCZENIE_SZKODY =

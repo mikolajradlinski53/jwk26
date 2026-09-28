@@ -30,6 +30,57 @@ const pelne: DaneFormularza = {
   ksywka: "Kotka",
 };
 
+describe("zwolnienie rektorskie i alkohol", () => {
+  const zwolnienie = { ...pelne, zwolnienie: true, zwolnienieOd: "12:30", zwolnienieDo: "16:00" };
+
+  it("zwolnienie w przedziale 12:00–18:00 co pół godziny przechodzi", () => {
+    expect(waliduj("oTobie", zwolnienie, JWK)).toEqual({});
+    expect(
+      waliduj("oTobie", { ...zwolnienie, zwolnienieOd: "12:00", zwolnienieDo: "18:00" }, JWK),
+    ).toEqual({});
+  });
+
+  it("zwolnienie bez godzin, odwrócone albo poza przedziałem nie przechodzi", () => {
+    expect(
+      waliduj("oTobie", { ...zwolnienie, zwolnienieOd: "", zwolnienieDo: "" }, JWK).zwolnienieOd,
+    ).toBeDefined();
+    expect(
+      waliduj("oTobie", { ...zwolnienie, zwolnienieOd: "16:00", zwolnienieDo: "16:00" }, JWK)
+        .zwolnienieDo,
+    ).toBeDefined();
+    // Wyjazd rusza o 12:00 — wcześniejsza godzina nie ma sensu, nawet wpisana ręcznie.
+    expect(
+      waliduj("oTobie", { ...zwolnienie, zwolnienieOd: "11:30" }, JWK).zwolnienieOd,
+    ).toBeDefined();
+    expect(
+      waliduj("oTobie", { ...zwolnienie, zwolnienieDo: "18:30" }, JWK).zwolnienieDo,
+    ).toBeDefined();
+  });
+
+  it("Alumni nie podają zwolnienia — pole nie idzie do bazy", () => {
+    const alumn = { ...zwolnienie, pula: "alumni" as const, zwolnienieOd: "", zwolnienieDo: "" };
+    expect(waliduj("oTobie", alumn, JWK)).toEqual({});
+    expect(doRpc({ ...zwolnienie, pula: "alumni" }).p_dane).toMatchObject({
+      zwolnienie_od: null,
+      zwolnienie_do: null,
+    });
+  });
+
+  it("zwolnienie i alkohol trafiają do wywołania, brak odpowiedzi jako null", () => {
+    expect(doRpc({ ...zwolnienie, alkohol: "czasami" }).p_dane).toMatchObject({
+      zwolnienie_od: "12:30",
+      zwolnienie_do: "16:00",
+      alkohol: "czasami",
+    });
+    // Odznaczone zwolnienie nie wysyła godzin, nawet jeśli wybrano je wcześniej.
+    expect(doRpc({ ...zwolnienie, zwolnienie: false }).p_dane).toMatchObject({
+      zwolnienie_od: null,
+      zwolnienie_do: null,
+      alkohol: null,
+    });
+  });
+});
+
 describe("próg pełnoletności", () => {
   it("to dzień wyjazdu osiemnaście lat wcześniej", () => {
     expect(progPelnoletnosci(JWK)).toBe("2008-10-23");

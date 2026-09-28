@@ -97,6 +97,10 @@ export type Registration = {
   zgoda_wizerunek_wycofana_at: string | null;
   rezerwa: boolean;
   kolejnosc_rezerwy: number | null;
+  /** `HH:MM:SS` z kolumny `time`; oba NULL, gdy zwolnienie niepotrzebne. */
+  zwolnienie_od: string | null;
+  zwolnienie_do: string | null;
+  alkohol: Alkohol | null;
 };
 
 export type ShopKind = "digital" | "physical";
@@ -193,6 +197,9 @@ export type WpisKroniki = {
 export type KluczPuli = "dzialacze" | "swiezaki" | "alumni";
 
 export type Dojazd = "autokar_oba" | "autokar_tam" | "autokar_powrot" | "wlasny";
+
+/** Odpowiedź na „Czy pijasz alkohol?" — dobrowolna, więc w bazie może być NULL. */
+export type Alkohol = "nie" | "czasami" | "tak";
 
 /** Wiersz `stan_pul()` — liczby bez nazwisk, czytelne dla uczestnika. */
 export type StanPuli = {
