@@ -5,8 +5,7 @@
  * którą uczestnik zobaczył, i tylko po niej da się potem ustalić, na co się
  * zgodził. Baza tego nie wyłapie; to reguła przeglądu kodu (D8 speca).
  *
- * Wersję 2026-09-27 przejrzeli IOD i radcowie prawni UEW. Wersja 2026-09-28
- * dopisuje do klauzuli dwa pola dodane po tym przeglądzie: zwolnienie
+ * Wersja 2026-09-28 dopisuje do klauzuli dwa nowe pola: zwolnienie
  * rektorskie (z godzinami) i odpowiedź na pytanie o alkohol. Wersja
  * 2026-09-28.2 dopisuje Google (arkusz zespołu) jako podmiot przetwarzający.
  *

@@ -2,8 +2,7 @@
 -- Sekta Wyjazdowa — zapisy: zwolnienie rektorskie i pytanie o alkohol
 -- ============================================================
 --
--- Dwa dobrowolne pola dodane po przeglądzie tekstów przez IOD (wersja zgód
--- 2026-09-28). Oba siedzą w registrations, nie w dane_wrazliwe: zwolnienie to
+-- Dwa dobrowolne pola (wersja zgód 2026-09-28). Oba siedzą w registrations, nie w dane_wrazliwe: zwolnienie to
 -- sprawa organizacyjna, a odpowiedzi o alkohol celowo nie zawierają deklaracji
 -- choroby („TAK, i to chętnie ;)", nie „jestem alkoholikiem"), więc nie są
 -- danymi o zdrowiu z art. 9 RODO.

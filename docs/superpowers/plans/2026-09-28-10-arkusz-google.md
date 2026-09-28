@@ -21,10 +21,10 @@ rozbrajając wartości, które Sheets wykonałby jako formuły.
 
 - `gas/arkusz.gs`, `gas/README.md` (instalacja, dostęp imienny, rotacja sekretu).
 
-## Task 3: Klauzula — zrobione, czeka na IOD
+## Task 3: Klauzula — zrobione
 
 - `src/lib/zapisy/zgody.ts`: Google jako podmiot przetwarzający; `WERSJA_ZGOD`
-  `2026-09-28.2`. **Arkusza nie udostępniać, dopóki IOD nie zatwierdzi.**
+  `2026-09-28.2`. Arkusz udostępniany wyłącznie imiennie.
 
 ## Task 4: Wdrożenie
 

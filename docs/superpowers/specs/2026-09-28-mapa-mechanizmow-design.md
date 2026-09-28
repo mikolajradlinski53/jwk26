@@ -36,8 +36,8 @@ Wpłaty ruszają 12.10 — do tego dnia muszą działać 09 i 10, żeby zespół
 zapisy. Push (11) musi działać od pierwszej minuty wyjazdu.
 
 **Rzeczy do uruchomienia wcześniej, poza kodem:**
-- klauzula: dopisać Google (arkusz) jako podmiot przetwarzający — do IOD zanim
-  ruszy plan 10;
+- klauzula: dopisać Google (arkusz) jako podmiot przetwarzający, zanim arkusz
+  zostanie udostępniony (zrobione 2026-09-28, wersja zgód `2026-09-28.2`);
 - SMSAPI: konto i zatwierdzenie nadawcy „JWK26" trwa 1–3 dni — jeśli SMS-y mają
   mieć szansę, zgłosić wcześnie.
 
@@ -65,7 +65,7 @@ zapisy. Push (11) musi działać od pierwszej minuty wyjazdu.
 - Arkusz udostępniany wyłącznie imiennie; Sheets nie ukrywa zakładek przed kimś,
   kto ma dostęp do pliku.
 - Kod skryptu w repo (`gas/`).
-- Wymaga zmiany klauzuli (Google jako podmiot przetwarzający) i przeglądu IOD.
+- Wymaga zmiany klauzuli (Google jako podmiot przetwarzający).
 
 ### 11 · Push i ogłoszenia
 

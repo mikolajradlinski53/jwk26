@@ -199,7 +199,7 @@ ostatnim krokiem.
 - „Jaki utwór rozpęta rytuał na parkiecie?"
 - „Chcesz coś dodać od siebie?"
 
-**Dopisane 2026-09-28** (po przeglądzie IOD, wersja zgód `2026-09-28`):
+**Dopisane 2026-09-28** (wersja zgód `2026-09-28`):
 
 - „Potrzebuję zwolnienia rektorskiego na I dzień wyjazdu, tj. 23.10.2026" —
   dobrowolne, niewidoczne dla Alumnów. Po zaznaczeniu: godziny od–do co 30 minut
@@ -227,8 +227,8 @@ to obejść.
 
 ## 5. Teksty prawne
 
-Robocze. **Przed otwarciem pierwszej tury klauzulę i oświadczenie przegląda
-IOD i dział prawny UEW.** Autor tych tekstów nie jest prawnikiem.
+Teksty poniżej to pierwsza wersja z 27.09; obowiązująca treść żyje
+w `src/lib/zapisy/zgody.ts`. Autor tych tekstów nie jest prawnikiem.
 
 ### Klauzula informacyjna (art. 13 RODO) — elementy obowiązkowe
 

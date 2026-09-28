@@ -59,8 +59,8 @@ export function Regulamin({ zatwierdzony }: { zatwierdzony: boolean }) {
       {!zatwierdzony && pyta && (
         <>
           <p className="text-xs leading-relaxed text-kosc">
-            Zrób to dopiero wtedy, gdy zarząd przyjął regulamin, a IOD i dział prawny
-            UEW przejrzeli klauzulę informacyjną i oświadczenie o szkodach.
+            Zrób to dopiero wtedy, gdy zarząd przyjął regulamin, a klauzula
+            informacyjna i oświadczenie o szkodach są w ostatecznej wersji.
           </p>
           <div className="grid grid-cols-2 gap-3">
             <Button variant="szklo" onClick={() => setPyta(false)} disabled={czeka}>

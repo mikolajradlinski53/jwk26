@@ -6,9 +6,8 @@ stanem zapisów z bazy: **Podsumowanie**, **Zapisy** i **Dane wrażliwe**.
 > **Dostęp tylko imienny.** Zakładka „Dane wrażliwe" zawiera diety, alergie,
 > choroby, leki i kontakty ICE, a Google Sheets nie ukrywa zakładek przed nikim,
 > kto ma dostęp do pliku. Udostępniaj arkusz wyłącznie wskazanym organizatorom
-> z nazwiska — nigdy „każdy, kto ma link". Przed pierwszym udostępnieniem IOD
-> musi zatwierdzić klauzulę z Google jako podmiotem przetwarzającym
-> (wersja zgód `2026-09-28.2`).
+> z nazwiska — nigdy „każdy, kto ma link". Klauzula informacyjna wymienia Google
+> jako podmiot przetwarzający od wersji zgód `2026-09-28.2`.
 
 ## Instalacja (raz)
 
