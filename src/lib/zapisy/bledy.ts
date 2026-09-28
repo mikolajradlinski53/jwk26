@@ -31,7 +31,7 @@ export function komunikat(e: unknown): string {
   if (limit) return `Dzienny limit kasyna wyczerpany: ${limit[1]} z ${limit[2]} pkt w ostatnich 24 h.`;
   if (/reke w toku/i.test(t)) return "Masz rękę w toku — dokończ ją.";
   if (/Brak reki w toku/i.test(t)) return "Ta ręka jest już rozstrzygnięta.";
-  if (/Podwoic mozna/i.test(t)) return "Podwoić można tylko na dwóch pierwszych kartach.";
+  if (/Podwoic mozna/i.test(t)) return "Podwoić można tylko przy 9, 10 albo 11 na dwóch pierwszych kartach.";
   if (/Stawka to 10, 20 albo 50/i.test(t)) return "Stawka to 10, 20 albo 50 pkt.";
   // Gossipy
   if (/na siebie/i.test(t)) return "Nie możesz głosować na siebie.";

@@ -108,11 +108,29 @@ describe("rozgrywka", () => {
     expect(await saldo()).toBe(90);
   });
 
-  it("blackjack z rozdania płaci 3:2 i rozstrzyga się od razu", async () => {
+  it("blackjack z rozdania płaci 6:5 i rozstrzyga się od razu", async () => {
     await dosypPunktyOsobie(gracz.id, druzyna, 100);
     const w = await start(["As", "9h", "Ks", "7h"]);
-    expect(w).toMatchObject({ status: "settled", wynik: "blackjack", wyplata: 25 });
-    expect(await saldo()).toBe(115);
+    // 6:5 zamiast 3:2 — przewaga kasyna (2026-09-28): stawka 10 wraca jako 22.
+    expect(w).toMatchObject({ status: "settled", wynik: "blackjack", wyplata: 22 });
+    expect(await saldo()).toBe(112);
+  });
+
+  it("krupier dobiera na miękkie 17", async () => {
+    await dosypPunktyOsobie(gracz.id, druzyna, 100);
+    // Gracz 10+8 = 18, krupier A+6 = miękkie 17 → dobiera 2 → 19.
+    await start(["10s", "As", "8s", "6h", "2d"]);
+    const w = await ruch("stan");
+    expect(w).toMatchObject({ wynik: "przegrana", punkty_krupiera: 19 });
+  });
+
+  it("podwojenie tylko przy 9, 10 albo 11", async () => {
+    await dosypPunktyOsobie(gracz.id, druzyna, 100);
+    // 10+2 = 12: podwojenie niedostępne.
+    const w = await start(["10s", "10h", "2s", "7h"]);
+    expect(w.mozna_podwoic).toBe(false);
+    const { error } = await admin.rpc("bj_ruch", { p_user: gracz.id, p_ruch: "podwoj" });
+    expect(error!.message).toMatch(/9, 10 albo 11/);
   });
 
   it("krupier dobiera do 17 i może wygrać", async () => {

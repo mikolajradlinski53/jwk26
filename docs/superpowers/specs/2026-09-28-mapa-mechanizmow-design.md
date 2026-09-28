@@ -92,6 +92,8 @@ zapisy. Push (11) musi działać od pierwszej minuty wyjazdu.
 ### 13 · Blackjack
 
 - Dobierz / stań / podwój; krupier staje na 17; blackjack 3:2.
+  Po pierwszych grach (2026-09-28) przewaga kasyna podniesiona: blackjack 6:5,
+  krupier dobiera na miękkie 17, podwojenie tylko przy 9–11.
 - **Stawka do wyboru: 10, 20 albo 50** — trzy przyciski, bez wpisywania kwoty.
 - `game_sessions.state` z talią już zamknięte; limit obrotu wspólny ze slotami
   (`obrot_w_oknie` liczy wszystkie gry).

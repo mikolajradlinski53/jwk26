@@ -184,8 +184,9 @@ export function Stol({ poczatkowa, saldo }: { poczatkowa: RekaBj | null; saldo: 
       )}
 
       <p className="text-center text-xs leading-relaxed text-dym">
-        Krupier staje na 17. Blackjack z rozdania płaci 3:2. Podwojenie tylko na dwóch
-        pierwszych kartach. Ręka zostawiona na 10 minut kończy się jak „stań”.
+        Krupier dobiera do 17, także na miękkie 17 z asem. Blackjack z rozdania płaci 6:5.
+        Podwojenie tylko przy 9, 10 albo 11 na dwóch pierwszych kartach. Ręka zostawiona
+        na 10 minut kończy się jak „stań”.
       </p>
     </div>
   );
