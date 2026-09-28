@@ -101,6 +101,9 @@ zapisy. Push (11) musi działać od pierwszej minuty wyjazdu.
 
 ### 14 · Dino
 
+Zmienione (2026-09-28) na **Kruka** — lot przez szczeliny zamiast biegu, spec
+`2026-09-28-kruk-design.md`. Bez punktów, ranking osób.
+
 - Gra w canvasie; wynik zapisuje funkcja z sanity checkami (jeden wynik na grę,
   maksymalny przyrost na minutę).
 - **Bez punktów — tylko ranking**, więc podrobiony wynik psuje najwyżej ranking dino.
