@@ -24,6 +24,15 @@ export function komunikat(e: unknown): string {
   }
   if (/REGULAMIN_ROBOCZY/.test(t)) return "Najpierw oznacz regulamin jako zatwierdzony.";
   if (/raz na minute/i.test(t)) return "Próbne powiadomienie możesz wysłać raz na minutę.";
+  // Kasyno
+  const stawka = t.match(/Masz (-?\d+) pkt, a stawka to (\d+)/);
+  if (stawka) return `Masz ${stawka[1]} pkt, a stawka to ${stawka[2]}.`;
+  const limit = t.match(/Limit obrotu wyczerpany: (\d+) z (\d+)/);
+  if (limit) return `Dzienny limit kasyna wyczerpany: ${limit[1]} z ${limit[2]} pkt w ostatnich 24 h.`;
+  if (/reke w toku/i.test(t)) return "Masz rękę w toku — dokończ ją.";
+  if (/Brak reki w toku/i.test(t)) return "Ta ręka jest już rozstrzygnięta.";
+  if (/Podwoic mozna/i.test(t)) return "Podwoić można tylko na dwóch pierwszych kartach.";
+  if (/Stawka to 10, 20 albo 50/i.test(t)) return "Stawka to 10, 20 albo 50 pkt.";
   // Gossipy
   if (/na siebie/i.test(t)) return "Nie możesz głosować na siebie.";
   if (/juz oddany/i.test(t)) return "Twój głos w tej kategorii jest już oddany.";

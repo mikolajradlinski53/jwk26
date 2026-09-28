@@ -47,6 +47,15 @@ export default async function ArcadePage() {
         <strong className="font-tytul text-2xl leading-none tabular-nums">{saldo}</strong>
       </div>
 
+      <Link
+        href="/app/arcade/blackjack"
+        className="szklo mb-4 flex min-h-12 items-center justify-between rounded-md px-4 text-sm font-bold
+                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
+      >
+        <span>Blackjack</span>
+        <span className="text-xs font-normal text-dym">stawka 10 · 20 · 50 →</span>
+      </Link>
+
       <Bebny
         saldo={saldo}
         stawka={stawka}
@@ -59,7 +68,7 @@ export default async function ArcadePage() {
       </h2>
       {historia.length === 0 ? (
         <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">
-          Jeszcze nie kręciłeś.
+          Jeszcze żadnego spinu.
         </p>
       ) : (
         <ol className="grid gap-1.5">
