@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
 import { Kontener } from "./Kontener";
+import { ZabaStala } from "./zaba/ZabaStala";
 
 const DOKUMENTY = [
   {
@@ -20,7 +21,7 @@ export function Dokumenty() {
   return (
     <section id="dokumenty" className="bg-jesien-tlo/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener>
-        <SekcjaNaglowek numer="09" nadtytul="Zasady" tytul="Zasady i dokumenty" />
+        <SekcjaNaglowek numer="09" nadtytul="Zasady" tytul="Zasady i dokumenty" zaba={<ZabaStala poza="czyta" skala={0.62} />} />
         <div className="grid gap-3 min-[600px]:grid-cols-2">
           {DOKUMENTY.map((d) => (
             <Link

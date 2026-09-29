@@ -1,6 +1,7 @@
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
 import { Kontener } from "./Kontener";
 import { Zaslona } from "./Zaslona";
+import { ZabaStala } from "./zaba/ZabaStala";
 import { grupujPoDniach, krotkaGodzina, nazwaDnia, type PunktHarmonogramu } from "@/lib/harmonogram";
 import type { OdslonaWidok } from "@/lib/odslony";
 
@@ -20,6 +21,7 @@ export function Plan({ punkty, odslona }: { punkty: PunktHarmonogramu[]; odslona
         tlo="bg-jesien-karta/70"
         ksztalt="plan"
         odslona={odslona}
+        zaba={<ZabaStala poza="podglada" skala={0.9} polozenie={{ bottom: "calc(100% - 9px)", left: "50%", transform: "translateX(-50%)" }} />}
       />
     );
   }

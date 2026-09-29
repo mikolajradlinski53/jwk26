@@ -3,6 +3,7 @@ import { SekcjaNaglowek } from "./SekcjaNaglowek";
 import { Kontener } from "./Kontener";
 import { Zaslona } from "./Zaslona";
 import { Mapa } from "./Mapa";
+import { ZabaStala } from "./zaba/ZabaStala";
 import { DATY_WYJAZDU, type OdslonaWidok } from "@/lib/odslony";
 
 const TLO = "bg-jesien-tlo/70";
@@ -37,6 +38,7 @@ export function KiedyGdzie({
         tlo={TLO}
         ksztalt="osrodek"
         odslona={odslona}
+        zaba={<ZabaStala poza="lornetka" skala={0.62} polozenie={{ bottom: 0, right: "calc(100% + 8px)" }} />}
       >
         <Daty />
       </Zaslona>
@@ -46,7 +48,7 @@ export function KiedyGdzie({
   return (
     <section id="kiedy-gdzie" className={`${TLO} mx-auto w-full scroll-mt-20 px-4 py-14`}>
       <Kontener wariant="szeroki">
-        <SekcjaNaglowek numer="03" nadtytul="Lokalizacja" tytul="Kiedy i gdzie" />
+        <SekcjaNaglowek numer="03" nadtytul="Lokalizacja" tytul="Kiedy i gdzie" zaba={<ZabaStala poza="lornetka" skala={0.62} />} />
         <Daty />
         <div className="mt-4 grid grid-cols-[1.7fr_1fr] gap-2.5">
           <div className="relative aspect-[4/3] overflow-hidden rounded-lg">

@@ -1,5 +1,6 @@
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
 import { Kontener } from "./Kontener";
+import { ZabaStala } from "./zaba/ZabaStala";
 import { Licznik } from "./Licznik";
 import { PrzyciskZapisu } from "./PrzyciskZapisu";
 import { odliczanie } from "@/lib/odliczanie";
@@ -43,7 +44,7 @@ export function Zapisy({ zapisy, dataSwiezakow }: { zapisy: OdslonaWidok; dataSw
   return (
     <section id="zapisy" className="bg-jesien-karta/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener wariant="szeroki">
-        <SekcjaNaglowek numer="04" nadtytul="Zgłoszenie" tytul="Zapisy" />
+        <SekcjaNaglowek numer="04" nadtytul="Zgłoszenie" tytul="Zapisy" zaba={<ZabaStala poza="pisze" skala={0.62} />} />
 
         <div className="grid gap-4 min-[850px]:grid-cols-3">
           <div className="grid content-start gap-2 rounded-lg border border-jesien-kora/15 bg-jesien-tlo/80 p-5">

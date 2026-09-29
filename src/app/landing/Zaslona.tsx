@@ -69,6 +69,7 @@ export function Zaslona({
   ksztalt,
   odslona,
   children,
+  zaba,
 }: {
   id: string;
   numer: string;
@@ -80,6 +81,8 @@ export function Zaslona({
   odslona: OdslonaWidok;
   /** Treść jawna przed odsłoną, nad atrapą (np. daty w „Kiedy i gdzie”). */
   children?: React.ReactNode;
+  /** Żaba przy karcie licznika — pozycjonowana przez wywołującego względem karty. */
+  zaba?: React.ReactNode;
 }) {
   return (
     <section id={id} className={`${tlo} mx-auto w-full scroll-mt-20 px-4 py-14`}>
@@ -92,9 +95,10 @@ export function Zaslona({
           </div>
           <div className="absolute inset-0 grid place-items-center p-4">
             <div
-              className="grid justify-items-center gap-1 rounded-lg border border-jesien-kora/15 bg-jesien-tlo/90
+              className="relative grid justify-items-center gap-1 rounded-lg border border-jesien-kora/15 bg-jesien-tlo/90
                          px-6 py-4 text-center shadow-[0_14px_30px_-18px_rgb(47_33_24/0.5)]"
             >
+              {zaba}
               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-jesien-rdza">Odsłonimy za</p>
               <LicznikOdslony
                 data={odslona.data}

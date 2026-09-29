@@ -17,7 +17,6 @@ import { CoZabrac } from "./landing/CoZabrac";
 import { Pytania } from "./landing/Pytania";
 import { Dokumenty } from "./landing/Dokumenty";
 import { Liscie } from "./landing/Liscie";
-import { Przewodnik } from "./landing/zaba/Przewodnik";
 import { Stopka } from "./landing/Stopka";
 import { DzielnikFala, DzielnikSzewron, DzielnikSkos, DzielnikLisc } from "./landing/Dzielniki";
 
@@ -111,19 +110,15 @@ export default async function Landing({
         prześwitywały — kontrast policzony dla najgorszego przypadku (~4,9:1).
       */}
       <Liscie />
-      <Przewodnik />
 
       <div className="relative z-10">
         <Naglowek />
         <Wejscie dataJwk={dataJwk} zapisy={odslony.zapisy} miasto={miasto} />
         {/* Fala wypływa z ciemnego dołu zdjęcia hero w jasną sekcję. */}
-        {/* Bez trasy: w hero żaba siedzi na liczniku, druga — wędrująca —
-            obok niej wyglądałaby jak klon. Przewodnik rusza od następnego dzielnika. */}
-        <DzielnikFala kolorKlasa="text-jesien-tlo" tloKlasa="bg-noc" trasa="brak" />
+        <DzielnikFala kolorKlasa="text-jesien-tlo" tloKlasa="bg-noc" />
 
         <Opis kwota={cenaJawna ? (przelew?.kwota ?? null) : null} miasto={miasto} />
-        {/* Trasa tuż przed zasłoniętą sekcją: żaba staje i wskazuje. */}
-        <DzielnikSzewron trasa={!odslony.plan.odsloniete || (!pokazPlan && !osrodekJawny) ? "wskazuj" : "idz"} />
+        <DzielnikSzewron />
 
         {pokazPlan && (
           <>
@@ -131,7 +126,6 @@ export default async function Landing({
             <DzielnikSkos
               kolorKlasa="bg-jesien-tlo"
               tloKlasa="bg-jesien-karta"
-              trasa={osrodekJawny ? "idz" : "wskazuj"}
             />
           </>
         )}
@@ -144,11 +138,10 @@ export default async function Landing({
         <DzielnikSkos
           kolorKlasa="bg-jesien-karta"
           tloKlasa="bg-jesien-tlo"
-          trasa={odslony.zapisy.odsloniete ? "idz" : "wskazuj"}
         />
 
         <Zapisy zapisy={odslony.zapisy} dataSwiezakow={dataSwiezakow} />
-        <DzielnikSzewron trasa={cenaJawna ? "idz" : "wskazuj"} />
+        <DzielnikSzewron />
 
         <CenaIWplata odslona={odslony.cena} przelew={cenaJawna ? przelew : null} />
         <DzielnikFala kolorKlasa="text-jesien-karta" tloKlasa="bg-jesien-tlo" />

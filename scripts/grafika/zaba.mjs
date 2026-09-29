@@ -19,15 +19,20 @@ if (!zrodlo) throw new Error("Podaj katalog z klatkami");
 const WZROST = 240;
 
 // nazwa w silniku, prefiks plików, wzrost stojącej żaby w pikselach źródła
+// Pozy do sekcji (arkusz ab04f5e8) mają wspólną skalę: stojąca żaba 698 px.
+// Chód i wygłupy z pierwszej wersji (wędrująca żaba) wypadły 2026-09-29 —
+// Mikołaj wolał żabę wpisaną w każdą sekcję; klatki zostały w scratchpadzie.
 const ANIMACJE = [
-  ["chod", "chod", 746],
-  ["podskok", "podskok", 421],
-  ["taniec", "taniec", 421],
-  ["potkniecie", "potkniecie", 421],
-  ["macha", "macha", 785],
   ["siedzi", "siedzi", 785],
-  ["wskazuje", "wskazuje", 875],
   ["ramka", "ramka", 875],
+  ["opiera", "opiera", 698],
+  ["podglada", "podglada", 698],
+  ["lornetka", "lornetka", 698],
+  ["pisze", "pisze", 698],
+  ["skarbonka", "skarbonka", 698],
+  ["plecak", "plecak", 698],
+  ["mysli", "mysli", 698],
+  ["czyta", "czyta", 698],
 ];
 
 const wyjscie = "public/grafika/zaba";

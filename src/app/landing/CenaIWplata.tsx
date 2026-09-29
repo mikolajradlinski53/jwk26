@@ -1,6 +1,7 @@
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
 import { Kontener } from "./Kontener";
 import { Zaslona } from "./Zaslona";
+import { ZabaStala } from "./zaba/ZabaStala";
 import { DanePrzelewu } from "@/components/DanePrzelewu";
 import type { DanePrzelewu as DanePrzelewuTyp } from "@/lib/zapisy/qrPrzelewu";
 import type { OdslonaWidok } from "@/lib/odslony";
@@ -24,6 +25,7 @@ export function CenaIWplata({ odslona, przelew }: { odslona: OdslonaWidok; przel
         tlo={TLO}
         ksztalt="cena"
         odslona={odslona}
+        zaba={<ZabaStala poza="skarbonka" skala={0.62} polozenie={{ bottom: 0, left: "calc(100% + 8px)" }} />}
       />
     );
   }
@@ -31,7 +33,7 @@ export function CenaIWplata({ odslona, przelew }: { odslona: OdslonaWidok; przel
   return (
     <section id="cena-i-wplata" className={`${TLO} mx-auto w-full scroll-mt-20 px-4 py-14`}>
       <Kontener>
-        <SekcjaNaglowek numer="05" nadtytul="Koszt" tytul="Cena i wpłata" />
+        <SekcjaNaglowek numer="05" nadtytul="Koszt" tytul="Cena i wpłata" zaba={<ZabaStala poza="skarbonka" skala={0.62} />} />
         {przelew ? (
           <p className="font-tytul text-5xl text-jesien-rdza min-[600px]:text-6xl">{przelew.kwota} zł</p>
         ) : (

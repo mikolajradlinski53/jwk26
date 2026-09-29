@@ -750,13 +750,46 @@ body {
   }
 }
 
-/* Żaba w hero macha: dwie klatki paska na zmianę (ZabaStala, plan 16b).
-   step-end — bez przenikania klatek; ograniczony ruch zatrzymuje na pierwszej. */
+/* Żaba w sekcjach landingu (ZabaStala, plan 16b). Kołysanie stale, wskok
+   przy wejściu w ekran, podskok po dotknięciu. Ograniczony ruch zeruje czasy
+   animacji globalnie — `both` zostawia wtedy żabę w stanie końcowym (widoczna). */
 @keyframes zaba-machanie {
   0% { background-position: 0% 0; }
   50% { background-position: 100% 0; }
   100% { background-position: 100% 0; }
 }
-.zaba-machanie {
-  animation: zaba-machanie 0.9s step-end infinite;
+
+@keyframes zaba-kolys {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+.zaba-kolys {
+  animation: zaba-kolys 3.2s ease-in-out infinite;
+  cursor: pointer;
+}
+.zaba-kolys.zaba-czeka {
+  opacity: 0;
+  animation: none;
+}
+@keyframes zaba-wchodzi {
+  0% { opacity: 0; transform: translateY(24px) scale(0.9); }
+  55% { opacity: 1; transform: translateY(-12px) scale(1.03); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.zaba-kolys.zaba-wchodzi {
+  animation: zaba-wchodzi 0.55s cubic-bezier(0.3, 0.7, 0.4, 1) both, zaba-kolys 3.2s ease-in-out 0.55s infinite;
+}
+@keyframes zaba-hop {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-18px) rotate(-4deg); }
+  70% { transform: translateY(0) scale(1.05, 0.94); }
+}
+.zaba-kolys.zaba-hop {
+  animation: zaba-hop 0.45s ease-out both;
+}
+.zaba-kolys.zaba-machanie {
+  animation: zaba-machanie 0.9s step-end infinite, zaba-kolys 3.2s ease-in-out infinite;
+}
+.zaba-kolys.zaba-machanie.zaba-hop {
+  animation: zaba-machanie 0.9s step-end infinite, zaba-hop 0.45s ease-out both;
 }

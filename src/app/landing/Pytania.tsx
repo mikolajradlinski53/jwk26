@@ -1,5 +1,6 @@
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
 import { Kontener } from "./Kontener";
+import { ZabaStala } from "./zaba/ZabaStala";
 import { KOORDYNATOR_MAIL, KOORDYNATOR_TELEFON } from "@/lib/regulamin";
 
 // Odpowiedzi oparte na regulaminie i formularzu zapisów — nic, czego system
@@ -54,7 +55,7 @@ export function Pytania() {
   return (
     <section id="pytania" className="bg-jesien-karta/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener>
-        <SekcjaNaglowek numer="08" nadtytul="Pytania" tytul="Najczęstsze pytania" />
+        <SekcjaNaglowek numer="08" nadtytul="Pytania" tytul="Najczęstsze pytania" zaba={<ZabaStala poza="mysli" skala={0.62} />} />
 
         <div className="grid gap-3">
           {PYTANIA.map((p) => (
