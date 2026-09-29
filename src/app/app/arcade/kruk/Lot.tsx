@@ -55,19 +55,33 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
   const [rekord, setRekord] = useState<number | null>(rekordPoczatkowy);
   const [uwaga, setUwaga] = useState<string | null>(null);
   const obrazyRef = useRef<ObrazyGry | null>(null);
+  // Czy można już grać: grafiki wczytane albo minął czas oczekiwania.
+  // Ref dla pętli i dotyku (żyją w domknięciu efektu), stan dla nakładki.
+  const gotowaRef = useRef(false);
+  const [gotowa, setGotowa] = useState(false);
 
-  // Grafiki raz na wejście na ekran. Do czasu wczytania gra rysuje wersję
-  // wektorową — słaba sieć niczego nie blokuje (spec wyglądu, „Kruk”). Osobny
-  // efekt, bez `runda`: „Jeszcze raz” nie ciągnie grafik od nowa.
+  // Grafiki raz na wejście na ekran; do tego czasu nakładka „Kruk nadlatuje”,
+  // a nie wektorowy zastępca — wektor mignął i znikał, co wyglądało jak błąd
+  // (uwaga Mikołaja). Jeśli grafiki nie dojdą w 8 s albo padną, gra rusza
+  // w wersji wektorowej: słaba sieć nie może zablokować gry na zawsze.
+  // Osobny efekt, bez `runda`: „Jeszcze raz” nie ciągnie grafik od nowa.
   useEffect(() => {
     let zyje = true;
+    const uwolnij = () => {
+      if (!zyje || gotowaRef.current) return;
+      gotowaRef.current = true;
+      setGotowa(true);
+    };
+    const limit = setTimeout(uwolnij, 8000);
     wczytajObrazy()
       .then((o) => {
         if (zyje) obrazyRef.current = o;
       })
-      .catch((e) => console.error("Grafiki kruka się nie wczytały:", e));
+      .catch((e) => console.error("Grafiki kruka się nie wczytały:", e))
+      .finally(uwolnij);
     return () => {
       zyje = false;
+      clearTimeout(limit);
     };
   }, []);
 
@@ -138,6 +152,9 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
     }
 
     function dotkniecie() {
+      // Przed wczytaniem grafik start byłby lotem w ciemno — nakładka mówi,
+      // że trzeba chwilę poczekać.
+      if (!gotowaRef.current) return;
       if (aktualna === "czeka") {
         wystartuj();
         ustaw("leci");
@@ -228,7 +245,16 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
           aria-label="Plansza lotu kruka — dotknij, żeby machnąć skrzydłami"
           className="block aspect-[3/4] w-full touch-none select-none"
         />
-        {faza === "czeka" && <Napis>Dotknij, by lecieć</Napis>}
+        {!gotowa && (
+          <div
+            role="status"
+            className="absolute inset-0 grid place-content-center justify-items-center gap-4 bg-noc text-center"
+          >
+            <span aria-hidden="true" className="size-9 animate-spin rounded-full border-2 border-white/15 border-t-kosc" />
+            <p className="text-xs uppercase tracking-[0.14em] text-dym">Kruk nadlatuje…</p>
+          </div>
+        )}
+        {gotowa && faza === "czeka" && <Napis>Dotknij, by lecieć</Napis>}
         {faza === "pauza" && <Napis>Pauza — dotknij, by lecieć dalej</Napis>}
         {faza === "koniec" && (
           <div className="absolute inset-0 grid place-content-center gap-4 bg-noc/70 px-8 text-center">
