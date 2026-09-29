@@ -15,3 +15,19 @@ export async function skompresuj(plik: File): Promise<File> {
     fileType: "image/jpeg",
   });
 }
+
+/**
+ * Podgląd do feedu: 720 px, ~60–80 KB. Feed pokazuje podglądy, pełne zdjęcie
+ * dopiero po dotknięciu — przy 60 osobach przeglądających feed to różnica
+ * rzędu dziesięciu razy w transferze (spec porządku, D6).
+ */
+export async function podglad(plik: File): Promise<File> {
+  const { default: imageCompression } = await import("browser-image-compression");
+
+  return imageCompression(plik, {
+    maxSizeMB: 0.08,
+    maxWidthOrHeight: 720,
+    useWebWorker: true,
+    fileType: "image/jpeg",
+  });
+}

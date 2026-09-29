@@ -13,22 +13,29 @@ import { RUCH } from "./Ekran";
 export function SzkieletEkranu({
   tytul,
   podtytul,
+  naglowek,
   children,
 }: {
   tytul: string;
   /** `true` — podtytuł zależny od danych (np. ksywka), rysowany jako pasek. */
   podtytul?: string | true;
+  /** Ten sam własny nagłówek co w Ekran (np. logo feedu). */
+  naglowek?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <ViewTransition enter={RUCH} exit={RUCH} default={RUCH}>
       <section className="mx-auto w-full max-w-md px-4 pb-10" aria-busy="true" aria-label={`${tytul} — ładowanie`}>
         <header className="grid justify-items-center px-1 pb-4 pt-4 text-center">
-          <h1 className="font-tytul text-[1.7rem] leading-tight tracking-tight text-kosc">{tytul}</h1>
-          {podtytul === true ? (
-            <Pasek className="mt-2.5 h-3 w-28" />
-          ) : (
-            podtytul && <p className="mt-1.5 text-xs text-dym">{podtytul}</p>
+          {naglowek ?? (
+            <>
+              <h1 className="font-tytul text-[1.7rem] leading-tight tracking-tight text-kosc">{tytul}</h1>
+              {podtytul === true ? (
+                <Pasek className="mt-2.5 h-3 w-28" />
+              ) : (
+                podtytul && <p className="mt-1.5 text-xs text-dym">{podtytul}</p>
+              )}
+            </>
           )}
         </header>
         {children}

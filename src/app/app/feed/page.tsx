@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Wpis, type KomentarzWpis } from "./Wpis";
 import { Pusto } from "@/components/Pusto";
+import { NaglowekFeedu } from "./NaglowekFeedu";
 
 type WpisSurowy = {
   id: string;
@@ -26,7 +27,7 @@ type KomentarzSurowy = {
 /** Ekran awarii odczytu — celowo mówi, że to usterka, a nie stan feedu. */
 function Awaria({ co }: { co: string }) {
   return (
-    <Ekran tytul="Feed" podtytul="Zaakceptowane dowody">
+    <Ekran tytul="Feed" naglowek={<NaglowekFeedu />}>
       <p className="szklo rounded-md px-4 py-6 text-center text-sm text-krew-jasna">
         Nie udało się wczytać {co}. To usterka po naszej stronie, nie Twoja —
         spróbuj odświeżyć za chwilę.
@@ -88,7 +89,7 @@ export default async function FeedPage() {
 
   if (wpisy.length === 0) {
     return (
-      <Ekran tytul="Feed" podtytul="Zaakceptowane dowody">
+      <Ekran tytul="Feed" naglowek={<NaglowekFeedu />}>
         <Pusto ikona="oko">Tu wylądują zdjęcia z bingo, kiedy tylko ktoś zacznie je wrzucać.</Pusto>
       </Ekran>
     );
@@ -96,21 +97,15 @@ export default async function FeedPage() {
 
   const ids = wpisy.map((w) => w.id);
 
-  // Podpisane URL-e do zdjęć oraz lajki i komentarze pobieramy równolegle,
-  // jak w kolejce zgłoszeń — sekwencyjnie byłoby to widoczne gołym okiem.
-  // Przy 65 osobach i jednym lajku na osobę liczba wierszy jest mała, więc
-  // pobieramy wszystkie lajki wpisów i liczymy je po stronie klienta zamiast
-  // dociągać osobny `count` na każdy wpis.
-  const [podgladyPary, { data: lajkiRaw, error: bladLajkow }, { data: komentarzeRaw, error: bladKomentarzy }] =
+  // Lajki i komentarze pobieramy równolegle. Przy 65 osobach i jednym lajku
+  // na osobę liczba wierszy jest mała, więc pobieramy wszystkie lajki wpisów
+  // i liczymy je po stronie klienta zamiast dociągać osobny `count` na wpis.
+  //
+  // Zdjęć tu nie podpisujemy: idą przez stałe adresy /app/feed/zdjecie/[id]
+  // (spec porządku, D5). Podpisany adres zmieniał się przy każdym wejściu,
+  // więc telefon nie mógł nic zapamiętać i ściągał cały feed od nowa.
+  const [{ data: lajkiRaw, error: bladLajkow }, { data: komentarzeRaw, error: bladKomentarzy }] =
     await Promise.all([
-      Promise.all(
-        wpisy.map(async (w) => {
-          const { data } = await supabase.storage
-            .from("bingo")
-            .createSignedUrl(w.photo_path, 3600);
-          return [w.id, data?.signedUrl ?? null] as const;
-        }),
-      ),
       supabase.from("feed_likes").select("submission_id, user_id").in("submission_id", ids),
       supabase
         .from("feed_comments")
@@ -130,8 +125,6 @@ export default async function FeedPage() {
     console.error("Nie udało się wczytać komentarzy feedu:", bladKomentarzy);
     return <Awaria co="komentarzy" />;
   }
-
-  const podglady = new Map(podgladyPary);
 
   const lajkiByWpis = new Map<string, string[]>();
   for (const l of (lajkiRaw ?? []) as { submission_id: string; user_id: string }[]) {
@@ -154,13 +147,13 @@ export default async function FeedPage() {
   }
 
   return (
-    <Ekran tytul="Feed" podtytul="Zaakceptowane dowody">
+    <Ekran tytul="Feed" naglowek={<NaglowekFeedu />}>
       <ul className="grid gap-6">
         {wpisy.map((w) => (
           <li key={w.id}>
             <Wpis
               id={w.id}
-              zdjecieUrl={podglady.get(w.id) ?? null}
+              zdjecieUrl={`/app/feed/zdjecie/${w.id}`}
               podpis={w.caption}
               utworzonoIso={w.created_at}
               utworzonoTekst={new Date(w.created_at).toLocaleString("pl-PL", {

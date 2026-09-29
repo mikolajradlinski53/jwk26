@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { skompresuj } from "@/lib/obrazy";
+import { podglad, skompresuj } from "@/lib/obrazy";
 import { Button } from "@/components/ui/Button";
 import type { BingoSubmission, BingoTask } from "@/types/db";
 
@@ -212,6 +212,18 @@ export function Plansza({
         .from("bingo")
         .upload(sciezka, zmniejszone, { contentType: "image/jpeg" });
       if (bladUploadu) throw bladUploadu;
+
+      // Podgląd do feedu obok pełnego pliku. Porażka nie psuje zgłoszenia —
+      // trasa zdjęć odda wtedy pełne (spec porządku, D6).
+      try {
+        const maly = await podglad(plik);
+        const { error: bladPodgladu } = await supabase.storage
+          .from("bingo")
+          .upload(sciezka.replace(/\.jpg$/, ".podglad.jpg"), maly, { contentType: "image/jpeg" });
+        if (bladPodgladu) throw bladPodgladu;
+      } catch (e) {
+        console.error("Podgląd zdjęcia bingo się nie wysłał:", e);
+      }
 
       setEtap("Zapisuję zgłoszenie...");
       const { error: bladZgloszenia } = await supabase.from("bingo_submissions").insert({

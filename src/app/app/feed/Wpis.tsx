@@ -2,6 +2,7 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { ZdjecieFeedu } from "./ZdjecieFeedu";
 
 export type KomentarzWpis = {
   id: string;
@@ -271,13 +272,7 @@ export function Wpis({
   return (
     <article className="szklo overflow-hidden rounded-lg">
       {zdjecieUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={zdjecieUrl}
-          alt={`Zdjęcie do zadania „${zadanieTytul}", wrzucone przez ${autor}`}
-          loading="lazy"
-          className="aspect-square w-full object-cover"
-        />
+        <ZdjecieFeedu url={zdjecieUrl} opis={`Zdjęcie do zadania „${zadanieTytul}", wrzucone przez ${autor}`} />
       ) : (
         <p className="flex aspect-square w-full items-center justify-center bg-noc-glab text-center text-sm text-krew-jasna">
           Nie udało się wczytać zdjęcia.

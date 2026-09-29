@@ -19,24 +19,31 @@ export const RUCH = {
 export function Ekran({
   tytul,
   podtytul,
+  naglowek,
   children,
 }: {
   tytul: string;
   podtytul?: string;
+  /** Własny nagłówek zamiast tytułu i podtytułu (np. logo w feedzie). `tytul` zostaje w etykiecie sekcji. */
+  naglowek?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <ViewTransition enter={RUCH} exit={RUCH} default={RUCH}>
-      <section className="mx-auto w-full max-w-md px-4 pb-10">
+      <section className="mx-auto w-full max-w-md px-4 pb-10" aria-label={naglowek ? tytul : undefined}>
         {/* Odstęp na wcięcie ekranu daje `body` przez env(safe-area-inset-top),
             więc tutaj zostaje tylko oddech typograficzny. Wcześniejsze `pt-7`
             było dobrane pod widok z paskiem adresu i w trybie aplikacji
             zostawało jako pusta przestrzeń. */}
         <header className="px-1 pb-4 pt-4 text-center">
-          <h1 className="font-tytul text-[1.7rem] leading-tight tracking-tight text-kosc">
-            {tytul}
-          </h1>
-          {podtytul && <p className="mt-1.5 text-xs text-dym">{podtytul}</p>}
+          {naglowek ?? (
+            <>
+              <h1 className="font-tytul text-[1.7rem] leading-tight tracking-tight text-kosc">
+                {tytul}
+              </h1>
+              {podtytul && <p className="mt-1.5 text-xs text-dym">{podtytul}</p>}
+            </>
+          )}
         </header>
         {children}
       </section>

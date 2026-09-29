@@ -1,9 +1,10 @@
 import { Blok, Kolko, Pasek, SzkieletEkranu } from "@/components/Szkielet";
+import { NaglowekFeedu } from "./NaglowekFeedu";
 
 /** Feed: wpisy — autor, kwadratowe zdjęcie, reakcje. */
 export default function Ladowanie() {
   return (
-    <SzkieletEkranu tytul="Feed" podtytul="Zaakceptowane dowody">
+    <SzkieletEkranu tytul="Feed" naglowek={<NaglowekFeedu />}>
       <div className="grid gap-5">
         {[0, 1].map((i) => (
           <div key={i} className="grid gap-2.5">
