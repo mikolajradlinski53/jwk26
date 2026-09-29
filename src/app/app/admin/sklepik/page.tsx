@@ -11,7 +11,7 @@ export default async function AdminSklepikPage() {
   const supabase = await createClient();
 
   const [{ data: kolejka }, { data: pozycje }] = await Promise.all([
-    // Kolejka pokazuje wyłącznie 'pending', a pozycje cyfrowe nigdy nią nie są —
+    // Kolejka pokazuje wyłącznie 'pending', a pozycje cyfrowe nigdy nią nie są -
     // efekt wykonuje się w tej samej transakcji, co zakup. Filtr po statusie
     // wystarcza więc, żeby klątwy i tarcze nie zaśmiecały kolejki wydań.
     supabase
@@ -68,7 +68,7 @@ export default async function AdminSklepikPage() {
 
       <p className="mt-5 px-1 text-xs leading-relaxed text-dym">
         Anulowanie zwraca punkty drużynie dodatnim wpisem w księdze i oddaje sztukę
-        na półkę. Efektu cyfrowego nie da się cofnąć — klątwa już zabrała ofierze
+        na półkę. Efektu cyfrowego nie da się cofnąć - klątwa już zabrała ofierze
         punkty.
       </p>
 

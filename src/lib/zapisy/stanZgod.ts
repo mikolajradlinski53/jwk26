@@ -9,7 +9,7 @@ export type StanZgod = {
 };
 
 /**
- * Czy użytkownik ma coś, co może wycofać — dla sekcji „Twoje zgody".
+ * Czy użytkownik ma coś, co może wycofać - dla sekcji „Twoje zgody".
  *
  * Dane zdrowotne sprawdzamy po wszystkich zgłoszeniach tej osoby, nie tylko
  * po przekazanym: `wycofaj_zgode_zdrowie` czyści je naraz we wszystkich, a
@@ -53,7 +53,7 @@ export async function stanZgod(
     });
   }
 
-  // Błąd odczytu traktujemy tak, jakby dane były — pokazanie przycisku
+  // Błąd odczytu traktujemy tak, jakby dane były - pokazanie przycisku
   // usunięcia jest w najgorszym razie nieszkodliwe (RPC sprząta tylko to, co
   // faktycznie istnieje), a ukrycie go, gdy dane naprawdę są, łamie
   // art. 7 ust. 3 RODO: wycofanie ma być równie łatwe jak wyrażenie zgody.

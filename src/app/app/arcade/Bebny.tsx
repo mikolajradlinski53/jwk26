@@ -37,7 +37,7 @@ export function Bebny({
     const { data, error } = await createClient().rpc("zakrec_slotami");
 
     // Odblokowanie przed sprawdzeniem błędu, nie po. Wyjście z funkcji przy
-    // zostawionym `wToku` zablokowałoby automat do przeładowania strony — a
+    // zostawionym `wToku` zablokowałoby automat do przeładowania strony - a
     // w trybie aplikacji na iOS przeładowania może nie być.
     setCzeka(false);
     wToku.current = false;
@@ -104,7 +104,7 @@ export function Bebny({
             ? "Za mało punktów"
             : zostalo === 0
               ? "Limit wyczerpany"
-              : `Zakręć — ${stawka} pkt`}
+              : `Zakręć - ${stawka} pkt`}
       </Button>
 
       <p className="text-center text-xs leading-relaxed text-dym">

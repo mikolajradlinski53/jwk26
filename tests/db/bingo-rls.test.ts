@@ -16,7 +16,7 @@ import {
 const { nowyUzytkownik, posprzataj } = sprzatanieUzytkownikow();
 
 /**
- * Druga drużyna, różna od tej podanej — potrzebna wyłącznie do testu, który
+ * Druga drużyna, różna od tej podanej - potrzebna wyłącznie do testu, który
  * sprawdza, że nie da się złożyć zgłoszenia dla cudzej drużyny. Drużyny są
  * zasiane na stałe (migracja 0001) i współdzielone między plikami testowymi,
  * więc tylko czytamy, nigdy nie modyfikujemy.
@@ -52,7 +52,7 @@ afterAll(async () => {
 
 afterEach(async () => {
   await admin.from("bingo_submissions").delete().eq("user_id", czlonek.id);
-  // Reset do stanu domyślnego (pending, bez drużyny) — kilka testów zatwierdza
+  // Reset do stanu domyślnego (pending, bez drużyny) - kilka testów zatwierdza
   // tego uczestnika, kolejny test ma zawsze zaczynać od świeżego konta.
   await admin
     .from("profiles")
@@ -73,7 +73,7 @@ describe("polityki RLS: bingo", () => {
 
   it("oczekujący nie widzi zadań", async () => {
     // Brak tu jawnego ustawienia statusu, bo 'pending' to stan domyślny świeżego
-    // konta — a afterEach i tak przywraca go po każdym teście. Test przechodzi
+    // konta - a afterEach i tak przywraca go po każdym teście. Test przechodzi
     // więc również uruchomiony samotnie, przez `-t`; nie zależy od tego, że coś
     // przed nim poszło pierwsze. Sprawdzone.
     const { data, error } = await czlonekClient.from("bingo_tasks").select("id");
@@ -167,13 +167,13 @@ describe("polityki RLS: bingo", () => {
       .single();
     expect(bladZapisu).toBeNull();
 
-    // Odrzucenie kluczem serwisowym — samą funkcję review_bingo bada inny test.
+    // Odrzucenie kluczem serwisowym - samą funkcję review_bingo bada inny test.
     await admin
       .from("bingo_submissions")
       .update({ status: "rejected" })
       .eq("id", pierwsze!.id);
 
-    // Indeks jest częściowy (where status <> 'rejected') — sprawdzamy dokładnie
+    // Indeks jest częściowy (where status <> 'rejected') - sprawdzamy dokładnie
     // ten warunek, nie samą unikalność (którą już potwierdził test powyżej).
     // Gdyby zapisano go bez tego warunku, pole raz zajęte zostałoby zablokowane
     // na stałe nawet po odrzuceniu zgłoszenia.
@@ -215,7 +215,7 @@ describe("polityki RLS: bingo", () => {
     await ustawJakoZaakceptowany(czlonek, teamId);
     const taskId = await idZadania(7);
 
-    // Wstawione kluczem serwisowym — bez tego test byłby zielony także wtedy,
+    // Wstawione kluczem serwisowym - bez tego test byłby zielony także wtedy,
     // gdyby wiersz w ogóle nie powstał.
     const { data: wiersz, error: bladZapisu } = await admin
       .from("bingo_submissions")

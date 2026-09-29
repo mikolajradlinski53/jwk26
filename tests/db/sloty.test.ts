@@ -13,7 +13,7 @@ import {
 } from "../helpers/supabase";
 
 // Dwóch graczy z tej samej drużyny: jeden gra, drugi sprawdza, czy widzi cudze
-// spiny. Logowanie raz na plik — projekt testowy dopuszcza 30 na pięć minut.
+// spiny. Logowanie raz na plik - projekt testowy dopuszcza 30 na pięć minut.
 let gracz: TestUser;
 let obcy: TestUser;
 let graczClient: SupabaseClient;
@@ -141,7 +141,7 @@ describe("fundament kasyna", () => {
 });
 
 describe("bębny", () => {
-  /** Wycena podanych bębnów — bez losowania i bez grosza obrotu. */
+  /** Wycena podanych bębnów - bez losowania i bez grosza obrotu. */
   async function wycen(bebny: string[]): Promise<number> {
     const { data, error } = await graczClient.rpc("rozstrzygnij_bebny", {
       p_bebny: bebny,
@@ -161,7 +161,7 @@ describe("bębny", () => {
 
   it("para zwraca stawkę, niezależnie od pozycji", async () => {
     // Trzy układy pary: pierwsze dwa, ostatnie dwa, skrajne. Wszystkie muszą
-    // płacić tyle samo — pomyłka w warunku łapie zwykle tylko dwa z trzech.
+    // płacić tyle samo - pomyłka w warunku łapie zwykle tylko dwa z trzech.
     expect(await wycen(["oko", "oko", "klucz"])).toBe(10);
     expect(await wycen(["klucz", "oko", "oko"])).toBe(10);
     expect(await wycen(["oko", "klucz", "oko"])).toBe(10);
@@ -179,7 +179,7 @@ describe("bębny", () => {
     const SYMBOLE = ["oko", "swieca", "kielich", "sztylet", "pieczec", "klucz"];
 
     // Sześćdziesiąt losowań równolegle. Kryterium nie sprawdza jednostajności
-    // random() — to własność Postgresa. Celuje w dwie awarie mojego kodu:
+    // random() - to własność Postgresa. Celuje w dwie awarie mojego kodu:
     // indeksowanie od zera (tablice w Postgresie liczą od jedynki, więc bez `+1`
     // wychodzi NULL) i użycie jednego losowania do trzech bębnów.
     const losowania = await Promise.all(
@@ -271,7 +271,7 @@ describe("spin", () => {
   it("niezalogowany nie wywoła funkcji", async () => {
     const { error } = await anonimowy().rpc("zakrec_slotami");
     expect(error).not.toBeNull();
-    // Gdyby grant dla anon został, funkcja weszłaby i padła na is_approved() —
+    // Gdyby grant dla anon został, funkcja weszłaby i padła na is_approved() -
     // komunikatem o akceptacji. Cokolwiek innego dowodzi, że revoke zadziałał.
     expect(error!.message).not.toMatch(/zaakceptowan/i);
   });
@@ -328,7 +328,7 @@ describe("spin", () => {
 
   it("obrót starszy niż dobę nie liczy się do limitu", async () => {
     await dosypPunktyOsobie(gracz.id, druzyna, 5000);
-    // Okno jest ruchome i liczy czas absolutny — świadomie, bo czas letni
+    // Okno jest ruchome i liczy czas absolutny - świadomie, bo czas letni
     // kończy się 25 października 2026, w ostatnią noc wyjazdu (D1).
     const wczoraj = new Date(Date.now() - 25 * 3_600_000);
     await zapelnijObrot(gracz.id, 30, wczoraj);
@@ -342,7 +342,7 @@ describe("spin", () => {
 
     // Dwanaście spinów to 120 punktów obrotu, dobrze poniżej limitu 300.
     //
-    // Test **nie zakłada, co wypadnie** — porównuje księgę z sesjami, więc jest
+    // Test **nie zakłada, co wypadnie** - porównuje księgę z sesjami, więc jest
     // rozstrzygający niezależnie od losu. Wcześniejsza wersja sprawdzałaby zwrot
     // stawki tylko wtedy, gdy para akurat padła, czyli w 42% przebiegów udawała,
     // że coś weryfikuje.
@@ -379,11 +379,11 @@ describe("spin", () => {
   it("dwa równoległe spiny przy saldzie na jeden: jeden przechodzi", async () => {
     // Stawka to 10, saldo dokładnie 10. Bez blokady wiersza profiles oba
     // wywołania przeczytają to samo saldo i oba przejdą, a gracz zjedzie pod
-    // zero — księga jest tylko do dopisywania, więc nie ma jak tego cofnąć.
+    // zero - księga jest tylko do dopisywania, więc nie ma jak tego cofnąć.
     //
     // Wypłaty zerujemy na czas testu. Bez tego wynik zależał od losu: para
     // (42% spinów) zwraca stawkę, saldo zostaje 10 i drugi spin słusznie
-    // przechodzi — test padał wtedy mimo działającej blokady.
+    // przechodzi - test padał wtedy mimo działającej blokady.
     const { data: ustawienie } = await admin
       .from("app_settings")
       .select("value")

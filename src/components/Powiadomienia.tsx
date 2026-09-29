@@ -93,7 +93,7 @@ export function Powiadomienia() {
     };
   }, []);
 
-  /** Próbne powiadomienie do siebie — jedyny sposób, żeby każdy sprawdził,
+  /** Próbne powiadomienie do siebie - jedyny sposób, żeby każdy sprawdził,
    *  czy u niego budzi telefon i wyskakuje u góry. Tego strona nie ustawi. */
   async function probne() {
     if (wToku.current) return;
@@ -121,7 +121,7 @@ export function Powiadomienia() {
     try {
       const rejestracja = await navigator.serviceWorker.ready;
       if (wlacz) {
-        // Prośba o zgodę musi wyjść z kliknięcia — iOS ignoruje ją w innym momencie.
+        // Prośba o zgodę musi wyjść z kliknięcia - iOS ignoruje ją w innym momencie.
         const zgoda = await Notification.requestPermission();
         if (zgoda !== "granted") {
           setStan(zgoda === "denied" ? "zablokowane" : "wylaczone");
@@ -168,7 +168,7 @@ export function Powiadomienia() {
             </Button>
             {wyslanoProbne && (
               <p role="status" className="text-sm text-kosc">
-                Wysłane — powinno przyjść w ciągu kilku sekund. Zablokuj telefon albo
+                Wysłane - powinno przyjść w ciągu kilku sekund. Zablokuj telefon albo
                 wyjdź z apki, żeby zobaczyć, jak wygląda.
               </p>
             )}

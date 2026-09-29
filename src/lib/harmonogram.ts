@@ -26,7 +26,7 @@ export function grupujPoDniach(punkty: PunktHarmonogramu[]): DzienHarmonogramu[]
 }
 
 /**
- * „piątek, 23 października”. Data bez godziny liczona w UTC — w strefie
+ * „piątek, 23 października”. Data bez godziny liczona w UTC - w strefie
  * przeglądarki północ mogłaby się przesunąć na poprzedni dzień.
  */
 export function nazwaDnia(dzien: string): string {

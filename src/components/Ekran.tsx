@@ -2,11 +2,11 @@ import { ViewTransition } from "react";
 
 // Kierunek wynika z typu przejścia na linku: zakładki paska przenikają się,
 // wejście głębiej odjeżdża w lewo, powrót w prawo. Bez typu (odświeżenie,
-// systemowe „wstecz”) — bez animacji. Opakowanie jest tutaj, w ekranie, a nie
+// systemowe „wstecz”) - bez animacji. Opakowanie jest tutaj, w ekranie, a nie
 // w layoucie: layout przeżywa nawigację, więc enter/exit by się nie odpaliły.
 //
 // Ta sama mapa w `default`, nie tylko w enter/exit: przy zmianie strony Next
-// potrafi potraktować ekran jako aktualizację, a nie wymianę — wtedy liczy
+// potrafi potraktować ekran jako aktualizację, a nie wymianę - wtedy liczy
 // się `default`, a z „none” nie działo się nic poza domyślnym przenikaniem
 // całej strony (sprawdzone pomiarem animacji w Chrome).
 export const RUCH = {

@@ -42,19 +42,19 @@ export default async function RejestracjaPage() {
       .maybeSingle(),
     supabase.rpc("stan_pul"),
     // Ustawienie samo w sobie jest tylko wygodą (patrz DATA_JWK_ZAPASOWA
-    // niżej) — jego błąd nie zasługuje na cały ekran błędu.
+    // niżej) - jego błąd nie zasługuje na cały ekran błędu.
     supabase.from("app_settings").select("value").eq("key", "data_jwk").maybeSingle(),
     supabase
       .from("app_settings")
       .select("value")
       .eq("key", "regulamin_zatwierdzony")
       .maybeSingle(),
-    // Brak danych albo błąd odczytu dają `null` — formularz mówi wtedy
+    // Brak danych albo błąd odczytu dają `null` - formularz mówi wtedy
     // „dane pojawią się wkrótce", co nie blokuje zapisu na rezerwę.
     wczytajDanePrzelewu(supabase),
   ]);
 
-  // Brak zgłoszenia (`data === null`) znaczy po prostu „nowa osoba" — ale
+  // Brak zgłoszenia (`data === null`) znaczy po prostu „nowa osoba" - ale
   // błąd odczytu wygląda identycznie jak `null`, więc bez tego rozróżnienia
   // ktoś zobaczyłby czysty formularz zamiast informacji, że coś nie zadziałało.
   if (bladZgloszenia || bladPul || bladFlagi) {
@@ -89,7 +89,7 @@ export default async function RejestracjaPage() {
     const nazwaPuli = stan.find((p) => p.klucz === ostatnie.pula)?.nazwa;
 
     if (ostatnie.rezerwa) {
-      // Dwa niezależne zapytania dla tego samego ekranu — równolegle, żeby
+      // Dwa niezależne zapytania dla tego samego ekranu - równolegle, żeby
       // czekać na wolniejsze z nich, a nie na sumę obu.
       const [zgody, { data: pozycja }] = await Promise.all([
         stanZgod(supabase, user.id, ostatnie),
@@ -99,7 +99,7 @@ export default async function RejestracjaPage() {
         <Ekran tytul="Rezerwa" podtytul={nazwaPuli}>
           <div className="szklo rounded-md px-4 py-6 text-center">
             <p className="text-xs uppercase tracking-[0.14em] text-dym">Miejsce w kolejce</p>
-            <p className="mt-1 font-tytul text-4xl tabular-nums">{pozycja ?? "—"}</p>
+            <p className="mt-1 font-tytul text-4xl tabular-nums">{pozycja ?? "-"}</p>
             <p className="mt-3 text-sm leading-relaxed text-dym">
               {ostatnie.proof_path
                 ? "Twoje potwierdzenie przelewu już mamy. Gdy zwolni się miejsce i " +
@@ -111,7 +111,7 @@ export default async function RejestracjaPage() {
           <Powiadomienia />
           <TwojeZgody {...zgody} />
           {/* Awans z rezerwy jest ruchem admina, nie czymś, co ta osoba wywoła
-              sama — bez odświeżania po powrocie zostałaby tu, nieświadoma,
+              sama - bez odświeżania po powrocie zostałaby tu, nieświadoma,
               że kolejka już ruszyła dalej. */}
           <OdswiezPrzyPowrocie />
           <Wyloguj />
@@ -126,7 +126,7 @@ export default async function RejestracjaPage() {
         <Ekran tytul="Miejsce czeka" podtytul={nazwaPuli}>
           <p className="szklo mb-5 rounded-md px-4 py-4 text-sm leading-relaxed text-dym">
             Zwolniło się miejsce i organizator przesunął Cię z rezerwy. Zrób przelew
-            za wyjazd i wgraj jego potwierdzenie — dopiero wtedy zgłoszenie trafi
+            za wyjazd i wgraj jego potwierdzenie - dopiero wtedy zgłoszenie trafi
             do akceptacji.
           </p>
           <DolaczPrzelew
@@ -147,7 +147,7 @@ export default async function RejestracjaPage() {
         </p>
         <Powiadomienia />
         <TwojeZgody {...zgody} />
-        {/* Akceptację albo odrzucenie ustawia admin — bez odświeżania po
+        {/* Akceptację albo odrzucenie ustawia admin - bez odświeżania po
             powrocie ta osoba czekałaby na wyrok, który już zapadł. */}
         <OdswiezPrzyPowrocie />
         <Wyloguj />
@@ -156,7 +156,7 @@ export default async function RejestracjaPage() {
   }
 
   const otwarte = stan.some((p) => p.otwarta);
-  // Odrzucone zgłoszenie mogło zostawić dane zdrowotne albo aktywne zgody —
+  // Odrzucone zgłoszenie mogło zostawić dane zdrowotne albo aktywne zgody -
   // brama wpuszcza taką osobę wyłącznie tu, więc to jedyne miejsce, gdzie
   // może je wycofać.
   const zgodyOstatnie: StanZgod | null = ostatnie

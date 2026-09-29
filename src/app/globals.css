@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * Tailwind domyślnie skanuje cały projekt w poszukiwaniu nazw klas — także
+ * Tailwind domyślnie skanuje cały projekt w poszukiwaniu nazw klas - także
  * dokumenty planów, które są pełne fragmentów kodu. Efekt: reguły dla klas,
  * których w aplikacji nie ma (`accent-[var(--color-candle)]` ze starego planu)
  * lądowały w produkcyjnym arkuszu i jechały na telefony uczestników.
@@ -9,7 +9,7 @@
 @source not "../../docs";
 
 @theme {
-  /* Czerń z odchyleniem w czerwień — neutralna szarość czytałaby się jak brak decyzji. */
+  /* Czerń z odchyleniem w czerwień - neutralna szarość czytałaby się jak brak decyzji. */
   --color-noc: #0c0709;
   --color-noc-glab: #060304;
   --color-krew: #c8102e;
@@ -17,18 +17,18 @@
 
   /*
    * Krew do pisania, nie do wypełniania. #c8102e jako tekst na ciemnym tle daje
-   * 3,4:1 — poniżej progu 4,5:1, a dotyczy komunikatów błędów, czyli tego, co
+   * 3,4:1 - poniżej progu 4,5:1, a dotyczy komunikatów błędów, czyli tego, co
    * użytkownik akurat najbardziej chce przeczytać. Ten odcień daje 7,0:1 na tle
    * i 6,2:1 na szkle. Jako wypełnienie zostaje --color-krew: biel na nim ma 5,9:1.
    */
   --color-krew-jasna: #f2707c;
   --color-kosc: #f4eeeb;
   --color-dym: #9c8b8e;
-  /* Napisy na płynnym szkle — czysta biel była za ostra (uwaga Mikołaja). */
+  /* Napisy na płynnym szkle - czysta biel była za ostra (uwaga Mikołaja). */
   --color-popiol: #ddd3d5;
 
   /*
-   * Jesień — paleta wyłącznie dla landinga.
+   * Jesień - paleta wyłącznie dla landinga.
    *
    * Landing ma wyglądać jak zwyczajna, ciepła strona studenckiego wyjazdu
    * w październiku, żeby wejście do apki uderzyło kontrastem. To przykrywka,
@@ -38,9 +38,9 @@
    * Zmierzone kontrasty na tle `jesien-tlo` (#fbf3e7):
    *   atrament 14,1:1 · kora 7,2:1 · rdza 5,5:1 · mech 5,2:1
    * Na jaśniejszej `jesien-karta` każdy spada o jakieś pół punktu i nadal
-   * przechodzi próg 4,5:1 — najniżej mech, 4,7:1.
+   * przechodzi próg 4,5:1 - najniżej mech, 4,7:1.
    *
-   * `dynia` daje 2,8:1 i **nie jest kolorem tekstu** — wyłącznie wypełnienia
+   * `dynia` daje 2,8:1 i **nie jest kolorem tekstu** - wyłącznie wypełnienia
    * i grube akcenty. Uwaga na pułapkę: biel na dyni to tylko 3,1:1, więc
    * napis na pomarańczowym przycisku musi być w `atrament`, nie biały.
    * Biel przechodzi na `rdza` (6,1:1) i na `mech` (5,8:1).
@@ -58,7 +58,7 @@
    * NIE skracaj ich do s/m/l: w Tailwindzie v4 `rounded-s` znaczy „border-start",
    * a `rounded-l` znaczy „border-left". Wbudowana reguła trafia do arkusza po
    * naszej i wygrywa w kaskadzie, więc pole dostałoby lewe narożniki 4 px zamiast
-   * czternastu. Nic tego nie zgłasza — ani kompilator, ani linter.
+   * czternastu. Nic tego nie zgłasza - ani kompilator, ani linter.
    */
   --radius-sm: 14px;
   --radius-md: 20px;
@@ -82,7 +82,7 @@ html {
 
 /*
  * Rozwinięta lista <select>. Chrome na Windowsie maluje opcje tłem samego
- * pola — a to jest półprzezroczyste szkło, więc lista wychodziła biała,
+ * pola - a to jest półprzezroczyste szkło, więc lista wychodziła biała,
  * a tekst dziedziczył jasną `kosc`: biel na bieli, nic nie widać. Opcje
  * dostają własne, pełne tło. Poza warstwą, bo Tailwind nie ma utility na
  * `option`, a nic w apce nie próbuje ich nadpisywać.
@@ -92,7 +92,7 @@ select option {
   color: var(--color-kosc);
 }
 
-/* Landing jest jasny — tam opcje w jego kolorach, nie w ciemnych apki. */
+/* Landing jest jasny - tam opcje w jego kolorach, nie w ciemnych apki. */
 .jesien select option {
   background-color: var(--color-jesien-tlo);
   color: var(--color-jesien-atrament);
@@ -121,7 +121,7 @@ body {
  * rozjeżdżają się przy pierwszej zmianie.
  *
  * MUSI siedzieć w `@layer components`. Reguła napisana poza warstwą wygrywa
- * w kaskadzie z każdym utility Tailwinda, niezależnie od specyficzności — czyli
+ * w kaskadzie z każdym utility Tailwinda, niezależnie od specyficzności - czyli
  * `.szklo` przebiłoby `hover:bg-*`, `focus-visible:border-*` i `shadow-*`
  * wszędzie, gdzie ktoś ich użyje obok. Pole formularza straciłoby wtedy
  * jedyny wskaźnik skupienia, a pasek nawigacji swój cień.
@@ -139,7 +139,7 @@ body {
   /*
    * Bez obsługi rozmycia szkło degraduje się do panelu o wyższej
    * nieprzezroczystości. Obramowanie i zaokrąglenie zostają, więc układ się nie
-   * rusza — zmienia się wyłącznie to, czy widać przez panel.
+   * rusza - zmienia się wyłącznie to, czy widać przez panel.
    */
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .szklo {
@@ -148,7 +148,7 @@ body {
   }
 
   /*
-   * Płynne szkło (spec wyglądu, D8) — tylko przyciski i pasek. Karty listy
+   * Płynne szkło (spec wyglądu, D8) - tylko przyciski i pasek. Karty listy
    * zostają przy .szklo: płynne szkło na każdej karcie przewijanej listy to za
    * dużo rozmycia naraz dla słabszych telefonów.
    *
@@ -208,7 +208,7 @@ body {
     background: radial-gradient(120% 100% at 50% 0%, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0) 70%);
     pointer-events: none;
   }
-  /* Sprężyste wciśnięcie tylko na samym przycisku — :active łapie też przodków,
+  /* Sprężyste wciśnięcie tylko na samym przycisku - :active łapie też przodków,
      więc bez zawężenia cały pasek kurczyłby się przy dotknięciu ikony. */
   .szklo-plynne:is(button, a):active:not(:disabled) {
     transform: scale(0.965);
@@ -231,7 +231,7 @@ body {
   }
   /*
    * Skreślenie zaliczonego pola bingo (spec porządku, D7). Kreska w kolorze
-   * kości — czerwona na czerwonym kaflu by zniknęła. Rysuje się tylko przy
+   * kości - czerwona na czerwonym kaflu by zniknęła. Rysuje się tylko przy
    * polach zaliczonych od ostatniej wizyty; później stoi bez animacji.
    */
   .skreslenie {
@@ -245,7 +245,7 @@ body {
   .skreslenie-rysuj path {
     animation: rysuj-kreske 700ms cubic-bezier(0.6, 0, 0.3, 1) var(--opoznienie, 0ms) both;
   }
-  /* Pole, które właśnie skreślono, krótko „oddycha” — widać, gdzie coś się stało. */
+  /* Pole, które właśnie skreślono, krótko „oddycha” - widać, gdzie coś się stało. */
   [data-pole]:has(> .skreslenie-rysuj) {
     animation: puls-pola 700ms ease-out var(--opoznienie, 0ms) both;
   }
@@ -283,7 +283,7 @@ body {
 
   /*
    * Powłoka landinga. Maluje własne tło przez całą wysokość okna, bo `html`
-   * i `body` są ciemne z myślą o apce — bez tego jesienna strona świeciłaby
+   * i `body` są ciemne z myślą o apce - bez tego jesienna strona świeciłaby
    * czernią wszędzie tam, gdzie treść nie sięga.
    *
    * `color-scheme: light` prostuje przy okazji paski przewijania i kontrolki
@@ -300,14 +300,14 @@ body {
    * Błysk na wierszu, którego wynik się zmienił. Wybrany zamiast animowania
    * przestawienia pozycji: tamto wymaga techniki FLIP i pomiaru każdego wiersza
    * przed i po, co przy czterech drużynach jest nieproporcjonalne. Błysk mówi
-   * dokładnie to samo — „tu coś się przed chwilą zdarzyło".
+   * dokładnie to samo - „tu coś się przed chwilą zdarzyło".
    */
   .blysk {
     animation: blysk 1.4s ease-out;
   }
 
   /*
-   * Zamek instalacji. Decyduje CSS, nie JavaScript — reguła obowiązuje od
+   * Zamek instalacji. Decyduje CSS, nie JavaScript - reguła obowiązuje od
    * pierwszej klatki, więc nie ma błysku niewłaściwej treści przed hydracją.
    *
    * Zamek działa wyłącznie na wąskich ekranach. Panel admina obsługuje się
@@ -323,7 +323,7 @@ body {
   }
 
   /*
-   * Stopka landingu — panel wezwania, pasek, karta i wyblakłe tło.
+   * Stopka landingu - panel wezwania, pasek, karta i wyblakłe tło.
    * Gradienty, klatki kluczowe, plamy i maski w jednym miejscu, z prefiksem
    * `stopka-`. MUSI siedzieć w warstwie `components` z tego samego powodu co
    * `.szklo` wyżej: reguła poza warstwą przebija każde utility Tailwinda
@@ -331,24 +331,24 @@ body {
    */
 
   /*
-   * Tło panelu — jesienny gradient, nie czerń: `dynia` (jasna, ciepła) u góry
+   * Tło panelu - jesienny gradient, nie czerń: `dynia` (jasna, ciepła) u góry
    * za logo, przez `rdza` i `kora` w dół do `atrament` na samym dole.
    *
    * Kontrast policzony (WCAG, na kanałach po zblendowaniu, nie „na oko"):
-   *   - Biel na samej `dynia` to tylko 3,1:1 — dlatego tekst (`h2`/`p`) nigdy
+   *   - Biel na samej `dynia` to tylko 3,1:1 - dlatego tekst (`h2`/`p`) nigdy
    *     tam nie siedzi: pierwszy stop trzyma `dynia` tylko w górnej ćwiartce
-   *     panelu, gdzie jest logo (patrz niżej — logo dlatego nie jest białe),
+   *     panelu, gdzie jest logo (patrz niżej - logo dlatego nie jest białe),
    *     a treść zaczyna się dopiero w strefie `rdza`/`kora`.
    *   - Biel na `rdza` (6,1:1) i `kora` (7,9:1) ma zapas, ale plamy/poświata
    *     kursora lokalnie rozjaśniają tło, więc zapas trzeba liczyć z tym
    *     naddatkiem doliczonym, nie samym kolorem bazowym. Przy efektywnym
    *     kryciu rozjaśnienia do 0,15 (jasna plama + kursor naraz, w tym samym
-   *     miejscu) `rdza` spada do 4,52:1, `kora` do 5,36:1 — nadal nad progiem
+   *     miejscu) `rdza` spada do 4,52:1, `kora` do 5,36:1 - nadal nad progiem
    *     4,5:1. Dlatego plamy i poświata kursora w tej wersji są wyraźnie
    *     przygaszone względem oryginału (patrz alfa niżej): niezależnie ich
    *     krycie nie przekracza wartości, które dawałyby więcej niż ~0,15
    *     łącznego rozjaśnienia w jednym punkcie.
-   *   - `atrament` na dole (15,5:1 dla bieli) ma ogromny zapas — tam może
+   *   - `atrament` na dole (15,5:1 dla bieli) ma ogromny zapas - tam może
    *     się rozjaśnić dowolnie i nadal zostanie czytelne.
    */
   .stopka-panel {
@@ -396,7 +396,7 @@ body {
     animation: stopka-dryf-lewo 11s ease-in-out infinite alternate;
   }
 
-  /* Ciemniejszy akcent (dawniej `krew-glab`), nie jaśniejszy — rozjaśniające
+  /* Ciemniejszy akcent (dawniej `krew-glab`), nie jaśniejszy - rozjaśniające
      plamy już mają swój budżet krycia wyżej; ta zostaje ciemna, więc tylko
      dokłada głębi i nigdy nie zagraża kontrastowi tekstu. */
   .stopka-blob-prawy {
@@ -405,10 +405,10 @@ body {
     animation: stopka-dryf-prawo 12s ease-in-out infinite alternate;
   }
 
-  /* Poświata za kursorem — pozycja z `--mysz-x/--mysz-y`, ustawianych z JS wprost na elemencie.
+  /* Poświata za kursorem - pozycja z `--mysz-x/--mysz-y`, ustawianych z JS wprost na elemencie.
      Krycie niższe niż w mrocznym pierwowzorze (0.18 → 0.10): tu tło pod spodem
      jest dużo jaśniejsze niż `noc`, więc ten sam dodatek światła zjadałby
-     więcej kontrastu tekstu — patrz wyliczenia przy `.stopka-panel`. */
+     więcej kontrastu tekstu - patrz wyliczenia przy `.stopka-panel`. */
   .stopka-cursor-glow {
     position: absolute;
     inset: -25% -10% auto -10%;
@@ -427,7 +427,7 @@ body {
     background-size: 180px 180px;
   }
 
-  /* Wjazd treści panelu przy pierwszym renderze — czysty CSS, zerowany globalną regułą reduced-motion. */
+  /* Wjazd treści panelu przy pierwszym renderze - czysty CSS, zerowany globalną regułą reduced-motion. */
   .stopka-wjazd {
     animation: stopka-wjazd-klatki 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
@@ -467,7 +467,7 @@ body {
     transform: rotate(20deg) translateX(420%);
   }
 
-  /* Pasek rozdzielający pod panelem — poświata u góry, cień u dołu. */
+  /* Pasek rozdzielający pod panelem - poświata u góry, cień u dołu. */
   .stopka-pasek {
     position: relative;
     height: 15px;
@@ -485,7 +485,7 @@ body {
     pointer-events: none;
   }
 
-  /* Pływająca karta stopki — wjazd sterowany klasą `.jest-widoczna` z JS. */
+  /* Pływająca karta stopki - wjazd sterowany klasą `.jest-widoczna` z JS. */
   .stopka-karta {
     border: 1px solid rgb(47 33 24 / 0.1);
     background: rgb(251 243 231 / 0.89);
@@ -524,7 +524,7 @@ body {
     filter: brightness(1.18);
   }
 
-  /* Gigantyczne wyblakłe słowo pod kartą — jasny wariant tła, prawie niewidoczne. */
+  /* Gigantyczne wyblakłe słowo pod kartą - jasny wariant tła, prawie niewidoczne. */
   .stopka-slowo {
     color: #efe3d2;
     font-weight: 720;
@@ -537,9 +537,9 @@ body {
   /*
    * Przyciemnienie zdjęcia hero. Wartości zmierzone skryptem względem
    * najjaśniejszego piksela `hero-8.jpg` (prawie czysta biel, 249/255,
-   * w górnej jednej dziesiątej wysokości kadru — nie w dole, gdzie akurat
+   * w górnej jednej dziesiątej wysokości kadru - nie w dole, gdzie akurat
    * jest cień): przy 62% czerni ten piksel spada do względnej jasności
-   * ok. 0,12, co wobec białego tekstu (jasność 1,0) daje kontrast ~6,2:1 —
+   * ok. 0,12, co wobec białego tekstu (jasność 1,0) daje kontrast ~6,2:1 -
    * z zapasem nad progiem 4,5:1. Gradient schodzi do 85% na dole, pod
    * przyciskiem i licznikiem (choć licznik i tak siedzi na własnej,
    * nieprzezroczystej karcie `jesien-karta`, więc jego kontrast nie zależy
@@ -555,7 +555,7 @@ body {
   }
 
   /*
-   * Ukośna krawędź między sekcjami — jeden z kilku motywów podziału obok
+   * Ukośna krawędź między sekcjami - jeden z kilku motywów podziału obok
    * fali (SVG) i paska z szewronem. `clip-path` tnie prostokąt na trójkątny
    * klin; kolor wypełnienia ustawia się zwykłym Tailwindowym `bg-*` na tym
    * samym elemencie, więc tutaj zostaje wyłącznie kształt.
@@ -612,7 +612,7 @@ body {
   }
 }
 
-/* Keyframes nie należą do warstw — trzymamy je poza. */
+/* Keyframes nie należą do warstw - trzymamy je poza. */
 @keyframes puls-pola {
   0% {
     transform: scale(1);
@@ -641,7 +641,7 @@ body {
 /*
  * Przejścia między ekranami (spec wyglądu, „Przejścia”). Czasy za przewodnikiem
  * Next: wyjście 150 ms, wejście 210 ms z opóźnieniem na wyjście, ruch 400 ms,
- * przesunięcie 60 px — dość, żeby było widać kierunek, za mało, żeby śledzić.
+ * przesunięcie 60 px - dość, żeby było widać kierunek, za mało, żeby śledzić.
  */
 ::view-transition {
   /* Dotyk w trakcie animacji nie ginie. */
@@ -649,7 +649,7 @@ body {
 }
 /*
  * Bez domyślnego przenikania całej strony. Przeglądarka robi je przy każdym
- * przejściu (półprzezroczysta stara strona na nowej, 250 ms) — to ono dawało
+ * przejściu (półprzezroczysta stara strona na nowej, 250 ms) - to ono dawało
  * efekt „jedno na drugim”, zwłaszcza w Safari. Tło i tak jest wspólne, a to,
  * co ma się ruszać, ma własne przejście (ekran, pasek).
  */
@@ -665,7 +665,7 @@ body {
   /*
    * Przycięcie do kształtu paska. Na czas przejścia przeglądarka pokazuje
    * „zdjęcie” paska, a Safari robi je prostokątne, razem z tym, co widać przez
-   * szkło — w prawym dolnym rogu tła jest czerwona poświata, więc przy każdym
+   * szkło - w prawym dolnym rogu tła jest czerwona poświata, więc przy każdym
    * dotknięciu zakładki wychodził czerwony prostokąt łamiący zaokrąglenie
    * (zgłoszenie Mikołaja z iPhone'a). Przycięcie zamyka też cień i poświatę
    * aktywnej zakładki w granicach kapsuły.
@@ -682,7 +682,7 @@ body {
 ::view-transition-old(.przenikanie) {
   animation: 150ms ease-out both vt-zanik;
 }
-/* Nowy wchodzi dopiero, gdy stary zniknął — bez chwili, w której widać oba. */
+/* Nowy wchodzi dopiero, gdy stary zniknął - bez chwili, w której widać oba. */
 ::view-transition-new(.przenikanie) {
   animation: 210ms ease-out 150ms both vt-pojaw;
 }
@@ -752,7 +752,7 @@ body {
 
 /* Żaba w sekcjach landingu (ZabaStala, plan 16b). Kołysanie stale, wskok
    przy wejściu w ekran, podskok po dotknięciu. Ograniczony ruch zeruje czasy
-   animacji globalnie — `both` zostawia wtedy żabę w stanie końcowym (widoczna). */
+   animacji globalnie - `both` zostawia wtedy żabę w stanie końcowym (widoczna). */
 @keyframes zaba-machanie {
   0% { background-position: 0% 0; }
   50% { background-position: 100% 0; }

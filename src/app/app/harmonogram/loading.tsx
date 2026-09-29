@@ -1,6 +1,6 @@
 import { Pasek, PasekSekcji, SzkieletEkranu } from "@/components/Szkielet";
 
-/** Harmonogram: nagłówek dnia i karta z punktami — godzina po lewej, opis po prawej. */
+/** Harmonogram: nagłówek dnia i karta z punktami - godzina po lewej, opis po prawej. */
 export default function Ladowanie() {
   return (
     <SzkieletEkranu tytul="Harmonogram" podtytul="Co, kiedy i gdzie">

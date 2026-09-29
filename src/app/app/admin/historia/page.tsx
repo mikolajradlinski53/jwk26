@@ -16,7 +16,7 @@ export default async function HistoriaPage() {
   const supabase = await createClient();
 
   // Relację do profiles trzeba wskazać po nazwie klucza obcego. `points_ledger`
-  // ma ich dwa — `user_id` i `awarded_by` — więc samo `profiles(...)` kończy się
+  // ma ich dwa - `user_id` i `awarded_by` - więc samo `profiles(...)` kończy się
   // błędem PGRST201 „more than one relationship was found". Bez tego zapytanie
   // nie zwraca nic, a strona renderuje „Księga jest pusta" niezależnie od
   // zawartości: typ jest rzutowany ręcznie, więc TypeScript milczy.
@@ -54,7 +54,7 @@ export default async function HistoriaPage() {
             </strong>
             <span className="min-w-0 flex-1">
               <span className="block text-sm">
-                {w.profiles?.display_name ?? w.teams?.name ?? "—"}
+                {w.profiles?.display_name ?? w.teams?.name ?? "-"}
               </span>
               <span className="block text-xs text-dym">{w.reason ?? w.category}</span>
             </span>

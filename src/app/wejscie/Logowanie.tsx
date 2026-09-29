@@ -25,12 +25,12 @@ export function Logowanie() {
   // Czy mail faktycznie poszedł. Do ekranu z kodem można wejść także bez tego.
   const [wyslano, setWyslano] = useState(false);
   // Osobno od `czeka`, bo cofa się inaczej: `czeka` gaśnie po odpowiedzi
-  // serwera, a to — dopiero gdy człowiek wróci na tę stronę.
+  // serwera, a to - dopiero gdy człowiek wróci na tę stronę.
   const [czekaGoogle, setCzekaGoogle] = useState(false);
-  // Furtka mailowa startuje ukryta — Google jest drogą główną, a formularz
+  // Furtka mailowa startuje ukryta - Google jest drogą główną, a formularz
   // z adresem i kodem ma się pokazać dopiero, gdy ktoś naprawdę tego potrzebuje.
   // Inicjalizacja od razu z adresu (bez efektu): parametry z useSearchParams są
-  // te same na serwerze i po hydracji, więc nie ma tu ryzyka rozjazdu — a `set
+  // te same na serwerze i po hydracji, więc nie ma tu ryzyka rozjazdu - a `set
   // State` w efekcie i tak odrzuciłby eslint (react-hooks/set-state-in-effect).
   const [awaria, setAwaria] = useState(() => Boolean(parametry.get("awaria")));
 
@@ -38,13 +38,13 @@ export function Logowanie() {
    * Odblokowuje przycisk po powrocie z ekranu Google.
    *
    * Na iOS w trybie aplikacji ekran wyboru konta otwiera się jako nakładka nad
-   * tą samą, żywą stroną — nie ma przeładowania. Kto się rozmyśli i zamknie
+   * tą samą, żywą stroną - nie ma przeładowania. Kto się rozmyśli i zamknie
    * nakładkę, wraca do komponentu, w którym stan „czekam" został ustawiony
    * przed przekierowaniem i nikt go nie cofnął: przycisk zostaje wyłączony
    * na zawsze, a apka wygląda na zaciętą, aż do ubicia i uruchomienia od nowa.
    * W przeglądarce tego nie widać, bo tam następuje pełne przeładowanie.
    *
-   * Przy udanym logowaniu ten efekt nie ma znaczenia — strona i tak odjeżdża
+   * Przy udanym logowaniu ten efekt nie ma znaczenia - strona i tak odjeżdża
    * na /auth/callback, zanim ktokolwiek zobaczy odblokowany przycisk.
    */
   useEffect(() => {
@@ -68,7 +68,7 @@ export function Logowanie() {
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        // `hd` to wyłącznie podpowiedź dla ekranu wyboru konta — prawdziwą
+        // `hd` to wyłącznie podpowiedź dla ekranu wyboru konta - prawdziwą
         // bramką jest wyzwalacz w bazie. `select_account` wymusza wybór konta
         // u kogoś, kto ma zalogowane prywatne i uczelniane naraz.
         queryParams: { hd: "samorzad.ue.wroc.pl", prompt: "select_account" },
@@ -167,7 +167,7 @@ export function Logowanie() {
         (etap === "email" ? (
           <div className="grid gap-5">
             <p className="text-center text-xs text-dym">
-              albo kodem na maila — furtka awaryjna
+              albo kodem na maila - furtka awaryjna
             </p>
 
             <Field
@@ -217,7 +217,7 @@ export function Logowanie() {
               inputMode="numeric"
               autoComplete="one-time-code"
               // Długość kodu jest ustawieniem projektu Supabase (Authentication →
-              // Email OTP Length, 6–10 cyfr), nie stałą. Zaszyte na sztywno sześć
+              // Email OTP Length, 6-10 cyfr), nie stałą. Zaszyte na sztywno sześć
               // znaczyło, że przy dłuższym kodzie nie dało się zalogować w ogóle:
               // maxLength ucinał wpisywanie, a przycisk i tak pozostawał aktywny
               // dla wartości, której serwer nie przyjmie.

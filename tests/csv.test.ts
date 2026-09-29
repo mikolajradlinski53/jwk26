@@ -17,7 +17,7 @@ describe("eksport CSV", () => {
   });
 
   it("rozbraja wartości, które Excel wykonałby jako formułę", () => {
-    // Pole wpisuje uczestnik — „=HYPERLINK(...)" w uwagach otwierałoby się
+    // Pole wpisuje uczestnik - „=HYPERLINK(...)" w uwagach otwierałoby się
     // u organizatora jako formuła. Apostrof każe Excelowi czytać to jako tekst.
     const csv = doCsv(["x"], [["=1+1"], ["+48 600"], ["-5"], ["@SUMA"], ["zwykły"]]);
     expect(csv.split("\r\n").slice(1, 6)).toEqual(["'=1+1", "'+48 600", "'-5", "'@SUMA", "zwykły"]);

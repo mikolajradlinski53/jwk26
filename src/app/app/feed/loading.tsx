@@ -1,7 +1,7 @@
 import { Blok, Kolko, Pasek, SzkieletEkranu } from "@/components/Szkielet";
 import { NaglowekFeedu } from "./NaglowekFeedu";
 
-/** Feed: wpisy — autor, kwadratowe zdjęcie, reakcje. */
+/** Feed: wpisy - autor, kwadratowe zdjęcie, reakcje. */
 export default function Ladowanie() {
   return (
     <SzkieletEkranu tytul="Feed" naglowek={<NaglowekFeedu />}>

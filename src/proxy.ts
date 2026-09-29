@@ -9,7 +9,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   // Jeden prefiks zamiast listy wyjątków. Wszystko poza `/app` jest publiczne
-  // z założenia, a nie przez to, że ktoś pamiętał dopisać wyjątek — na tej
+  // z założenia, a nie przez to, że ktoś pamiętał dopisać wyjątek - na tej
   // liście trzykrotnie trzeba było robić miejsce dla tras podglądu, a dwa razy
   // wykluczenie okazało się szersze, niż zamierzano.
   matcher: ["/app/:path*"],

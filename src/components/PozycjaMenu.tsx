@@ -3,7 +3,7 @@ import { Ikona, type NazwaIkony } from "./Ikona";
 
 /**
  * Wiersz menu: ikona, nazwa, opis, opcjonalnie licznik po prawej. Wspólny dla
- * „Więcej”, Sanktuarium i kasyna — ten sam kształt wszędzie, jedna zmiana
+ * „Więcej”, Sanktuarium i kasyna - ten sam kształt wszędzie, jedna zmiana
  * obejmuje wszystkie trzy. Linki wewnętrzne niosą przejście „w głąb”.
  */
 export function PozycjaMenu({
@@ -19,7 +19,7 @@ export function PozycjaMenu({
   nazwa: string;
   opis?: string;
   licznik?: React.ReactNode;
-  /** `mailto:` i adresy spoza apki — zwykły <a>, bez przejścia. */
+  /** `mailto:` i adresy spoza apki - zwykły <a>, bez przejścia. */
   zewnetrzny?: boolean;
 }) {
   // `min-w-0`: w siatce element domyślnie rośnie do szerokości treści, więc

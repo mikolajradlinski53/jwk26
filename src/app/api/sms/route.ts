@@ -16,7 +16,7 @@ function tenSamSekret(a: string, b: string): boolean {
 
 /**
  * Wysyłka SMS-ów przez SMSAPI. Wołana przez bazę (pg_net po wstawieniu
- * wiersza z kanałem `sms`, pg_cron co minutę) z sekretem w nagłówku —
+ * wiersza z kanałem `sms`, pg_cron co minutę) z sekretem w nagłówku -
  * dokładnie jak /api/push, i tak samo bez klucza serwisowego.
  *
  * Konfiguracja (docs/sms.md): SMS_SEKRET (= sekrety.sms), SMSAPI_TOKEN;
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
         format: "json",
         encoding: "utf-8",
         // Polskie znaki zamienione na łacińskie: SMS mieści wtedy 160 znaków
-        // zamiast 70, czyli ogłoszenie kosztuje 2–3 razy mniej części.
+        // zamiast 70, czyli ogłoszenie kosztuje 2-3 razy mniej części.
         normalize: "1",
       });
       if (nadawca) parametry.set("from", nadawca);

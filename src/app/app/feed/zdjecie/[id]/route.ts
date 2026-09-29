@@ -5,11 +5,11 @@ import { createClient } from "@/lib/supabase/server";
  *
  * Podpisany adres ważny godzinę zmieniał się przy każdym wejściu do feedu,
  * więc przeglądarka nie mogła niczego zapamiętać i ściągała wszystkie zdjęcia
- * od nowa — główny zjadacz limitu 5 GB transferu w Supabase Free. Tutaj:
+ * od nowa - główny zjadacz limitu 5 GB transferu w Supabase Free. Tutaj:
  * bramka sesji z proxy (trasa pod /app), RLS decyduje, kto co widzi, a zdjęcie
  * z bingo nigdy się nie zmienia, więc telefon trzyma je tydzień.
  *
- * `?podglad` — mała wersja (720 px); starsze zdjęcia jej nie mają, wtedy pełne.
+ * `?podglad` - mała wersja (720 px); starsze zdjęcia jej nie mają, wtedy pełne.
  */
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

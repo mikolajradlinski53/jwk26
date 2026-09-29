@@ -1,7 +1,7 @@
 /**
  * Ikony interfejsu w stylu Instagrama: obrys 3,2 w siatce 48 × 48, kółko 2,6,
  * zaokrąglone końce, kolor z `currentColor`. Rysowane ręcznie, nie
- * generowane — ostre w każdym rozmiarze i lżejsze od obrazka (spec wyglądu,
+ * generowane - ostre w każdym rozmiarze i lżejsze od obrazka (spec wyglądu,
  * D1, D7). Kształty zatwierdzone na makiecie `ikony-svg`.
  */
 const KSZTALTY = {

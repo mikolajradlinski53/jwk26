@@ -21,7 +21,7 @@ function tenSamSekret(a: string, b: string): boolean {
  * do `powiadomienia` i pg_cron co minutę) z sekretem w nagłówku.
  *
  * Bez klucza serwisowego: paczkę i oznaczenie robią funkcje w bazie
- * (pobierz_push, oznacz_push), które same sprawdzają ten sam sekret —
+ * (pobierz_push, oznacz_push), które same sprawdzają ten sam sekret -
  * trasa ma tylko klucz anon, jak skrypt arkusza.
  */
 export async function POST(request: Request) {
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
           JSON.stringify({ id: p.id, tytul: p.tytul, tresc: p.tresc, link: p.link }),
           {
             // Godzina: powiadomienie o zbiórce sprzed trzech godzin jest gorsze
-            // niż żadne — telefon offline dłużej go już nie dostanie.
+            // niż żadne - telefon offline dłużej go już nie dostanie.
             TTL: 3600,
             // Wysoki priorytet: Android nie odkłada wtedy dostarczenia do
             // wybudzenia z trybu oszczędzania baterii (Doze), tylko budzi
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
       ),
     );
 
-    // 404 i 410 znaczą „tej subskrypcji już nie ma" — telefon się wypisał
+    // 404 i 410 znaczą „tej subskrypcji już nie ma" - telefon się wypisał
     // albo apka zniknęła. Inne błędy (np. chwilowe 5xx) zostawiają adres.
     const martwe = wyniki.flatMap((w, i) => {
       if (w.status !== "rejected") return [];

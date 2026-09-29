@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { admin, createUser, deleteUser } from "../helpers/supabase";
 
-// GoTrue nie przepuszcza treści wyjątku z Postgresa do klienta API — zwraca
+// GoTrue nie przepuszcza treści wyjątku z Postgresa do klienta API - zwraca
 // generyczne "Database error creating new user". Asercja na tekst komunikatu
 // byłaby więc bezwartościowa. Dowodem, że zadziałała bramka, jest brak konta:
 // gdyby trigger przepuścił adres, handle_new_user założyłby profil.

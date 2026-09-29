@@ -1,6 +1,6 @@
 import QRCode from "qrcode";
 
-/** Dane do przelewu z app_settings — ustawiane w /app/admin/ustawienia. */
+/** Dane do przelewu z app_settings - ustawiane w /app/admin/ustawienia. */
 export type DanePrzelewu = {
   /** Numer rachunku w dowolnym zapisie; liczą się tylko cyfry. */
   konto: string;
@@ -12,7 +12,7 @@ export type DanePrzelewu = {
 /**
  * Zdejmuje polskie znaki. Część aplikacji bankowych źle czyta je z kodu QR,
  * a tytuł „JWK26 Łucja Żak" i tak jest czytelny bez ogonków. `ł` trzeba
- * zamienić osobno — NFD go nie rozkłada, bo to osobna litera, nie „l" z akcentem.
+ * zamienić osobno - NFD go nie rozkłada, bo to osobna litera, nie „l" z akcentem.
  */
 export function bezOgonkow(s: string): string {
   return s
@@ -22,7 +22,7 @@ export function bezOgonkow(s: string): string {
     .replace(/[̀-ͯ]/g, "");
 }
 
-/** Tytuł przelewu z imieniem i nazwiskiem — po nim organizator paruje wpłatę ze zgłoszeniem. */
+/** Tytuł przelewu z imieniem i nazwiskiem - po nim organizator paruje wpłatę ze zgłoszeniem. */
 export function tytulPrzelewu(imie: string, nazwisko: string): string {
   return ["JWK26", imie.trim(), nazwisko.trim()].filter(Boolean).join(" ");
 }
@@ -60,7 +60,7 @@ export function ladunekQr(dane: DanePrzelewu, tytul: string): string {
 
 /**
  * Moduły kodu jako jedna ścieżka SVG. Synchronicznie i bez efektów, więc
- * liczy się w renderze po obu stronach — bez `useEffect` + `setState`, które
+ * liczy się w renderze po obu stronach - bez `useEffect` + `setState`, które
  * lint w tej wersji Reacta odrzuca, i bez mignięcia pustego kwadratu.
  */
 export function sciezkaQr(tekst: string): { rozmiar: number; d: string } {

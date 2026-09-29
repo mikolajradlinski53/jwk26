@@ -13,7 +13,7 @@ export type Uczestnik = {
   druzyna: string | null;
   telefon: string | null;
   dojazd: Dojazd | null;
-  /** „12:30–16:00" albo `null`, gdy zwolnienie niepotrzebne. */
+  /** „12:30-16:00" albo `null`, gdy zwolnienie niepotrzebne. */
   zwolnienie: string | null;
   alkohol: Alkohol | null;
   zgodaWizerunek: boolean;
@@ -27,7 +27,7 @@ export type FiltryUczestnikow = { pula?: KluczPuli; druzyna?: string };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * Filtry z query stringa — wspólne dla ekranu i trasy CSV, żeby eksport zawsze
+ * Filtry z query stringa - wspólne dla ekranu i trasy CSV, żeby eksport zawsze
  * był dokładnie tym, co widać na ekranie. Nieznane wartości są pomijane, nie
  * przekazywane do zapytania.
  */
@@ -114,7 +114,7 @@ export async function wczytajUczestnikow(
     dojazd: r.dojazd,
     zwolnienie:
       r.zwolnienie_od && r.zwolnienie_do
-        ? `${r.zwolnienie_od.slice(0, 5)}–${r.zwolnienie_do.slice(0, 5)}`
+        ? `${r.zwolnienie_od.slice(0, 5)}-${r.zwolnienie_do.slice(0, 5)}`
         : null,
     alkohol: r.alkohol,
     zgodaWizerunek: r.zgoda_wizerunek,
@@ -146,7 +146,7 @@ export function opisIce(w: DaneWrazliwe | null): string | null {
   return `${w.ice_imie ?? ""}${w.ice_relacja ? ` (${w.ice_relacja})` : ""}, ${w.ice_telefon}`;
 }
 
-/** Jeden wiersz CSV — w kolejności NAGLOWKI_CSV. */
+/** Jeden wiersz CSV - w kolejności NAGLOWKI_CSV. */
 export function wierszCsv(u: Uczestnik): (string | null)[] {
   return [
     u.nazwisko,

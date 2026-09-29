@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 /**
- * Kształty pozycji półki, rysowane w miejscu — tak samo jak ikony paska
+ * Kształty pozycji półki, rysowane w miejscu - tak samo jak ikony paska
  * nawigacji. Jedenaście konturów nie uzasadnia kolejnej zależności, a te muszą
  * być czytelne przy 24 px, w ciemności, po alkoholu.
  *
@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
  * z kolumny `shop_items.ikona`.
  */
 const KSZTALTY: Record<string, ReactNode> = {
-  // Butelka wódki — korek, szyjka, etykieta.
+  // Butelka wódki - korek, szyjka, etykieta.
   butelka: (
     <>
       <path d="M10 4h4v3.2l2 3.1V20a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-9.7l2-3.1Z" />
@@ -28,7 +28,7 @@ const KSZTALTY: Record<string, ReactNode> = {
     </>
   ),
 
-  // Kufel z uchem — jedyny kształt, który czyta się jako „piwo" bez podpisu.
+  // Kufel z uchem - jedyny kształt, który czyta się jako „piwo" bez podpisu.
   kufel: (
     <>
       <path d="M6 7.5h9.5V19a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2Z" />
@@ -37,7 +37,7 @@ const KSZTALTY: Record<string, ReactNode> = {
     </>
   ),
 
-  // Skrzynka z wystającymi szyjkami — kilka butelek naraz.
+  // Skrzynka z wystającymi szyjkami - kilka butelek naraz.
   skrzynka: (
     <>
       <path d="M4.5 10h15v9a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2Z" />
@@ -46,7 +46,7 @@ const KSZTALTY: Record<string, ReactNode> = {
     </>
   ),
 
-  // Kropla — namaszczenie. Jeden kontur, więc czytelny nawet bardzo mały.
+  // Kropla - namaszczenie. Jeden kontur, więc czytelny nawet bardzo mały.
   kropla: <path d="M12 3.2s5.5 6.6 5.5 10.1a5.5 5.5 0 0 1-11 0C6.5 9.8 12 3.2 12 3.2Z" />,
 
   // Torebka z zawiniętą górą.
@@ -77,7 +77,7 @@ const KSZTALTY: Record<string, ReactNode> = {
     </>
   ),
 
-  // Blask — błogosławieństwo.
+  // Blask - błogosławieństwo.
   blask: (
     <>
       <circle cx="12" cy="12" r="3.4" />

@@ -1,5 +1,5 @@
 /**
- * Fizyka kruka — czysta logika, bez rysowania i bez Reacta.
+ * Fizyka kruka - czysta logika, bez rysowania i bez Reacta.
  *
  * Świat ma stałe jednostki logiczne (360 × 480), więc gra zachowuje się tak
  * samo na każdym ekranie; komponent tylko skaluje rysunek. Prędkość pozioma
@@ -18,7 +18,7 @@ export const PREDKOSC = 150; // jednostek/s w poziomie
 
 /**
  * Co ile sekund nowa kolumna. Ta sama wartość siedzi w kruk_wynik()
- * (`c_odstep_kolumn_s`) — test pilnuje, żeby się nie rozjechały.
+ * (`c_odstep_kolumn_s`) - test pilnuje, żeby się nie rozjechały.
  */
 export const ODSTEP_KOLUMN_S = 1.5;
 export const SZER_KOLUMNY = 56;
@@ -52,7 +52,7 @@ export function nowyStan(): Stan {
 }
 
 /**
- * Najwyższy wynik, jaki baza uzna po tylu sekundach — lustro warunku
+ * Najwyższy wynik, jaki baza uzna po tylu sekundach - lustro warunku
  * z kruk_wynik(). Pierwsza kolumna dolatuje do kruka po ok. 2,25 s, każda
  * następna co ODSTEP_KOLUMN_S, więc uczciwy lot zawsze się w nim mieści.
  */
@@ -89,7 +89,7 @@ function uderza(y: number, k: Kolumna): boolean {
 
 /**
  * Jeden krok symulacji. Zwraca nowy stan, stary zostaje nietknięty.
- * `losuj` daje liczbę z [0, 1) na wysokość nowej szczeliny — testy podają stałą.
+ * `losuj` daje liczbę z [0, 1) na wysokość nowej szczeliny - testy podają stałą.
  */
 export function krok(
   s: Stan,
@@ -118,7 +118,7 @@ export function krok(
 
   let doNastepnej = s.doNastepnej - dt;
   while (doNastepnej <= 0) {
-    // Nadmiar czasu przesuwa nową kolumnę w lewo — odstępy zostają równe co do jednostki.
+    // Nadmiar czasu przesuwa nową kolumnę w lewo - odstępy zostają równe co do jednostki.
     kolumny.push({
       x: SWIAT.szer + doNastepnej * PREDKOSC,
       srodek: srodekSzczeliny(losuj()),

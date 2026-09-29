@@ -21,11 +21,11 @@ function terazMs() {
   return chwila;
 }
 
-// Serwer nie zna chwili, w której klient wykona hydratację — a `Date.now()`
+// Serwer nie zna chwili, w której klient wykona hydratację - a `Date.now()`
 // wywołane osobno po obu stronach dałoby dwie różne wartości i ostrzeżenie
 // o rozjeździe. `null` znaczy „jeszcze nie wiadomo" i jest identyczne
 // na serwerze i w pierwszej klatce klienta; prawdziwy czas przychodzi dopiero
-// po zamontowaniu, przez subskrypcję powyżej — nie przez `setState` wywołane
+// po zamontowaniu, przez subskrypcję powyżej - nie przez `setState` wywołane
 // wprost w ciele efektu (to łapie reguła `react-hooks/set-state-in-effect`).
 function terazNaSerwerze() {
   return null;
@@ -41,7 +41,7 @@ const JEDNOSTKI = [
 /**
  * Odliczanie do daty wydarzenia.
  *
- * Pierwsza klatka (serwer i hydratacja) nie liczy niczego — `teraz` jest
+ * Pierwsza klatka (serwer i hydratacja) nie liczy niczego - `teraz` jest
  * wtedy `null`, więc karta pokazuje neutralny placeholder zamiast cyfr.
  * Realne wartości dochodzą po zamontowaniu, gdy zaczyna tykać `setInterval`
  * w `subskrybuj`. Dzięki temu serwer i klient renderują to samo w pierwszej
@@ -64,7 +64,7 @@ export function Licznik({
   /**
    * Odliczanie policzone na serwerze, dla pierwszej klatki.
    *
-   * Bez tego licznik pokazywał kreskę, dopóki nie doładował się JavaScript —
+   * Bez tego licznik pokazywał kreskę, dopóki nie doładował się JavaScript -
    * a licznik do wyjazdu jest jednym z dwóch elementów sekcji wejściowej
    * landinga, którą spec każe uczynić czytelną w pierwszej klatce. Landing
    * promujemy na Instagramie, więc trafia też do ludzi na słabym łączu.
@@ -72,7 +72,7 @@ export function Licznik({
    * To nie grozi rozjazdem hydracji: wartość jest zwykłą właściwością,
    * zamrożoną w chwili renderu serwerowego, więc serwer i klient renderują
    * dokładnie ten sam napis. Sekundy bywają wtedy o moment nieświeże
-   * i przeskakują przy pierwszym tyknięciu — niewidoczne w praktyce, a cena
+   * i przeskakują przy pierwszym tyknięciu - niewidoczne w praktyce, a cena
    * za pokazanie prawdziwej liczby dni od razu.
    */
   poczatkowe: Odliczanie;

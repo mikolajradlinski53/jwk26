@@ -50,7 +50,7 @@ export default async function OgloszeniaPage() {
   const druzyny = (druzynyRaw ?? []) as { id: string; name: string }[];
   const historia = (historiaRaw ?? []) as Wpis[];
   const nazwaDruzyny = new Map(druzyny.map((d) => [d.id, d.name]));
-  // Strona dynamiczna, liczona per żądanie — chwila renderu to chwila odczytu.
+  // Strona dynamiczna, liczona per żądanie - chwila renderu to chwila odczytu.
   const teraz = new Date().getTime();
 
   function komu(w: Wpis) {
@@ -62,14 +62,14 @@ export default async function OgloszeniaPage() {
   function stan(w: Wpis) {
     if (w.kanal === "sms") {
       if (w.wyslane_at) return `SMS do ${w.wyslane_do ?? 0} numerów`;
-      // Po godzinie wysyłka odpuszcza (pobierz_sms) — najczęściej dlatego,
+      // Po godzinie wysyłka odpuszcza (pobierz_sms) - najczęściej dlatego,
       // że SMSAPI nie jest jeszcze podpięte (docs/sms.md).
       const przeterminowany = teraz - new Date(w.created_at).getTime() > 3600_000;
       if (w.proby >= 5 || przeterminowany) return "SMS nie wyszedł";
       return "SMS w drodze…";
     }
     if (w.wyslane_at) return `dotarło do ${w.wyslane_do ?? 0} urządzeń`;
-    // Po pięciu próbach wysyłka się poddaje (pobierz_push) — to trzeba widzieć.
+    // Po pięciu próbach wysyłka się poddaje (pobierz_push) - to trzeba widzieć.
     if (w.proby >= 5) return "nie udało się wysłać";
     return "w drodze…";
   }

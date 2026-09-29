@@ -59,7 +59,7 @@ const POZYCJE: Pozycja[] = [
 
 export function PasekNawigacji() {
   const sciezka = usePathname();
-  // Suma kolejek admina — u uczestnika zawsze 0, więc znacznika nie ma.
+  // Suma kolejek admina - u uczestnika zawsze 0, więc znacznika nie ma.
   const { suma } = useKolejki();
 
   return (
@@ -74,7 +74,7 @@ export function PasekNawigacji() {
     >
       {POZYCJE.map((p) => {
         // Ranking jest pod "/app", więc dopasowanie po prefiksie zapaliłoby go
-        // na każdej trasie — stąd porównanie dokładne.
+        // na każdej trasie - stąd porównanie dokładne.
         //
         // Panel admina leży pod /app/admin, a nie pod /app/wiecej, mimo że
         // wchodzi się do niego z tej zakładki. Bez jawnej reguły na trasach
@@ -91,7 +91,7 @@ export function PasekNawigacji() {
           <Link
             key={p.href}
             href={p.href}
-            // Zakładki paska to „to samo miejsce, inna zawartość” — przenikanie,
+            // Zakładki paska to „to samo miejsce, inna zawartość” - przenikanie,
             // nie przesunięcie (spec wyglądu, „Przejścia”).
             transitionTypes={["zakladka"]}
             aria-current={aktywna ? "page" : undefined}

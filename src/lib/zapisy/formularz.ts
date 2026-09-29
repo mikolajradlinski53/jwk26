@@ -20,7 +20,7 @@ export function etykietaDojazdu(d: Dojazd): string {
 
 /**
  * Godziny zwolnienia rektorskiego na pierwszy dzień wyjazdu, co pół godziny.
- * Od 12:00, bo wtedy rusza wyjazd — wcześniejsze zajęcia nikomu nie kolidują;
+ * Od 12:00, bo wtedy rusza wyjazd - wcześniejsze zajęcia nikomu nie kolidują;
  * do 18:00, bo później nie ma już czego zwalniać. Ten sam przedział pilnuje
  * `check` na registrations i zloz_zgloszenie().
  */
@@ -39,7 +39,7 @@ export function etykietaAlkoholu(a: Alkohol): string {
   return ALKOHOL.find((x) => x.wartosc === a)?.etykieta ?? a;
 }
 
-/** Czy pula w ogóle pyta o zwolnienie — Alumni nie studiują, więc nie. */
+/** Czy pula w ogóle pyta o zwolnienie - Alumni nie studiują, więc nie. */
 export function pytaOZwolnienie(pula: KluczPuli | null): boolean {
   return pula !== null && pula !== "alumni";
 }
@@ -120,7 +120,7 @@ export function kroki(naRezerwe: boolean): Krok[] {
 export type Bledy = Partial<Record<keyof DaneFormularza, string>>;
 
 // Te same wzorce co w zloz_zgloszenie(). Zmiana jednego bez drugiego da
-// formularz, który przepuszcza, i bazę, która odbija — albo odwrotnie.
+// formularz, który przepuszcza, i bazę, która odbija - albo odwrotnie.
 const TELEFON = /^\+?[0-9 ()-]{9,20}$/;
 const INDEKS = /^[0-9]{4,10}$/;
 const DATA = /^\d{4}-\d{2}-\d{2}$/;
@@ -241,7 +241,7 @@ export function waliduj(krok: Krok, d: DaneFormularza, dataJwkIso: string): Bled
       break;
 
     case "przelew":
-      // Plik sprawdza komponent — nie jest częścią DaneFormularza.
+      // Plik sprawdza komponent - nie jest częścią DaneFormularza.
       break;
   }
 
@@ -252,7 +252,7 @@ const alboNull = (s: string) => (puste(s) ? null : s.trim());
 
 /** Parametry `p_dane` i `p_wrazliwe` dla zloz_zgloszenie(). */
 export function doRpc(d: DaneFormularza) {
-  // Godziny tylko wtedy, gdy zwolnienie jest zaznaczone i pula o nie pyta —
+  // Godziny tylko wtedy, gdy zwolnienie jest zaznaczone i pula o nie pyta -
   // wybrane wcześniej, a potem odznaczone nie mogą przeciec do bazy.
   const zwolnienie = d.zwolnienie && pytaOZwolnienie(d.pula);
 

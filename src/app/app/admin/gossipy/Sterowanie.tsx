@@ -89,7 +89,7 @@ export function Sterowanie({ kategoria, wpisy }: { kategoria: KategoriaGossipow;
           {wpisy.map((w) => (
             <li key={w.id} className={`rounded-sm border border-white/10 p-3 ${w.ukryte ? "opacity-50" : ""}`}>
               <p className="flex items-center gap-1.5 text-xs text-dym">
-                {/* Nowe — jeszcze nieprzejrzane; to one zapalają licznik w pasku. */}
+                {/* Nowe - jeszcze nieprzejrzane; to one zapalają licznik w pasku. */}
                 {!w.przejrzane && !w.ukryte && (
                   <span aria-label="nowe" className="inline-block size-2 flex-none rounded-full bg-krew" />
                 )}

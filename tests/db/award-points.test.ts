@@ -17,7 +17,7 @@ const { nowyUzytkownik, posprzataj } = sprzatanieUzytkownikow();
 
 // Jeden zwykły uczestnik i jeden admin na cały plik, założeni raz w beforeAll.
 // Żaden z dziesięciu testów nie bada rozróżnienia między dwiema konkretnymi
-// osobami tego samego typu — award_points wywołuje „jakiś admin", odmowę
+// osobami tego samego typu - award_points wywołuje „jakiś admin", odmowę
 // sprawdza „jakiś zwykły uczestnik". is_admin() czyta rolę na żywo z profili
 // przy każdym wywołaniu, więc jedno logowanie na rolę wystarcza.
 let uczestnik: TestUser;
@@ -40,7 +40,7 @@ afterAll(async () => {
 
 afterEach(async () => {
   await admin.from("points_ledger").delete().eq("category", "admin_adjust");
-  // Pierwszy test zatwierdza współdzielonego uczestnika do drużyny — reset,
+  // Pierwszy test zatwierdza współdzielonego uczestnika do drużyny - reset,
   // żeby kolejne testy zawsze widziały go w domyślnym stanie.
   await admin
     .from("profiles")
@@ -71,7 +71,7 @@ describe("przyznawanie punktów", () => {
 
     expect(error).not.toBeNull();
     // Gdyby grant dla anona został, funkcja weszłaby do ciała i padła na
-    // strażniku is_admin() — komunikatem o adminie.
+    // strażniku is_admin() - komunikatem o adminie.
     expect(error!.message).not.toMatch(/admin/i);
   });
 
@@ -147,7 +147,7 @@ describe("przyznawanie punktów", () => {
 
   it("odmawia zmiany poza rozsądnym zakresem", async () => {
     // Widok team_scores rzutuje sumę na int. Dwa wpisy po INT_MAX wystarczą,
-    // żeby odczyt widoku padał na `22003 integer out of range` — i ranking
+    // żeby odczyt widoku padał na `22003 integer out of range` - i ranking
     // przestaje działać dla wszystkich drużyn naraz, nie tylko dla tej jednej.
     const teamId = await firstTeamId();
 

@@ -40,7 +40,7 @@ export default async function ZapisyPage() {
     <Wroc href="/app/admin">Wróć do sanktuarium</Wroc>
   );
 
-  // Na ekranie admina błąd odczytu ma być widoczny — pusta lista pul
+  // Na ekranie admina błąd odczytu ma być widoczny - pusta lista pul
   // wyglądałaby jak „nie ma tur", a pusta rezerwa jak „nikt nie czeka",
   // choć oba są nieprawdą. Stąd sprawdzenie wszystkich trzech zapytań, nie
   // tylko pul.
@@ -69,7 +69,7 @@ export default async function ZapisyPage() {
         {stan.map((p) => (
           // Klucz uwzględnia wartości z serwera, nie tylko p.klucz: karta ma
           // się zresetować, gdy zmieni je inny admin, ale nie przy każdym
-          // odświeżeniu strony — inaczej niezapisana zmiana w tym oknie
+          // odświeżeniu strony - inaczej niezapisana zmiana w tym oknie
           // zniknęłaby po cichu.
           <Pula
             key={`${p.klucz}:${p.otwarta}:${p.miejsca}:${zatwierdzony}`}

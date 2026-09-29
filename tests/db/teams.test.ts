@@ -14,7 +14,7 @@ import {
 const zalozone: string[] = [];
 
 // Jeden zwykły członek drużyny i jeden admin na cały plik. Żaden z trzech
-// testów nie bada rozróżnienia między dwiema konkretnymi osobami — tylko to,
+// testów nie bada rozróżnienia między dwiema konkretnymi osobami - tylko to,
 // co wolno roli. is_admin()/is_approved() czytają rolę i status na żywo z
 // profili, więc zatwierdzenie kluczem serwisowym w beforeAll wystarczy raz.
 let uczestnik: TestUser;
@@ -54,7 +54,7 @@ describe("drużyny", () => {
       .eq("id", teamId)
       .select();
 
-    // Brak polityki UPDATE dla uczestnika nie daje błędu — daje pustą listę
+    // Brak polityki UPDATE dla uczestnika nie daje błędu - daje pustą listę
     // zmienionych wierszy.
     expect(data).toEqual([]);
 

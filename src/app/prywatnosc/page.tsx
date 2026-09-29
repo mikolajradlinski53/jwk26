@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AKTUALIZACJA_POLITYKI, POLITYKA } from "@/lib/prywatnosc";
 
 export const metadata = {
-  title: "Polityka prywatności — JWK26",
+  title: "Polityka prywatności - JWK26",
   description: "Jak aplikacja JWK26 przetwarza dane osobowe.",
 };
 
@@ -12,7 +12,7 @@ export const viewport = {
 
 /**
  * Polityka prywatności. Publiczna jak regulamin i w tej samej jesiennej
- * oprawie — linkuje do niej landing, gdzie motyw sekty jest tajemnicą.
+ * oprawie - linkuje do niej landing, gdzie motyw sekty jest tajemnicą.
  */
 export default function PrywatnoscPage() {
   return (

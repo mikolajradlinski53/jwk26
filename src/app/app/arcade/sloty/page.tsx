@@ -31,7 +31,7 @@ export default async function SlotyPage() {
       // Obrót liczy baza tą samą funkcją, którą wymusza spin. Liczenie go tutaj
       // z `Date.now()` byłoby dwiema prawdami o jednym limicie, a przy okazji
       // reguła react-hooks/purity w tej wersji Nexta odrzuca `Date.now()`
-      // w renderze — także w komponencie serwerowym, i to jako błąd.
+      // w renderze - także w komponencie serwerowym, i to jako błąd.
       supabase.rpc("obrot_w_oknie"),
     ]);
 

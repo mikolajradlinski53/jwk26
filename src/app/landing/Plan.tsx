@@ -6,7 +6,7 @@ import { grupujPoDniach, krotkaGodzina, nazwaDnia, type PunktHarmonogramu } from
 import type { OdslonaWidok } from "@/lib/odslony";
 
 /**
- * Plan z harmonogramu — wyłącznie punkty oznaczone przez admina „na landing”
+ * Plan z harmonogramu - wyłącznie punkty oznaczone przez admina „na landing”
  * (odczyt `anon` i tak nie widzi innych). Do odsłony planu (dzień wyjazdu,
  * 14:00) zasłona z licznikiem; po odsłonie bez punktów sekcji nie ma.
  */
@@ -21,7 +21,7 @@ export function Plan({ punkty, odslona }: { punkty: PunktHarmonogramu[]; odslona
         tlo="bg-jesien-karta/70"
         ksztalt="plan"
         odslona={odslona}
-        zaba={<ZabaStala poza="podglada" skala={0.9} polozenie={{ bottom: "calc(100% - 9px)", left: "50%", transform: "translateX(-50%)" }} />}
+        zaba={<ZabaStala poza="podglada" skala={1.35} polozenie={{ bottom: "calc(100% - 13px)", left: "50%", transform: "translateX(-50%)" }} />}
       />
     );
   }
@@ -40,7 +40,7 @@ export function Plan({ punkty, odslona }: { punkty: PunktHarmonogramu[]; odslona
                 {d.punkty.map((p) => (
                   <li key={p.id} className="flex gap-3">
                     <span className="w-11 flex-none font-tytul text-base leading-snug tabular-nums text-jesien-rdza">
-                      {krotkaGodzina(p.godzina) ?? "—"}
+                      {krotkaGodzina(p.godzina) ?? "-"}
                     </span>
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-jesien-atrament">{p.tytul}</p>

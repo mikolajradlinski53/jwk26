@@ -1,6 +1,6 @@
 import { Pasek, SzkieletEkranu } from "@/components/Szkielet";
 
-/** Gossipy: karty kategorii — status, tytuł, opis, formularz nominacji. */
+/** Gossipy: karty kategorii - status, tytuł, opis, formularz nominacji. */
 export default function Ladowanie() {
   return (
     <SzkieletEkranu tytul="Gossipy" podtytul="Anonimowe nominacje">

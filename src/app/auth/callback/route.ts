@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Google potrafi wrócić z błędem zamiast kodu — wtedy `code` nie ma wcale.
+  // Google potrafi wrócić z błędem zamiast kodu - wtedy `code` nie ma wcale.
   const odmowa = searchParams.get("error_description") ?? searchParams.get("error");
   if (odmowa) return zBledem(odmowa);
 

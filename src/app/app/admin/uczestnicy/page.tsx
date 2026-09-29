@@ -37,7 +37,7 @@ export default async function UczestnicyPage({
   ]);
   const druzyny = (druzynyRaw ?? []) as Pick<Team, "id" | "name">[];
 
-  // Ten sam query string dla CSV — eksport ma być dokładnie tym, co widać.
+  // Ten sam query string dla CSV - eksport ma być dokładnie tym, co widać.
   const zapytanie = new URLSearchParams(
     Object.entries(filtry).filter(([, v]) => v) as [string, string][],
   ).toString();
@@ -132,9 +132,9 @@ function Karta({ u }: { u: Uczestnik }) {
 
       <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
         <dt className="text-dym">Drużyna</dt>
-        <dd className="text-kosc">{u.druzyna ?? "—"}</dd>
+        <dd className="text-kosc">{u.druzyna ?? "-"}</dd>
         <dt className="text-dym">Telefon</dt>
-        <dd className="text-kosc">{u.telefon ?? "—"}</dd>
+        <dd className="text-kosc">{u.telefon ?? "-"}</dd>
         {u.dojazd && (
           <>
             <dt className="text-dym">Dojazd</dt>
@@ -161,7 +161,7 @@ function Karta({ u }: { u: Uczestnik }) {
         </p>
       )}
 
-      {/* Dane z art. 9 pod przyciskiem — listę przegląda się też na telefonie. */}
+      {/* Dane z art. 9 pod przyciskiem - listę przegląda się też na telefonie. */}
       {maWrazliwe && (
         <details className="mt-2">
           <summary className="flex min-h-11 cursor-pointer items-center text-xs text-dym">

@@ -14,7 +14,7 @@ const { nowyUzytkownik, posprzataj } = sprzatanieUzytkownikow();
 const pliki: string[] = [];
 
 // Jeden zwykły uczestnik i jeden admin na cały plik. Polityki na buckecie
-// „proofs" patrzą tylko na auth.uid() (własny folder) albo na rolę admina —
+// „proofs" patrzą tylko na auth.uid() (własny folder) albo na rolę admina -
 // obie da się sprawdzić żywą sesją jednej osoby na rolę, założoną raz.
 let uczestnik: TestUser;
 let uczestnikClient: SupabaseClient;
@@ -43,7 +43,7 @@ afterEach(async () => {
   await posprzataj();
 });
 
-/** Najmniejszy sensowny ładunek — treść nie ma znaczenia, liczy się ścieżka. */
+/** Najmniejszy sensowny ładunek - treść nie ma znaczenia, liczy się ścieżka. */
 function atrapaZdjecia(): Blob {
   return new Blob([new Uint8Array([0xff, 0xd8, 0xff, 0xd9])], {
     type: "image/jpeg",
@@ -89,7 +89,7 @@ describe("bucket z dowodami przelewu", () => {
   });
 
   it("nie pozwala uczestnikowi pobrać nawet własnego dowodu", async () => {
-    // Polityka SELECT jest wyłącznie dla admina — świadomie, zgodnie ze specem.
+    // Polityka SELECT jest wyłącznie dla admina - świadomie, zgodnie ze specem.
     // Autor widział zdjęcie przed wysłaniem i nie ma po co do niego wracać.
     const sciezka = `${uczestnik.id}/dowod.jpg`;
     const { error: bladZapisu } = await admin.storage
@@ -126,7 +126,7 @@ describe("bucket z dowodami przelewu", () => {
       .from("proofs")
       .remove([sciezka]);
 
-    // Plik ma przetrwać — niezależnie od tego, czy API zgłosi błąd, czy po
+    // Plik ma przetrwać - niezależnie od tego, czy API zgłosi błąd, czy po
     // cichu nic nie zrobi. Liczy się stan bucketu, nie kształt odpowiedzi.
     const { data: nadalJest } = await admin.storage
       .from("proofs")
@@ -154,7 +154,7 @@ describe("bucket z dowodami przelewu", () => {
 
   it("odrzuca plik o niedozwolonym typie", async () => {
     // allowed_mime_types na buckecie: jpeg, png, webp. PDF przechodziłby przez
-    // politykę RLS — zatrzymuje go dopiero konfiguracja bucketu.
+    // politykę RLS - zatrzymuje go dopiero konfiguracja bucketu.
     const { error } = await uczestnikClient.storage
       .from("proofs")
       .upload(`${uczestnik.id}/dowod.pdf`, new Blob(["%PDF-1.4"], {

@@ -11,7 +11,7 @@ const bodoni = Bodoni_Moda({
   variable: "--font-bodoni",
 });
 
-// Manrope nie ma kursywy — <em> dostanie syntetyczny pochył. Do wyróżnień
+// Manrope nie ma kursywy - <em> dostanie syntetyczny pochył. Do wyróżnień
 // używamy wagi, nie kursywy.
 const manrope = Manrope({
   subsets: ["latin", "latin-ext"],
@@ -19,7 +19,7 @@ const manrope = Manrope({
   variable: "--font-manrope",
 });
 
-// Neutralne domyślne — dziedziczą je strony publiczne (landing, regulamin,
+// Neutralne domyślne - dziedziczą je strony publiczne (landing, regulamin,
 // polityka). Nazwa z motywem i manifest żyją w METADANE_APKI, podpiętych
 // wyłącznie pod /app i /wejscie.
 export const metadata: Metadata = {
@@ -42,7 +42,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Tło widać na każdym ekranie — niech przeglądarka zacznie je ciągnąć
+  // Tło widać na każdym ekranie - niech przeglądarka zacznie je ciągnąć
   // razem z HTML-em, a nie dopiero po sparsowaniu stylów.
   preload("/grafika/tlo-apki.webp", { as: "image", type: "image/webp" });
 
@@ -51,12 +51,12 @@ export default function RootLayout({
       <body>
         {/*
           Tło apki mieszka w warstwie globalnej, nie na ekranach. To ono jest
-          tym, co rozmywa szkło — bez niego backdrop-filter nie ma czego
+          tym, co rozmywa szkło - bez niego backdrop-filter nie ma czego
           rozmywać i szkło zamienia się w szarą płytę. Jedno tło znaczy też,
           że każdy nowy ekran jest szklany od razu.
 
           Obraz z Higgsfielda (Dym, spec wyglądu §4), 9 KB. `fixed` na
-          elemencie, nie `background-attachment: fixed` — iOS tamto ignoruje.
+          elemencie, nie `background-attachment: fixed` - iOS tamto ignoruje.
           Kolor pod spodem to --color-noc: zanim obraz dojdzie, ekran wygląda
           jak ciemniejsza wersja siebie, a nie jak błąd.
 

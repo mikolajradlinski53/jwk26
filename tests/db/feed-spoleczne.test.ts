@@ -13,12 +13,12 @@ import {
   type TestUser,
 } from "../helpers/supabase";
 
-// Jeden uczestnik i jeden admin na cały plik, założeni raz w beforeAll —
+// Jeden uczestnik i jeden admin na cały plik, założeni raz w beforeAll -
 // jedenaście testów, żaden nie rozróżnia dwóch konkretnych zaakceptowanych
 // osób. is_approved()/is_admin() czytają stan z profili na żywo przy każdym
 // wywołaniu, więc odebranie/przywrócenie statusu kluczem serwisowym w teście 5
-// widać w sesji od razu, bez ponownego logowania. „Ofiara" — właściciel
-// cudzych lajków i komentarzy w testach 4 i 10 — nigdy się nie loguje: do
+// widać w sesji od razu, bez ponownego logowania. „Ofiara" - właściciel
+// cudzych lajków i komentarzy w testach 4 i 10 - nigdy się nie loguje: do
 // wstawienia jej danych wystarczy klucz serwisowy, a do dowiedzenia, że
 // uczestnik nie może ich skasować, wystarczy jego już istniejąca sesja.
 let uczestnik: TestUser;
@@ -42,10 +42,10 @@ beforeAll(async () => {
   await makeAdmin(szef);
   adminClient = await signIn(szef);
 
-  // Jedno zaakceptowane zgłoszenie na cały plik — lajki i komentarze mają FK
+  // Jedno zaakceptowane zgłoszenie na cały plik - lajki i komentarze mają FK
   // na bingo_submissions(id), a to, przez które pole zostało zapalone, nie ma
   // tu znaczenia. Wstawione wprost kluczem serwisowym, bez przechodzenia przez
-  // review_bingo — nie to jest przedmiotem tych testów.
+  // review_bingo - nie to jest przedmiotem tych testów.
   const taskId = await idZadania(0);
   const { data, error } = await admin
     .from("bingo_submissions")
@@ -66,11 +66,11 @@ afterAll(async () => {
 });
 
 afterEach(async () => {
-  // Lajki i komentarze pod wspólnym zgłoszeniem kasujemy po każdym teście —
+  // Lajki i komentarze pod wspólnym zgłoszeniem kasujemy po każdym teście -
   // kolejny test ma zawsze zaczynać od pustego feedu pod tym zgłoszeniem.
   await admin.from("feed_likes").delete().eq("submission_id", submissionId);
   await admin.from("feed_comments").delete().eq("submission_id", submissionId);
-  // Test 5 odbiera uczestnikowi status na czas jednego testu — reset tutaj
+  // Test 5 odbiera uczestnikowi status na czas jednego testu - reset tutaj
   // jest bezwarunkowy i bezpieczny również dla testów, które go nie ruszały.
   await ustawJakoZaakceptowany(uczestnik, teamId);
 });
@@ -92,7 +92,7 @@ describe("warstwa społeczna: lajki i komentarze", () => {
   });
 
   it("drugi lajk tej samej osoby pada", async () => {
-    // Pierwszy przechodzi — dowodzi, że ładunek sam w sobie jest poprawny
+    // Pierwszy przechodzi - dowodzi, że ładunek sam w sobie jest poprawny
     // (FK, is_approved()). Drugi, identyczny, może więc paść już wyłącznie na
     // kluczu głównym (submission_id, user_id), a nie na czymś innym.
     const pierwszy = await uczestnikClient
@@ -129,7 +129,7 @@ describe("warstwa społeczna: lajki i komentarze", () => {
   });
 
   it("nie cofnie cudzego lajka", async () => {
-    // Cudzy lajek wstawiony kluczem serwisowym — nie przechodzi przez sesję
+    // Cudzy lajek wstawiony kluczem serwisowym - nie przechodzi przez sesję
     // ofiary, bo do zbadania polityki DELETE wystarczy, że wiersz istnieje
     // i należy do kogoś innego niż uczestnikClient.
     const { error: bladZapisu } = await admin
@@ -156,7 +156,7 @@ describe("warstwa społeczna: lajki i komentarze", () => {
   });
 
   it("oczekujący nie postawi lajka", async () => {
-    // Ten sam token, świeżo pozbawiony statusu — is_approved() czyta na żywo,
+    // Ten sam token, świeżo pozbawiony statusu - is_approved() czyta na żywo,
     // więc nie trzeba nowej sesji, żeby zobaczyć efekt.
     await admin.from("profiles").update({ status: "pending" }).eq("id", uczestnik.id);
 
@@ -189,7 +189,7 @@ describe("warstwa społeczna: lajki i komentarze", () => {
   });
 
   it("pusty komentarz pada", async () => {
-    // Kontrola tym samym ładunkiem z sensowną treścią — przechodzi. Jeśli
+    // Kontrola tym samym ładunkiem z sensowną treścią - przechodzi. Jeśli
     // wersja z samymi spacjami padnie, to wyłącznie przez ograniczenie na
     // body (length(trim(body)) between 1 and 500), nie przez coś innego.
     const kontrola = await uczestnikClient

@@ -11,7 +11,7 @@ export default async function AdminGossipyPage() {
   const { data: kategorieRaw, error } = await supabase.rpc("gossipy");
   const kategorie = (kategorieRaw ?? []) as KategoriaGossipow[];
 
-  // Moderacja per kategoria — kilka kategorii na wyjazd, więc osobne zapytania
+  // Moderacja per kategoria - kilka kategorii na wyjazd, więc osobne zapytania
   // nie bolą, a funkcja i tak sprawdza rolę admina sama.
   const moderacja = await Promise.all(
     kategorie.map(async (k) => {

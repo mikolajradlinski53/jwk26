@@ -4,13 +4,13 @@
  * Na telefonie zostaje wąska kolumna, bo tak czyta się najlepiej i tak samo
  * zachowuje się apka. Na większych ekranach musi oddychać: przy stałym
  * `max-w-md` landing był kolumną 448 px pośrodku monitora, podczas gdy karta
- * stopki ma 1000 px — wyglądało to jak strona w połowie zbudowana.
+ * stopki ma 1000 px - wyglądało to jak strona w połowie zbudowana.
  *
  * Szerokość nie jest jedna dla wszystkiego, bo różne rzeczy mają różne
  * potrzeby:
  *
  * - `tekst` zatrzymuje się na 65 znakach. Akapit rozciągnięty na 1000 px
- *   czyta się fatalnie — oko gubi początek następnego wiersza.
+ *   czyta się fatalnie - oko gubi początek następnego wiersza.
  * - `szeroki` służy galeriom, zdjęciom i wszystkiemu, co zyskuje na
  *   powierzchni. Zrównany ze stopką, żeby krawędzie się pokrywały.
  */

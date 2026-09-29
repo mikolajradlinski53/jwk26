@@ -12,7 +12,7 @@ import type { Ustawienia } from "@/lib/ustawienia";
  *
  * Wcześniej stała `+02:00` była doklejana do każdej wpisanej daty. Dla dwóch
  * dat tego wydarzenia to działa, bo obie wypadają przed zmianą czasu
- * 25 października 2026 — ale ten ekran istnieje po to, żeby właściciel mógł
+ * 25 października 2026 - ale ten ekran istnieje po to, żeby właściciel mógł
  * wpisać dowolną datę. Data listopadowa zapisywała się wtedy z letnim
  * przesunięciem i cicho przesuwała godzinę o jedną, bez ostrzeżenia.
  */
@@ -36,14 +36,14 @@ function przesuniecieWarszawy(lokalna: string): string {
 
 export function naDatetimeLocal(iso: string | null): string {
   if (!iso) return "";
-  // <input type="datetime-local"> nie przyjmuje wartości ze strefą —
+  // <input type="datetime-local"> nie przyjmuje wartości ze strefą -
   // obcinamy przesunięcie ("+02:00" na końcu) przy odczycie.
   return iso.replace(/[+-]\d{2}:\d{2}$/, "");
 }
 
 export function naIso(lokalna: string): string {
   // Wartość z <input type="datetime-local"> to zwykle "YYYY-MM-DDTHH:mm",
-  // rzadziej (gdy przeglądarka pokaże sekundy) "YYYY-MM-DDTHH:mm:ss" —
+  // rzadziej (gdy przeglądarka pokaże sekundy) "YYYY-MM-DDTHH:mm:ss" -
   // sekundy dokładamy tylko wtedy, gdy ich brakuje.
   const zSekundami = /T\d{2}:\d{2}:\d{2}$/.test(lokalna) ? lokalna : `${lokalna}:00`;
   return `${zSekundami}${przesuniecieWarszawy(zSekundami)}`;
@@ -89,7 +89,7 @@ export function Formularz({ poczatkowe }: { poczatkowe: Ustawienia }) {
       // Jedno zapytanie zamiast czterech osobnych. Pętla `update` zostawiała
       // bazę w stanie mieszanym, gdy trzecie żądanie padło: dwa klucze
       // zapisane, dwa nie, a formularz dalej pokazywał to, co człowiek wpisał.
-      // Sprawdzone na żywej bazie — tak właśnie się kończyło.
+      // Sprawdzone na żywej bazie - tak właśnie się kończyło.
       const { error } = await supabase
         .from("app_settings")
         .upsert(
@@ -137,7 +137,7 @@ export function Formularz({ poczatkowe }: { poczatkowe: Ustawienia }) {
 
       {/* Komunikat należy do całego formularza, nie do ostatniego pola.
           Wcześniej trafiał przez `error` do „Adresu miejsca" niezależnie od
-          przyczyny — czytnik ekranu ogłaszał wtedy, że to pole jest błędne,
+          przyczyny - czytnik ekranu ogłaszał wtedy, że to pole jest błędne,
           choć błąd dotyczył dat albo zapisu do bazy. */}
       {blad && (
         <p role="alert" className="text-sm text-krew-jasna">

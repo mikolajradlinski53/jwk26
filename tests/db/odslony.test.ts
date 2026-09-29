@@ -41,7 +41,7 @@ async function widzi(client: SupabaseClient): Promise<Set<string>> {
 beforeAll(async () => {
   const { data } = await admin.from("app_settings").select("value").eq("key", "przelew_kwota").maybeSingle();
   poprzedniaKwota = data?.value ?? null;
-  // Klucz musi istnieć — inaczej „nie widzi” przechodziłoby na pustej tabeli.
+  // Klucz musi istnieć - inaczej „nie widzi” przechodziłoby na pustej tabeli.
   await ustawUstawienie("przelew_kwota", 320);
 
   const u = await nowyUzytkownik("odslony-uczestnik");
@@ -104,7 +104,7 @@ describe("zasłony w bazie", () => {
     expect(new Date(o.cena.data!).getTime()).toBe(new Date(PRZYSZLOSC).getTime());
   });
 
-  it("plan ma własny termin — odsłona zapisów go nie odsłania", async () => {
+  it("plan ma własny termin - odsłona zapisów go nie odsłania", async () => {
     await odslony(PRZYSZLOSC, PRZYSZLOSC, PRZESZLOSC);
     await ustawUstawienie("odslona_plan", PRZYSZLOSC);
     const { data } = await anonimowy().rpc("odslony");

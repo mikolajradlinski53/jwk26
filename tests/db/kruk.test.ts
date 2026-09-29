@@ -37,7 +37,7 @@ async function start(): Promise<string> {
 }
 
 /**
- * Cofa start gry o minutę — test nie czeka, aż kruk naprawdę przeleci.
+ * Cofa start gry o minutę - test nie czeka, aż kruk naprawdę przeleci.
  * Minuta, nie mniej: zegar maszyny testowej i bazy mogą się rozjeżdżać
  * o sekundy, a limit po minucie (41) zostawia na to dużo miejsca.
  */
@@ -129,7 +129,7 @@ describe("kruk_start i kruk_wynik", () => {
 
 describe("dostęp", () => {
   it("gracz nie czyta ani nie pisze do kruk_gry bezpośrednio", async () => {
-    // Brak grantu: błąd uprawnień, nie pusta lista — pusta lista niczego by nie dowodziła.
+    // Brak grantu: błąd uprawnień, nie pusta lista - pusta lista niczego by nie dowodziła.
     const odczyt = await graczClient.from("kruk_gry").select("id");
     expect(odczyt.error?.code).toBe("42501");
     const zapis = await graczClient.from("kruk_gry").insert({ user_id: gracz.id, wynik: 999 });

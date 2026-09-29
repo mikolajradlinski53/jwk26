@@ -6,7 +6,7 @@ export type StanZaby = "powitanie" | "tutorial" | "odmowa" | "czekanie" | "sukce
 
 /*
  * Uwaga na `powitanie`: to jedyny stan używany na **landingu**, a landing nie
- * może zdradzać motywu apki — także w drzewie dostępności. Dawny opis z nazwą
+ * może zdradzać motywu apki - także w drzewie dostępności. Dawny opis z nazwą
  * motywu czytnik ekranu ogłaszał komuś, kto ogląda zwyczajną jesienną stronę.
  * Pozostałe stany żyją wyłącznie za bramką. Słowa motywu nie ma nawet w tym
  * komentarzu: komponent trafia do skryptów landingu, a skrypt deweloperski
@@ -20,18 +20,18 @@ const OPISY: Record<StanZaby, string> = {
   sukces: "Żaba świętuje pierwsze wejście do aplikacji",
 };
 
-// Czas między klatkami animacji poklatkowej. ~8 klatek na sekundę — szybciej
+// Czas między klatkami animacji poklatkowej. ~8 klatek na sekundę - szybciej
 // niż to nie ma sensu dla ręcznie malowanej sekwencji PNG, wolniej wygląda
 // na przycinanie.
 const MS_NA_KLATKE = 120;
 
 /**
- * Maskotka wydarzenia — gniazda i stany, nie finalny wygląd.
+ * Maskotka wydarzenia - gniazda i stany, nie finalny wygląd.
  *
  * Właściwej grafiki jeszcze nie ma. Do czasu jej dostarczenia rysujemy prostą
  * sylwetkę zastępczą w SVG (gałąź bez `klatki`), żeby brak rysunku nie
  * blokował budowy ani nie zostawiał dziury w układzie. To NIE jest finalna
- * maskotka — to placeholder, i pozostaje domyślnym zachowaniem, gdy nikt nie
+ * maskotka - to placeholder, i pozostaje domyślnym zachowaniem, gdy nikt nie
  * przekaże klatek.
  *
  * PODMIANA / PODPIĘCIE ANIMACJI:
@@ -50,22 +50,22 @@ const MS_NA_KLATKE = 120;
  *    = sylwetka zastępcza jak dotychczas.
  *
  * Animacja idzie przez `useSyncExternalStore`, tak jak licznik w `Licznik.tsx`
- * — indeks bieżącej klatki mieszka w refie, zmieniany przez `setInterval`
+ * - indeks bieżącej klatki mieszka w refie, zmieniany przez `setInterval`
  * poza Reactem, subskrypcja tylko o tym powiadamia. Żadnego `setState`
  * wywołanego wprost w ciele efektu (reguła `react-hooks/set-state-in-effect`
  * jest w tym repozytorium twardym błędem), i żadnego rozjazdu serwer/klient:
  * `getServerSnapshot` zawsze zwraca 0, więc pierwsza klatka po obu stronach
  * jest identyczna.
  *
- * `prefers-reduced-motion: reduce` zatrzymuje sekwencję na pierwszej klatce —
+ * `prefers-reduced-motion: reduce` zatrzymuje sekwencję na pierwszej klatce -
  * `subskrybuj` w ogóle nie odpala interwału.
  *
- * Kolor sylwetki zastępczej dziedziczy się z `currentColor` — miejsce
+ * Kolor sylwetki zastępczej dziedziczy się z `currentColor` - miejsce
  * wstawienia decyduje o czytelności przez klasę tekstową w `className`.
  * Landing (jasne tło) używa np. `text-jesien-mech`, apka (ciemne tło) np.
- * `text-kosc` albo `text-krew-jasna` — obie kombinacje mają sprawdzony
+ * `text-kosc` albo `text-krew-jasna` - obie kombinacje mają sprawdzony
  * kontrast. Gdy `klatki` są PNG-ami, `className` nadal steruje rozmiarem
- * (np. `size-24`), ale nie kolorem — kolor jest wtedy w samym pliku.
+ * (np. `size-24`), ale nie kolorem - kolor jest wtedy w samym pliku.
  */
 export function Zaba({
   stan,

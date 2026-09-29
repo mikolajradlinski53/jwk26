@@ -33,7 +33,7 @@ export default async function WiecejPage() {
   ]);
 
   // Dane zdrowotne stanZgod sprawdza we wszystkich zgłoszeniach osoby
-  // (także starych, odrzuconych); zgody na wizerunek i SMS — w przyjętym.
+  // (także starych, odrzuconych); zgody na wizerunek i SMS - w przyjętym.
   const zgody = await stanZgod(supabase, user.id, zgloszenie);
 
   const mojWynik = wynik as UserScore | null;
@@ -51,7 +51,7 @@ export default async function WiecejPage() {
       </div>
 
       {/* Sekcje zamiast worka na wszystko (spec porządku, „Więcej”). Nagłówki
-          „Powiadomienia” i „Twoje zgody” mają same komponenty — nie dublujemy
+          „Powiadomienia” i „Twoje zgody” mają same komponenty - nie dublujemy
           ich nagłówkiem „Ustawienia”. */}
       {jestAdminem && (
         <>
@@ -79,7 +79,7 @@ export default async function WiecejPage() {
       <nav className="grid gap-2.5">
         <PozycjaMenu href="/regulamin" ikona="zwoj" nazwa="Regulamin" opis="Zasady wyjazdu" />
         <PozycjaMenu href="/prywatnosc" ikona="tarcza" nazwa="Prywatność" opis="Jak przetwarzamy Twoje dane" />
-        {/* Koordynator — ten sam kontakt, który podaje regulamin (§ 17, § 19). */}
+        {/* Koordynator - ten sam kontakt, który podaje regulamin (§ 17, § 19). */}
         <PozycjaMenu
           href="mailto:dawid.rutkowski@samorzad.ue.wroc.pl"
           ikona="list"

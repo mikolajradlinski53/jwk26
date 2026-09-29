@@ -16,7 +16,7 @@ type BladPostgrest = { message?: string; code?: string } | Error | unknown;
 
 /**
  * Tłumaczy błąd techniczny na zdanie po polsku, z którym uczestnik ma co
- * zrobić — ten sam pomysł co w `Plansza.tsx`.
+ * zrobić - ten sam pomysł co w `Plansza.tsx`.
  */
 function komunikat(e: BladPostgrest): string {
   const tekst = e instanceof Error ? e.message : String(e);
@@ -136,7 +136,7 @@ export function Wpis({
   const synchronizacjaTrwa = useRef(false);
 
   /**
-   * Doprowadza bazę do stanu, którego użytkownik chce — po jednym żądaniu
+   * Doprowadza bazę do stanu, którego użytkownik chce - po jednym żądaniu
    * naraz, aż jedno i drugie się zgodzi.
    *
    * Naiwne „wystrzel żądanie przy każdym stuknięciu" rozjeżdżało licznik
@@ -144,7 +144,7 @@ export function Wpis({
    * były refleksy klikającego, tylko to, że INSERT przechodzi politykę RLS
    * z podzapytaniem na profiles i dwa sprawdzenia kluczy obcych, a DELETE
    * idzie prosto po kluczu głównym. INSERT jest systematycznie wolniejszy,
-   * więc wysłany pierwszy potrafi skończyć się drugi — i lajk zostawał
+   * więc wysłany pierwszy potrafi skończyć się drugi - i lajk zostawał
    * w bazie mimo odklikania, aż do odświeżenia strony.
    *
    * Blokada przycisku na czas żądania też by to zamknęła, ale gubiłaby
@@ -179,7 +179,7 @@ export function Wpis({
         }
 
         console.error("Lajk nie przeszedł:", error);
-        // Baza została przy swoim, więc interfejs musi się do niej cofnąć —
+        // Baza została przy swoim, więc interfejs musi się do niej cofnąć -
         // inaczej pokazywałby obietnicę, której nikt nie dotrzymał.
         pragnienie.current = zapisane.current;
         setLajki((poprzednie) =>
@@ -219,7 +219,7 @@ export function Wpis({
 
     const przyciety = tresc.trim();
     // Egzekwujemy limit również po stronie klienta, ale to nie zastępuje
-    // obsługi błędu z bazy niżej — bez tego komentarz i tak by odbił.
+    // obsługi błędu z bazy niżej - bez tego komentarz i tak by odbił.
     if (przyciety.length < 1 || przyciety.length > 500) {
       setBladKomentarza("Komentarz musi mieć od 1 do 500 znaków.");
       return;

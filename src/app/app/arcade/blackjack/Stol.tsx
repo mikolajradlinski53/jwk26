@@ -24,9 +24,9 @@ const STAWKI = [10, 20, 50] as const;
 const WYNIK: Record<NonNullable<RekaBj["wynik"]>, string> = {
   blackjack: "Blackjack!",
   wygrana: "Wygrana",
-  remis: "Remis — stawka wraca",
+  remis: "Remis - stawka wraca",
   przegrana: "Przegrana",
-  fura: "Fura — ponad 21",
+  fura: "Fura - ponad 21",
 };
 
 const KOLOR: Record<string, string> = { s: "♠", h: "♥", d: "♦", c: "♣" };
@@ -83,7 +83,7 @@ function Reka({ tytul, karty, punkty, zakryta }: { tytul: string; karty: string[
 }
 
 /**
- * Stół blackjacka. Całą grę liczy baza — przeglądarka tylko rysuje widok,
+ * Stół blackjacka. Całą grę liczy baza - przeglądarka tylko rysuje widok,
  * który dostaje z funkcji, i wysyła jeden z trzech ruchów.
  */
 export function Stol({ poczatkowa, saldo }: { poczatkowa: RekaBj | null; saldo: number }) {
@@ -101,14 +101,14 @@ export function Stol({ poczatkowa, saldo }: { poczatkowa: RekaBj | null; saldo: 
     setCzeka(true);
     setBlad(null);
     const { data, error } = await createClient().rpc(rpc, parametry);
-    // Odblokowanie przed sprawdzeniem błędu — w apce na iOS nie ma
+    // Odblokowanie przed sprawdzeniem błędu - w apce na iOS nie ma
     // przeładowania, które by zdjęło zablokowany stół.
     setCzeka(false);
     wToku.current = false;
     if (error) {
       console.error("Ruch w blackjacku nie przeszedł:", { code: error.code, message: error.message });
       setBlad(komunikat(error));
-      // Ręka mogła się w międzyczasie rozstrzygnąć sama (porzucona) — świeży stan.
+      // Ręka mogła się w międzyczasie rozstrzygnąć sama (porzucona) - świeży stan.
       router.refresh();
       return;
     }

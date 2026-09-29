@@ -8,7 +8,7 @@ import { Field } from "@/components/ui/Field";
 import { komunikat } from "@/lib/zapisy/bledy";
 
 /**
- * Nowa kategoria — sama nazwa i opis. Nominują uczestnicy; kategoria startuje
+ * Nowa kategoria - sama nazwa i opis. Nominują uczestnicy; kategoria startuje
  * otwarta, a wszyscy dostają powiadomienie.
  */
 export function NowaKategoria() {
@@ -73,7 +73,7 @@ export function NowaKategoria() {
         {czeka ? "Tworzę…" : "Utwórz i otwórz nominacje"}
       </Button>
       <p className="text-xs leading-relaxed text-dym">
-        Uczestnicy dostaną powiadomienie i sami nominują — każdy jedną osobę, z uzasadnieniem.
+        Uczestnicy dostaną powiadomienie i sami nominują - każdy jedną osobę, z uzasadnieniem.
       </p>
     </section>
   );

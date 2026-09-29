@@ -1,4 +1,4 @@
-// Wygenerowane przez scripts/grafika/zaba.mjs — nie edytować ręcznie.
+// Wygenerowane przez scripts/grafika/zaba.mjs - nie edytować ręcznie.
 // Wymiary jednej klatki w CSS przy wzroście stojącej żaby 120 px.
 export const KLATKI = {
   "siedzi": {

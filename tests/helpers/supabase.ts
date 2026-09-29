@@ -10,14 +10,14 @@ if (!url || !anonKey || !serviceKey) {
   );
 }
 
-/** Klient omijający RLS — do przygotowania i sprzątania danych. */
+/** Klient omijający RLS - do przygotowania i sprzątania danych. */
 export const admin = createClient(url, serviceKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
 const PASSWORD = "rytual-testowy-2026";
 
-/** Unikalny adres w dozwolonej domenie — kolizje między uruchomieniami bolą. */
+/** Unikalny adres w dozwolonej domenie - kolizje między uruchomieniami bolą. */
 export function testEmail(tag: string): string {
   const nonce = Math.random().toString(36).slice(2, 10);
   return `test.${tag}.${nonce}@samorzad.ue.wroc.pl`;
@@ -37,7 +37,7 @@ export async function createUser(tag: string): Promise<TestUser> {
   return { id: data.user.id, email };
 }
 
-/** Klient działający z uprawnieniami danego użytkownika — tak widzi go RLS. */
+/** Klient działający z uprawnieniami danego użytkownika - tak widzi go RLS. */
 export async function signIn(user: TestUser): Promise<SupabaseClient> {
   const client = createClient(url!, anonKey!, {
     auth: { persistSession: false, autoRefreshToken: false },
@@ -54,7 +54,7 @@ export async function deleteUser(user: TestUser): Promise<void> {
   await admin.auth.admin.deleteUser(user.id);
 }
 
-/** Identyfikator pierwszej zasianej drużyny — przydaje się w niemal każdym teście. */
+/** Identyfikator pierwszej zasianej drużyny - przydaje się w niemal każdym teście. */
 export async function firstTeamId(): Promise<string> {
   const { data, error } = await admin
     .from("teams")
@@ -66,7 +66,7 @@ export async function firstTeamId(): Promise<string> {
   return data.id as string;
 }
 
-/** Nadaje rolę admina — omija granty kolumnowe, bo idzie kluczem serwisowym. */
+/** Nadaje rolę admina - omija granty kolumnowe, bo idzie kluczem serwisowym. */
 export async function makeAdmin(user: TestUser): Promise<void> {
   const { error } = await admin
     .from("profiles")
@@ -79,7 +79,7 @@ export async function makeAdmin(user: TestUser): Promise<void> {
  * Ustawia status 'approved' bez przechodzenia przez review_registration.
  * Nazwa mówi „ustaw", nie „zaakceptuj", bo funkcja omija całą ścieżkę akceptacji:
  * klucz serwisowy nie podlega grantom kolumnowym, które blokują te pola roli
- * `authenticated`. Drużyna jest opcjonalna — bywa testowi obojętna.
+ * `authenticated`. Drużyna jest opcjonalna - bywa testowi obojętna.
  */
 export async function ustawJakoZaakceptowany(
   user: TestUser,
@@ -92,14 +92,14 @@ export async function ustawJakoZaakceptowany(
   if (error) throw error;
 }
 
-/** Klient bez sesji — tak bazę widzi ktoś niezalogowany. */
+/** Klient bez sesji - tak bazę widzi ktoś niezalogowany. */
 export function anonimowy(): SupabaseClient {
   return createClient(url!, anonKey!, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
 
-/** Id zadania bingo po pozycji na planszy (0-24) — zasiane na stałe w migracji. */
+/** Id zadania bingo po pozycji na planszy (0-24) - zasiane na stałe w migracji. */
 export async function idZadania(position: number): Promise<string> {
   const { data, error } = await admin
     .from("bingo_tasks")
@@ -123,7 +123,7 @@ export function zgloszenieBingoDla(user: TestUser, teamId: string, taskId: strin
 /**
  * Zapala wskazane pola planszy dla drużyny, omijając review_bingo.
  *
- * Wstawia zgłoszenia od razu jako `approved`, bez `reviewed_by`/`reviewed_at` —
+ * Wstawia zgłoszenia od razu jako `approved`, bez `reviewed_by`/`reviewed_at` -
  * to stan, do którego aplikacja dochodzi wyłącznie przez funkcję akceptacji.
  * Skrót jest bezpieczny, bo wykrywanie linii i pełnej planszy patrzy tylko na
  * `status`, nigdy na pola recenzenta. Dzięki temu test bonusu za linię nie musi
@@ -166,7 +166,7 @@ export function zgloszenieDla(user: TestUser) {
 
 /**
  * Rejestr użytkowników do posprzątania po teście. Każdy plik testowy trzymał
- * dotąd własną kopię tej pętli — przy piątej kopii przestało to być zabawne.
+ * dotąd własną kopię tej pętli - przy piątej kopii przestało to być zabawne.
  */
 export function sprzatanieUzytkownikow() {
   const kolejka: TestUser[] = [];
@@ -185,10 +185,10 @@ export function sprzatanieUzytkownikow() {
 
   async function posprzataj(): Promise<void> {
     while (kolejka.length) {
-      // Zdejmujemy z kolejki dopiero po udanym skasowaniu — inaczej wyjątek
+      // Zdejmujemy z kolejki dopiero po udanym skasowaniu - inaczej wyjątek
       // w deleteUser zostawiłby osieroconego użytkownika w zdalnej bazie.
       const user = kolejka[kolejka.length - 1];
-      // Redundantne wobec kaskady z profiles — zostawione jako polisa.
+      // Redundantne wobec kaskady z profiles - zostawione jako polisa.
       await admin.from("registrations").delete().eq("user_id", user.id);
       await deleteUser(user);
       kolejka.pop();
@@ -220,7 +220,7 @@ export async function ustawKapitana(
 /**
  * Dosypuje drużynie punkty wprost do księgi, żeby miała za co kupować.
  *
- * Kategoria jest osobna (`zasiew_testowy`) i nieużywana przez aplikację —
+ * Kategoria jest osobna (`zasiew_testowy`) i nieużywana przez aplikację -
  * dzięki temu sprzątanie po tym pliku nie dotknie wpisów, które zostawił inny.
  * Drużyny są zasiane na stałe i współdzielone między plikami testowymi.
  */
@@ -340,7 +340,7 @@ export function daneZapisu(nadpisz: Record<string, unknown> = {}) {
 
 /**
  * Ustawia pulę kluczem serwisowym, z pominięciem ustaw_pule() i blokady
- * regulaminu. Pule są globalne dla projektu testowego — plik, który je
+ * regulaminu. Pule są globalne dla projektu testowego - plik, który je
  * otwiera, zamyka je w afterAll.
  */
 export async function ustawPule(

@@ -1,6 +1,6 @@
 import { Kolko, Pasek, Saldo, SzkieletEkranu } from "@/components/Szkielet";
 
-/** Sklepik: saldo drużyny i pozycje na półce. Podtytuł to nazwa drużyny — z danych. */
+/** Sklepik: saldo drużyny i pozycje na półce. Podtytuł to nazwa drużyny - z danych. */
 export default function Ladowanie() {
   return (
     <SzkieletEkranu tytul="Sklepik" podtytul>

@@ -13,14 +13,14 @@ type ZgloszenieSurowe = {
   profiles: { display_name: string | null } | null;
 };
 
-/** Ekran awarii odczytu — ten sam pomysł co w feedzie: mówi wprost, że to
+/** Ekran awarii odczytu - ten sam pomysł co w feedzie: mówi wprost, że to
  * usterka po naszej stronie, nie stan kolejki. */
 function Awaria() {
   return (
     <Ekran tytul="Bingo" podtytul="Zdjęcia do rozpatrzenia">
       <p className="szklo rounded-md px-4 py-6 text-center text-sm text-krew-jasna">
         Nie udało się wczytać kolejki. To usterka po naszej stronie, nie Twoja
-        — spróbuj odświeżyć za chwilę.
+        - spróbuj odświeżyć za chwilę.
       </p>
     </Ekran>
   );
@@ -32,7 +32,7 @@ export default async function KolejkaBingo() {
   const supabase = await createClient();
 
   // Uwaga: `bingo_submissions` ma dwa klucze obce do `profiles` (`user_id`
-  // i `reviewed_by`) — samo `profiles(display_name)` kończy się PGRST201.
+  // i `reviewed_by`) - samo `profiles(display_name)` kończy się PGRST201.
   // Relację trzeba wskazać jawnie po nazwie klucza obcego, tak jak w feedzie.
   const { data: zgloszeniaRaw, error: bladOdczytu } = await supabase
     .from("bingo_submissions")
@@ -45,7 +45,7 @@ export default async function KolejkaBingo() {
     .order("created_at", { ascending: true });
 
   // Cicho połknięty błąd renderowałby pustą kolejkę i wyglądałby jak dobra
-  // wiadomość ("nic nie czeka") — stąd osobny ekran awarii.
+  // wiadomość ("nic nie czeka") - stąd osobny ekran awarii.
   if (bladOdczytu) {
     console.error("Nie udało się wczytać kolejki bingo:", bladOdczytu);
     return <Awaria />;
@@ -53,7 +53,7 @@ export default async function KolejkaBingo() {
 
   const zgloszenia = (zgloszeniaRaw ?? []) as unknown as ZgloszenieSurowe[];
 
-  // Podpisane URL-e powstają przy renderze i żyją godzinę — bucket jest
+  // Podpisane URL-e powstają przy renderze i żyją godzinę - bucket jest
   // prywatny. Równolegle, jak w kolejce zgłoszeń: sekwencyjne podpisywanie
   // przy kilkudziesięciu zgłoszeniach byłoby widoczne gołym okiem.
   const wpisy = await Promise.all(
@@ -88,7 +88,7 @@ export default async function KolejkaBingo() {
               {/* Kolor drużyny jako kropka, nie jako kolor tekstu. Kolory są
                   wpisywane w bazie i nikt ich nie dobiera pod kontrast: zasiane
                   „Bractwo Krwi" ma #8b1e1e, co jako tekst na szkle daje 1,92:1
-                  — nazwa drużyny byłaby nieczytelna przy każdym ich zgłoszeniu.
+                  - nazwa drużyny byłaby nieczytelna przy każdym ich zgłoszeniu.
                   Ten sam wzorzec co we wpisie feedu. */}
               <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-sm text-dym">
                 <span>{autor}</span>
@@ -103,7 +103,7 @@ export default async function KolejkaBingo() {
               </p>
               {/* break-words, bo podpis ma limit 300 znaków, ale nie ma wymogu
                   spacji. Bez tego karta ma overflow-hidden i ucięłaby tekst
-                  w połowie słowa — admin decydowałby na podstawie niepełnej
+                  w połowie słowa - admin decydowałby na podstawie niepełnej
                   treści, nie wiedząc, że czegoś nie widzi. */}
               {z.caption && (
                 <p className="mt-2 break-words text-sm text-kosc">{`„${z.caption}”`}</p>

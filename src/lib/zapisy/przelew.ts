@@ -6,7 +6,7 @@ export type WgranyDowod = { sciezka: string; ocr: WynikOcr | null };
 
 /**
  * Kompresja, upload do prywatnego `proofs`, OCR. Wspólne dla formularza
- * i dopłaty po awansie z rezerwy — dwie kopie rozjechałyby się przy
+ * i dopłaty po awansie z rezerwy - dwie kopie rozjechałyby się przy
  * pierwszej poprawce.
  *
  * Kolejność ma znaczenie: OCR po uploadzie, bo jego awaria nie może
@@ -35,7 +35,7 @@ export async function wgrajDowod(
   if (error) throw error;
 
   etap("Odczytuję przelew...");
-  // OCR to tylko podpowiedź dla admina (D4) — zdjęcie już wisi w buckecie, więc
+  // OCR to tylko podpowiedź dla admina (D4) - zdjęcie już wisi w buckecie, więc
   // nie może zablokować zgłoszenia. Przy słabym sygnale ściąganie modelu
   // Tesseracta potrafi wisieć bez końca; po 45 s formularz jedzie dalej bez
   // wyniku, tak jakby OCR się nie udał.
@@ -52,7 +52,7 @@ export function polaOcr(d: WgranyDowod | null) {
   return {
     // Limit zgodny z CHECK-iem `registrations_ocr_text_dlugosc` w bazie. Bez
     // przycięcia zapis raz odrzucony z tego powodu odbijałby się identycznie
-    // przy każdej kolejnej próbie — zdjęcie (i jego OCR) jest już wgrane.
+    // przy każdej kolejnej próbie - zdjęcie (i jego OCR) jest już wgrane.
     p_ocr_text: d?.ocr?.tekst?.slice(0, 20000) ?? null,
     p_ocr_confidence: d?.ocr?.pewnosc ?? null,
     p_ocr_keywords_hit: d?.ocr?.trafienia.length ?? 0,

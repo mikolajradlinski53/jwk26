@@ -29,8 +29,8 @@ const GRUPY = [
 ] as const;
 
 /**
- * „Co zabrać" — druga połowa października w górach to zimno, możliwy
- * deszcz i śnieg. Lista rzeczowa, bez żartów i bez emoji — motyw wizualny
+ * „Co zabrać" - druga połowa października to zimno, możliwy
+ * deszcz i śnieg. Lista rzeczowa, bez żartów i bez emoji - motyw wizualny
  * landingu opiera się na typografii, nie na ikonkach. Miasto pada dopiero
  * po odsłonie ośrodka.
  */
@@ -38,11 +38,13 @@ export function CoZabrac({ miasto }: { miasto: string | null }) {
   return (
     <section id="co-zabrac" className="bg-jesien-tlo/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener wariant="szeroki">
-        <SekcjaNaglowek numer="07" nadtytul="Przygotowanie" tytul="Co zabrać" zaba={<ZabaStala poza="plecak" skala={0.58} />} />
+        <SekcjaNaglowek numer="07" nadtytul="Przygotowanie" tytul="Co zabrać" zaba={<ZabaStala poza="plecak" skala={0.95} />} />
 
         <p className="text-sm leading-relaxed text-jesien-kora">
-          {miasto ? `${miasto} w drugiej połowie października` : "W górach w drugiej połowie października"}{" "}
-          bywa zimno i wilgotno — licz się z deszczem, a nawet śniegiem.
+          {miasto
+            ? `${miasto} w drugiej połowie października bywa zimny i wilgotny`
+            : "Druga połowa października bywa zimna i wilgotna"}{" "}
+          - licz się z deszczem, a nawet śniegiem.
         </p>
 
         <div className="mt-6 grid gap-6 min-[600px]:grid-cols-2 min-[850px]:grid-cols-3">

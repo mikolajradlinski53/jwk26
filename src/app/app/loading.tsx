@@ -1,6 +1,6 @@
 import { SzkieletEkranu, Wiersz } from "@/components/Szkielet";
 
-/** Ranking: cztery drużyny — numer, nazwa z mottem, wynik. */
+/** Ranking: cztery drużyny - numer, nazwa z mottem, wynik. */
 export default function Ladowanie() {
   return (
     <SzkieletEkranu tytul="Ranking Sekt" podtytul="Punkty ruszą razem z bingo">

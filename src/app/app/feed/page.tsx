@@ -24,12 +24,12 @@ type KomentarzSurowy = {
   profiles: { display_name: string | null } | null;
 };
 
-/** Ekran awarii odczytu — celowo mówi, że to usterka, a nie stan feedu. */
+/** Ekran awarii odczytu - celowo mówi, że to usterka, a nie stan feedu. */
 function Awaria({ co }: { co: string }) {
   return (
     <Ekran tytul="Feed" naglowek={<NaglowekFeedu />}>
       <p className="szklo rounded-md px-4 py-6 text-center text-sm text-krew-jasna">
-        Nie udało się wczytać {co}. To usterka po naszej stronie, nie Twoja —
+        Nie udało się wczytać {co}. To usterka po naszej stronie, nie Twoja -
         spróbuj odświeżyć za chwilę.
       </p>
     </Ekran>
@@ -55,7 +55,7 @@ export default async function FeedPage() {
     .maybeSingle();
 
   // Rola decyduje wyłącznie o tym, czy klient pokaże przycisk kasowania
-  // cudzego komentarza — samo kasowanie i tak pilnuje RLS po stronie bazy.
+  // cudzego komentarza - samo kasowanie i tak pilnuje RLS po stronie bazy.
   // Awaria tego odczytu nie blokuje feedu: bez roli po prostu nie zobaczymy
   // przycisku admina, co jest bezpiecznym (nie uprzywilejowanym) domyślnym
   // stanem, więc dostaje log, a nie cały ekran awarii.
@@ -66,7 +66,7 @@ export default async function FeedPage() {
   const mojeImie = profil?.display_name ?? "Uczestnik";
 
   // Uwaga: `bingo_submissions` ma dwa klucze obce do `profiles` (`user_id`
-  // i `reviewed_by`) — samo `profiles(display_name)` kończy się PGRST201.
+  // i `reviewed_by`) - samo `profiles(display_name)` kończy się PGRST201.
   // Relację trzeba wskazać jawnie po nazwie klucza obcego.
   const { data: wpisyRaw, error: bladWpisow } = await supabase
     .from("bingo_submissions")
@@ -78,7 +78,7 @@ export default async function FeedPage() {
     .eq("status", "approved")
     .order("created_at", { ascending: false });
 
-  // Cicho połknięty błąd renderuje pusty feed i wygląda jak brak treści —
+  // Cicho połknięty błąd renderuje pusty feed i wygląda jak brak treści -
   // stąd osobny ekran awarii zamiast lądowania na pustej liście niżej.
   if (bladWpisow) {
     console.error("Nie udało się wczytać feedu:", bladWpisow);

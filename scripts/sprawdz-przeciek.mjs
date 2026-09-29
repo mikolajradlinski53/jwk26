@@ -10,7 +10,9 @@ const zakazane = [
   /rytua/i,
   /kapła/i,
   /sanktuar/i,
-  ...(osrodekJawny ? [] : [/Karpacz/, /Zielone Wzg/, /Pozna[nń]sk/, /o-4c8e1a/, /o-9b2d7f/, /osrodek-\d/]),
+  ...(osrodekJawny
+    ? []
+    : [/Karpacz/, /Zielone Wzg/, /Pozna[nń]sk/, /o-4c8e1a/, /o-9b2d7f/, /osrodek-\d/, /\bw górach\b/i, /\bgóry\b/i, /wzgórz/i]),
   ...(cenaJawna ? [] : [/\b\d{3} zł/, /przelew_kwota/]),
 ];
 

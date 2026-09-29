@@ -10,7 +10,7 @@ import {
   type TestUser,
 } from "../helpers/supabase";
 
-// Ten plik kasuje WSZYSTKIE treści z zabaw na bazie testowej — tak działa
+// Ten plik kasuje WSZYSTKIE treści z zabaw na bazie testowej - tak działa
 // funkcja po terminie. Pliki testów idą po kolei (fileParallelism: false),
 // a każdy inny plik zakłada sobie dane sam, więc nikomu nic nie ginie w trakcie.
 
@@ -19,7 +19,7 @@ let ala: TestUser;
 let druzyna: string;
 const url = process.env.TEST_SUPABASE_URL!;
 
-// Jedno zgłoszenie na pole i drużynę — każde zasianie bierze kolejne pole.
+// Jedno zgłoszenie na pole i drużynę - każde zasianie bierze kolejne pole.
 let pole = 0;
 async function zasiej() {
   const zadanie = await idZadania(pole++);
@@ -93,7 +93,7 @@ describe("retencja treści z zabaw", () => {
     const { data } = await admin.rpc("sprzataj_zabawy");
     expect((data as { pliki_zlecone: number }).pliki_zlecone).toBeGreaterThan(0);
 
-    // pg_net wysyła po zatwierdzeniu transakcji — czekamy, aż plik zniknie.
+    // pg_net wysyła po zatwierdzeniu transakcji - czekamy, aż plik zniknie.
     let jest = true;
     for (let i = 0; i < 20 && jest; i++) {
       await new Promise((r) => setTimeout(r, 1000));

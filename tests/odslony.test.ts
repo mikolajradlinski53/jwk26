@@ -6,7 +6,7 @@ const P = "2099-01-01T12:00:00+01:00";
 const W = "2020-01-01T12:00:00+01:00";
 const teraz = new Date("2026-10-01T12:00:00+02:00");
 
-describe("czyOdsloniete — lustro reguły z bazy", () => {
+describe("czyOdsloniete - lustro reguły z bazy", () => {
   it("własna data decyduje, gdy zapisy przed nami", () => {
     expect(czyOdsloniete({ osrodek: W, cena: P, zapisy: P, plan: P }, "osrodek", teraz)).toBe(true);
     expect(czyOdsloniete({ osrodek: W, cena: P, zapisy: P, plan: P }, "cena", teraz)).toBe(false);
@@ -31,7 +31,7 @@ describe("teksty", () => {
     expect(miastoZAdresu(null)).toBeNull();
     expect(miastoZAdresu("bez kodu")).toBeNull();
   });
-  it("kiedy odsłona — po polsku, w strefie warszawskiej", () => {
+  it("kiedy odsłona - po polsku, w strefie warszawskiej", () => {
     expect(kiedyOdslona("2026-10-05T16:00:00+00:00")).toBe("5 października o 18:00");
     expect(kiedyOdslona(null)).toBe("wkrótce");
   });

@@ -6,25 +6,25 @@ import type { OdslonaWidok } from "@/lib/odslony";
 import { PrzyciskZapisu } from "./PrzyciskZapisu";
 
 /**
- * Panel wezwania — jesienny gradient (`dynia` → `rdza` → `kora` → `atrament`,
+ * Panel wezwania - jesienny gradient (`dynia` → `rdza` → `kora` → `atrament`,
  * patrz `.stopka-panel` w globals.css), nie czerń. Wcześniejsza wersja siadała
- * na palecie apki (`noc`/`krew-glab`) — to był wyciek motywu, landing nie ma
+ * na palecie apki (`noc`/`krew-glab`) - to był wyciek motywu, landing nie ma
  * go zdradzać ani kolorem. Poświata za kursorem, dryfujące plamy i ziarno
  * zostają, tylko przemalowane i przygaszone (uzasadnienie krycia przy
- * `.stopka-panel` w globals.css — dynia daje tylko 3,1:1 dla bieli, więc
+ * `.stopka-panel` w globals.css - dynia daje tylko 3,1:1 dla bieli, więc
  * tekst nigdy tam nie siedzi, a jaśniejące plamy mają budżet krycia, żeby
  * nie zjeść zapasu kontrastu w strefie `rdza`/`kora`, na której stoi `h2`/`p`).
  *
  * Logo w wariancie czarnym, nie białym: w górnej, jasnej strefie panelu
- * (`dynia`) czarne daje 6,8:1, białe tylko 3,1:1 — dokładnie odwrotnie niż
+ * (`dynia`) czarne daje 6,8:1, białe tylko 3,1:1 - dokładnie odwrotnie niż
  * w mrocznej wersji.
  *
  * Poświata podąża za kursorem przez zmienne CSS `--mysz-x` / `--mysz-y`
- * ustawiane wprost na elemencie (`style.setProperty`), nie przez stan Reacta —
+ * ustawiane wprost na elemencie (`style.setProperty`), nie przez stan Reacta -
  * `react-hooks/set-state-in-effect` jest tu twardym błędem, a stan i tak nie
  * jest do niczego potrzebny: nikt inny nie czyta pozycji kursora.
  *
- * Tła (oddech, dryf plam, wjazd treści) to czyste animacje CSS w globals.css —
+ * Tła (oddech, dryf plam, wjazd treści) to czyste animacje CSS w globals.css -
  * globalna reguła `prefers-reduced-motion` w globals.css zeruje ich czas
  * automatycznie. Tego samego zerowania NIE dostaje obsługa kursora (to logika
  * JS, nie CSS), więc `naRuchWskaznika` sprawdza `matchMedia` sam.
@@ -72,7 +72,7 @@ export function PanelWezwania({ zapisy }: { zapisy: OdslonaWidok }) {
         className="stopka-wjazd relative z-10 mt-[59px] flex max-w-[680px] flex-col items-center
                    text-center min-[600px]:mt-[42px]"
       >
-        {/* Panel jest jasny u góry (`dynia`) — jedyne miejsce, gdzie logo
+        {/* Panel jest jasny u góry (`dynia`) - jedyne miejsce, gdzie logo
             występuje w wariancie czarnym, patrz uzasadnienie w komentarzu
             nad komponentem. */}
         <Image
@@ -93,9 +93,9 @@ export function PanelWezwania({ zapisy }: { zapisy: OdslonaWidok }) {
         {/*
           Pełna biel, nie przezroczysta: nagłówek i akapit siedzą w strefie
           `rdza`/`kora` gradientu (patrz `.stopka-panel` w globals.css), gdzie
-          zapas nad progiem 4,5:1 jest realny, ale nie ogromny (4,5–5,4:1
+          zapas nad progiem 4,5:1 jest realny, ale nie ogromny (4,5-5,4:1
           z doliczonym rozjaśnieniem od plam/kursora). Przezroczysty tekst
-          dokłada się do tego samego rozjaśnienia od spodu — zamiast liczyć to
+          dokłada się do tego samego rozjaśnienia od spodu - zamiast liczyć to
           osobno, prościej i bezpieczniej zostawić tekst w pełnej bieli.
         */}
         <p

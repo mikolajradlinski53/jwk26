@@ -16,10 +16,10 @@ import {
   type Stan,
 } from "@/lib/kruk/fizyka";
 
-// Szczelina zawsze na środku planszy — kruk trzymany na tej wysokości nigdy nie uderza.
+// Szczelina zawsze na środku planszy - kruk trzymany na tej wysokości nigdy nie uderza.
 const srodek = () => 0.5;
 const bezKolumn = (s: Stan): Stan => ({ ...s, kolumny: [], doNastepnej: 999 });
-/** Krok, po którym kruk wraca na środek — test samych kolumn, bez sterowania. */
+/** Krok, po którym kruk wraca na środek - test samych kolumn, bez sterowania. */
 const unosSie = (s: Stan): Stan => ({ ...krok(s, KROK_S, false, srodek), y: SWIAT.wys / 2, vy: 0 });
 
 describe("lot", () => {
@@ -72,7 +72,7 @@ describe("kolumny", () => {
     };
     expect(krok(przyKapitelu, KROK_S, false, srodek).rozbity).toBe(true);
 
-    // Ta sama kolumna, kruk w środku szczeliny — przelatuje.
+    // Ta sama kolumna, kruk w środku szczeliny - przelatuje.
     const wSzczelinie: Stan = { ...przyKapitelu, y: kolumna.srodek };
     expect(krok(wSzczelinie, KROK_S, false, srodek).rozbity).toBe(false);
   });

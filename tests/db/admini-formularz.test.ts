@@ -14,7 +14,7 @@ import {
   type TestUser,
 } from "../helpers/supabase";
 
-// Admini dostali dostęp ręcznie, z pominięciem formularza, a też jadą —
+// Admini dostali dostęp ręcznie, z pominięciem formularza, a też jadą -
 // więc zloz_zgloszenie() ma ich przepuścić, ale tylko raz.
 let szef: TestUser;
 let uczestnik: TestUser;

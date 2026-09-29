@@ -12,7 +12,7 @@ export function Awans({
 }: {
   id: string;
   wolneMiejsce: boolean;
-  /** Imię i nazwisko z listy — trafia do aria-label, bo samo „Awansuj”
+  /** Imię i nazwisko z listy - trafia do aria-label, bo samo „Awansuj”
    * czytnikowi ekranu nie mówi, kogo dotyczy przycisk w liście wielu osób. */
   kto: string;
 }) {

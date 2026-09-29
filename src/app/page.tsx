@@ -25,7 +25,7 @@ const TYTUL = "Jesienny Wyjazd Komisji 2026";
 /**
  * Metadane liczone per żądanie: przed odsłoną ośrodka opis i podgląd linku
  * nie mogą podać miasta. Tytuł, opis i `appleWebApp` nadpisują domyślne
- * metadane z `layout.tsx` — te są napisane z myślą o mrocznej apce i landing
+ * metadane z `layout.tsx` - te są napisane z myślą o mrocznej apce i landing
  * nie może ich zdradzić nawet w znaczniku, którego nikt nie czyta na oczy
  * (`appleWebApp.title` trzeba nadpisać osobno, bo Next scala metadane pole
  * po polu). Obrazek podglądu to plikowy `opengraph-image.jpg` obok.
@@ -34,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const supabase = await createClient();
   const [odslony, { miejsceAdres }] = await Promise.all([wczytajOdslony(supabase), ustawienia()]);
   const miasto = odslony.osrodek.odsloniete ? miastoZAdresu(miejsceAdres) : null;
-  const opis = `${DATY_WYJAZDU}${miasto ? `, ${miasto}` : ""}. Wyjazd integracyjny Samorządu Studentów UEW — zapisz się.`;
+  const opis = `${DATY_WYJAZDU}${miasto ? `, ${miasto}` : ""}. Wyjazd integracyjny Samorządu Studentów UEW - zapisz się.`;
   return {
     metadataBase: new URL("https://www.jwk26.pl"),
     title: TYTUL,
@@ -44,7 +44,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-// `themeColor` z layoutu jest ciemny (apka) — landing nadpisuje go jasnym
+// `themeColor` z layoutu jest ciemny (apka) - landing nadpisuje go jasnym
 // odcieniem tła, żeby pasek przeglądarki na telefonie nie był czarny.
 export const viewport: Viewport = {
   themeColor: "#fbf3e7",
@@ -52,12 +52,12 @@ export const viewport: Viewport = {
 };
 
 /**
- * Landing wydarzenia. Publiczny, bez zamka instalacji — jedyna trasa, którą
+ * Landing wydarzenia. Publiczny, bez zamka instalacji - jedyna trasa, którą
  * ktoś ma otworzyć z Instagrama, zanim cokolwiek zainstaluje.
  *
  * Kolejność pod zapisy (spec landingu, wariant B). O zakrytych sekcjach
  * decyduje baza (`odslony()`), a polityki `app_settings` przed odsłoną nie
- * wydają miejsca ani danych przelewu — więc nie ma ich nawet czym wyrenderować.
+ * wydają miejsca ani danych przelewu - więc nie ma ich nawet czym wyrenderować.
  * Awaria odczytów nie wywraca strony: liczniki i dane po prostu się nie pokażą.
  */
 export default async function Landing({
@@ -66,7 +66,7 @@ export default async function Landing({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   // Kod logowania, który wylądował na stronie głównej zamiast na /auth/callback.
-  // Supabase robi tak, gdy adresu powrotu nie ma na liście Redirect URLs —
+  // Supabase robi tak, gdy adresu powrotu nie ma na liście Redirect URLs -
   // odsyła wtedy na Site URL. Bez tego przekazania sesja nigdy nie powstaje.
   const { code } = await searchParams;
   if (typeof code === "string" && code) {
@@ -80,7 +80,7 @@ export default async function Landing({
       wczytajDanePrzelewu(supabase),
       wczytajOdslony(supabase),
       social(),
-      // Jawnie tylko punkty na landing — zalogowany przyjęty widziałby inaczej
+      // Jawnie tylko punkty na landing - zalogowany przyjęty widziałby inaczej
       // cały harmonogram (polityka dla zalogowanych nie filtruje po znaczniku).
       supabase
         .from("harmonogram")
@@ -91,12 +91,12 @@ export default async function Landing({
     ]);
 
   const odslony = widokOdslon(odslonySurowe, new Date());
-  // Admin widzi w bazie wszystko — o tym, co pokazać, decyduje stan odsłony,
+  // Admin widzi w bazie wszystko - o tym, co pokazać, decyduje stan odsłony,
   // nie to, czy wartość przyszła z bazy.
   const osrodekJawny = odslony.osrodek.odsloniete;
   const cenaJawna = odslony.cena.odsloniete;
   const miasto = osrodekJawny ? miastoZAdresu(miejsceAdres) : null;
-  // Przed odsłoną planu nic z harmonogramu nie idzie do strony — także
+  // Przed odsłoną planu nic z harmonogramu nie idzie do strony - także
   // zalogowanemu przyjętemu, który w bazie widzi więcej niż anonim.
   const plan = odslony.plan.odsloniete ? ((planRaw ?? []) as PunktHarmonogramu[]) : [];
   const pokazPlan = !odslony.plan.odsloniete || plan.length > 0;
@@ -107,12 +107,12 @@ export default async function Landing({
         Liście pod treścią, nad tłem: `Liscie` maluje na `fixed inset-0 z-0`,
         a opakowanie treści dostaje `relative z-10`. Sekcje mają tła na 70%
         krycia (`bg-jesien-tlo/70`, `bg-jesien-karta/70`), żeby liście
-        prześwitywały — kontrast policzony dla najgorszego przypadku (~4,9:1).
+        prześwitywały - kontrast policzony dla najgorszego przypadku (~4,9:1).
       */}
       <Liscie />
 
       <div className="relative z-10">
-        <Naglowek />
+        <Naglowek zapisy={odslony.zapisy} />
         <Wejscie dataJwk={dataJwk} zapisy={odslony.zapisy} miasto={miasto} />
         {/* Fala wypływa z ciemnego dołu zdjęcia hero w jasną sekcję. */}
         <DzielnikFala kolorKlasa="text-jesien-tlo" tloKlasa="bg-noc" />

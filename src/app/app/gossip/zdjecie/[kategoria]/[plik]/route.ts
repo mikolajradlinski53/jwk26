@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 /**
  * Zdjęcie z nominacji w gossipach. Kto co widzi, rozstrzyga polityka bucketu
  * `gossip` (admin zawsze, uczestnik dopiero po ujawnieniu i tylko o
- * zwycięzcy) — trasa tylko podaje plik dalej. Ścieżka to `<kategoria>/<uuid>.jpg`,
+ * zwycięzcy) - trasa tylko podaje plik dalej. Ścieżka to `<kategoria>/<uuid>.jpg`,
  * więc adres nie zdradza autora.
  */
 export async function GET(

@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 export type Odnosnik = { etykieta: string; href: string };
 
 export function OdnosnikNawigacji({ etykieta, href }: Odnosnik) {
-  // Dotyk min. 44px dotyczy też odnośników nawigacji — stąd `min-h-11
+  // Dotyk min. 44px dotyczy też odnośników nawigacji - stąd `min-h-11
   // flex items-center` na każdym linku, nawet kosztem gęstości listy.
   const klasa =
     "flex min-h-11 items-center text-[11.5px] text-jesien-kora transition duration-200 " +
@@ -82,12 +82,12 @@ export function ZnakMarki() {
  * Pływająca karta stopki z wjazdem przy wejściu w widok.
  *
  * Widoczność sterowana wyłącznie przez klasę na elemencie DOM (`ref`), nie
- * przez stan Reacta — nie ma tu nic, co potrzebowałoby przerenderowania,
+ * przez stan Reacta - nie ma tu nic, co potrzebowałoby przerenderowania,
  * a `react-hooks/set-state-in-effect` jest w repo twardym błędem. Dzięki
  * temu też nie ma rozjazdu SSR/klient: pierwszy render zawsze wygląda tak
  * samo, efekt dokleja klasę dopiero po hydracji.
  *
- * Przy `prefers-reduced-motion: reduce` karta ma być widoczna od razu —
+ * Przy `prefers-reduced-motion: reduce` karta ma być widoczna od razu -
  * observer w ogóle się nie uruchamia, klasa leci na sztywno.
  */
 export function KartaStopki({ children }: { children: React.ReactNode }) {

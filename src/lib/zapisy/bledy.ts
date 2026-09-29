@@ -1,4 +1,4 @@
-/** Treść błędu dowolnego kształtu — PostgrestError bywa zwykłym obiektem. */
+/** Treść błędu dowolnego kształtu - PostgrestError bywa zwykłym obiektem. */
 export function tekstBledu(e: unknown): string {
   if (e instanceof Error) return e.message;
   if (typeof e === "object" && e !== null && "message" in e) {
@@ -18,7 +18,7 @@ export function komunikat(e: unknown): string {
   if (/PULA_ZAMKNIETA/.test(t)) {
     return "Ta tura jest zamknięta. Wróć do pierwszego kroku i sprawdź, które są otwarte.";
   }
-  if (/PRZELEW_WYMAGANY/.test(t)) return "W tej puli zwolniło się miejsce — dołącz potwierdzenie przelewu.";
+  if (/PRZELEW_WYMAGANY/.test(t)) return "W tej puli zwolniło się miejsce - dołącz potwierdzenie przelewu.";
   if (/NIEPELNOLETNI/.test(t)) {
     return "Na JWK26 jadą osoby, które w dniu wyjazdu mają skończone 18 lat.";
   }
@@ -29,13 +29,13 @@ export function komunikat(e: unknown): string {
   if (stawka) return `Masz ${stawka[1]} pkt, a stawka to ${stawka[2]}.`;
   const limit = t.match(/Limit obrotu wyczerpany: (\d+) z (\d+)/);
   if (limit) return `Dzienny limit kasyna wyczerpany: ${limit[1]} z ${limit[2]} pkt w ostatnich 24 h.`;
-  if (/reke w toku/i.test(t)) return "Masz rękę w toku — dokończ ją.";
+  if (/reke w toku/i.test(t)) return "Masz rękę w toku - dokończ ją.";
   if (/Brak reki w toku/i.test(t)) return "Ta ręka jest już rozstrzygnięta.";
   if (/Podwoic mozna/i.test(t)) return "Podwoić można tylko przy 9, 10 albo 11 na dwóch pierwszych kartach.";
   if (/Stawka to 10, 20 albo 50/i.test(t)) return "Stawka to 10, 20 albo 50 pkt.";
   if (/zaakceptowani uczestnicy/i.test(t)) return "Grać mogą tylko przyjęci uczestnicy.";
   // Kruk
-  if (/Nie ma takiej gry/i.test(t)) return "Ta gra już nie istnieje — zacznij nowy lot.";
+  if (/Nie ma takiej gry/i.test(t)) return "Ta gra już nie istnieje - zacznij nowy lot.";
   if (/juz zapisany/i.test(t)) return "Wynik tego lotu jest już zapisany.";
   if (/niemozliwy w tym czasie/i.test(t)) return "Serwer nie uznał tego wyniku.";
   // Gossipy

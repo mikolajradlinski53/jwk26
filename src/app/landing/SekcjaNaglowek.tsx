@@ -3,11 +3,11 @@
  * krótki nadtytuł wersalikami w `jesien-rdza` (rozstrzelone litery przez
  * `tracking-[0.24em]`) i właściwy tytuł sekcji w `font-tytul`.
  *
- * To jest główne narzędzie "wyraźnego podziału" z brifu — każda sekcja
+ * To jest główne narzędzie "wyraźnego podziału" z brifu - każda sekcja
  * zaczyna się tym samym rytmem, więc granice między nimi czyta się od razu,
  * nawet zanim dotrze się do naprzemiennego tła czy dzielnika.
  *
- * `zaba` — poza żaby-przewodnika dla tej sekcji, po prawej stronie nagłówka
+ * `zaba` - poza żaby-przewodnika dla tej sekcji, po prawej stronie nagłówka
  * (stopy na linii tytułu). Własny wiersz, więc nie wchodzi na tekst sekcji.
  */
 export function SekcjaNaglowek({

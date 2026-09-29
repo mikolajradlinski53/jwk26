@@ -17,7 +17,7 @@ export function SzkieletEkranu({
   children,
 }: {
   tytul: string;
-  /** `true` — podtytuł zależny od danych (np. ksywka), rysowany jako pasek. */
+  /** `true` - podtytuł zależny od danych (np. ksywka), rysowany jako pasek. */
   podtytul?: string | true;
   /** Ten sam własny nagłówek co w Ekran (np. logo feedu). */
   naglowek?: React.ReactNode;
@@ -25,7 +25,7 @@ export function SzkieletEkranu({
 }) {
   return (
     <ViewTransition enter={RUCH} exit={RUCH} default={RUCH}>
-      <section className="mx-auto w-full max-w-md px-4 pb-10" aria-busy="true" aria-label={`${tytul} — ładowanie`}>
+      <section className="mx-auto w-full max-w-md px-4 pb-10" aria-busy="true" aria-label={`${tytul} - ładowanie`}>
         <header className="grid justify-items-center px-1 pb-4 pt-4 text-center">
           {naglowek ?? (
             <>
@@ -44,7 +44,7 @@ export function SzkieletEkranu({
   );
 }
 
-/** Szklany prostokąt, który pulsuje — karta, kafel, pole. */
+/** Szklany prostokąt, który pulsuje - karta, kafel, pole. */
 export function Blok({ className = "" }: { className?: string }) {
   return <div className={`szklo animate-pulse rounded-md ${className}`} />;
 }
@@ -54,12 +54,12 @@ export function Pasek({ className = "" }: { className?: string }) {
   return <div className={`animate-pulse rounded-full bg-white/10 ${className}`} />;
 }
 
-/** Kółko — ikona, numer miejsca. */
+/** Kółko - ikona, numer miejsca. */
 export function Kolko({ className = "size-11" }: { className?: string }) {
   return <div className={`flex-none animate-pulse rounded-full bg-white/10 ${className}`} />;
 }
 
-/** Nagłówek sekcji w szkielecie — ten sam odstęp co NaglowekSekcji. */
+/** Nagłówek sekcji w szkielecie - ten sam odstęp co NaglowekSekcji. */
 export function PasekSekcji() {
   return <Pasek className="mb-3 ml-1 mt-8 h-2.5 w-24" />;
 }
@@ -78,7 +78,7 @@ export function Wiersz({ ikona = true, liczba = false }: { ikona?: boolean; licz
   );
 }
 
-/** Karta z saldem — wspólna dla kasyna, gier, „Więcej” i sklepiku. */
+/** Karta z saldem - wspólna dla kasyna, gier, „Więcej” i sklepiku. */
 export function Saldo() {
   return (
     <div className="szklo mb-4 flex animate-pulse items-center justify-between rounded-md px-4 py-4">

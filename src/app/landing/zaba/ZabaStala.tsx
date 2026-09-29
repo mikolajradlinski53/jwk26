@@ -9,11 +9,11 @@ import { stylKlatki } from "./sprite";
  * 2026-09-29: w każdej sekcji inna poza zamiast wędrówki po dzielnikach).
  *
  * Zewnętrzny element przyjmuje pozycjonowanie z `className`, wewnętrzny
- * rysuje klatkę i animuje się — rozdzielone, bo transformacje położenia
+ * rysuje klatkę i animuje się - rozdzielone, bo transformacje położenia
  * i animacji nadpisywałyby się nawzajem.
  *
- * Ruch: gdy żaba wjeżdża w ekran — wskok (`.zaba-wchodzi`), potem lekkie
- * kołysanie (`.zaba-kolys`); dotknięcie — podskok (`.zaba-hop`). Ukrycie
+ * Ruch: gdy żaba wjeżdża w ekran - wskok (`.zaba-wchodzi`), potem lekkie
+ * kołysanie (`.zaba-kolys`); dotknięcie - podskok (`.zaba-hop`). Ukrycie
  * przed wskokiem nakłada dopiero skrypt i tylko dla żab jeszcze pod ekranem,
  * więc bez JavaScriptu i przy ograniczonym ruchu żaba po prostu stoi.
  * W hero `siedzi` macha dwiema klatkami (`.zaba-machanie`).
@@ -29,7 +29,7 @@ export function ZabaStala({
   poza: Animacja;
   skala?: number;
   className?: string;
-  /** Położenie względem rodzica (np. karty licznika) — styl wprost, bez klas z `calc`. */
+  /** Położenie względem rodzica (np. karty licznika) - styl wprost, bez klas z `calc`. */
   polozenie?: React.CSSProperties;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);

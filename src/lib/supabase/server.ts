@@ -19,7 +19,7 @@ export async function createClient() {
               cookieStore.set(name, value, options),
             );
           } catch {
-            // Wywołane z Server Componentu — odświeżanie sesji ogarnia bramka.
+            // Wywołane z Server Componentu - odświeżanie sesji ogarnia bramka.
           }
         },
       },

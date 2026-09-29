@@ -36,7 +36,7 @@ const ETYKIETA =
 function Blad({ tresc }: { tresc?: string }) {
   // `data-blad` obok `aria-invalid`: grupy radiowe (pula, dojazd) nie mają
   // jednego pola do oznaczenia jako niepoprawne, ale ten span zawsze stoi
-  // tuż przy nich — po nim formularz odnajduje, gdzie przewinąć po błędzie.
+  // tuż przy nich - po nim formularz odnajduje, gdzie przewinąć po błędzie.
   return tresc ? (
     <span data-blad className="mt-1.5 block text-sm text-krew-jasna">
       {tresc}
@@ -44,7 +44,7 @@ function Blad({ tresc }: { tresc?: string }) {
   ) : null;
 }
 
-/** Wybór godziny z listy — natywny select, bo na telefonie otwiera systemowe koło. */
+/** Wybór godziny z listy - natywny select, bo na telefonie otwiera systemowe koło. */
 function Godzina({
   label,
   value,
@@ -68,7 +68,7 @@ function Godzina({
         className="szklo min-h-11 w-full rounded-sm px-3 text-sm text-kosc
                    outline-none focus-visible:border-krew"
       >
-        <option value="">—</option>
+        <option value="">-</option>
         {godziny.map((g) => (
           <option key={g} value={g}>
             {g}
@@ -144,7 +144,7 @@ function Pole({
   );
 }
 
-/** Tekst prawny w przewijanym bloku — nie spycha przycisków poza ekran telefonu. */
+/** Tekst prawny w przewijanym bloku - nie spycha przycisków poza ekran telefonu. */
 function Tekst({ children }: { children: ReactNode }) {
   return (
     <div className="szklo max-h-72 overflow-y-auto rounded-md px-4 py-3 text-xs leading-relaxed text-dym">
@@ -255,7 +255,7 @@ export function KrokZasady({ dane, zmien, bledy }: PropsKroku) {
       </section>
 
       <section className="grid gap-2">
-        <h2 className={ETYKIETA}>Wizerunek — dobrowolnie</h2>
+        <h2 className={ETYKIETA}>Wizerunek - dobrowolnie</h2>
         <Zgoda zaznaczona={dane.zgodaWizerunek} onZmiana={(v) => zmien("zgodaWizerunek", v)}>
           {ZGODA_WIZERUNEK}
         </Zgoda>
@@ -432,7 +432,7 @@ export function KrokOTobie({ dane, zmien, bledy }: PropsKroku) {
 
       {pytaOZwolnienie(dane.pula) && (
         <section className="grid gap-3">
-          <h2 className={ETYKIETA}>Zwolnienie rektorskie — dobrowolnie</h2>
+          <h2 className={ETYKIETA}>Zwolnienie rektorskie - dobrowolnie</h2>
           <Zgoda zaznaczona={dane.zwolnienie} onZmiana={(v) => zmien("zwolnienie", v)}>
             Potrzebuję zwolnienia rektorskiego na I dzień wyjazdu, tj. 23.10.2026.
           </Zgoda>
@@ -441,11 +441,11 @@ export function KrokOTobie({ dane, zmien, bledy }: PropsKroku) {
               <Godzina
                 label="Od godziny"
                 value={dane.zwolnienieOd}
-                // Ostatnia godzina nie może być początkiem — po niej nie ma już końca.
+                // Ostatnia godzina nie może być początkiem - po niej nie ma już końca.
                 godziny={GODZINY_ZWOLNIENIA.slice(0, -1)}
                 onChange={(v) => {
                   zmien("zwolnienieOd", v);
-                  // „Do" spoza nowej listy znikłoby z selecta, a zostało w stanie —
+                  // „Do" spoza nowej listy znikłoby z selecta, a zostało w stanie -
                   // lepiej je wyczyścić, niż pokazywać kreskę i zgłaszać błąd.
                   if (v && dane.zwolnienieDo && dane.zwolnienieDo <= v) zmien("zwolnienieDo", "");
                 }}
@@ -471,7 +471,7 @@ export function KrokOTobie({ dane, zmien, bledy }: PropsKroku) {
       )}
 
       <fieldset className="grid gap-2">
-        <legend className={ETYKIETA}>Czy pijasz alkohol? — dobrowolnie</legend>
+        <legend className={ETYKIETA}>Czy pijasz alkohol? - dobrowolnie</legend>
         {[...ALKOHOL, { wartosc: "" as const, etykieta: "Wolę nie odpowiadać" }].map((a) => (
           <label
             key={a.wartosc || "brak"}

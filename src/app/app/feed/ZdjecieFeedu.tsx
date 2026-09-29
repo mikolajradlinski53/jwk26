@@ -3,7 +3,7 @@
 import { useRef } from "react";
 
 /**
- * Zdjęcie we wpisie feedu: podgląd (720 px), a pełne dopiero po dotknięciu —
+ * Zdjęcie we wpisie feedu: podgląd (720 px), a pełne dopiero po dotknięciu -
  * w dialogu na cały ekran (spec porządku, D6). Pełne ładuje się dopiero przy
  * otwarciu, więc przewijanie feedu ciągnie wyłącznie podglądy.
  */
@@ -28,7 +28,7 @@ export function ZdjecieFeedu({ url, opis }: { url: string; opis: string }) {
         />
       </button>
 
-      {/* `open:flex`, nie `flex` — klasa autora biłaby regułę przeglądarki
+      {/* `open:flex`, nie `flex` - klasa autora biłaby regułę przeglądarki
           chowającą zamknięty dialog (ten sam błąd był w bingo). */}
       <dialog
         ref={dialogRef}

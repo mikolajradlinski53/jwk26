@@ -3,14 +3,14 @@ import { Kontener } from "./Kontener";
 import { ZabaStala } from "./zaba/ZabaStala";
 import { KOORDYNATOR_MAIL, KOORDYNATOR_TELEFON } from "@/lib/regulamin";
 
-// Odpowiedzi oparte na regulaminie i formularzu zapisów — nic, czego system
+// Odpowiedzi oparte na regulaminie i formularzu zapisów - nic, czego system
 // albo regulamin nie mówi. Poprawki treści idą przez rozmowę z właścicielem.
 const PYTANIA = [
   {
     pytanie: "Kto może jechać?",
     odpowiedz:
-      "Pełnoletnie osoby z komisji, jednostek i projektów Samorządu, świeżaki przyjęci w tegorocznej " +
-      "rekrutacji i Alumni — wszyscy logują się kontem @samorzad.ue.wroc.pl. Szczegóły w § 3 regulaminu.",
+      "Pełnoletnie osoby z Samorządu - Działacze, Świeżaki i Alumni. Wszyscy logują się kontem " +
+      "@samorzad.ue.wroc.pl. Szczegóły w § 3 regulaminu.",
   },
   {
     pytanie: "Co, jeśli tura jest pełna?",
@@ -27,7 +27,7 @@ const PYTANIA = [
   {
     pytanie: "Jak dojeżdżamy?",
     odpowiedz:
-      "Autokarem albo własnym transportem — w formularzu wybierasz autokar w obie strony, tylko tam, tylko " +
+      "Autokarem albo własnym transportem - w formularzu wybierasz autokar w obie strony, tylko tam, tylko " +
       "z powrotem albo dojazd własny. Godzinę i miejsce zbiórki podamy przed wyjazdem.",
   },
   {
@@ -43,19 +43,19 @@ const PYTANIA = [
 ] as const;
 
 /**
- * „Najczęstsze pytania" — natywne `<details>`/`<summary>`: działają bez
+ * „Najczęstsze pytania" - natywne `<details>`/`<summary>`: działają bez
  * JavaScriptu, są dostępne z klawiatury (Tab + Enter/Spacja) i nie
  * potrzebują żadnego stanu Reacta do otwierania/zamykania. Domyślny
  * trójkącik znacznika jest ukryty i zastąpiony własnym, obracanym przez
- * `group-open:` — więc nie wygląda jak nieostylowany widget przeglądarki.
+ * `group-open:` - więc nie wygląda jak nieostylowany widget przeglądarki.
  *
- * Kontakt pod listą to koordynator z regulaminu (§ 17, § 20) — te same stałe.
+ * Kontakt pod listą to koordynator z regulaminu (§ 17, § 20) - te same stałe.
  */
 export function Pytania() {
   return (
     <section id="pytania" className="bg-jesien-karta/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener>
-        <SekcjaNaglowek numer="08" nadtytul="Pytania" tytul="Najczęstsze pytania" zaba={<ZabaStala poza="mysli" skala={0.62} />} />
+        <SekcjaNaglowek numer="08" nadtytul="Pytania" tytul="Najczęstsze pytania" zaba={<ZabaStala poza="mysli" skala={1} />} />
 
         <div className="grid gap-3">
           {PYTANIA.map((p) => (

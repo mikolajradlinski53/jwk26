@@ -7,12 +7,12 @@ export type Co = "osrodek" | "cena" | "zapisy" | "plan";
 export type Odslona = { data: string | null; odsloniete: boolean };
 export type Odslony = Record<Co, Odslona>;
 
-/** Odsłona z tekstami policzonymi na serwerze — pierwsza klatka bez skoku. */
+/** Odsłona z tekstami policzonymi na serwerze - pierwsza klatka bez skoku. */
 export type OdslonaWidok = Odslona & { poczatkowy: string; kiedy: string };
 export type OdslonyWidok = Record<Co, OdslonaWidok>;
 
-/** Daty wyjazdu jak w regulaminie (§ 1 ust. 3) — jawne od początku. */
-export const DATY_WYJAZDU = "23–25 października";
+/** Daty wyjazdu jak w regulaminie (§ 1 ust. 3) - jawne od początku. */
+export const DATY_WYJAZDU = "23-25 października";
 
 const CO: Co[] = ["osrodek", "cena", "zapisy", "plan"];
 
@@ -28,7 +28,7 @@ export const WSZYSTKO_ZAKRYTE: Odslony = {
 };
 
 /**
- * Lustro `public.odsloniete()` — wyłącznie dla liczników po stronie klienta.
+ * Lustro `public.odsloniete()` - wyłącznie dla liczników po stronie klienta.
  * Decyzję, co wysłać, zawsze podejmuje baza.
  */
 export function czyOdsloniete(daty: Record<Co, string | null>, co: Co, teraz: Date): boolean {
@@ -59,7 +59,7 @@ const KIEDY = new Intl.DateTimeFormat("pl-PL", {
   minute: "2-digit",
 });
 
-/** „5 października o 18:00” — dla czytnika ekranu i podpisów. */
+/** „5 października o 18:00” - dla czytnika ekranu i podpisów. */
 export function kiedyOdslona(data: string | null): string {
   if (!data) return "wkrótce";
   const czesci = KIEDY.formatToParts(new Date(data));
@@ -86,7 +86,7 @@ export function widokOdslon(odslony: Odslony, teraz: Date): OdslonyWidok {
 
 /**
  * Miasto z adresu z panelu („Poznańska 5, 58-540 Karpacz” → „Karpacz”).
- * Nazwa miasta nie siedzi nigdzie w kodzie — przed odsłoną baza nie wyda
+ * Nazwa miasta nie siedzi nigdzie w kodzie - przed odsłoną baza nie wyda
  * adresu, więc nie ma skąd jej wziąć.
  */
 export function miastoZAdresu(adres: string | null): string | null {

@@ -11,7 +11,7 @@ import {
 /**
  * Eksport listy przyjętych do CSV. Bramka w proxy.ts i tak wpuszcza pod
  * /app/admin wyłącznie admina, ale plik zawiera dane o zdrowiu, więc trasa
- * sprawdza rolę sama — nie polega na tym, że nikt nie zmieni matchera.
+ * sprawdza rolę sama - nie polega na tym, że nikt nie zmieni matchera.
  */
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -34,14 +34,14 @@ export async function GET(request: NextRequest) {
     return new NextResponse(csv, {
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
-        // Stała nazwa: filtry w nazwie pliku to nic, ale nazwiska — już tak.
+        // Stała nazwa: filtry w nazwie pliku to nic, ale nazwiska - już tak.
         "Content-Disposition": 'attachment; filename="uczestnicy-jwk26.csv"',
         // Dane o zdrowiu nie mają prawa zostać w żadnym cache po drodze.
         "Cache-Control": "no-store",
       },
     });
   } catch (e) {
-    // Tylko kod i treść — szczegóły błędu Postgresa potrafią zawierać wiersz.
+    // Tylko kod i treść - szczegóły błędu Postgresa potrafią zawierać wiersz.
     const blad = e as { code?: string; message?: string };
     console.error("Eksport CSV uczestników nie przeszedł:", { code: blad.code, message: blad.message });
     return new NextResponse("Nie udało się przygotować pliku", { status: 500 });

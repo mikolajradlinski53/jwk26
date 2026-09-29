@@ -24,7 +24,7 @@ export async function wczytajObrazy(): Promise<ObrazyGry> {
 // Geometria grafik w pikselach źródła (spec wyglądu §4, pomiar w planie 15a).
 const KOLUMNA_TRZON_PX = 106; // szerokość trzonu u góry
 const KOLUMNA_KAPITEL_PX = 80; // abakus, echinus i pierścień szyi
-const KOLUMNA_TRZON_DO_PX = 300; // górny, prosty odcinek trzonu — niżej trzon się rozszerza
+const KOLUMNA_TRZON_DO_PX = 300; // górny, prosty odcinek trzonu - niżej trzon się rozszerza
 const KLATKA_W = 480;
 const KLATKA_H = 475;
 const KLATKA_DZIOB_Y = 356; // czubek dzioba w klatce (klatki wyrównane do dzioba)
@@ -35,7 +35,7 @@ const CYKL = [1, 6, 2, 3, 5, 2, 6].map((n) => n - 1);
 const KLATKA_MS = 120;
 
 /**
- * Jedna klatka w jednostkach świata — skalę pod ekran ustawia wywołujący
+ * Jedna klatka w jednostkach świata - skalę pod ekran ustawia wywołujący
  * przez setTransform. Z grafikami, gdy są wczytane; do tego czasu wersja
  * wektorowa, żeby słaba sieć niczego nie blokowała.
  */
@@ -114,7 +114,7 @@ function rysujGrafiki(
   ctx.restore();
 }
 
-/** Wersja wektorowa — rysowana, dopóki grafiki się nie wczytają. */
+/** Wersja wektorowa - rysowana, dopóki grafiki się nie wczytają. */
 function rysujWektor(
   ctx: CanvasRenderingContext2D,
   s: Stan,
@@ -130,7 +130,7 @@ function rysujWektor(
     ctx.fillStyle = p.dym;
     ctx.fillRect(k.x, 0, SZER_KOLUMNY, gora);
     ctx.fillRect(k.x, dol, SZER_KOLUMNY, SWIAT.wys - dol);
-    // Kapitele — szerszy blok na końcu każdej kolumny, od strony szczeliny.
+    // Kapitele - szerszy blok na końcu każdej kolumny, od strony szczeliny.
     ctx.fillStyle = p.kosc;
     ctx.fillRect(k.x - 4, gora - 10, SZER_KOLUMNY + 8, 10);
     ctx.fillRect(k.x - 4, dol, SZER_KOLUMNY + 8, 10);
@@ -144,7 +144,7 @@ function rysujWektor(
   ctx.save();
   ctx.translate(KRUK_X, y);
   ctx.rotate(kat);
-  // Czarny kruk na prawie czarnym tle — widać go dzięki obrysowi w kolorze kości.
+  // Czarny kruk na prawie czarnym tle - widać go dzięki obrysowi w kolorze kości.
   ctx.fillStyle = "#000";
   ctx.strokeStyle = p.kosc;
   ctx.lineWidth = 1.5;

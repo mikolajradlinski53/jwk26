@@ -7,7 +7,7 @@ import { ustawienia } from "@/lib/ustawienia";
 import { Logowanie } from "./Logowanie";
 import { METADANE_APKI } from "@/lib/metadaneApki";
 
-// Tu odbywa się instalacja na ekranie głównym — nazwa i manifest apki.
+// Tu odbywa się instalacja na ekranie głównym - nazwa i manifest apki.
 export const metadata = METADANE_APKI;
 
 function dataWyjazdu(iso: string | null): string | null {
@@ -25,7 +25,7 @@ function dataWyjazdu(iso: string | null): string | null {
 /**
  * Brama: godło, nazwa wyjazdu i jasna informacja, kto wchodzi i jakim kontem
  * (spec wyglądu, „Logowanie”). Wcześniej był tu tytuł i przycisk przyklejone
- * do góry, a pod nimi pusta czerń — bez słowa o domenie samorządu, choć tylko
+ * do góry, a pod nimi pusta czerń - bez słowa o domenie samorządu, choć tylko
  * takie konta przechodzą przez wyzwalacz w bazie.
  */
 export default async function WejsciePage() {
@@ -37,7 +37,7 @@ export default async function WejsciePage() {
   } = await supabase.auth.getUser();
   if (user) redirect("/app");
 
-  // Gość czyta ustawienia jak landing; awaria odczytu — wiersz bez daty.
+  // Gość czyta ustawienia jak landing; awaria odczytu - wiersz bez daty.
   const data = dataWyjazdu((await ustawienia()).dataJwk);
 
   return (
@@ -64,7 +64,7 @@ export default async function WejsciePage() {
           </p>
           <div className="mt-1.5 w-full">
             {/* Logowanie czyta błąd z adresu przez useSearchParams, a to wymaga
-                granicy Suspense — bez niej build wywala całą trasę. */}
+                granicy Suspense - bez niej build wywala całą trasę. */}
             <Suspense fallback={null}>
               <Logowanie />
             </Suspense>

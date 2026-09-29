@@ -25,7 +25,7 @@ export default async function BlackjackPage() {
         .select("id, stake, payout, wynik, created_at")
         .order("created_at", { ascending: false })
         .limit(10),
-      // Ten sam limit co w slotach — obie gry liczą się razem.
+      // Ten sam limit co w slotach - obie gry liczą się razem.
       supabase.rpc("obrot_w_oknie"),
       supabase.from("app_settings").select("value").eq("key", "casino_daily_stake_cap").maybeSingle(),
     ]);
@@ -54,7 +54,7 @@ export default async function BlackjackPage() {
           {historia.map((r) => (
             <li key={r.id} className="szklo flex items-baseline justify-between gap-3 rounded-md px-3.5 py-2.5">
               <span className="text-xs text-dym">
-                {r.wynik ?? "—"} · stawka {r.stake}
+                {r.wynik ?? "-"} · stawka {r.stake}
               </span>
               <span
                 className={

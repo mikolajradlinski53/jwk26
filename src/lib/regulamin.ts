@@ -1,8 +1,8 @@
 /**
- * Regulamin JWK26 — treść przekazana przez Mikołaja 2026-09-29, z poprawkami
+ * Regulamin JWK26 - treść przekazana przez Mikołaja 2026-09-29, z poprawkami
  * wynikającymi z działania aplikacji (lista zmian w opisie commita i w
  * docs/formalnosci.md). Zmiana treści wymaga podbicia WERSJA_ZGOD
- * w src/lib/zapisy/zgody.ts — zgłoszenie zapisuje wersję, którą uczestnik
+ * w src/lib/zapisy/zgody.ts - zgłoszenie zapisuje wersję, którą uczestnik
  * zaakceptował.
  */
 export type Paragraf = { numer: number; tytul: string; ustepy: string[] };
@@ -211,7 +211,7 @@ export const REGULAMIN: Paragraf[] = [
     ustepy: [
       "Do zapisów, przekazywania informacji organizacyjnych oraz zabaw integracyjnych w czasie Wydarzenia służy Aplikacja JWK26, do której Uczestnik loguje się kontem wskazanym w zgłoszeniu. Korzystanie z funkcji rozrywkowych Aplikacji (bingo, gry, nominacje, sklepik drużynowy) jest dobrowolne.",
       "Punkty zdobywane w Aplikacji służą wyłącznie zabawie integracyjnej. Nie mają wartości pieniężnej, nie można ich kupić, sprzedać, przenieść poza Aplikację ani wymienić na pieniądze. Świadczenia dostępne za punkty w sklepiku drużynowym są elementem programu przygotowanym przez Organizatora i mogą zostać zmienione lub wycofane.",
-      "Treści zamieszczane przez Uczestników w Aplikacji — w szczególności zdjęcia, podpisy, komentarze, nominacje i ich uzasadnienia — nie mogą naruszać prawa, Regulaminu ani dóbr osobistych, godności i prywatności innych osób. Zakazane są treści obraźliwe, dyskryminujące, o charakterze seksualnym, przedstawiające sytuacje intymne, interwencje medyczne lub osoby w sposób je ośmieszający, a także zdjęcia osób, które zgłosiły, że nie życzą sobie fotografowania.",
+      "Treści zamieszczane przez Uczestników w Aplikacji - w szczególności zdjęcia, podpisy, komentarze, nominacje i ich uzasadnienia - nie mogą naruszać prawa, Regulaminu ani dóbr osobistych, godności i prywatności innych osób. Zakazane są treści obraźliwe, dyskryminujące, o charakterze seksualnym, przedstawiające sytuacje intymne, interwencje medyczne lub osoby w sposób je ośmieszający, a także zdjęcia osób, które zgłosiły, że nie życzą sobie fotografowania.",
       "Zamieszczając zdjęcie, Uczestnik potwierdza, że osoby na nim rozpoznawalne nie sprzeciwiają się jego pokazaniu pozostałym Uczestnikom w Aplikacji. Treści Uczestników są widoczne wyłącznie dla zalogowanych Uczestników i Kadry i nie są publikowane poza Aplikacją bez odrębnej podstawy prawnej.",
       "Kadra moderuje treści w Aplikacji i może ukryć lub usunąć treść naruszającą Regulamin, także bez uprzedzenia. Osoba, której dotyczy treść, może zażądać jej usunięcia, zgłaszając to Kadrze lub na adres podany w § 20; zgłoszenie rozpatruje się niezwłocznie.",
       "Nominacje w zabawach Aplikacji, wraz z uzasadnieniami i zdjęciami, są anonimowe wobec innych Uczestników, ale nie wobec Kadry, która może ustalić autora treści naruszającej Regulamin wyłącznie w celu zastosowania § 15.",

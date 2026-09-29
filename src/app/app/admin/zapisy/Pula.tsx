@@ -26,7 +26,7 @@ export function Pula({
   // da się zamknąć zawsze.
   const zablokowana = !regulaminZatwierdzony && !pula.otwarta;
   // Zablokowany checkbox ma pokazywać stan z serwera, nie ostatnie kliknięcie
-  // sprzed zablokowania — inaczej wyglądałby na odznaczony, choć pula wciąż
+  // sprzed zablokowania - inaczej wyglądałby na odznaczony, choć pula wciąż
   // jest otwarta.
   const otwartaEfektywnie = zablokowana ? pula.otwarta : otwarta;
   const zmieniona = otwartaEfektywnie !== pula.otwarta || miejsca !== String(pula.miejsca);

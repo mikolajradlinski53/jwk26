@@ -13,7 +13,7 @@ import {
 import { wczytajUczestnikow, wierszCsv, NAGLOWKI_CSV } from "../../src/lib/zapisy/uczestnicy";
 
 // Dwie przyjęte osoby w różnych drużynach i pulach, jedna oczekująca, admin
-// i zwykły uczestnik. Dane zakładamy raz — testy tylko czytają.
+// i zwykły uczestnik. Dane zakładamy raz - testy tylko czytają.
 let przyjety: TestUser;
 let przyjeta: TestUser;
 let czekajacy: TestUser;
@@ -86,7 +86,7 @@ afterAll(async () => {
   await Promise.all([przyjety, przyjeta, czekajacy, szef].map(deleteUser));
 });
 
-/** Tylko osoby z tego pliku — w bazie testowej mogą być zgłoszenia innych plików. */
+/** Tylko osoby z tego pliku - w bazie testowej mogą być zgłoszenia innych plików. */
 function nasi<T extends { userId: string }>(lista: T[]): T[] {
   const id = new Set([przyjety.id, przyjeta.id, czekajacy.id]);
   return lista.filter((u) => id.has(u.userId));
@@ -100,7 +100,7 @@ describe("lista przyjętych", () => {
 
     const jan = lista.find((u) => u.userId === przyjety.id)!;
     expect(jan.druzyna).toBeTruthy();
-    expect(jan.zwolnienie).toBe("12:30–16:00");
+    expect(jan.zwolnienie).toBe("12:30-16:00");
     expect(jan.alkohol).toBe("czasami");
     expect(jan.wrazliwe).toMatchObject({
       dieta: "wegetariańska",
@@ -123,7 +123,7 @@ describe("lista przyjętych", () => {
 
   it("zwykły uczestnik nie widzi cudzych danych", async () => {
     // RLS wpuszcza do registrations tylko własne wiersze, a do dane_wrazliwe
-    // tylko własne i admina — lista uczestnika to co najwyżej on sam.
+    // tylko własne i admina - lista uczestnika to co najwyżej on sam.
     const lista = await wczytajUczestnikow(przyjetyClient, {});
     expect(lista.every((u) => u.userId === przyjety.id)).toBe(true);
   });

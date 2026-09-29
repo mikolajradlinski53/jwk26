@@ -14,7 +14,7 @@ const GRY: { href: string; nazwa: string; opis: string; ikona: NazwaIkony }[] = 
 
 /**
  * Rozdroże kasyna: saldo i trzy równorzędne gry (spec wyglądu, „Kasyno”).
- * Wcześniej sloty leżały tu wprost, a pozostałe gry były odnośnikami —
+ * Wcześniej sloty leżały tu wprost, a pozostałe gry były odnośnikami -
  * hierarchia była nierówna, choć gry są na tym samym poziomie.
  */
 export default async function ArcadePage() {

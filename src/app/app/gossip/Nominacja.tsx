@@ -11,7 +11,7 @@ import type { Kandydat } from "@/lib/gossipy";
 const ETYKIETA = "mb-1.5 block pl-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-dym";
 
 /**
- * Nominacja w jednej kategorii: kogo, dlaczego i — jeśli chcesz — zdjęcie.
+ * Nominacja w jednej kategorii: kogo, dlaczego i - jeśli chcesz - zdjęcie.
  * Lista kandydatów przychodzi już bez pytającego, więc siebie nie da się
  * nawet zaznaczyć.
  *
@@ -44,7 +44,7 @@ export function Nominacja({
   const widoczni = fraza ? kandydaci.filter((k) => k.nazwa.toLowerCase().includes(fraza)) : kandydaci;
   const wybrany = kandydaci.find((k) => k.id === wybor);
 
-  // Adres podglądu zwalniany przy zmianie zdjęcia i przy odmontowaniu —
+  // Adres podglądu zwalniany przy zmianie zdjęcia i przy odmontowaniu -
   // bez tego każdy wybór trzyma cały plik w pamięci do zamknięcia karty.
   useEffect(() => {
     return () => {
@@ -66,7 +66,7 @@ export function Nominacja({
       return;
     }
     if (dlugosc < minimum) {
-      setBlad(`Uzasadnienie musi mieć co najmniej ${minimum} znaków — brakuje ${minimum - dlugosc}.`);
+      setBlad(`Uzasadnienie musi mieć co najmniej ${minimum} znaków - brakuje ${minimum - dlugosc}.`);
       return;
     }
 
@@ -153,7 +153,7 @@ export function Nominacja({
           value={tekst}
           onChange={(e) => setTekst(e.target.value)}
           className="szklo w-full rounded-sm px-3.5 py-2.5 text-sm text-kosc outline-none placeholder:text-dym focus-visible:border-krew"
-          placeholder="Napisz konkret — historię, cytat, moment z wyjazdu."
+          placeholder="Napisz konkret - historię, cytat, moment z wyjazdu."
         />
         <span
           className={`mt-1 block text-right text-xs tabular-nums ${dlugosc >= minimum ? "text-dym" : "text-krew-jasna"}`}
@@ -200,7 +200,7 @@ export function Nominacja({
       </Button>
       <p className="text-xs leading-relaxed text-dym">
         Nominujesz raz i nie da się tego zmienić. Nikt poza organizatorami nie zobaczy, kto co
-        napisał — po ujawnieniu pokażemy tylko uzasadnienia i zdjęcia o zwycięzcy. Zdjęcie nie może
+        napisał - po ujawnieniu pokażemy tylko uzasadnienia i zdjęcia o zwycięzcy. Zdjęcie nie może
         nikogo ośmieszać ani pokazywać osób, które nie chcą być fotografowane (regulamin, § 19).
       </p>
     </div>

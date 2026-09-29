@@ -40,7 +40,7 @@ function Tutorial({ sys, wAplikacji, adres }: { sys: System; wAplikacji: boolean
       <Zaba stan="tutorial" className="mx-auto size-16 text-kosc" />
       <p className="text-sm text-kosc">
         Sekta mieszka na ekranie głównym, nie w przeglądarce. Przypnij ją,
-        a potem otwórz stąd — inaczej nie dostaniesz powiadomień.
+        a potem otwórz stąd - inaczej nie dostaniesz powiadomień.
       </p>
       <ol className="grid list-decimal gap-2 pl-5 text-sm text-dym">
         {KROKI[sys].map((k) => (
@@ -54,7 +54,7 @@ function Tutorial({ sys, wAplikacji, adres }: { sys: System; wAplikacji: boolean
 /**
  * Wpuszcza dalej tylko w trybie aplikacji; w zwykłej karcie pokazuje tutorial.
  *
- * O widoczności rozstrzyga CSS (`display-mode`), nie JavaScript — reguła
+ * O widoczności rozstrzyga CSS (`display-mode`), nie JavaScript - reguła
  * obowiązuje od pierwszej klatki, więc nie ma błysku niewłaściwej treści przed
  * hydracją. Same instrukcje składa serwer z nagłówka żądania, żeby pierwsza
  * klatka była nie tylko właściwa, ale i niepusta.

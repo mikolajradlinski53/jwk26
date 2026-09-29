@@ -179,7 +179,7 @@ export type Spin = {
   bebny: string[] | null;
 };
 
-/** Wiersz widoku `kronika_sklepiku` — nazwy rozwiązane po stronie bazy. */
+/** Wiersz widoku `kronika_sklepiku` - nazwy rozwiązane po stronie bazy. */
 export type WpisKroniki = {
   id: string;
   created_at: string;
@@ -198,10 +198,10 @@ export type KluczPuli = "dzialacze" | "swiezaki" | "alumni";
 
 export type Dojazd = "autokar_oba" | "autokar_tam" | "autokar_powrot" | "wlasny";
 
-/** Odpowiedź na „Czy pijasz alkohol?" — dobrowolna, więc w bazie może być NULL. */
+/** Odpowiedź na „Czy pijasz alkohol?" - dobrowolna, więc w bazie może być NULL. */
 export type Alkohol = "nie" | "czasami" | "tak";
 
-/** Wiersz `stan_pul()` — liczby bez nazwisk, czytelne dla uczestnika. */
+/** Wiersz `stan_pul()` - liczby bez nazwisk, czytelne dla uczestnika. */
 export type StanPuli = {
   klucz: KluczPuli;
   nazwa: string;
@@ -212,7 +212,7 @@ export type StanPuli = {
   kolejnosc: number;
 };
 
-/** Wiersz `dane_wrazliwe` — widzi go właściciel i admin, nikt więcej. */
+/** Wiersz `dane_wrazliwe` - widzi go właściciel i admin, nikt więcej. */
 export type DaneWrazliwe = {
   registration_id: string;
   ice_imie: string | null;
@@ -227,7 +227,7 @@ export type DaneWrazliwe = {
   created_at: string;
 };
 
-/** Wiersz widoku kruk_ranking — rekord osoby w kruku. */
+/** Wiersz widoku kruk_ranking - rekord osoby w kruku. */
 export type KrukMiejsce = {
   user_id: string;
   display_name: string;

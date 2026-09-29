@@ -5,8 +5,8 @@ import { useState } from "react";
 /**
  * Mały przycisk „Kopiuj" obok wartości do przepisania (numer konta, tytuł).
  * Kolor bierze z otoczenia (`currentColor`), więc pasuje i do ciemnej apki,
- * i do jasnego landinga. Brak API schowka — np. w przeglądarce wbudowanej
- * w Instagrama — kończy się komunikatem, nie martwym przyciskiem.
+ * i do jasnego landinga. Brak API schowka - np. w przeglądarce wbudowanej
+ * w Instagrama - kończy się komunikatem, nie martwym przyciskiem.
  */
 export function KopiujMaly({ tekst, co }: { tekst: string; co: string }) {
   const [stan, setStan] = useState<"gotowy" | "skopiowano" | "nie-udalo-sie">("gotowy");

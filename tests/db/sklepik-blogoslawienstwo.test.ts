@@ -219,7 +219,7 @@ describe("błogosławieństwo", () => {
   it("bonusy za linię i planszę działają po podmianie funkcji", async () => {
     const autor = await nowyUzytkownik("blogo-regresja");
 
-    // Bez błogosławieństwa — to test regresji, nie efektu. Sprawdza, że
+    // Bez błogosławieństwa - to test regresji, nie efektu. Sprawdza, że
     // przeniesienie ciała review_bingo nie zgubiło pętli bonusów.
     const wszystkie = Array.from({ length: 25 }, (_, i) => i);
     await zapal(

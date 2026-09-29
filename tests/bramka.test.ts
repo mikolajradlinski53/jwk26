@@ -8,20 +8,20 @@ const KORZEN = resolve(__dirname, "../src/app");
  * Ekrany dostępne bez zalogowania. Każdy inny musi siedzieć pod /app,
  * bo tylko ten prefiks obejmuje bramka w proxy.ts.
  */
-// /prywatnosc — polityka musi być dostępna przed zalogowaniem (landing, osoba ICE).
+// /prywatnosc - polityka musi być dostępna przed zalogowaniem (landing, osoba ICE).
 const PUBLICZNE_EKRANY = new Set(["/", "/wejscie", "/regulamin", "/prywatnosc"]);
 
 /**
- * Uchwyty tras dostępne bez zalogowania — osobna lista, bo osobne ryzyko.
+ * Uchwyty tras dostępne bez zalogowania - osobna lista, bo osobne ryzyko.
  *
  * `/auth/callback` musi być publiczny: przyjmuje powrót od Google, gdy sesji
  * jeszcze nie ma. `/auth/signout` tylko kończy sesję i niczego nie czyta.
  *
- * Każdy inny uchwyt poza /app wywali ten test — i o to chodzi. Uchwyt zwraca
+ * Każdy inny uchwyt poza /app wywali ten test - i o to chodzi. Uchwyt zwraca
  * dane wprost, bez ekranu, więc zapomniany jest groźniejszy niż zapomniana
  * strona: nie widać go w interfejsie, a odpowiada każdemu, kto zna adres.
  */
-// /api/push woła baza (pg_net, pg_cron), nie przeglądarka — bez sesji, za to
+// /api/push woła baza (pg_net, pg_cron), nie przeglądarka - bez sesji, za to
 // z sekretem w nagłówku `x-push-sekret`; bez niego trasa odpowiada 401.
 // /api/sms tak samo, z nagłówkiem `x-sms-sekret`.
 const PUBLICZNE_UCHWYTY = new Set(["/auth/callback", "/auth/signout", "/api/push", "/api/sms"]);
@@ -61,7 +61,7 @@ describe("bramka obejmuje każdy ekran apki", () => {
 
   /*
    * Ten przypadek dopisano po tym, jak przegląd wykazał lukę: test patrzył
-   * wyłącznie na page.tsx. Recenzent dodał route.ts z danymi poza /app —
+   * wyłącznie na page.tsx. Recenzent dodał route.ts z danymi poza /app -
    * pakiet pozostał zielony, a plik odpowiadał każdemu kodem 200 z treścią.
    */
   it("nie istnieje uchwyt trasy poza /app, który nie jest świadomie publiczny", () => {

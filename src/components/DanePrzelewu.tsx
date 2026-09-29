@@ -25,7 +25,7 @@ const STYLE = {
 } as const;
 
 /**
- * Dane do przelewu z kodem QR w formacie ZBP — po zeskanowaniu w aplikacji
+ * Dane do przelewu z kodem QR w formacie ZBP - po zeskanowaniu w aplikacji
  * banku numer konta, kwota, odbiorca i tytuł wpisują się same. Ręczne
  * przepisywanie 26 cyfr na telefonie to najczęstsze źródło przelewów, których
  * organizator potem nie umie sparować.
@@ -71,7 +71,7 @@ export function DanePrzelewu({
         <svg
           viewBox={`-4 -4 ${rozmiar + 8} ${rozmiar + 8}`}
           role="img"
-          aria-label="Kod QR przelewu — zeskanuj w aplikacji banku"
+          aria-label="Kod QR przelewu - zeskanuj w aplikacji banku"
           shapeRendering="crispEdges"
           className="size-44 shrink-0 rounded-md bg-white"
         >
@@ -106,7 +106,7 @@ export function DanePrzelewu({
       </div>
 
       <p className={s.przypis}>
-        Zeskanuj kod w aplikacji banku — numer konta, kwota i tytuł wpiszą się same.
+        Zeskanuj kod w aplikacji banku - numer konta, kwota i tytuł wpiszą się same.
       </p>
     </div>
   );

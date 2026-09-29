@@ -9,7 +9,7 @@ import { cyfry, kontoCzytelne, kontoPoprawne } from "@/lib/zapisy/qrPrzelewu";
 
 /**
  * Dane do przelewu: z nich formularz zapisów i landing składają kod QR
- * i kartę „Dane do przelewu". Puste konto to stan dozwolony — oba miejsca
+ * i kartę „Dane do przelewu". Puste konto to stan dozwolony - oba miejsca
  * mówią wtedy „dane pojawią się wkrótce".
  */
 export function FormularzPrzelewu({
@@ -37,7 +37,7 @@ export function FormularzPrzelewu({
       return;
     }
     if (konto.trim() !== "" && odbiorca.trim() === "") {
-      setBlad("Podaj odbiorcę — bez niego bank nie przyjmie przelewu z kodu QR");
+      setBlad("Podaj odbiorcę - bez niego bank nie przyjmie przelewu z kodu QR");
       return;
     }
     if (!Number.isFinite(liczba) || liczba <= 0 || liczba > 10000) {
@@ -48,7 +48,7 @@ export function FormularzPrzelewu({
     wToku.current = true;
     setCzeka(true);
 
-    // Jedno zapytanie na trzy klucze, jak w formularzu dat — pętla update
+    // Jedno zapytanie na trzy klucze, jak w formularzu dat - pętla update
     // zostawiała bazę w stanie mieszanym, gdy padało któreś z kolei.
     const { error } = await createClient()
       .from("app_settings")
@@ -100,7 +100,7 @@ export function FormularzPrzelewu({
         onChange={(e) => setKwota(e.target.value)}
       />
       <p className="-mt-2 px-1 text-xs leading-relaxed text-dym">
-        W kodzie QR odbiorca mieści się w 20 znakach, a polskie litery idą bez ogonków —
+        W kodzie QR odbiorca mieści się w 20 znakach, a polskie litery idą bez ogonków -
         tak wymaga standard banków. Na ekranie widać pełną nazwę.
       </p>
 

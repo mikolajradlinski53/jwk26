@@ -17,7 +17,7 @@ export default async function Home() {
 
   const [{ data }, { data: czlonkowie }] = await Promise.all([
     supabase.from("team_scores").select("*").order("score", { ascending: false }),
-    // Skład drużyn do rozwinięcia wiersza — widok liczy punkty każdej osoby.
+    // Skład drużyn do rozwinięcia wiersza - widok liczy punkty każdej osoby.
     supabase
       .from("user_scores")
       .select("user_id, display_name, team_id, score")
@@ -27,7 +27,7 @@ export default async function Home() {
 
   return (
     <Ekran tytul="Ranking Sekt" podtytul="Punkty ruszą razem z bingo">
-      {/* Odczyt przy wejściu zostaje niezależnie od subskrypcji — przy słabym
+      {/* Odczyt przy wejściu zostaje niezależnie od subskrypcji - przy słabym
           zasięgu websocket może nie dojść, a ranking musi się pokazać. */}
       <RankingNaZywo
         poczatkowe={(data ?? []) as TeamScore[]}

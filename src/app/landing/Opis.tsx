@@ -4,7 +4,7 @@ import { ZabaStala } from "./zaba/ZabaStala";
 
 /**
  * Czym jest JWK + pasek faktów. Cena i miejsce dochodzą do paska dopiero po
- * swoich odsłonach — przedtem „wkrótce”. Liczby miejsc celowo nie ma
+ * swoich odsłonach - przedtem „wkrótce”. Liczby miejsc celowo nie ma
  * (decyzja właściciela).
  */
 export function Opis({ kwota, miasto }: { kwota: number | null; miasto: string | null }) {
@@ -16,17 +16,17 @@ export function Opis({ kwota, miasto }: { kwota: number | null; miasto: string |
   return (
     <section id="o-wyjezdzie" className="bg-jesien-tlo/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener>
-        <SekcjaNaglowek numer="01" nadtytul="Wyjazd" tytul="Czym to jest" zaba={<ZabaStala poza="opiera" skala={0.62} />} />
+        <SekcjaNaglowek numer="01" nadtytul="Wyjazd" tytul="Czym to jest" zaba={<ZabaStala poza="opiera" skala={1} />} />
         <div className="grid gap-3 text-sm leading-relaxed text-jesien-kora">
           <p>
             Raz w roku Komisja znika z uczelni na trzy dni. JWK to nie jest
-            szkolenie ani konferencja — to wyjazd, na który się jedzie, żeby
+            szkolenie ani konferencja - to wyjazd, na który się jedzie, żeby
             naprawdę się poznać, zanim znowu zderzymy się na korytarzu
             z terminami.
           </p>
           <p>
             Nikt nie jedzie sam. Drużyny, gry, szkolenia i wieczory, o których
-            mówi się potem cały rok. Tydzień wcześniej przyjmujemy świeżaków —
+            mówi się potem cały rok. Tydzień wcześniej przyjmujemy świeżaków -
             kto się załapie, jedzie razem z nami.
           </p>
         </div>

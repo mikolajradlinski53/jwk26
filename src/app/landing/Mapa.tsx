@@ -4,10 +4,10 @@ import { useState } from "react";
 
 /**
  * Mapa w karcie ośrodka: adres, „Otwórz w Mapach” i osadzona mapa dopiero po
- * dotknięciu (ciężki iframe nie leci do każdego, kto przewinął stronę —
+ * dotknięciu (ciężki iframe nie leci do każdego, kto przewinął stronę -
  * landing trafia z Instagrama też do ludzi na limicie danych).
  *
- * Adres przychodzi z bazy — w kodzie nie ma żadnego, więc przed odsłoną
+ * Adres przychodzi z bazy - w kodzie nie ma żadnego, więc przed odsłoną
  * ośrodka nie ma go też w skryptach strony.
  */
 export function Mapa({ nazwa, adres }: { nazwa: string | null; adres: string }) {

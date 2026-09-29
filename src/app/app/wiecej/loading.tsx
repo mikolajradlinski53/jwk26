@@ -1,6 +1,6 @@
 import { Blok, Pasek, PasekSekcji, Saldo, SzkieletEkranu } from "@/components/Szkielet";
 
-/** „Więcej”: drużyna z saldem, pozycje, powiadomienia. Podtytuł to ksywka — z danych. */
+/** „Więcej”: drużyna z saldem, pozycje, powiadomienia. Podtytuł to ksywka - z danych. */
 export default function Ladowanie() {
   return (
     <SzkieletEkranu tytul="Więcej" podtytul>

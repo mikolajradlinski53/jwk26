@@ -20,7 +20,7 @@ export function WyborZdjecia({
         <input
           type="file"
           accept="image/*"
-          // `capture` podpowiada aparat zamiast galerii — większość osób i tak
+          // `capture` podpowiada aparat zamiast galerii - większość osób i tak
           // robi zdjęcie ekranu bankowości w momencie wypełniania.
           capture="environment"
           aria-invalid={blad ? true : undefined}

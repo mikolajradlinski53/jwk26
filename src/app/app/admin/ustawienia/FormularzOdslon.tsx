@@ -57,7 +57,7 @@ export function FormularzOdslon({ poczatkowe }: { poczatkowe: PoczatkoweOdslony 
       social_instagram: instagram.trim(),
       social_facebook: facebook.trim(),
     };
-    // Jedno zapytanie — pętla zostawiałaby bazę w stanie mieszanym przy awarii.
+    // Jedno zapytanie - pętla zostawiałaby bazę w stanie mieszanym przy awarii.
     const { error } = await createClient()
       .from("app_settings")
       .upsert(

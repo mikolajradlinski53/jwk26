@@ -6,27 +6,27 @@ import { PrzyciskZapisu } from "./PrzyciskZapisu";
 import { ZabaStala } from "./zaba/ZabaStala";
 
 /**
- * Sekcja wejściowa — pierwsze, co widać po otwarciu landingu. Zdjęcie
+ * Sekcja wejściowa - pierwsze, co widać po otwarciu landingu. Zdjęcie
  * `hero-8` (grupowe selfie na pomoście, złote drzewa) jako tło, logo, licznik
  * i przycisk wejścia na nim.
  *
  * Musi być czytelna w pierwszej klatce:
- * - Żadnej sekcji na `100vh` — wysokość idzie z `aspect-*` (rezerwuje miejsce
- *   od razu, zanim zdjęcie się doładuje — zero „białej dziury"), nie z
+ * - Żadnej sekcji na `100vh` - wysokość idzie z `aspect-*` (rezerwuje miejsce
+ *   od razu, zanim zdjęcie się doładuje - zero „białej dziury"), nie z
  *   viewportu, więc nie wypycha reszty strony poza pierwszy kadr.
- * - Zdjęcie ładowane z `preload` (następca `priority` w Next 16 — starsze
+ * - Zdjęcie ładowane z `preload` (następca `priority` w Next 16 - starsze
  *   API jest tu przestarzałe) i `fetchPriority="high"`, żeby przeglądarka
  *   zaczęła je pobierać od razu, nie dopiero gdy dotrze do niego w drzewie.
- * - Licznik dostaje `poczatkowe` policzone tutaj, na serwerze — bez tego
+ * - Licznik dostaje `poczatkowe` policzone tutaj, na serwerze - bez tego
  *   pokazywałby kreskę, dopóki nie doładuje się JavaScript.
  *
  * Kontrast tekstu na zdjęciu: `.hero-przyciemnienie` w globals.css to gradient
  * czerni zmierzony względem najjaśniejszego piksela `hero-8.jpg` (prawie
  * czysta biel, ok. 249/255, w górnej jednej dziesiątej kadru), nie względem
- * średniej jasności zdjęcia — przy 62% na tym pikselu wychodzi kontrast
+ * średniej jasności zdjęcia - przy 62% na tym pikselu wychodzi kontrast
  * ok. 6,2:1 dla białego tekstu, z zapasem nad progiem 4,5:1. Sam licznik
  * i tak siedzi na własnej nieprzezroczystej karcie (`jesien-karta`), więc
- * jego czytelność nie zależy od zdjęcia w ogóle — przyciemnienie chroni
+ * jego czytelność nie zależy od zdjęcia w ogóle - przyciemnienie chroni
  * logo i przycisk.
  */
 export function Wejscie({
@@ -78,7 +78,7 @@ export function Wejscie({
             <div className="relative grid justify-items-center gap-3">
               {/* Przewodnik wita, siedząc na rogu karty licznika; dalej po
                   stronie chodzi jego wędrująca wersja (zaba/Przewodnik.tsx). */}
-              <ZabaStala poza="siedzi" skala={0.75} className="absolute -top-[52px] right-1 z-10" />
+              <ZabaStala poza="siedzi" skala={1} className="absolute -top-[72px] right-0 z-10" />
               <Licznik
                 docelowa={dataJwk}
                 etykieta="Do wyjazdu"

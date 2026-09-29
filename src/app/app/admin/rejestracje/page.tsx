@@ -10,7 +10,7 @@ import type { DaneWrazliwe, Registration, Team } from "@/types/db";
 export default async function KolejkaRejestracji() {
   const supabase = await createClient();
 
-  // Rezerwa ma własną kolejkę w /app/admin/zapisy — tu tylko osoby na miejscu.
+  // Rezerwa ma własną kolejkę w /app/admin/zapisy - tu tylko osoby na miejscu.
   const [{ data: zgloszeniaRaw, error: zgloszeniaError }, { data: druzynyRaw }] = await Promise.all([
     supabase
       .from("registrations")
@@ -61,10 +61,10 @@ export default async function KolejkaRejestracji() {
       {wrazliweError && (
         <p className="szklo mb-5 rounded-md px-4 py-3.5 text-sm text-krew-jasna">
           Nie udało się wczytać danych wrażliwych (ICE, zdrowie). Nie przyjmuj zgłoszeń, dopóki się
-          nie wczytają — odśwież stronę.
+          nie wczytają - odśwież stronę.
         </p>
       )}
-      {/* Błąd odczytu wygląda jak pusta kolejka, gdyby go tu nie rozróżnić —
+      {/* Błąd odczytu wygląda jak pusta kolejka, gdyby go tu nie rozróżnić -
           admin uznałby, że nie ma kogo rozpatrywać, choć zgłoszenia czekają. */}
       {zgloszeniaError ? (
         <p className="szklo rounded-md px-4 py-3.5 text-center text-sm text-krew-jasna">
@@ -88,7 +88,7 @@ export default async function KolejkaRejestracji() {
 
               <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
                 <dt className="text-dym">Telefon</dt>
-                <dd className="text-kosc">{z.phone ?? "—"}</dd>
+                <dd className="text-kosc">{z.phone ?? "-"}</dd>
                 {z.nr_indeksu && (
                   <>
                     <dt className="text-dym">Indeks</dt>
@@ -110,9 +110,9 @@ export default async function KolejkaRejestracji() {
                 {z.zwolnienie_od && z.zwolnienie_do && (
                   <>
                     <dt className="text-dym">Zwolnienie 23.10</dt>
-                    {/* Kolumna `time` przychodzi jako HH:MM:SS — sekundy są zawsze zerowe. */}
+                    {/* Kolumna `time` przychodzi jako HH:MM:SS - sekundy są zawsze zerowe. */}
                     <dd className="text-kosc">
-                      {z.zwolnienie_od.slice(0, 5)}–{z.zwolnienie_do.slice(0, 5)}
+                      {z.zwolnienie_od.slice(0, 5)}-{z.zwolnienie_do.slice(0, 5)}
                     </dd>
                   </>
                 )}
@@ -199,7 +199,7 @@ export default async function KolejkaRejestracji() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={podglady.get(z.id)!}
-                  alt={`Dowód przelewu — ${nazwa}`}
+                  alt={`Dowód przelewu - ${nazwa}`}
                   loading="lazy"
                   className="mt-3 w-full"
                 />
@@ -210,7 +210,7 @@ export default async function KolejkaRejestracji() {
               {z.proof_path && (
                 <p className="mt-3 text-xs text-dym">
                   {z.ocr_confidence === null
-                    ? "OCR się nie powiódł — oceniaj wyłącznie po zdjęciu."
+                    ? "OCR się nie powiódł - oceniaj wyłącznie po zdjęciu."
                     : `OCR: ${z.ocr_keywords_hit} słów kluczowych, pewność ${Math.round(
                         z.ocr_confidence * 100,
                       )}%`}

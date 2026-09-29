@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 
 // Komunikat, którym `review_bingo` odpowiada, gdy zgłoszenie zniknęło spod
-// ręki — bo drugi admin (projekt świadomie dopuszcza równoległą pracę) zdążył
+// ręki - bo drugi admin (projekt świadomie dopuszcza równoległą pracę) zdążył
 // je rozpatrzyć pierwszy. To normalna sytuacja, nie usterka.
 const JUZ_ROZPATRZONE = /nie istnieje albo zostalo juz rozpatrzone/i;
 
@@ -38,7 +38,7 @@ export function DecyzjaBingo({ zgloszenieId }: { zgloszenieId: string }) {
       console.error("Rozpatrzenie zgłoszenia bingo nie przeszło:", error);
 
       if (JUZ_ROZPATRZONE.test(error.message)) {
-        // Dwóch adminów pracuje równocześnie — to założenie projektu.
+        // Dwóch adminów pracuje równocześnie - to założenie projektu.
         // Wiersz i tak zniknie z listy po odświeżeniu (przestał być
         // `pending`); dajemy chwilę, żeby komunikat zdążył się przeczytać,
         // zanim serwer podmieni kolejkę pod nogami.
@@ -47,7 +47,7 @@ export function DecyzjaBingo({ zgloszenieId }: { zgloszenieId: string }) {
         return;
       }
 
-      // Surowy komunikat z `raise exception` trafia na ekran wprost — admin
+      // Surowy komunikat z `raise exception` trafia na ekran wprost - admin
       // zna projekt, treść wyjątku jest dla niego informacją, nie szumem.
       setBlad(error.message);
       setCzeka(false);
@@ -55,7 +55,7 @@ export function DecyzjaBingo({ zgloszenieId }: { zgloszenieId: string }) {
       return;
     }
 
-    // Akceptacja mogła po drodze dopisać bonus za linię albo pełną planszę —
+    // Akceptacja mogła po drodze dopisać bonus za linię albo pełną planszę -
     // ile dokładnie, wie tylko baza. Nie zgadujemy tu żadnej liczby.
     router.refresh();
   }

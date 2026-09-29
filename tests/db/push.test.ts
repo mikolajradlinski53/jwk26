@@ -164,7 +164,7 @@ describe("ogłoszenia i adresaci", () => {
     expect(error!.message).toMatch(/admin/i);
   });
 
-  it("„wszyscy” to przyjęci — bez osób czekających na akceptację", async () => {
+  it("„wszyscy” to przyjęci - bez osób czekających na akceptację", async () => {
     await ogloszenie({ p_adresat: "all" });
     const [p] = await paczka();
     expect(naszeAdresy(p)).toEqual(["ala", "obcy", "ola"]);
@@ -222,7 +222,7 @@ describe("wysyłka", () => {
   });
 
   it("po pięciu nieudanych próbach powiadomienie przestaje wracać", async () => {
-    // Martwe powiadomienie nie może krążyć bez końca — ponawia je pg_cron co minutę.
+    // Martwe powiadomienie nie może krążyć bez końca - ponawia je pg_cron co minutę.
     await ogloszenie({ p_adresat: "all" });
     for (let i = 0; i < 5; i++) expect(await paczka()).toHaveLength(1);
     expect(await paczka()).toEqual([]);

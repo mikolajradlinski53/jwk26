@@ -4,10 +4,10 @@ import { OSWIADCZENIE_SZKODY, WERSJA_ZGOD } from "@/lib/zapisy/zgody";
 import { regulaminDoWyswietlenia } from "@/lib/regulamin";
 import { wczytajOdslony } from "@/lib/odslony";
 
-// `description` nadpisany osobno — bez tego strona dziedziczyłaby po
+// `description` nadpisany osobno - bez tego strona dziedziczyłaby po
 // `layout.tsx` opis napisany z myślą o mrocznej apce.
 export const metadata = {
-  title: "Regulamin — JWK26",
+  title: "Regulamin - JWK26",
   description: "Zasady udziału w Jesiennym Wyjeździe Komisji 2026.",
 };
 
@@ -17,7 +17,7 @@ export const viewport = {
 
 /**
  * Regulamin wyjazdu. Trasa publiczna i osobna od landingu, żeby dało się ją
- * zlinkować wprost — z formularza zapisów albo komuś, kto pyta, na co się pisze.
+ * zlinkować wprost - z formularza zapisów albo komuś, kto pyta, na co się pisze.
  *
  * Baner „wersja robocza" zależy od `regulamin_zatwierdzony` w app_settings
  * (D8 speca zapisów). Anonim czyta tę flagę dzięki polityce settings_read_public.
@@ -39,7 +39,7 @@ export default async function RegulaminPage() {
   return (
     <>
       {/* Jesienne tło pod całym oknem, nie tylko pod kolumną treści. Regulamin
-          jest podpięty pod landing, a tam motyw sekty jest tajemnicą — wcześniej
+          jest podpięty pod landing, a tam motyw sekty jest tajemnicą - wcześniej
           po bokach (komputer) i w wcięciu nad treścią (iPhone) prześwitywało
           ciemne tło apki. `fixed` przykrywa też to, co odsłania przewijanie
           poza krawędź. */}
@@ -58,7 +58,7 @@ export default async function RegulaminPage() {
         <div className="mt-5 rounded-md border border-jesien-dynia/50 bg-jesien-dynia/10 p-4 text-sm leading-relaxed text-jesien-atrament">
           <strong className="text-jesien-rdza">Wersja robocza.</strong> Ten
           dokument czeka na zatwierdzenie przez zarząd Samorządu Studenckiego
-          i dziś nie ma mocy obowiązującej — traktuj go jako zapowiedź
+          i dziś nie ma mocy obowiązującej - traktuj go jako zapowiedź
           ostatecznych zasad, nie gotowy regulamin.
         </div>
       )}

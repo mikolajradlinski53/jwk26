@@ -50,7 +50,7 @@ export function Polka({
     });
 
     // Odblokowanie idzie przed sprawdzeniem błędu, nie po. Wyjście z funkcji
-    // przy zostawionym `wToku` zablokowałoby półkę do przeładowania strony —
+    // przy zostawionym `wToku` zablokowałoby półkę do przeładowania strony -
     // a w trybie aplikacji na iOS przeładowania może nie być.
     setCzeka(null);
     wToku.current = false;
@@ -63,8 +63,8 @@ export function Polka({
 
     setUdane(
       pozycja.kind === "physical"
-        ? `${pozycja.name} — zamówione, czeka na wydanie`
-        : `${pozycja.name} — zadziałało`,
+        ? `${pozycja.name} - zamówione, czeka na wydanie`
+        : `${pozycja.name} - zadziałało`,
     );
     setOtwarta(null);
     setCel("");
@@ -147,7 +147,7 @@ export function Polka({
                       className="szklo min-h-11 w-full rounded-sm px-3.5 text-sm text-kosc
                                  outline-none focus-visible:border-krew"
                     >
-                      <option value="">— wybierz —</option>
+                      <option value="">- wybierz -</option>
                       {obceDruzyny.map((d) => (
                         <option key={d.id} value={d.id}>
                           {d.name}
@@ -160,7 +160,7 @@ export function Polka({
                 {blad && <p className="text-sm text-krew-jasna">{blad}</p>}
 
                 <Button onClick={() => void kup(p)} disabled={czeka === p.id}>
-                  {czeka === p.id ? "Kupuję..." : `Potwierdź — ${p.price} pkt`}
+                  {czeka === p.id ? "Kupuję..." : `Potwierdź - ${p.price} pkt`}
                 </Button>
                 <Button
                   variant="cichy"

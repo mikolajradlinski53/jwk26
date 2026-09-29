@@ -11,10 +11,10 @@ const ZERO: Kolejki = { sklepik: 0, bingo: 0, zgloszenia: 0, gossipy: 0 };
 const Kontekst = createContext<Kolejki>(ZERO);
 
 /**
- * Liczniki kolejek admina (spec porządku, D1–D3). Odświeżane przy wejściu,
+ * Liczniki kolejek admina (spec porządku, D1-D3). Odświeżane przy wejściu,
  * przy każdej zmianie ekranu, po powrocie do apki i co 30 s. Realtime
  * obejmuje tylko dwie tabele, a dopisywanie kolejnych dla kilku adminów nie
- * jest warte złożoności — o zamówieniach admin i tak dostaje push.
+ * jest warte złożoności - o zamówieniach admin i tak dostaje push.
  * Uczestnik nie pyta bazy w ogóle.
  */
 export function KolejkiAdmina({ jestAdminem, children }: { jestAdminem: boolean; children: React.ReactNode }) {
@@ -36,7 +36,7 @@ export function KolejkiAdmina({ jestAdminem, children }: { jestAdminem: boolean;
       setKolejki(data as Kolejki);
     }
 
-    // Każda zmiana ekranu odpala efekt od nowa — admin właśnie mógł coś wydać
+    // Każda zmiana ekranu odpala efekt od nowa - admin właśnie mógł coś wydać
     // albo zaakceptować, więc liczby mają dogonić stan od razu.
     void odswiez();
     const co30 = setInterval(() => void odswiez(), 30_000);
@@ -57,7 +57,7 @@ export function useKolejki(): Kolejki & { suma: number } {
   return { ...k, suma: k.sklepik + k.bingo + k.zgloszenia + k.gossipy };
 }
 
-/** Znacznik jednej kolejki albo sumy — do wstawienia także w komponencie serwerowym. */
+/** Znacznik jednej kolejki albo sumy - do wstawienia także w komponencie serwerowym. */
 export function LicznikKolejki({ ktora }: { ktora: keyof Kolejki | "suma" }) {
   const liczba = useKolejki()[ktora];
   return <Znacznik liczba={liczba} etykieta={`${liczba} do zrobienia`} className="ml-auto" />;

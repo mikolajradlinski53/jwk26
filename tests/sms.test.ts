@@ -33,7 +33,7 @@ describe("numeryDoWysylki", () => {
 
 describe("trescSms", () => {
   it("prefiks JWK26, tytuł i treść", () => {
-    expect(trescSms(" Zbiórka ", " O 10:00 przy autokarze ")).toBe("JWK26: Zbiórka — O 10:00 przy autokarze");
+    expect(trescSms(" Zbiórka ", " O 10:00 przy autokarze ")).toBe("JWK26: Zbiórka - O 10:00 przy autokarze");
     expect(trescSms("Zbiórka", null)).toBe("JWK26: Zbiórka");
   });
 });

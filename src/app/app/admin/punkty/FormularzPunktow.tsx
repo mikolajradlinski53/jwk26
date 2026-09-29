@@ -102,7 +102,7 @@ export function FormularzPunktow({
           <optgroup label="Osoby">
             {osoby.map((o) => (
               <option key={o.user_id} value={`u:${o.user_id}`}>
-                {o.display_name ?? "bez nazwy"} — {o.team_name ?? "bez drużyny"}
+                {o.display_name ?? "bez nazwy"} - {o.team_name ?? "bez drużyny"}
               </option>
             ))}
           </optgroup>
@@ -118,7 +118,7 @@ export function FormularzPunktow({
         onChange={(e) => {
           // Jeden opcjonalny minus na początku i cyfry. Filtr przepuszczający
           // minus w środku pozwalał wpisać „40-20", a parseInt czytał to jako 40
-          // — inna liczba niż ta, którą admin widział, w księdze bez cofania.
+          // - inna liczba niż ta, którą admin widział, w księdze bez cofania.
           const v = e.target.value;
           if (v === "" || /^-?\d*$/.test(v)) setDelta(v);
         }}
@@ -143,7 +143,7 @@ export function FormularzPunktow({
       </Button>
 
       <p className="text-center text-xs leading-relaxed text-dym">
-        Wpis trafia do księgi na zawsze. Nie da się go zmienić ani usunąć —
+        Wpis trafia do księgi na zawsze. Nie da się go zmienić ani usunąć -
         pomyłkę prostuje się wpisem przeciwnym.
       </p>
     </div>

@@ -20,7 +20,7 @@ type Eksport = {
 };
 
 // Przyjęta osoba z danymi wrażliwymi i osoba na rezerwie. Skrypt arkusza woła
-// funkcję kluczem anon z sekretem — tak samo robią to testy.
+// funkcję kluczem anon z sekretem - tak samo robią to testy.
 let przyjety: TestUser;
 let rezerwowa: TestUser;
 let przyjetyClient: SupabaseClient;
@@ -54,7 +54,7 @@ beforeAll(async () => {
         proof_path: `${przyjety.id}/dowod.jpg`,
         rezerwa: false,
         kolejnosc_rezerwy: null,
-        // Wartość, którą Sheets wykonałby jako formułę — skrypt ją rozbraja,
+        // Wartość, którą Sheets wykonałby jako formułę - skrypt ją rozbraja,
         // ale baza ma ją oddać bez zmian.
         uwagi: "=HYPERLINK(\"http://zlo\")",
       },
@@ -112,7 +112,7 @@ describe("eksport do arkusza", () => {
   });
 
   it("zalogowany uczestnik nie wywoła eksportu nawet z sekretem", async () => {
-    // Funkcja jest dla skryptu (rola anon z sekretem) — nie dla sesji w apce.
+    // Funkcja jest dla skryptu (rola anon z sekretem) - nie dla sesji w apce.
     const { error } = await przyjetyClient.rpc("eksport_arkusza", { p_sekret: sekret });
     expect(error).not.toBeNull();
   });

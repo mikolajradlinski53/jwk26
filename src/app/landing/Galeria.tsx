@@ -15,19 +15,19 @@ type ZdjecieDane = {
  * Siedem zdjęć z poprzednich edycji, wybrane po obejrzeniu całego zestawu
  * `public/hero/hero-1..10`. Trzy pominięte celowo:
  *
- * - `hero-1` — wypalona data „25 10 2025" w kadrze i rozebrany uczestnik
+ * - `hero-1` - wypalona data „25 10 2025" w kadrze i rozebrany uczestnik
  *   w żartobliwej pozie na ławce. Nie nadaje się na oficjalny landing.
- * - `hero-3` — najciemniejsze z całego zestawu (jasność 19/255) i dodatkowo
+ * - `hero-3` - najciemniejsze z całego zestawu (jasność 19/255) i dodatkowo
  *   kompozycję zjada dłoń z zegarkiem wepchnięta tuż przed obiektyw.
  *   `hero-4` jest niemal równie ciemne (28/255), ale bez tej wady kadru,
- *   więc zostaje — jako jedyny nocny akcent poza `hero-2`.
- * - `hero-8` — już zajęte: to zdjęcie hero na samej górze strony
+ *   więc zostaje - jako jedyny nocny akcent poza `hero-2`.
+ * - `hero-8` - już zajęte: to zdjęcie hero na samej górze strony
  *   (`Wejscie.tsx`). Powtórzenie go w galerii, którą widać kilka sekcji
  *   niżej na tej samej stronie, tylko zabierałoby miejsce jednemu z siedmiu
  *   unikalnych kadrów.
  *
  * Kolejność: dzień na start (`hero-7`, `hero-6`), potem wnętrza i wieczory,
- * kończąc na dwóch najciemniejszych ujęciach — naturalny łuk od jasnego
+ * kończąc na dwóch najciemniejszych ujęciach - naturalny łuk od jasnego
  * do nocnego nastroju, nie przypadkowa kolejność plików.
  */
 const ZDJECIA: ZdjecieDane[] = [
@@ -42,8 +42,8 @@ const ZDJECIA: ZdjecieDane[] = [
     plik: "hero-6",
     szerokosc: 1350,
     wysokosc: 1800,
-    etykieta: "Jesienne wzgórza",
-    alt: "Dwóch uczestników rozmawia na wzgórzu, w tle góry pokryte jesiennym lasem",
+    etykieta: "Jesienny spacer",
+    alt: "Dwóch uczestników rozmawia na jesiennym spacerze, w tle kolorowy las",
   },
   {
     plik: "hero-9",
@@ -84,26 +84,26 @@ const ZDJECIA: ZdjecieDane[] = [
 
 // Ile kafelków widać, zanim ktoś kliknie „Pokaż więcej". Galeria nie może
 // „przykrywać objętością treści” (uwaga właściciela), więc na start cztery:
-// na telefonie dwa rzędy po dwa, na komputerze jeden pełny rząd — przy pięciu
+// na telefonie dwa rzędy po dwa, na komputerze jeden pełny rząd - przy pięciu
 // piąte zdjęcie wisiało samo pod spodem.
 const WIDOCZNE_NA_START = 4;
 
 /**
- * Galeria zdjęć z poprzednich edycji — murowana siatka (CSS `columns`),
+ * Galeria zdjęć z poprzednich edycji - murowana siatka (CSS `columns`),
  * nie sztywne kafelki 4:3. Cztery z siedmiu zdjęć są pionowe albo prawie
  * kwadratowe (patrz `ZDJECIA`); wymuszenie ich w jeden kształt obcinałoby
  * głowy, więc każdy kafelek dostaje własny `aspect-ratio` policzony
  * z prawdziwych wymiarów pliku i **nic nie jest kadrowane**.
  *
  * `columns-2` do `min-[1200px]:columns-4`: ta sama siatka na telefonie
- * i na desktopie, tylko liczba kolumn rośnie z szerokością ekranu — na
+ * i na desktopie, tylko liczba kolumn rośnie z szerokością ekranu - na
  * dużym monitorze faktycznie wykorzystuje szerokość zamiast wyglądać jak
  * powiększony widok telefonu (dawna talia 3D w `TaliaKart.tsx` miała
  * dokładnie tę wadę: jeden układ, myślany pod telefon, tylko rozciągnięty).
  * `break-inside-avoid-column` pilnuje, żeby żaden kafelek nie rozłamał się
  * w połowie na granicy kolumny.
  *
- * Kliknięcie/Enter na kafelku otwiera lightbox z większym podglądem —
+ * Kliknięcie/Enter na kafelku otwiera lightbox z większym podglądem -
  * Escape zamyka, focus po otwarciu ląduje na przycisku zamknięcia, po
  * zamknięciu wraca na kafelek, który go otworzył. Strzałki lewo/prawo
  * przełączają zdjęcie w lightboksie.
@@ -126,7 +126,7 @@ export function Galeria() {
 
     zamknijRef.current?.focus();
 
-    // Blokada przewijania strony pod lightboksem — przywrócona w sprzątaniu
+    // Blokada przewijania strony pod lightboksem - przywrócona w sprzątaniu
     // efektu, więc znika razem z zamknięciem albo odmontowaniem.
     const poprzednieOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";

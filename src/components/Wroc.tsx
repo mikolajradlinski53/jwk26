@@ -1,11 +1,11 @@
 import Link from "next/link";
 
 /**
- * Link powrotu. Niesie typ przejścia `nav-back`, więc ekran odjeżdża w prawo —
+ * Link powrotu. Niesie typ przejścia `nav-back`, więc ekran odjeżdża w prawo -
  * odwrotnie niż przy wejściu głębiej (spec wyglądu, „Przejścia”).
  *
  * Kapsuła z płynnego szkła ze strzałką, nie goły napis: szary, rozstrzelony
- * tekst ginął na tle Dym (uwaga Mikołaja). Jeden komponent — zmiana obejmuje
+ * tekst ginął na tle Dym (uwaga Mikołaja). Jeden komponent - zmiana obejmuje
  * wszystkie ekrany naraz.
  */
 export function Wroc({ href, children }: { href: string; children: React.ReactNode }) {

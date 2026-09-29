@@ -25,7 +25,7 @@ const KLASA_IKONY =
  * z marką/nawigacją/copyrightem i gigantyczne wyblakłe „JWK26" w tle.
  *
  * Nawigacja wskazuje wyłącznie kotwice i trasy, które istnieją. „Zapisy”
- * prowadzą na `/wejscie` dopiero po odsłonie zapisów — przedtem do sekcji
+ * prowadzą na `/wejscie` dopiero po odsłonie zapisów - przedtem do sekcji
  * z licznikiem. Ikony społecznościowe biorą adresy z Ustawień; pusty adres
  * = brak ikony (lepszy brak odnośnika niż odnośnik donikąd).
  */
@@ -64,7 +64,7 @@ export function Stopka({ zapisy, social, maPlan }: { zapisy: OdslonaWidok; socia
             </div>
 
             <p className="mt-[27px] max-w-[420px] text-[11.5px] leading-[1.55] text-jesien-kora">
-              Jesienny Wyjazd Komisji to trzy dni w górach, na które jedzie Samorząd Studentów
+              Jesienny Wyjazd Komisji to trzy dni poza Wrocławiem, na które jedzie Samorząd Studentów
               Uniwersytetu Ekonomicznego we Wrocławiu. Integracja, rywalizacja i kilka rzeczy,
               o których lepiej nie pisać.
             </p>

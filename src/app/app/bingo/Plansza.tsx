@@ -11,7 +11,7 @@ type Stan = "puste" | "oczekujace" | "zapalone";
 
 /**
  * Tłumaczy błąd techniczny na zdanie, z którym uczestnik ma co zrobić.
- * Ten sam pomysł co w formularzu rejestracyjnym — surowy komunikat Postgresa
+ * Ten sam pomysł co w formularzu rejestracyjnym - surowy komunikat Postgresa
  * na telefonie, po ciemku, nikomu nie pomaga.
  */
 function komunikat(e: unknown): string {
@@ -41,7 +41,7 @@ function stanPola(zgloszenie: BingoSubmission | undefined): Stan {
 }
 
 // Stan pola NIE może wynikać wyłącznie z koloru (obramowanie w kolorze krwi
-// bywa nieodróżnialne od wypełnienia dla daltonisty) — stąd trzy różne kształty
+// bywa nieodróżnialne od wypełnienia dla daltonisty) - stąd trzy różne kształty
 // ikon obok trzech różnych klas tła/obramowania.
 function Ikona({ stan }: { stan: Stan }) {
   if (stan === "zapalone") {
@@ -128,13 +128,13 @@ export function Plansza({
   const [etap, setEtap] = useState<string | null>(null);
   const [blad, setBlad] = useState<string | null>(null);
 
-  // Rygiel niezależny od stanu Reacta — musi stać PRZED pierwszym `await`,
+  // Rygiel niezależny od stanu Reacta - musi stać PRZED pierwszym `await`,
   // bo `etap` odczytane w domknięciu bywa nieaktualne w oknie krótszym niż
   // jeden render (dokładnie ten błąd kosztował nas czas przy rejestracji).
   const wToku = useRef(false);
 
   // Najwyżej jedno nieodrzucone zgłoszenie na zadanie i drużynę pilnuje tego
-  // unikalny indeks w bazie — odrzucone świadomie pomijamy, bo zwalniają pole.
+  // unikalny indeks w bazie - odrzucone świadomie pomijamy, bo zwalniają pole.
   const zgloszeniaByTask = useMemo(() => {
     const mapa = new Map<string, BingoSubmission>();
     for (const z of zgloszenia) {
@@ -145,9 +145,9 @@ export function Plansza({
 
   // Pola zaliczone od ostatniej wizyty tej osoby skreślają się po kolei
   // (spec porządku, D7). Lista obejrzanych w localStorage, osobno na drużynę.
-  // Zmiana klas w DOM zamiast stanu Reacta — to jednorazowy efekt wizualny,
+  // Zmiana klas w DOM zamiast stanu Reacta - to jednorazowy efekt wizualny,
   // a efekt układu (przed malowaniem) nie pozwala kresce mignąć narysowaną.
-  // Brak dostępu do localStorage (tryb prywatny) — bez animacji, nie błąd.
+  // Brak dostępu do localStorage (tryb prywatny) - bez animacji, nie błąd.
   useLayoutEffect(() => {
     const klucz = `bingo-widziane-${teamId}`;
     const zapalone = zgloszenia.filter((z) => z.status === "approved").map((z) => z.task_id);
@@ -169,7 +169,7 @@ export function Plansza({
     try {
       localStorage.setItem(klucz, JSON.stringify(zapalone));
     } catch {
-      // Zapis nieudany — przy następnym wejściu animacja zagra jeszcze raz.
+      // Zapis nieudany - przy następnym wejściu animacja zagra jeszcze raz.
     }
   }, [zgloszenia, teamId]);
 
@@ -215,7 +215,7 @@ export function Plansza({
         .upload(sciezka, zmniejszone, { contentType: "image/jpeg" });
       if (bladUploadu) throw bladUploadu;
 
-      // Podgląd do feedu obok pełnego pliku. Porażka nie psuje zgłoszenia —
+      // Podgląd do feedu obok pełnego pliku. Porażka nie psuje zgłoszenia -
       // trasa zdjęć odda wtedy pełne (spec porządku, D6).
       try {
         const maly = await podglad(plik);
@@ -289,7 +289,7 @@ export function Plansza({
                 gridColumn: (task.position % 5) + 1,
                 gridRow: Math.floor(task.position / 5) + 1,
               }}
-              aria-label={`${task.title} — ${opisStanu(stan, wlasne)}`}
+              aria-label={`${task.title} - ${opisStanu(stan, wlasne)}`}
               data-pole={task.id}
               className={
                 "relative flex aspect-square min-h-11 min-w-11 flex-col items-center justify-center gap-1 " +
@@ -309,8 +309,8 @@ export function Plansza({
                   aria-hidden="true"
                   className="skreslenie pointer-events-none absolute inset-1 text-kosc"
                 >
-                  {/* Ukośna, lekko nieregularna, jak odręczna — przez całe pole,
-                      nie tylko przez napis. pathLength=100 — stała długość do
+                  {/* Ukośna, lekko nieregularna, jak odręczna - przez całe pole,
+                      nie tylko przez napis. pathLength=100 - stała długość do
                       animacji niezależnie od rozmiaru pola. */}
                   <path
                     d="M8 80 C 30 62, 58 40, 92 18"
@@ -329,7 +329,7 @@ export function Plansza({
       </div>
 
       {/* Dialog rozpięty na cały ekran (tło samo w sobie jest przyciemnieniem),
-          panel przyklejony do dołu przez flex — dzięki temu kliknięcie w tło
+          panel przyklejony do dołu przez flex - dzięki temu kliknięcie w tło
           trafia bezpośrednio w element dialogu, bez sztuczek z ::backdrop.
           Klawisz Escape zamyka natywnie i odpala `onClose` poniżej. */}
       <dialog
@@ -458,7 +458,7 @@ export function Plansza({
 
             {stanOtwartego === "zapalone" && (
               <p className="text-sm text-dym">
-                Zaliczone — {otwarty.points} pkt trafiło już do drużyny.
+                Zaliczone - {otwarty.points} pkt trafiło już do drużyny.
               </p>
             )}
           </div>

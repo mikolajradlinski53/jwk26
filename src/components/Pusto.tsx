@@ -2,7 +2,7 @@ import { Ikona, type NazwaIkony } from "./Ikona";
 
 /**
  * Pusty stan: szklana karta z tekstem, u uczestnika z ikoną nad nim.
- * Admin używa go bez ikony — tam liczy się zwięzłość.
+ * Admin używa go bez ikony - tam liczy się zwięzłość.
  */
 export function Pusto({ ikona, children }: { ikona?: NazwaIkony; children: React.ReactNode }) {
   return (

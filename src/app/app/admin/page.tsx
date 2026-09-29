@@ -20,7 +20,7 @@ const WEJSCIA: { href: string; nazwa: string; opis: string; ikona: NazwaIkony; k
 
 /**
  * Sanktuarium. Liczniki przy pozycjach z kolejką liczy jedna funkcja
- * `admin_kolejki()` — te same liczby co na pasku i w „Więcej” (spec porządku, D3).
+ * `admin_kolejki()` - te same liczby co na pasku i w „Więcej” (spec porządku, D3).
  */
 export default function AdminPage() {
   return (

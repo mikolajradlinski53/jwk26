@@ -56,7 +56,7 @@ export default async function SklepPage() {
     supabase.from("team_scores").select("*").eq("team_id", mojaDruzyna).maybeSingle(),
     supabase.from("user_scores").select("*").eq("team_id", mojaDruzyna),
     supabase.from("shop_items").select("*").eq("active", true).order("position"),
-    // Widok `czynne_efekty` odsiewa zużyte i przedawnione po stronie bazy —
+    // Widok `czynne_efekty` odsiewa zużyte i przedawnione po stronie bazy -
     // patrz komentarz w migracji 20260925120400.
     supabase.from("czynne_efekty").select("*").eq("subject_id", mojaDruzyna),
     supabase
@@ -94,7 +94,7 @@ export default async function SklepPage() {
               key={e.id}
               className="szklo rounded-md px-3.5 py-2.5 text-xs text-krew-jasna"
             >
-              {NAZWA_EFEKTU[e.effect_key] ?? e.effect_key} — czynne
+              {NAZWA_EFEKTU[e.effect_key] ?? e.effect_key} - czynne
             </li>
           ))}
         </ul>

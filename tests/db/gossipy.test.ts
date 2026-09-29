@@ -27,7 +27,7 @@ const UZASADNIENIE =
   "a w międzyczasie zdąży jeszcze zorganizować konkurs karaoke, pogodzić dwie kłócące się drużyny " +
   "i przekonać ochronę ośrodka, że muzyka wcale nie jest za głośno.";
 
-// Najmniejszy poprawny JPEG nie jest potrzebny — bucket sprawdza typ z nagłówka
+// Najmniejszy poprawny JPEG nie jest potrzebny - bucket sprawdza typ z nagłówka
 // żądania, nie zawartość.
 const ZDJECIE = new Blob([new Uint8Array([0xff, 0xd8, 0xff, 0xd9])], { type: "image/jpeg" });
 
@@ -125,7 +125,7 @@ describe("kategorie", () => {
     expect(error!.message).toMatch(/admin/i);
   });
 
-  it("admin zakłada samą kategorię — otwartą, z powiadomieniem dla wszystkich", async () => {
+  it("admin zakłada samą kategorię - otwartą, z powiadomieniem dla wszystkich", async () => {
     const k = await nowaKategoria();
     const w = await widok(alaClient, k);
     expect(w.status).toBe("otwarta");
@@ -189,12 +189,12 @@ describe("nominacja", () => {
     expect(id).not.toContain(czekajacy.id);
   });
 
-  it("nikt poza funkcjami nie czyta głosów — autor nie wychodzi do przeglądarki", async () => {
+  it("nikt poza funkcjami nie czyta głosów - autor nie wychodzi do przeglądarki", async () => {
     const k = await nowaKategoria();
     await glos(elaClient, k, ola.id);
 
     const { data, error } = await alaClient.from("gossip_votes").select("voter_id");
-    // Brak grantu SELECT: błąd uprawnień, nie pusta lista — pusta lista byłaby
+    // Brak grantu SELECT: błąd uprawnień, nie pusta lista - pusta lista byłaby
     // też wynikiem pustej tabeli i niczego by nie dowodziła.
     expect(error?.code).toBe("42501");
     expect(data).toBeNull();
@@ -217,7 +217,7 @@ describe("zdjęcie", () => {
     expect((await glos(alaClient, k, ola.id)).error).toBeNull();
     expect((await glos(olaClient, k, ala.id, UZASADNIENIE, oAli)).error).toBeNull();
 
-    // Przed ujawnieniem nikt poza adminem nie pobierze pliku — nawet autor.
+    // Przed ujawnieniem nikt poza adminem nie pobierze pliku - nawet autor.
     expect((await alaClient.storage.from("gossip").download(oOli)).data).toBeNull();
     expect((await elaClient.storage.from("gossip").download(oOli)).data).toBeNull();
     expect((await szefClient.storage.from("gossip").download(oOli)).data).not.toBeNull();
@@ -277,7 +277,7 @@ describe("ujawnienie", () => {
     const w = await widok(elaClient, k);
     expect(w.zwyciezcy).toEqual([{ id: ola.id, nazwa: "Ola" }]);
     expect(w.uzasadnienia).toHaveLength(2);
-    // Uzasadnienie o przegranej nie wychodzi — zdradzałoby, ile dostała nominacji.
+    // Uzasadnienie o przegranej nie wychodzi - zdradzałoby, ile dostała nominacji.
     expect(w.uzasadnienia!.map((u) => u.tekst).join(" ")).not.toContain("Ola o Ali");
     expect(JSON.stringify(w)).not.toMatch(/"glosy"/);
   });
@@ -313,7 +313,7 @@ describe("ujawnienie", () => {
 });
 
 describe("moderacja", () => {
-  it("admin widzi autora i zdjęcie, ukrywa nominację — głos dalej się liczy", async () => {
+  it("admin widzi autora i zdjęcie, ukrywa nominację - głos dalej się liczy", async () => {
     const k = await nowaKategoria();
     const sciezka = `${k}/${crypto.randomUUID()}.jpg`;
     await wgraj(elaClient, sciezka);

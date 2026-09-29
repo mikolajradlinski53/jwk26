@@ -125,7 +125,7 @@ describe("zgłoszenia rejestracyjne", () => {
     expect(widoczny).toHaveLength(1);
 
     // Ktoś odruchowo „naprawi" to, dokładając registrations_admin_write na wzór
-    // teams_admin_write — i zniknie gwarancja, że status zmienia się wyłącznie
+    // teams_admin_write - i zniknie gwarancja, że status zmienia się wyłącznie
     // przez review_registration.
     const { data: poZmianie } = await adminClient
       .from("registrations")
@@ -154,7 +154,7 @@ describe("zgłoszenia rejestracyjne", () => {
 });
 
 // Ograniczenia `check` z migracji hartowania dalej stoją na tabeli. Klucz
-// serwisowy omija RLS, ale nie `check` — dlatego sprawdzamy je nim.
+// serwisowy omija RLS, ale nie `check` - dlatego sprawdzamy je nim.
 describe("ograniczenia pól OCR", () => {
   it("odrzuca pewność OCR spoza zakresu 0-1", async () => {
     const { error } = await admin

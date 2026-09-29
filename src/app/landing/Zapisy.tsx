@@ -11,7 +11,7 @@ const KROKI = [
     numer: "01",
     tytul: "Zaloguj się kontem Samorządu",
     opis:
-      "Logujesz się jednym dotknięciem przez Google, adresem @samorzad.ue.wroc.pl — " +
+      "Logujesz się jednym dotknięciem przez Google, adresem @samorzad.ue.wroc.pl - " +
       "także jeśli jesteś w Alumni.",
   },
   {
@@ -26,16 +26,16 @@ const KROKI = [
     tytul: "Poczekaj na decyzję",
     opis:
       "Zgłoszenie sprawdza organizator. Może zostać odrzucone, jeśli czegoś zabraknie albo nie da się " +
-      "zweryfikować przelewu. Decyzję zobaczysz po zalogowaniu w aplikacji — a jeśli włączysz " +
+      "zweryfikować przelewu. Decyzję zobaczysz po zalogowaniu w aplikacji - a jeśli włączysz " +
       "powiadomienia, dostaniesz też powiadomienie.",
   },
 ] as const;
 
 /**
- * „Zapisy” — tury opisane na stałe (bez stanu na żywo i bez dat; decyzja
+ * „Zapisy” - tury opisane na stałe (bez stanu na żywo i bez dat; decyzja
  * właściciela), lista rezerwowa, trzy kroki i przycisk zapisu, który do
  * odsłony zapisów jest licznikiem. Licznik przyjęcia świeżaków mieszka
- * w karcie ich tury — tylko tam ma sens.
+ * w karcie ich tury - tylko tam ma sens.
  *
  * Krok 03 mówi „w aplikacji”, nie „przyjdzie e-mail”: system nie wysyła
  * maili z decyzją, a obietnica maila byłaby pusta.
@@ -44,7 +44,7 @@ export function Zapisy({ zapisy, dataSwiezakow }: { zapisy: OdslonaWidok; dataSw
   return (
     <section id="zapisy" className="bg-jesien-karta/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener wariant="szeroki">
-        <SekcjaNaglowek numer="04" nadtytul="Zgłoszenie" tytul="Zapisy" zaba={<ZabaStala poza="pisze" skala={0.62} />} />
+        <SekcjaNaglowek numer="04" nadtytul="Zgłoszenie" tytul="Zapisy" zaba={<ZabaStala poza="pisze" skala={1} />} />
 
         <div className="grid gap-4 min-[850px]:grid-cols-3">
           <div className="grid content-start gap-2 rounded-lg border border-jesien-kora/15 bg-jesien-tlo/80 p-5">
@@ -73,7 +73,7 @@ export function Zapisy({ zapisy, dataSwiezakow }: { zapisy: OdslonaWidok; dataSw
 
         <p className="mt-5 text-sm leading-relaxed text-jesien-kora">
           Każda tura ma ustaloną liczbę miejsc. Gdy się zapełni, zapiszesz się na listę rezerwową bez
-          wpłaty — jeśli ktoś zrezygnuje, organizator przesuwa kolejną osobę z rezerwy i prosi ją
+          wpłaty - jeśli ktoś zrezygnuje, organizator przesuwa kolejną osobę z rezerwy i prosi ją
           o wpłatę. Otwarcie każdej tury ogłaszamy na Instagramie.
         </p>
 

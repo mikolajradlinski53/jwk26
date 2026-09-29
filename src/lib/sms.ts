@@ -1,6 +1,6 @@
 /**
  * Numer w formacie SMSAPI: same cyfry z kierunkowym, bez plusa. Formularz
- * zapisów przyjmuje numer z plusem, spacjami albo bez kierunkowego — polski
+ * zapisów przyjmuje numer z plusem, spacjami albo bez kierunkowego - polski
  * dziewięciocyfrowy dostaje 48. Czego nie da się rozpoznać, zwraca null
  * (wysyłka go pomija, zamiast płacić za SMS w próżnię).
  */
@@ -19,11 +19,11 @@ export function numeryDoWysylki(numery: string[]): string[] {
 }
 
 /**
- * Treść SMS-a. Prefiks mówi, od kogo to jest — nadawca w SMSAPI bywa ogólny,
+ * Treść SMS-a. Prefiks mówi, od kogo to jest - nadawca w SMSAPI bywa ogólny,
  * dopóki nie zarejestruje się własnej nazwy.
  */
 export function trescSms(tytul: string, tresc: string | null): string {
   const t = tytul.trim();
   const b = tresc?.trim();
-  return b ? `JWK26: ${t} — ${b}` : `JWK26: ${t}`;
+  return b ? `JWK26: ${t} - ${b}` : `JWK26: ${t}`;
 }

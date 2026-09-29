@@ -10,7 +10,7 @@ export function Odrzuc({
   kto,
 }: {
   id: string;
-  /** Imię i nazwisko z listy — trafia do aria-label, bo samo „Odrzuć”
+  /** Imię i nazwisko z listy - trafia do aria-label, bo samo „Odrzuć”
    * czytnikowi ekranu nie mówi, kogo dotyczy przycisk w liście wielu osób. */
   kto: string;
 }) {
@@ -67,7 +67,7 @@ export function Odrzuc({
           type="text"
           value={powod}
           onChange={(e) => setPowod(e.target.value)}
-          aria-label={kto ? `Powód odrzucenia — ${kto}` : "Powód odrzucenia"}
+          aria-label={kto ? `Powód odrzucenia - ${kto}` : "Powód odrzucenia"}
           className="min-h-11 rounded-md border border-white/20 bg-transparent px-3 text-sm text-kosc
                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
         />

@@ -14,7 +14,7 @@ const MINIONE: Odliczanie = {
  * Ile zostało do `docelowa`.
  *
  * Data docelowa jest zapisana z przesunięciem strefy (`+02:00`), więc wynik
- * nie zależy od tego, jak ustawiony jest telefon uczestnika — a bywa ustawiony
+ * nie zależy od tego, jak ustawiony jest telefon uczestnika - a bywa ustawiony
  * dziwnie. Po terminie zwracamy stan miniony zamiast wartości ujemnych:
  * świeżaki przyjmowane są tydzień przed wyjazdem, więc jeden licznik wygaśnie,
  * gdy drugi jeszcze chodzi, i ten przypadek zdarzy się na pewno.

@@ -15,7 +15,7 @@ import {
   type TestUser,
 } from "../helpers/supabase";
 
-// Trzech uczestników i admin, logowani raz na plik — projekt testowy dopuszcza
+// Trzech uczestników i admin, logowani raz na plik - projekt testowy dopuszcza
 // 30 logowań na pięć minut. Trzech, nie jeden: unikalny indeks pozwala osobie
 // mieć tylko jedno zgłoszenie w toku, a test równoczesności i kolejka rezerwy
 // potrzebują kilku osób naraz.
@@ -104,7 +104,7 @@ describe("schemat zapisów", () => {
   });
 
   it("anonim nie czyta danych wrażliwych", async () => {
-    // Pusta tabela dałaby [] także bez zabezpieczeń — trzeba sprawdzić błąd, nie dane.
+    // Pusta tabela dałaby [] także bez zabezpieczeń - trzeba sprawdzić błąd, nie dane.
     const { data, error } = await anonimowy().from("dane_wrazliwe").select("registration_id");
     expect(error?.code).toBe("42501");
     expect(data).toBeNull();
@@ -123,7 +123,7 @@ describe("pule", () => {
   it("stan pul liczy miejsca i rezerwę, pomija odrzucone", async () => {
     await ustawPule("swiezaki", true, 10);
     // Uwaga: bulk insert przez PostgREST dopełnia brakujące klucze wartością
-    // NULL zamiast DEFAULT tabeli, gdy wiersze mają różny zestaw kluczy —
+    // NULL zamiast DEFAULT tabeli, gdy wiersze mają różny zestaw kluczy -
     // stąd `status`/`rezerwa` wypisane jawnie we wszystkich trzech wierszach,
     // żeby żaden nie oberwał NULL-em na kolumnie NOT NULL cudzego sąsiada.
     const { error: bladZapisu } = await admin.from("registrations").insert([
@@ -183,7 +183,7 @@ describe("pule", () => {
     });
     expect(otwarcie.error!.message).toMatch(/REGULAMIN_ROBOCZY/);
 
-    // Zmiana liczby miejsc przy zamkniętej puli ma przechodzić — admin
+    // Zmiana liczby miejsc przy zamkniętej puli ma przechodzić - admin
     // przygotowuje tury, zanim zarząd przyjmie regulamin.
     const przygotowanie = await szefClient.rpc("ustaw_pule", {
       p_klucz: "alumni",
@@ -211,7 +211,7 @@ describe("pule", () => {
   });
 
   it("przy roboczym regulaminie otwarta tura przyjmuje zmianę liczby miejsc", async () => {
-    // Blokada dotyczy wyłącznie otwierania zamkniętej puli — już otwartej
+    // Blokada dotyczy wyłącznie otwierania zamkniętej puli - już otwartej
     // admin musi móc dosunąć miejsca, nawet gdy zarząd cofnął regulamin do
     // wersji roboczej.
     await ustawPule("alumni", true, 5);
@@ -237,7 +237,7 @@ describe("pule", () => {
 
     expect((await alaClient.rpc("pozycja_w_rezerwie")).data).toBe(1);
     expect((await obcyClient.rpc("pozycja_w_rezerwie")).data).toBe(2);
-    // Ktoś spoza rezerwy nie ma pozycji — null, nie „1".
+    // Ktoś spoza rezerwy nie ma pozycji - null, nie „1".
     expect((await olaClient.rpc("pozycja_w_rezerwie")).data).toBeNull();
   });
 });
@@ -335,7 +335,7 @@ describe("składanie zgłoszenia", () => {
 
   it("dwa równoczesne zapisy na ostatnie miejsce: jeden wchodzi, drugi odbity", async () => {
     // Bez blokady wiersza puli oba wywołania policzą zero zajętych i oba
-    // wejdą — 41. osoba na 40 miejsc przy otwarciu tury.
+    // wejdą - 41. osoba na 40 miejsc przy otwarciu tury.
     await ustawPule("dzialacze", true, 1);
 
     const [a, b] = await Promise.all([zloz(alaClient, ala), zloz(olaClient, ola)]);
@@ -462,13 +462,13 @@ describe("składanie zgłoszenia", () => {
     expect(cudza.error!.message).toMatch(/sciezka/);
 
     // `like 'uuid/%'` sam to przepuszcza, a klient Storage normalizuje `..`
-    // przy budowaniu URL-a — admin oglądałby cudzy dowód.
+    // przy budowaniu URL-a - admin oglądałby cudzy dowód.
     const wyjscie = await zloz(alaClient, ala, {
       zdjecie: `${ala.id}/../${obcy.id}/dowod.jpg`,
     });
     expect(wyjscie.error!.message).toMatch(/sciezka/);
 
-    // Parser URL zamienia `%2e%2e` na `..`, a storage-js ścieżki nie koduje —
+    // Parser URL zamienia `%2e%2e` na `..`, a storage-js ścieżki nie koduje -
     // to samo obejście bramy, tylko zapisane inaczej.
     const zakodowana = await zloz(alaClient, ala, {
       zdjecie: `${ala.id}/%2e%2e/${obcy.id}/dowod.jpg`,
@@ -563,7 +563,7 @@ describe("rezerwa i akceptacja", () => {
   it("przelew dołącza się raz, tylko po awansie i tylko do własnego folderu", async () => {
     const { alaId, olaId } = await pelnaPulaZRezerwa();
 
-    // Ola wciąż na rezerwie — dolacz_przelew wymaga `not rezerwa`, więc
+    // Ola wciąż na rezerwie - dolacz_przelew wymaga `not rezerwa`, więc
     // zgłoszenie jeszcze nie pasuje do warunku WHERE.
     const zaWczesnie = await olaClient.rpc("dolacz_przelew", {
       p_proof_path: `${ola.id}/dowod.jpg`,
@@ -593,7 +593,7 @@ describe("rezerwa i akceptacja", () => {
     expect(pierwszy.error).toBeNull();
 
     // Warunek `proof_path is null` w WHERE nie pozwala podmienić dowodu po
-    // fakcie — drugie wywołanie nie trafia w żaden wiersz.
+    // fakcie - drugie wywołanie nie trafia w żaden wiersz.
     const drugi = await olaClient.rpc("dolacz_przelew", {
       p_proof_path: `${ola.id}/drugi.jpg`,
     });
@@ -632,7 +632,7 @@ describe("rezerwa i akceptacja", () => {
 
   it("akceptacja odmawia rezerwie ze zdjęciem; po awansie przyjmuje bez ponownego uploadu", async () => {
     // Bez `v_rezerwa or` w warunku review_registration samo zdjęcie by
-    // wystarczyło do przyjęcia — rezerwa ze zdjęciem przeszłaby ponad limit
+    // wystarczyło do przyjęcia - rezerwa ze zdjęciem przeszłaby ponad limit
     // miejsc puli.
     const teamId = await firstTeamId();
     await ustawPule("dzialacze", true, 1);
@@ -660,7 +660,7 @@ describe("rezerwa i akceptacja", () => {
     const awans = await szefClient.rpc("awansuj_z_rezerwy", { p_registration_id: olaId });
     expect(awans.error).toBeNull();
 
-    // Zdjęcie zostało złożone razem ze zgłoszeniem rezerwowym — po awansie
+    // Zdjęcie zostało złożone razem ze zgłoszeniem rezerwowym - po awansie
     // nie trzeba wgrywać go drugi raz (D3).
     const przyjecie = await szefClient.rpc("review_registration", {
       p_registration_id: olaId,
@@ -672,7 +672,7 @@ describe("rezerwa i akceptacja", () => {
 
   it("odrzucenie dodatkowego zgłoszenia nie wyrzuca osoby już przyjętej", async () => {
     // Wyścig: admin przyjmuje pierwsze zgłoszenie, gdy drugie jest w drodze.
-    // Odtwarzamy stan po nim kluczem serwisowym — ułożenie wyścigu na żywo
+    // Odtwarzamy stan po nim kluczem serwisowym - ułożenie wyścigu na żywo
     // byłoby testem na szczęście.
     const teamId = await firstTeamId();
     await ustawJakoZaakceptowany(ala, teamId);
@@ -759,7 +759,7 @@ describe("wycofanie zgód", () => {
 
     expect((await alaClient.rpc("wycofaj_zgode_zdrowie")).error).toBeNull();
 
-    // ICE nie stoi na zgodzie, tylko na uzasadnionym interesie — wycofanie
+    // ICE nie stoi na zgodzie, tylko na uzasadnionym interesie - wycofanie
     // zgody z art. 9 nie ma prawa go zabrać.
     const { data: w } = await admin.from("dane_wrazliwe").select("*").eq("registration_id", id).single();
     expect(w).toMatchObject({
@@ -810,13 +810,13 @@ describe("wycofanie zgód", () => {
       .eq("id", (data as { id: string }).id)
       .single();
     expect(z!.zgoda_wizerunek).toBe(false);
-    // Stempel mówi, od kiedy zdjęć tej osoby nie wolno publikować — zdjęcie
+    // Stempel mówi, od kiedy zdjęć tej osoby nie wolno publikować - zdjęcie
     // sprzed wycofania wydrukowane w ulotce nie jest naruszeniem.
     expect(z!.zgoda_wizerunek_wycofana_at).not.toBeNull();
   });
 
   it("wycofanie zgody na SMS-y zdejmuje ją z profilu i zgłoszenia", async () => {
-    // Klauzula obiecuje, że każdą zgodę da się wycofać w aplikacji — także tę.
+    // Klauzula obiecuje, że każdą zgodę da się wycofać w aplikacji - także tę.
     await ustawPule("dzialacze", true, 10);
     const { data } = await zloz(alaClient, ala, { dane: { sms_consent: true } });
 
@@ -863,7 +863,7 @@ describe("retencja", () => {
     await ustawUstawienie("data_konca_jwk", "2020-01-01");
     await ustawUstawienie("data_retencji_zgloszen", "2099-12-31");
     const id = await zgloszenieZDieta();
-    // Dieta w starej kolumnie z planu 02 — ta sama kategoria danych.
+    // Dieta w starej kolumnie z planu 02 - ta sama kategoria danych.
     await admin.from("registrations").update({ diet_notes: "bez glutenu" }).eq("id", id);
 
     expect((await admin.rpc("sprzataj_dane")).error).toBeNull();
@@ -940,7 +940,7 @@ describe("zwolnienie rektorskie i alkohol", () => {
     expect(z).toEqual({ zwolnienie_od: null, zwolnienie_do: null, alkohol: null });
   });
 
-  it("zwolnienie poza 12:00–18:00, nie co pół godziny, odwrócone albo niepełne jest odbite", async () => {
+  it("zwolnienie poza 12:00-18:00, nie co pół godziny, odwrócone albo niepełne jest odbite", async () => {
     await ustawPule("dzialacze", true, 10);
     const zle = [
       { zwolnienie_od: "11:30", zwolnienie_do: "14:00" },

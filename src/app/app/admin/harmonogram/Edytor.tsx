@@ -12,7 +12,7 @@ const PRZYCISK_MALY =
   "min-h-11 rounded-full border border-white/20 px-4 text-xs font-bold text-kosc hover:bg-white/10 disabled:opacity-40";
 
 /**
- * Formularz punktu — nowego albo istniejącego. Zapis idzie wprost do tabeli;
+ * Formularz punktu - nowego albo istniejącego. Zapis idzie wprost do tabeli;
  * to, że pisze tylko admin, pilnuje RLS.
  */
 export function FormularzPunktu({
@@ -66,7 +66,7 @@ export function FormularzPunktu({
       return;
     }
     if (!punkt) {
-      // Dzień zostaje — kolejne punkty zwykle dopisuje się do tego samego.
+      // Dzień zostaje - kolejne punkty zwykle dopisuje się do tego samego.
       setGodzina("");
       setTytul("");
       setOpis("");
@@ -104,7 +104,7 @@ export function FormularzPunktu({
         />
       </label>
 
-      {/* Publiczne — landing pokazuje ten punkt każdemu, bez logowania. */}
+      {/* Publiczne - landing pokazuje ten punkt każdemu, bez logowania. */}
       <label className="flex min-h-11 items-start gap-3 text-sm text-kosc">
         <input
           type="checkbox"
@@ -115,7 +115,7 @@ export function FormularzPunktu({
         <span>
           Pokaż na landingu
           <span className="block text-xs text-dym">
-            Publiczne — bez motywu wyjazdu i bez nazwy miejsca przed jego odsłoną.
+            Publiczne - bez motywu wyjazdu i bez nazwy miejsca przed jego odsłoną.
           </span>
         </span>
       </label>
@@ -142,7 +142,7 @@ export function FormularzPunktu({
       )}
       {!punkt && (
         <p className="text-xs leading-relaxed text-dym">
-          Bez godziny punkt ląduje na początku dnia — np. „cały dzień: gra terenowa”.
+          Bez godziny punkt ląduje na początku dnia - np. „cały dzień: gra terenowa”.
         </p>
       )}
     </div>
@@ -179,7 +179,7 @@ export function PunktDoEdycji({ punkt }: { punkt: PunktHarmonogramu }) {
         <>
           <div className="flex gap-4">
             <span className="w-12 flex-none pt-0.5 font-tytul text-lg leading-none tabular-nums text-krew-jasna">
-              {krotkaGodzina(punkt.godzina) ?? "—"}
+              {krotkaGodzina(punkt.godzina) ?? "-"}
             </span>
             <div className="min-w-0 flex-1">
               <h3 className="text-sm font-bold text-kosc">{punkt.tytul}</h3>

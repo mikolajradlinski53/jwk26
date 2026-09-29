@@ -4,7 +4,7 @@ import { LicznikOdslony } from "./LicznikOdslony";
 import type { OdslonaWidok } from "@/lib/odslony";
 
 /**
- * Rozmyte kształty udające treść. Nie powstają z prawdziwej treści — to
+ * Rozmyte kształty udające treść. Nie powstają z prawdziwej treści - to
  * stały rysunek, więc nic nie da się z niego odczytać.
  */
 function Atrapa({ ksztalt }: { ksztalt: "osrodek" | "cena" | "plan" }) {
@@ -75,13 +75,13 @@ export function Zaslona({
   numer: string;
   nadtytul: string;
   tytul: string;
-  /** Klasa tła sekcji, ta sama co w odsłoniętej wersji — rytm strony się nie zmienia. */
+  /** Klasa tła sekcji, ta sama co w odsłoniętej wersji - rytm strony się nie zmienia. */
   tlo: string;
   ksztalt: "osrodek" | "cena" | "plan";
   odslona: OdslonaWidok;
   /** Treść jawna przed odsłoną, nad atrapą (np. daty w „Kiedy i gdzie”). */
   children?: React.ReactNode;
-  /** Żaba przy karcie licznika — pozycjonowana przez wywołującego względem karty. */
+  /** Żaba przy karcie licznika - pozycjonowana przez wywołującego względem karty. */
   zaba?: React.ReactNode;
 }) {
   return (

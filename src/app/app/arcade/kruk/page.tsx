@@ -48,13 +48,13 @@ export default async function KrukPage() {
   const mojPozaTop = moj !== null && !top.some((m) => m.user_id === user.id);
 
   return (
-    <Ekran tytul="Kruk" podtytul="Przeleć między kolumnami — bez punktów, o sławę">
+    <Ekran tytul="Kruk" podtytul="Przeleć między kolumnami - bez punktów, o sławę">
       <Lot rekordPoczatkowy={moj?.rekord ?? null} />
 
       <div className="szklo mt-4 flex items-baseline justify-between rounded-md px-4 py-4">
         <span className="text-xs uppercase tracking-[0.14em] text-dym">Twój rekord</span>
         <strong className="font-tytul text-2xl leading-none tabular-nums">
-          {moj ? `${moj.rekord} · ${moj.miejsce}. miejsce` : "—"}
+          {moj ? `${moj.rekord} · ${moj.miejsce}. miejsce` : "-"}
         </strong>
       </div>
 

@@ -53,7 +53,7 @@ export function DolaczPrzelew({
         code: (e as { code?: string })?.code,
         message: tekstBledu(e),
       });
-      // Zapis mógł przejść, a zgubiła się tylko odpowiedź — ponowienie
+      // Zapis mógł przejść, a zgubiła się tylko odpowiedź - ponowienie
       // zwraca wtedy „brak zgłoszenia czekającego na przelew". Świeży render
       // strony pokaże właściwy stan (poczekalnię), zamiast straszyć błędem.
       if (/czekajacego na przelew/.test(tekstBledu(e))) {

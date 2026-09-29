@@ -41,7 +41,7 @@ export default async function AdminDruzynyPage() {
       </ul>
 
       <p className="mt-5 px-1 text-xs leading-relaxed text-dym">
-        Bez kapitana drużyna nic nie kupi. Zmiana działa od razu — poprzedni traci
+        Bez kapitana drużyna nic nie kupi. Zmiana działa od razu - poprzedni traci
         prawo zakupu, historia zostaje.
       </p>
 

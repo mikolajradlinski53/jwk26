@@ -7,7 +7,7 @@ export function adresPaska(a: Animacja): string {
 
 /**
  * Styl jednej klatki: pasek jako tło, rozciągnięty na n szerokości elementu,
- * przesunięty do klatki `i`. `skala` — 1 to 120 px wzrostu stojącej żaby.
+ * przesunięty do klatki `i`. `skala` - 1 to 120 px wzrostu stojącej żaby.
  */
 export function stylKlatki(a: Animacja, i: number, skala = 1) {
   const { klatki, szerokosc, wysokosc } = KLATKI[a];

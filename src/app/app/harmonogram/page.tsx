@@ -39,7 +39,7 @@ export default async function HarmonogramPage() {
             {d.punkty.map((p) => (
               <li key={p.id} className="flex gap-4 border-b border-white/8 py-3.5 last:border-b-0">
                 <span className="w-12 flex-none pt-0.5 font-tytul text-lg leading-none tabular-nums text-krew-jasna">
-                  {krotkaGodzina(p.godzina) ?? "—"}
+                  {krotkaGodzina(p.godzina) ?? "-"}
                 </span>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-bold text-kosc">{p.tytul}</h3>

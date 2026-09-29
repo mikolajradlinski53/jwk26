@@ -61,14 +61,14 @@ export function RankingNaZywo({
     const supabase = createClient();
 
     // Subskrybujemy points_ledger, nie team_scores: Supabase nie wysyła zdarzeń
-    // z widoków. Zdarzenie niesie wyłącznie sygnał „coś się zmieniło" — sumę po
+    // z widoków. Zdarzenie niesie wyłącznie sygnał „coś się zmieniło" - sumę po
     // drużynie i tak liczy baza, więc wynik dociągamy zapytaniem.
     // Księga jest tylko do dopisywania, więc INSERT to jedyne możliwe zdarzenie.
     //
     // config.postgres_changes_options.wait: true jest konieczne. Bez tego
     // `subscribe()` zgłasza SUBSCRIBED już w chwili dołączenia do kanału,
     // zanim serwer naprawdę uruchomi subskrypcję postgres_changes na
-    // replikacji — insert wykonany tuż po SUBSCRIBED (typowe zaraz po wejściu
+    // replikacji - insert wykonany tuż po SUBSCRIBED (typowe zaraz po wejściu
     // na ranking) w tym oknie ginie bez żadnego błędu po stronie klienta.
     // Zweryfikowane skryptem: bez `wait: true` zdarzenie nie przychodziło
     // nigdy w ciągu 15 s, z `wait: true` przychodziło w ok. 0,7 s.

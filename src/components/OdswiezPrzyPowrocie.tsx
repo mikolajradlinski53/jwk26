@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 
 /**
  * W apce z ekranu głównego na iOS nie ma przeładowania ani pull-to-refresh,
- * a awans z rezerwy i akceptacja zgłoszenia dzieją się po stronie admina —
+ * a awans z rezerwy i akceptacja zgłoszenia dzieją się po stronie admina -
  * bez tego ktoś zostawałby na nieaktualnym ekranie aż do ręcznego zamknięcia
  * i ponownego otwarcia apki. Nasłuch łapie powrót z tła (`visibilitychange`)
  * i powrót z pamięci wstecz/wprzód przeglądarki (`pageshow`); przycisk jest

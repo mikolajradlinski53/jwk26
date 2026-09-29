@@ -32,7 +32,7 @@ const OPIS: Record<Co, { stan: string; akcja: string; pytanie: string; funkcja: 
 
 /**
  * Wycofanie zgody jednym przyciskiem plus potwierdzenie (art. 7 ust. 3 RODO:
- * równie łatwo jak wyrażenie). Potwierdzenie w miejscu, nie `confirm()` —
+ * równie łatwo jak wyrażenie). Potwierdzenie w miejscu, nie `confirm()` -
  * okna dialogowe w apce z ekranu głównego na iOS bywają zawodne.
  */
 export function TwojeZgody({ maDaneZdrowotne, zgodaWizerunek, zgodaSms }: StanZgod) {

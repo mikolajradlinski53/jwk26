@@ -32,7 +32,7 @@ async function czlonek(tag: string, teamId: string) {
 
 // Jeden zwykły członek drużyny i jeden admin na cały plik. Żaden z pięciu
 // testów nie bada rozróżnienia między dwiema konkretnymi osobami tego samego
-// typu — tylko to, co wolno roli. is_admin() czyta rolę na żywo z profili.
+// typu - tylko to, co wolno roli. is_admin() czyta rolę na żywo z profili.
 let uczestnik: TestUser;
 let uczestnikClient: SupabaseClient;
 let szef: TestUser;
@@ -100,7 +100,7 @@ describe("księga punktów", () => {
       .select("id")
       .single();
 
-    // Brak polityk UPDATE i DELETE nie powoduje błędu — powoduje, że żaden
+    // Brak polityk UPDATE i DELETE nie powoduje błędu - powoduje, że żaden
     // wiersz nie jest dla tych operacji widoczny. PostgREST zwraca wtedy pustą
     // listę zmienionych wierszy, więc asercja na błędzie niczego by nie złapała.
     const { data: poZmianie } = await adminClient

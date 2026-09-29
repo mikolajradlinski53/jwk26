@@ -98,7 +98,7 @@ describe("rozpatrywanie zgłoszeń", () => {
     expect(error).not.toBeNull();
 
     // Rozróżnienie jest tu istotne. Gdyby grant dla roli anon został, funkcja
-    // wykonałaby się i padła dopiero na strażniku is_admin() — komunikatem
+    // wykonałaby się i padła dopiero na strażniku is_admin() - komunikatem
     // o adminie. Cokolwiek innego dowodzi, że `revoke ... from anon` zadziałał:
     // PostgREST zgłasza brak uprawnień albo w ogóle nie znajduje funkcji,
     // zależnie od wersji.
@@ -278,7 +278,7 @@ describe("rozpatrywanie zgłoszeń", () => {
     const petent = await nowyUzytkownik("bylec");
 
     // Ktoś, kto był już w drużynie i składa kolejne zgłoszenie. Odrzucenie nie
-    // ma prawa wypisać go z drużyny — stąd `else team_id` w funkcji.
+    // ma prawa wypisać go z drużyny - stąd `else team_id` w funkcji.
     await ustawJakoZaakceptowany(petent, teamId);
     await admin.from("profiles").update({ status: "pending" }).eq("id", petent.id);
 

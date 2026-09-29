@@ -25,7 +25,7 @@ type Widok = {
 };
 
 // Talia w kolejności rozdawania: gracz, krupier, gracz, krupier, potem dobierane.
-// Funkcja rdzeniowa z ustaloną talią jest wyłącznie dla klucza serwisowego —
+// Funkcja rdzeniowa z ustaloną talią jest wyłącznie dla klucza serwisowego -
 // gracz nigdy nie wybiera kart.
 const reszta = ["2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s", "2h", "3h"];
 
@@ -111,7 +111,7 @@ describe("rozgrywka", () => {
   it("blackjack z rozdania płaci 6:5 i rozstrzyga się od razu", async () => {
     await dosypPunktyOsobie(gracz.id, druzyna, 100);
     const w = await start(["As", "9h", "Ks", "7h"]);
-    // 6:5 zamiast 3:2 — przewaga kasyna (2026-09-28): stawka 10 wraca jako 22.
+    // 6:5 zamiast 3:2 - przewaga kasyna (2026-09-28): stawka 10 wraca jako 22.
     expect(w).toMatchObject({ status: "settled", wynik: "blackjack", wyplata: 22 });
     expect(await saldo()).toBe(112);
   });

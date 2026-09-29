@@ -83,7 +83,7 @@ describe("półka", () => {
       "tarcza",
     ]);
 
-    // Pozycja fizyczna z kluczem efektu byłaby cicho martwym efektem — więzy
+    // Pozycja fizyczna z kluczem efektu byłaby cicho martwym efektem - więzy
     // w schemacie mają tego nie dopuścić.
     const fizyczne = data!.filter((i) => i.kind === "physical");
     expect(fizyczne.every((i) => i.effect_key === null)).toBe(true);
@@ -96,7 +96,7 @@ describe("półka", () => {
       .neq("description", "pozycja testowa");
 
     // Kolumna jest nullowalna, żeby pozycja dołożona zapytaniem nie wymagała
-    // ikony — ale zasiew ma być kompletny, bo to on trafia do rąk uczestników.
+    // ikony - ale zasiew ma być kompletny, bo to on trafia do rąk uczestników.
     const bezIkony = (data ?? []).filter((i) => i.ikona === null);
     expect(bezIkony.map((i) => i.name)).toEqual([]);
   });
@@ -158,7 +158,7 @@ describe("zakup pozycji fizycznej", () => {
 
     expect(error).not.toBeNull();
     // Gdyby grant dla roli anon został, funkcja weszłaby i padła na strażniku
-    // is_approved() — komunikatem o akceptacji. Cokolwiek innego dowodzi,
+    // is_approved() - komunikatem o akceptacji. Cokolwiek innego dowodzi,
     // że `revoke ... from anon` zadziałał.
     expect(error!.message).not.toMatch(/zaakceptowan/i);
   });
@@ -293,7 +293,7 @@ describe("zakup pozycji fizycznej", () => {
     expect(p![0].adresat).toBe("admin");
     expect(p![0].adresat_id).toBeNull();
     expect(p![0].ref_type).toBe("shop_order");
-    // Nikt outboxu w tym kroku nie opróżnia — transport powstaje w kroku 8.
+    // Nikt outboxu w tym kroku nie opróżnia - transport powstaje w kroku 8.
     expect(p![0].wyslane_at).toBeNull();
   });
 
@@ -308,7 +308,7 @@ describe("zakup pozycji fizycznej", () => {
 
   it("dwa równoległe zakupy na granicy salda: jeden przechodzi, drugi odbija", async () => {
     // Saldo wystarcza na dokładnie jedną sztukę. To jest ten test, dla którego
-    // istnieje blokada wiersza `teams` — bez niej oba wywołania przeczytają to
+    // istnieje blokada wiersza `teams` - bez niej oba wywołania przeczytają to
     // samo saldo, oba przejdą, a drużyna zjedzie pod zero. Ledger jest tylko do
     // dopisywania, więc nie ma jak tego cofnąć.
     await dosypPunkty(mojaDruzyna, 220);
@@ -394,7 +394,7 @@ describe("klątwa i tarcza", () => {
     expect(zam!.target_team_id).toBe(obcaDruzyna);
     expect(zam!.note).toBeNull();
 
-    // Ofiara ma się dowiedzieć, kto rzucił — księga jest jawna.
+    // Ofiara ma się dowiedzieć, kto rzucił - księga jest jawna.
     const { data: wpis } = await admin
       .from("points_ledger")
       .select("delta, reason, team_id")
@@ -477,7 +477,7 @@ describe("klątwa i tarcza", () => {
       .single();
     expect(efekt!.scope).toBe("team");
     expect(efekt!.subject_id).toBe(mojaDruzyna);
-    // Tarcza trwa, aż ją coś zużyje — stąd brak terminu.
+    // Tarcza trwa, aż ją coś zużyje - stąd brak terminu.
     expect(efekt!.expires_at).toBeNull();
     expect(efekt!.consumed_at).toBeNull();
     expect(efekt!.order_id).toBe(orderId);
@@ -487,7 +487,7 @@ describe("klątwa i tarcza", () => {
     await dosypPunkty(mojaDruzyna, 500);
     await dosypPunkty(obcaDruzyna, 300);
 
-    // Ofiara ma tarczę — wstawiamy ją wprost, bo kapitanem obcej drużyny nikt
+    // Ofiara ma tarczę - wstawiamy ją wprost, bo kapitanem obcej drużyny nikt
     // tu nie jest, a testujemy konsumpcję, nie zakup.
     const { data: tarcza } = await admin
       .from("active_effects")
@@ -656,7 +656,7 @@ describe("wydanie i anulowanie", () => {
     });
     expect(error).toBeNull();
 
-    // Zwrot idzie dodatnim wierszem, nie usunięciem wpisu — księga jest tylko
+    // Zwrot idzie dodatnim wierszem, nie usunięciem wpisu - księga jest tylko
     // do dopisywania, więc oba zdarzenia zostają widoczne.
     expect(await saldoDruzyny(mojaDruzyna)).toBe(poZakupie + 40);
 

@@ -34,7 +34,7 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // getUser() weryfikuje token u dostawcy — getSession() ufa cookie.
+  // getUser() weryfikuje token u dostawcy - getSession() ufa cookie.
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -56,7 +56,7 @@ export async function updateSession(request: NextRequest) {
     return przekieruj(request, POCZEKALNIA, response);
   }
 
-  // Admin dostał dostęp ręcznie, z pominięciem formularza, a też jedzie — jego
+  // Admin dostał dostęp ręcznie, z pominięciem formularza, a też jedzie - jego
   // dieta, ICE i zgody muszą trafić na listę jak u wszystkich. Kierujemy go na
   // formularz, dopóki nie złoży zgłoszenia, ale tylko przy otwartej puli: przy
   // zamkniętych formularz i tak nie przyjmie zgłoszenia, a blokada odcięłaby
@@ -79,7 +79,7 @@ export async function updateSession(request: NextRequest) {
     return przekieruj(request, POCZEKALNIA, response);
   }
 
-  // Zaakceptowany na /app/rejestracja — formularz ma już za sobą.
+  // Zaakceptowany na /app/rejestracja - formularz ma już za sobą.
   if (sciezka === POCZEKALNIA) return przekieruj(request, DOM, response);
 
   if (zaczynaSie(sciezka, ["/app/admin"]) && profile?.role !== "admin") {
@@ -94,7 +94,7 @@ export async function updateSession(request: NextRequest) {
  *
  * Supabase potrafi odświeżyć token w trakcie `getUser()` i zapisuje nowe
  * ciasteczka w `zrodlo`. Wcześniejsza wersja budowała czystą odpowiedź
- * przekierowania i te ciasteczka przepadały — przeglądarka zostawała ze starym,
+ * przekierowania i te ciasteczka przepadały - przeglądarka zostawała ze starym,
  * właśnie zużytym tokenem odświeżającym. Ratowało nas tylko okno tolerancji
  * GoTrue na ponowne użycie tokenu; poza tym oknem człowiek wypadał z sesji
  * w losowym momencie, bez żadnego wzorca, który dałoby się zgłosić.

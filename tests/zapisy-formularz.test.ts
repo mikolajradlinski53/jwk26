@@ -33,7 +33,7 @@ const pelne: DaneFormularza = {
 describe("zwolnienie rektorskie i alkohol", () => {
   const zwolnienie = { ...pelne, zwolnienie: true, zwolnienieOd: "12:30", zwolnienieDo: "16:00" };
 
-  it("zwolnienie w przedziale 12:00–18:00 co pół godziny przechodzi", () => {
+  it("zwolnienie w przedziale 12:00-18:00 co pół godziny przechodzi", () => {
     expect(waliduj("oTobie", zwolnienie, JWK)).toEqual({});
     expect(
       waliduj("oTobie", { ...zwolnienie, zwolnienieOd: "12:00", zwolnienieDo: "18:00" }, JWK),
@@ -48,7 +48,7 @@ describe("zwolnienie rektorskie i alkohol", () => {
       waliduj("oTobie", { ...zwolnienie, zwolnienieOd: "16:00", zwolnienieDo: "16:00" }, JWK)
         .zwolnienieDo,
     ).toBeDefined();
-    // Wyjazd rusza o 12:00 — wcześniejsza godzina nie ma sensu, nawet wpisana ręcznie.
+    // Wyjazd rusza o 12:00 - wcześniejsza godzina nie ma sensu, nawet wpisana ręcznie.
     expect(
       waliduj("oTobie", { ...zwolnienie, zwolnienieOd: "11:30" }, JWK).zwolnienieOd,
     ).toBeDefined();
@@ -57,7 +57,7 @@ describe("zwolnienie rektorskie i alkohol", () => {
     ).toBeDefined();
   });
 
-  it("Alumni nie podają zwolnienia — pole nie idzie do bazy", () => {
+  it("Alumni nie podają zwolnienia - pole nie idzie do bazy", () => {
     const alumn = { ...zwolnienie, pula: "alumni" as const, zwolnienieOd: "", zwolnienieDo: "" };
     expect(waliduj("oTobie", alumn, JWK)).toEqual({});
     expect(doRpc({ ...zwolnienie, pula: "alumni" }).p_dane).toMatchObject({
@@ -131,7 +131,7 @@ describe("walidacja kroków", () => {
   });
 
   it("ICE wymaga informacji, kim ta osoba jest dla uczestnika", () => {
-    // W nagłym wypadku „dzwonię do Anny" nic nie mówi — „dzwonię do mamy" tak.
+    // W nagłym wypadku „dzwonię do Anny" nic nie mówi - „dzwonię do mamy" tak.
     const bezRelacji = {
       ...pelne,
       iceImie: "Anna",
@@ -139,7 +139,7 @@ describe("walidacja kroków", () => {
       icePoinformowany: true,
     };
     expect(waliduj("ice", bezRelacji, JWK).iceRelacja).toBeDefined();
-    // Sama relacja też uruchamia ICE — nie da się jej zostawić bez numeru.
+    // Sama relacja też uruchamia ICE - nie da się jej zostawić bez numeru.
     expect(waliduj("ice", { ...pelne, iceRelacja: "tata" }, JWK).iceTelefon).toBeDefined();
   });
 

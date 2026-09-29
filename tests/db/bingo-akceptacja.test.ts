@@ -36,13 +36,13 @@ afterAll(async () => {
 afterEach(async () => {
   // Bonusy mają user_id = null (są zasługą drużyny, nie osoby), więc kaskada
   // po auth.users ich nie dotknie. Wpisy za pojedyncze zadania mają user_id
-  // ustawiony, ale FK na profiles jest „on delete set null", nie cascade —
+  // ustawiony, ale FK na profiles jest „on delete set null", nie cascade -
   // skasowanie autora osierociłoby wiersz, a nie usunęło go. Drużyny są zasiane
   // na stałe i współdzielone między plikami testowymi, więc bez tego sprzątania
   // bonus „wiersz-0" zostałby w bazie na zawsze i zafałszował kolejny przebieg
   // (test 6 zobaczyłby wpis, którego sam nie stworzył).
   await admin.from("points_ledger").delete().in("category", ["bingo", "bingo_bonus"]);
-  // Zgłoszenia kasujemy jawnie z tego samego powodu co księgę — nie polegamy
+  // Zgłoszenia kasujemy jawnie z tego samego powodu co księgę - nie polegamy
   // na kaskadzie z auth.users, choć akurat tu by zadziałała. Filtr dopasowuje
   // każdy wiersz: id jest kluczem głównym typu uuid, więc nigdy nie jest null.
   await admin.from("bingo_submissions").delete().not("id", "is", null);
@@ -101,7 +101,7 @@ describe("akceptacja zgłoszeń bingo i bonusy", () => {
     expect(error).not.toBeNull();
 
     // Rozróżnienie jest tu istotne: gdyby grant dla roli anon został, funkcja
-    // wykonałaby się i padła dopiero na strażniku is_admin() — komunikatem
+    // wykonałaby się i padła dopiero na strażniku is_admin() - komunikatem
     // o adminie. Cokolwiek innego dowodzi, że `revoke ... from anon` zadziałał.
     expect(error!.message).not.toMatch(/admin/i);
 
@@ -171,7 +171,7 @@ describe("akceptacja zgłoszeń bingo i bonusy", () => {
     expect(zgl!.review_note).toBe("Zdjęcie nie pokazuje zadania");
 
     // Filtr po ref_type jest tu istotny, choć wygląda na nadmiarowy. Drużyna
-    // jest zasiana na stałe i współdzielona z innymi plikami testowymi — bez
+    // jest zasiana na stałe i współdzielona z innymi plikami testowymi - bez
     // tego filtra jeden przerwany przebieg `award-points.test.ts` zostawiłby
     // w księdze wiersz kategorii `admin_adjust`, a ten test padłby przy
     // następnym, zupełnie czystym uruchomieniu. Sprawdzone: pada.
@@ -213,7 +213,7 @@ describe("akceptacja zgłoszeń bingo i bonusy", () => {
     const teamId = await firstTeamId();
     const autor = await nowyUzytkownik("powtorka-linii-bingo");
 
-    // Cała linia zapalona z pominięciem funkcji — bonus jeszcze nie istnieje,
+    // Cała linia zapalona z pominięciem funkcji - bonus jeszcze nie istnieje,
     // bo nigdy nie przeszedł przez review_bingo.
     await zapal(teamId, autor.id, [0, 1, 2, 3, 4]);
 
@@ -235,7 +235,7 @@ describe("akceptacja zgłoszeń bingo i bonusy", () => {
       .eq("ref_id", "wiersz-0");
     expect(poPierwszym).toHaveLength(1);
 
-    // Druga akceptacja, znów w innym polu tej samej linii — wiersz 0 jest
+    // Druga akceptacja, znów w innym polu tej samej linii - wiersz 0 jest
     // wciąż kompletny, więc pętla bonusów go znowu wykryje. Licznik ma
     // zostać na jedynce, bo wpis już istnieje.
     const taskB = await idZadania(6);

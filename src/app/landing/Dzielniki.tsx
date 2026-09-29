@@ -1,5 +1,5 @@
 /**
- * Dzielniki między sekcjami landingu — narzędzia "wyraźnego podziału"
+ * Dzielniki między sekcjami landingu - narzędzia "wyraźnego podziału"
  * z brifu, użyte naprzemiennie, żeby rytm nie był monotonny: fala rysowana
  * SVG-iem (nie obrazkiem), ukośna krawędź przez `clip-path` (patrz
  * globals.css), pasek z szewronem nawiązujący do strzałek z logotypu
@@ -7,14 +7,14 @@
  *
  * Każdy dzielnik przyjmuje kolor przez klasę tekstową (`kolorKlasa`, np.
  * "text-jesien-karta") i maluje nim przez `fill="currentColor"` albo
- * `background: currentColor` — bez powielania wartości barw w kilku miejscach.
+ * `background: currentColor` - bez powielania wartości barw w kilku miejscach.
  */
 
 export function DzielnikFala({
   kolorKlasa,
   tloKlasa = "",
 }: {
-  /** Klasa koloru tekstu — staje się kolorem wypełnienia fali. */
+  /** Klasa koloru tekstu - staje się kolorem wypełnienia fali. */
   kolorKlasa: string;
   /** Opcjonalne tło elementu-nosiciela, gdy fala ma "wypływać" z innego koloru. */
   tloKlasa?: string;
@@ -38,7 +38,7 @@ export function DzielnikFala({
   );
 }
 
-/** Trzy szewrony — powtórzenie strzałek z logotypu jako motyw przewodni. */
+/** Trzy szewrony - powtórzenie strzałek z logotypu jako motyw przewodni. */
 function Szewrony() {
   return (
     <svg viewBox="0 0 54 20" className="h-3 w-8 text-jesien-rdza" aria-hidden="true">
@@ -64,7 +64,7 @@ export function DzielnikSzewron() {
   );
 }
 
-/** Cienka linia z liściem pośrodku — echo kanwy `Liscie` w statycznej formie. */
+/** Cienka linia z liściem pośrodku - echo kanwy `Liscie` w statycznej formie. */
 export function DzielnikLisc() {
   return (
     <div
@@ -83,7 +83,7 @@ export function DzielnikLisc() {
 
 /**
  * Ukośna krawędź. `kolorKlasa` maluje klin (kolor sekcji, która następuje),
- * `tloKlasa` to tło paska-nosiciela (kolor sekcji, która się kończy) —
+ * `tloKlasa` to tło paska-nosiciela (kolor sekcji, która się kończy) -
  * dokładnie tak samo jak przy fali, tylko kształt inny (patrz `.dzielnik-skos`
  * w globals.css).
  */

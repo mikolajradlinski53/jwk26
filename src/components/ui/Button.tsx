@@ -2,7 +2,7 @@ import { ComponentProps } from "react";
 
 type Wariant = "krew" | "szklo" | "cichy";
 
-// Płynne szkło (spec wyglądu, D8) — klasy w globals.css, bo rant z maską
+// Płynne szkło (spec wyglądu, D8) - klasy w globals.css, bo rant z maską
 // i odblask to pseudoelementy, których utility Tailwinda nie opiszą.
 const style: Record<Wariant, string> = {
   // Akcja główna: płynne szkło zabarwione krwią.

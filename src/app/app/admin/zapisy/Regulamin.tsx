@@ -82,7 +82,7 @@ export function Regulamin({ zatwierdzony }: { zatwierdzony: boolean }) {
       {zatwierdzony && pyta && (
         <>
           <p className="text-xs leading-relaxed text-kosc">
-            Cofnięcie zatrzyma zapisy we wszystkich turach — nikt się nie zapisze,
+            Cofnięcie zatrzyma zapisy we wszystkich turach - nikt się nie zapisze,
             dopóki regulamin znów nie zostanie zatwierdzony.
           </p>
           <div className="grid grid-cols-2 gap-3">

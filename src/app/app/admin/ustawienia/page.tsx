@@ -13,7 +13,7 @@ const WroccLink = (
 export default async function UstawieniaPage() {
   // Nie korzysta z `ustawienia()` z @/lib/ustawienia: ten helper celowo
   // połyka błąd odczytu (dla landingu brak liczników to degradacja, nie
-  // usterka). Tutaj, na ekranie admina, błąd odczytu musi być widoczny —
+  // usterka). Tutaj, na ekranie admina, błąd odczytu musi być widoczny -
   // stąd osobne, jawne zapytanie.
   const supabase = await createClient();
   const { data, error } = await supabase

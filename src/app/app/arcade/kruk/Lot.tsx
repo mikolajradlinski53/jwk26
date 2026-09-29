@@ -12,7 +12,7 @@ type Faza = "czeka" | "leci" | "pauza" | "koniec";
 
 /**
  * Najdłuższy odcinek czasu, jaki pętla przyjmuje naraz. Po powrocie z tła
- * pierwsza klatka niesie sekundy przerwy — bez przycięcia kruk by je przeskoczył.
+ * pierwsza klatka niesie sekundy przerwy - bez przycięcia kruk by je przeskoczył.
  */
 const MAKS_DT = 0.25;
 
@@ -61,7 +61,7 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
   const [gotowa, setGotowa] = useState(false);
 
   // Grafiki raz na wejście na ekran; do tego czasu nakładka „Kruk nadlatuje”,
-  // a nie wektorowy zastępca — wektor mignął i znikał, co wyglądało jak błąd
+  // a nie wektorowy zastępca - wektor mignął i znikał, co wyglądało jak błąd
   // (uwaga Mikołaja). Jeśli grafiki nie dojdą w 8 s albo padną, gra rusza
   // w wersji wektorowej: słaba sieć nie może zablokować gry na zawsze.
   // Osobny efekt, bez `runda`: „Jeszcze raz” nie ciągnie grafik od nowa.
@@ -152,7 +152,7 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
     }
 
     function dotkniecie() {
-      // Przed wczytaniem grafik start byłby lotem w ciemno — nakładka mówi,
+      // Przed wczytaniem grafik start byłby lotem w ciemno - nakładka mówi,
       // że trzeba chwilę poczekać.
       if (!gotowaRef.current) return;
       if (aktualna === "czeka") {
@@ -179,7 +179,7 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
       dotkniecie();
     }
 
-    // Wyjście z apki w trakcie lotu — pauza. Nie pomaga oszukiwać: zegar bazy biegnie dalej.
+    // Wyjście z apki w trakcie lotu - pauza. Nie pomaga oszukiwać: zegar bazy biegnie dalej.
     function naWidocznosc() {
       if (document.hidden && aktualna === "leci") ustaw("pauza");
     }
@@ -242,7 +242,7 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
       <div className="relative overflow-hidden rounded-md border border-white/10">
         <canvas
           ref={canvasRef}
-          aria-label="Plansza lotu kruka — dotknij, żeby machnąć skrzydłami"
+          aria-label="Plansza lotu kruka - dotknij, żeby machnąć skrzydłami"
           className="block aspect-[3/4] w-full touch-none select-none"
         />
         {!gotowa && (
@@ -255,7 +255,7 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
           </div>
         )}
         {gotowa && faza === "czeka" && <Napis>Dotknij, by lecieć</Napis>}
-        {faza === "pauza" && <Napis>Pauza — dotknij, by lecieć dalej</Napis>}
+        {faza === "pauza" && <Napis>Pauza - dotknij, by lecieć dalej</Napis>}
         {faza === "koniec" && (
           <div className="absolute inset-0 grid place-content-center gap-4 bg-noc/70 px-8 text-center">
             <p className="font-tytul text-3xl tabular-nums text-kosc">Wynik {wynik}</p>

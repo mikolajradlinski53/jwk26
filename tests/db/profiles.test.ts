@@ -19,7 +19,7 @@ async function nowyUzytkownik(tag: string) {
 // Jedna zwykła sesja na cały plik: granty kolumnowe i is_approved() czytają
 // rolę/status na żywo z profili, więc te same reguły widać bez logowania się
 // od nowa za każdym razem. Test zakładania profilu potrzebuje świeżego
-// użytkownika — bada sam moment jego powstania — więc jego nie ruszamy.
+// użytkownika - bada sam moment jego powstania - więc jego nie ruszamy.
 let uczestnik: TestUser;
 let uczestnikClient: SupabaseClient;
 
@@ -33,7 +33,7 @@ afterAll(async () => {
 });
 
 afterEach(async () => {
-  // Test zmiany nazwy zostawia trwały ślad na współdzielonym koncie — reset,
+  // Test zmiany nazwy zostawia trwały ślad na współdzielonym koncie - reset,
   // żeby kolejny test zawsze widział domyślny (pusty) profil.
   await admin.from("profiles").update({ display_name: null }).eq("id", uczestnik.id);
   while (sprzatanie.length) await deleteUser(sprzatanie.pop()!);

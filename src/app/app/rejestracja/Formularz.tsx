@@ -32,7 +32,7 @@ const TYTULY: Record<Krok, string> = {
 };
 
 /**
- * Formularz krokowy. Nic nie idzie do bazy przed ostatnim krokiem — cofanie
+ * Formularz krokowy. Nic nie idzie do bazy przed ostatnim krokiem - cofanie
  * się i poprawianie nie zostawia po drodze półzgłoszeń.
  *
  * `pule` to stan z chwili renderu. Mógł się zmienić, zanim ktoś doszedł do
@@ -45,7 +45,7 @@ export function Formularz({
 }: {
   pule: StanPuli[];
   dataJwk: string;
-  /** `null`, dopóki admin nie poda numeru konta — krok pokazuje wtedy „wkrótce". */
+  /** `null`, dopóki admin nie poda numeru konta - krok pokazuje wtedy „wkrótce". */
   przelew: DanePrzelewuTyp | null;
 }) {
   const router = useRouter();
@@ -62,9 +62,9 @@ export function Formularz({
   // a chodzi o okno krótsze niż jeden render.
   const wToku = useRef(false);
   // Raz wgrane zdjęcie. Ponowna próba po błędzie albo przejście na rezerwę nie
-  // wgrywają go drugi raz — przy rezerwie zostaje przy zgłoszeniu (D3).
+  // wgrywają go drugi raz - przy rezerwie zostaje przy zgłoszeniu (D3).
   const wgrane = useRef<WgranyDowod | null>(null);
-  // Tytuł bieżącego kroku — cel skupienia po zmianie kroku, żeby czytnik
+  // Tytuł bieżącego kroku - cel skupienia po zmianie kroku, żeby czytnik
   // ekranu i klawiatura zaczynały od nagłówka, nie od miejsca sprzed kliknięcia.
   const tytulRef = useRef<HTMLParagraphElement>(null);
 
@@ -72,7 +72,7 @@ export function Formularz({
   const naRezerwe = wybrana ? wybrana.zajete >= wybrana.miejsca : false;
   const lista = kroki(naRezerwe);
   // `indeks` może wskazywać poza listę, jeśli zmiana puli skróciła kroki
-  // (rezerwa nie ma przelewu) — jedno miejsce klamrujące zamiast powtarzania
+  // (rezerwa nie ma przelewu) - jedno miejsce klamrujące zamiast powtarzania
   // tego samego `Math.min` w czterech miejscach.
   const pozycja = Math.min(indeks, lista.length - 1);
   const krok = lista[pozycja];
@@ -103,7 +103,7 @@ export function Formularz({
   function zmien<K extends keyof DaneFormularza>(pole: K, wartosc: DaneFormularza[K]) {
     setDane((d) => ({ ...d, [pole]: wartosc }));
     setBledy((b) => ({ ...b, [pole]: undefined }));
-    // Inna pula ma inny stan zajętości — propozycja rezerwy z poprzedniej
+    // Inna pula ma inny stan zajętości - propozycja rezerwy z poprzedniej
     // próby nic już nie mówi o nowo wybranej puli.
     if (pole === "pula") setPropozycjaRezerwy(false);
   }
@@ -116,10 +116,10 @@ export function Formularz({
   }
 
   /**
-   * Pierwszy krok (poza przelewem — plik nie jest częścią `DaneFormularza`),
+   * Pierwszy krok (poza przelewem - plik nie jest częścią `DaneFormularza`),
    * który nie przechodzi walidacji przy aktualnym stanie `dane`. Wychwytuje
    * przypadek, w którym ktoś cofnął się, zmienił coś wcześniej i doszedł do
-   * końca bez ponownego sprawdzenia — bez tego RPC odrzuciłby zgłoszenie
+   * końca bez ponownego sprawdzenia - bez tego RPC odrzuciłby zgłoszenie
    * dopiero po wgraniu zdjęcia, co wygląda jak błąd bez wytłumaczenia.
    */
   function pierwszyBlednyKrok(): { indeks: number; bledy: Bledy } | null {
@@ -200,13 +200,13 @@ export function Formularz({
     } catch (e) {
       const tekst = tekstBledu(e);
       // Surowy błąd (zwłaszcza `details` naruszenia CHECK) potrafi zawierać
-      // cały wiersz łącznie z danymi zdrowotnymi (art. 9 RODO) — do konsoli
+      // cały wiersz łącznie z danymi zdrowotnymi (art. 9 RODO) - do konsoli
       // idzie wyłącznie kod i komunikat, nigdy cały obiekt błędu.
       const zapis = { code: (e as { code?: string } | null)?.code, message: tekst };
 
       // PWA na iOS bez przeładowania: zawieszony `fetch` potrafi zgubić samą
       // odpowiedź, mimo że zapis po drugiej stronie przeszedł. Drugie
-      // kliknięcie odbiłoby się o ten sam unikalny indeks — więc traktujemy to
+      // kliknięcie odbiłoby się o ten sam unikalny indeks - więc traktujemy to
       // jak sukces i NIE zwalniamy rygla, żeby nie pokazać pustego formularza
       // tuż przed tym, jak serwer podmieni go na poczekalnię.
       if (/one_pending|duplicate key|juz zaakceptowane/i.test(tekst)) {
@@ -219,13 +219,13 @@ export function Formularz({
 
       if (/PULA_PELNA/.test(tekst)) {
         setPropozycjaRezerwy(true);
-        // Inni w tym czasie też się zapisywali — kafelki puli w tle są
+        // Inni w tym czasie też się zapisywali - kafelki puli w tle są
         // nieaktualne dokładnie w chwili, gdy pokazujemy propozycję rezerwy.
         router.refresh();
       } else {
         setBlad(komunikat(e));
         // Pula zwolniła miejsce (PRZELEW_WYMAGANY) albo się właśnie zamknęła
-        // (PULA_ZAMKNIETA) — w obu przypadkach stan pul z serwera się zmienił;
+        // (PULA_ZAMKNIETA) - w obu przypadkach stan pul z serwera się zmienił;
         // stan formularza (komponent kliencki) przeżywa odświeżenie.
         if (/PRZELEW_WYMAGANY|PULA_ZAMKNIETA/.test(tekst)) router.refresh();
       }
@@ -290,13 +290,13 @@ export function Formularz({
 
       {krok === "oTobie" && naRezerwe && (
         <p className="szklo rounded-md px-4 py-3 text-sm leading-relaxed text-dym">
-          Ta pula jest pełna, więc zapiszesz się na listę rezerwową — bez przelewu.
+          Ta pula jest pełna, więc zapiszesz się na listę rezerwową - bez przelewu.
           Gdy zwolni się miejsce, organizator przesunie Cię na listę, a wtedy
           poprosimy o potwierdzenie wpłaty.
         </p>
       )}
 
-      {/* Tylko na ostatnim kroku — `propozycjaRezerwy` gasi się przy każdej
+      {/* Tylko na ostatnim kroku - `propozycjaRezerwy` gasi się przy każdej
           zmianie kroku i puli, ale klamra zostaje na wypadek stanów brzegowych. */}
       {ostatni && propozycjaRezerwy && (
         <div className="szklo grid gap-3 rounded-md px-4 py-3.5 text-sm">

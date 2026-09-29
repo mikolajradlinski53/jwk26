@@ -27,7 +27,7 @@ function terazNaSerwerze() {
 
 /**
  * Licznik do odsłony jako jedna linia tekstu. Pierwsza klatka to `poczatkowy`
- * z serwera (jak w `Licznik`). Na zerze prosi serwer o nową wersję strony —
+ * z serwera (jak w `Licznik`). Na zerze prosi serwer o nową wersję strony -
  * bez przeładowania. Ponawia co 5 s, najwyżej sześć razy, bo zegar telefonu
  * bywa o kilka sekund przed zegarem bazy, a to baza decyduje o odsłonie.
  * Po odsłonie serwer przysyła sekcję bez licznika, więc komponent znika

@@ -51,7 +51,7 @@ export function WyborKapitana({
         className="szklo min-h-11 w-full rounded-sm px-3.5 text-sm text-kosc
                    outline-none focus-visible:border-krew"
       >
-        <option value="">— nikt —</option>
+        <option value="">- nikt -</option>
         {czlonkowie.map((c) => (
           <option key={c.user_id} value={c.user_id}>
             {c.display_name ?? "bez nazwy"}

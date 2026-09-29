@@ -3,7 +3,7 @@
  *
  * Najważniejszy przypadek to obca domena. Wyzwalacz `enforce_email_domain`
  * rzuca wyjątek w trakcie tworzenia konta, a GoTrue opakowuje to we własny,
- * ogólny komunikat — dlatego dopasowujemy oba warianty: naszą treść i tę,
+ * ogólny komunikat - dlatego dopasowujemy oba warianty: naszą treść i tę,
  * którą podstawia Supabase.
  */
 export function bladLogowania(surowy: string): string {

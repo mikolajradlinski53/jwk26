@@ -24,7 +24,7 @@ export function Ogloszenie({
   zgodSms,
 }: {
   druzyny: { id: string; name: string }[];
-  /** Ilu przyjętych ma zgodę na SMS i numer — tylu (najwyżej) dostanie SMS. */
+  /** Ilu przyjętych ma zgodę na SMS i numer - tylu (najwyżej) dostanie SMS. */
   zgodSms: number;
 }) {
   const router = useRouter();
@@ -143,7 +143,7 @@ export function Ogloszenie({
         )}
       </div>
 
-      {/* SMS kosztuje — domyślnie wyłączony i gaśnie po każdej wysyłce. */}
+      {/* SMS kosztuje - domyślnie wyłączony i gaśnie po każdej wysyłce. */}
       <label className="flex min-h-11 items-start gap-3 text-sm text-kosc">
         <input
           type="checkbox"
@@ -154,7 +154,7 @@ export function Ogloszenie({
         <span>
           Wyślij też SMS-em
           <span className="block text-xs text-dym">
-            Tylko do osób ze zgodą na SMS ({zgodSms} przyjętych). Płatne — na pilne sprawy.
+            Tylko do osób ze zgodą na SMS ({zgodSms} przyjętych). Płatne - na pilne sprawy.
           </span>
         </span>
       </label>
@@ -173,7 +173,7 @@ export function Ogloszenie({
       {pyta ? (
         <div className="szklo grid gap-3 rounded-md px-4 py-3.5">
           <p aria-live="polite" className="text-sm text-kosc">
-            Wysłać do {komu}{sms ? " — także SMS-em" : ""}? Tego nie da się cofnąć.
+            Wysłać do {komu}{sms ? " - także SMS-em" : ""}? Tego nie da się cofnąć.
           </p>
           <div className="grid grid-cols-2 gap-3">
             <Button variant="szklo" onClick={() => setPyta(false)} disabled={czeka}>

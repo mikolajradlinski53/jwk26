@@ -4,12 +4,12 @@ import { Ekran } from "@/components/Ekran";
 import { Plansza } from "./Plansza";
 import type { BingoSubmission, BingoTask } from "@/types/db";
 
-/** Ekran awarii odczytu — celowo mówi, że to usterka, a nie stan gry. */
+/** Ekran awarii odczytu - celowo mówi, że to usterka, a nie stan gry. */
 function Awaria({ co }: { co: string }) {
   return (
     <Ekran tytul="Bingo" podtytul="Plansza drużyny">
       <p className="szklo rounded-md px-4 py-6 text-center text-sm text-krew-jasna">
-        Nie udało się wczytać {co}. To usterka po naszej stronie, nie Twoja —
+        Nie udało się wczytać {co}. To usterka po naszej stronie, nie Twoja -
         spróbuj odświeżyć za chwilę.
       </p>
     </Ekran>
@@ -43,7 +43,7 @@ export default async function BingoPage() {
     return <Awaria co="Twojego profilu" />;
   }
 
-  // Akceptacja przypisuje drużynę, ale admin mógł ją później wyczyścić —
+  // Akceptacja przypisuje drużynę, ale admin mógł ją później wyczyścić -
   // to realny, nie tylko teoretyczny stan, więc dostaje własny ekran.
   if (!profil?.team_id) {
     return (
@@ -69,7 +69,7 @@ export default async function BingoPage() {
     return <Awaria co="planszy" />;
   }
   // Zgłoszenia to stan planszy, nie jej istnienie. Gdy padną, plansza bez nich
-  // pokazałaby wszystkie pola jako puste — czyli skłamałaby o stanie gry
+  // pokazałaby wszystkie pola jako puste - czyli skłamałaby o stanie gry
   // i skusiła do zgłoszenia pola, które drużyna już zajęła.
   if (bladZgloszen) {
     console.error("Nie udało się wczytać zgłoszeń bingo:", bladZgloszen);
