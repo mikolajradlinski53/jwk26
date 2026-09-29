@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Wpis, type KomentarzWpis } from "./Wpis";
+import { Pusto } from "@/components/Pusto";
 
 type WpisSurowy = {
   id: string;
@@ -88,9 +89,7 @@ export default async function FeedPage() {
   if (wpisy.length === 0) {
     return (
       <Ekran tytul="Feed" podtytul="Zaakceptowane dowody">
-        <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">
-          Tu wylądują zdjęcia z bingo, kiedy tylko ktoś zacznie je wrzucać.
-        </p>
+        <Pusto ikona="oko">Tu wylądują zdjęcia z bingo, kiedy tylko ktoś zacznie je wrzucać.</Pusto>
       </Ekran>
     );
   }

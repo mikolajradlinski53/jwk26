@@ -1,9 +1,11 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { NAZWY_PUL } from "@/lib/zapisy/formularz";
 import { Ogloszenie } from "./Ogloszenie";
 import type { KluczPuli } from "@/types/db";
+import { Wroc } from "@/components/Wroc";
+import { NaglowekSekcji } from "@/components/NaglowekSekcji";
+import { Pusto } from "@/components/Pusto";
 
 type Wpis = {
   id: number;
@@ -59,14 +61,14 @@ export default async function OgloszeniaPage() {
     <Ekran tytul="Ogłoszenia" podtytul="Powiadomienia push">
       <Ogloszenie druzyny={druzyny} />
 
-      <h2 className="mb-2.5 mt-8 px-1 text-xs uppercase tracking-[0.14em] text-dym">Wysłane</h2>
+      <NaglowekSekcji>Wysłane</NaglowekSekcji>
       {error && (
         <p className="szklo rounded-md px-4 py-3.5 text-sm text-krew-jasna">
           Nie udało się wczytać historii. Odśwież stronę.
         </p>
       )}
       {!error && historia.length === 0 && (
-        <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">Jeszcze nic.</p>
+        <Pusto>Jeszcze nic.</Pusto>
       )}
       <ol className="grid gap-1.5">
         {historia.map((w) => (
@@ -80,12 +82,7 @@ export default async function OgloszeniaPage() {
         ))}
       </ol>
 
-      <Link
-        href="/app/admin"
-        className="mt-7 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
-      >
-        Wróć do sanktuarium
-      </Link>
+      <Wroc href="/app/admin">Wróć do sanktuarium</Wroc>
     </Ekran>
   );
 }

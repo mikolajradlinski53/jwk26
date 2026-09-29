@@ -1,9 +1,11 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Lot } from "./Lot";
 import type { KrukMiejsce } from "@/types/db";
+import { Wroc } from "@/components/Wroc";
+import { NaglowekSekcji } from "@/components/NaglowekSekcji";
+import { Pusto } from "@/components/Pusto";
 
 function Wiersz({ m, ja }: { m: KrukMiejsce; ja: boolean }) {
   return (
@@ -56,11 +58,9 @@ export default async function KrukPage() {
         </strong>
       </div>
 
-      <h2 className="mb-2.5 mt-8 px-1 text-xs uppercase tracking-[0.14em] text-dym">Ranking</h2>
+      <NaglowekSekcji>Ranking</NaglowekSekcji>
       {top.length === 0 ? (
-        <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">
-          Nikt jeszcze nie przeleciał ani jednej kolumny.
-        </p>
+        <Pusto ikona="pioro">Nikt jeszcze nie przeleciał ani jednej kolumny.</Pusto>
       ) : (
         <ol className="grid gap-1.5">
           {top.map((m) => (
@@ -70,12 +70,7 @@ export default async function KrukPage() {
         </ol>
       )}
 
-      <Link
-        href="/app/arcade"
-        className="mt-7 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
-      >
-        Wróć do kasyna
-      </Link>
+      <Wroc href="/app/arcade">Wróć do kasyna</Wroc>
     </Ekran>
   );
 }

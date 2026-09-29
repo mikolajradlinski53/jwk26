@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { NAZWY_STATUSU, type KategoriaGossipow } from "@/lib/gossipy";
 import { NowaKategoria } from "./NowaKategoria";
 import { Sterowanie } from "./Sterowanie";
+import { Wroc } from "@/components/Wroc";
 
 export default async function AdminGossipyPage() {
   const supabase = await createClient();
@@ -65,12 +65,7 @@ export default async function AdminGossipyPage() {
         ))}
       </ul>
 
-      <Link
-        href="/app/admin"
-        className="mt-7 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
-      >
-        Wróć do sanktuarium
-      </Link>
+      <Wroc href="/app/admin">Wróć do sanktuarium</Wroc>
     </Ekran>
   );
 }

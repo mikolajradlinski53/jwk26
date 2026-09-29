@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Regulamin } from "./Regulamin";
@@ -6,6 +5,9 @@ import { Pula } from "./Pula";
 import { Awans } from "./Awans";
 import { Odrzuc } from "./Odrzuc";
 import type { KluczPuli, StanPuli } from "@/types/db";
+import { Wroc } from "@/components/Wroc";
+import { NaglowekSekcji } from "@/components/NaglowekSekcji";
+import { Pusto } from "@/components/Pusto";
 
 type WpisRezerwy = {
   id: string;
@@ -35,12 +37,7 @@ export default async function ZapisyPage() {
   ]);
 
   const wroc = (
-    <Link
-      href="/app/admin"
-      className="mt-7 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
-    >
-      Wróć do sanktuarium
-    </Link>
+    <Wroc href="/app/admin">Wróć do sanktuarium</Wroc>
   );
 
   // Na ekranie admina błąd odczytu ma być widoczny — pusta lista pul
@@ -82,11 +79,9 @@ export default async function ZapisyPage() {
         ))}
       </div>
 
-      <h2 className="mb-2.5 mt-8 px-1 text-xs uppercase tracking-[0.14em] text-dym">
-        Lista rezerwowa
-      </h2>
+      <NaglowekSekcji>Lista rezerwowa</NaglowekSekcji>
       {kolejka.length === 0 && (
-        <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">Pusto.</p>
+        <Pusto>Pusto.</Pusto>
       )}
 
       {stan.map((p) => {

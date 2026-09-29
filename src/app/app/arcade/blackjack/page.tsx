@@ -1,9 +1,11 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Stol, type RekaBj } from "./Stol";
 import type { UserScore } from "@/types/db";
+import { Wroc } from "@/components/Wroc";
+import { NaglowekSekcji } from "@/components/NaglowekSekcji";
+import { Pusto } from "@/components/Pusto";
 
 type Rozdanie = { id: string; stake: number; payout: number; wynik: string | null; created_at: string };
 
@@ -44,9 +46,9 @@ export default async function BlackjackPage() {
 
       <Stol poczatkowa={(reka as RekaBj | null) ?? null} saldo={saldo} />
 
-      <h2 className="mb-2.5 mt-8 px-1 text-xs uppercase tracking-[0.14em] text-dym">Ostatnie rozdania</h2>
+      <NaglowekSekcji>Ostatnie rozdania</NaglowekSekcji>
       {historia.length === 0 ? (
-        <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">Jeszcze żadnego rozdania.</p>
+        <Pusto ikona="karty">Jeszcze żadnego rozdania.</Pusto>
       ) : (
         <ol className="grid gap-1.5">
           {historia.map((r) => (
@@ -68,12 +70,7 @@ export default async function BlackjackPage() {
         </ol>
       )}
 
-      <Link
-        href="/app/arcade"
-        className="mt-7 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
-      >
-        Wróć do kasyna
-      </Link>
+      <Wroc href="/app/arcade">Wróć do kasyna</Wroc>
     </Ekran>
   );
 }

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { NAZWY_PUL, etykietaAlkoholu, etykietaDojazdu } from "@/lib/zapisy/formularz";
@@ -9,6 +8,7 @@ import {
   type Uczestnik,
 } from "@/lib/zapisy/uczestnicy";
 import type { KluczPuli, Team } from "@/types/db";
+import { Wroc } from "@/components/Wroc";
 
 const POLE =
   "szklo min-h-11 w-full rounded-sm px-3 text-sm text-kosc outline-none focus-visible:border-krew";
@@ -110,12 +110,7 @@ export default async function UczestnicyPage({
         </>
       )}
 
-      <Link
-        href="/app/admin"
-        className="mt-7 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
-      >
-        Wróć do sanktuarium
-      </Link>
+      <Wroc href="/app/admin">Wróć do sanktuarium</Wroc>
     </Ekran>
   );
 }

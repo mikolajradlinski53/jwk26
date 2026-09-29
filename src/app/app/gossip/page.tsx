@@ -1,10 +1,11 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { OdswiezPrzyPowrocie } from "@/components/OdswiezPrzyPowrocie";
 import { NAZWY_STATUSU, type KategoriaGossipow } from "@/lib/gossipy";
 import { Glosowanie } from "./Glosowanie";
+import { Wroc } from "@/components/Wroc";
+import { Pusto } from "@/components/Pusto";
 
 export default async function GossipPage() {
   const supabase = await createClient();
@@ -28,9 +29,7 @@ export default async function GossipPage() {
         </p>
       )}
       {!error && kategorie.length === 0 && (
-        <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">
-          Jeszcze nic. Pierwsza kategoria pojawi się, gdy ogłosi ją organizator.
-        </p>
+        <Pusto ikona="list">Jeszcze nic. Pierwsza kategoria pojawi się, gdy ogłosi ją organizator.</Pusto>
       )}
 
       <ul className="grid gap-4">
@@ -87,12 +86,7 @@ export default async function GossipPage() {
         <OdswiezPrzyPowrocie />
       </div>
 
-      <Link
-        href="/app/wiecej"
-        className="mt-4 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
-      >
-        Wróć
-      </Link>
+      <Wroc href="/app/wiecej">Wróć</Wroc>
     </Ekran>
   );
 }

@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { WyborKapitana } from "./WyborKapitana";
 import type { Team, TeamScore, UserScore } from "@/types/db";
+import { Wroc } from "@/components/Wroc";
 
 export default async function AdminDruzynyPage() {
   const supabase = await createClient();
@@ -45,12 +45,7 @@ export default async function AdminDruzynyPage() {
         prawo zakupu, historia zostaje.
       </p>
 
-      <Link
-        href="/app/admin"
-        className="mt-7 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
-      >
-        Wróć do sanktuarium
-      </Link>
+      <Wroc href="/app/admin">Wróć do sanktuarium</Wroc>
     </Ekran>
   );
 }

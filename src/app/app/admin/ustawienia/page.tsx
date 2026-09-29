@@ -1,17 +1,12 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Formularz } from "./Formularz";
 import { FormularzPrzelewu } from "./FormularzPrzelewu";
 import type { Ustawienia } from "@/lib/ustawienia";
+import { Wroc } from "@/components/Wroc";
 
 const WroccLink = (
-  <Link
-    href="/app/admin"
-    className="mt-7 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
-  >
-    Wróć do sanktuarium
-  </Link>
+  <Wroc href="/app/admin">Wróć do sanktuarium</Wroc>
 );
 
 export default async function UstawieniaPage() {

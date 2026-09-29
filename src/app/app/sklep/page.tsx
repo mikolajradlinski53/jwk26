@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Polka } from "./Polka";
 import { Kronika } from "./Kronika";
+import { NaglowekSekcji } from "@/components/NaglowekSekcji";
 import type {
   ActiveEffect,
   ShopItem,
@@ -107,9 +108,7 @@ export default async function SklepPage() {
         obceDruzyny={wszystkie.filter((d) => d.id !== mojaDruzyna)}
       />
 
-      <h2 className="mb-2.5 mt-8 px-1 text-xs uppercase tracking-[0.14em] text-dym">
-        Kronika
-      </h2>
+      <NaglowekSekcji>Kronika</NaglowekSekcji>
       <Kronika wpisy={(kronika ?? []) as WpisKroniki[]} />
     </Ekran>
   );

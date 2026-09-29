@@ -1,4 +1,5 @@
 import type { WpisKroniki } from "@/types/db";
+import { Pusto } from "@/components/Pusto";
 
 const OPIS_STANU: Record<WpisKroniki["status"], string> = {
   pending: "czeka na wydanie",
@@ -9,9 +10,7 @@ const OPIS_STANU: Record<WpisKroniki["status"], string> = {
 export function Kronika({ wpisy }: { wpisy: WpisKroniki[] }) {
   if (wpisy.length === 0) {
     return (
-      <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">
-        Nikt jeszcze niczego nie kupił.
-      </p>
+      <Pusto ikona="kielich">Nikt jeszcze niczego nie kupił.</Pusto>
     );
   }
 

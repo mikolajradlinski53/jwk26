@@ -1,10 +1,11 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { DecyzjaZamowienia } from "./DecyzjaZamowienia";
 import { StanPozycji } from "./StanPozycji";
 import { IkonaPozycji } from "@/components/IkonaPozycji";
 import type { ShopItem, WpisKroniki } from "@/types/db";
+import { Wroc } from "@/components/Wroc";
+import { NaglowekSekcji } from "@/components/NaglowekSekcji";
 
 export default async function AdminSklepikPage() {
   const supabase = await createClient();
@@ -49,9 +50,7 @@ export default async function AdminSklepikPage() {
         </ol>
       )}
 
-      <h2 className="mb-2.5 mt-8 px-1 text-xs uppercase tracking-[0.14em] text-dym">
-        Półka
-      </h2>
+      <NaglowekSekcji>Półka</NaglowekSekcji>
       <ul className="grid gap-2">
         {((pozycje ?? []) as ShopItem[]).map((p) => (
           <li key={p.id} className="szklo rounded-md px-3.5 py-3">
@@ -73,12 +72,7 @@ export default async function AdminSklepikPage() {
         punkty.
       </p>
 
-      <Link
-        href="/app/admin"
-        className="mt-7 flex min-h-11 items-center justify-center text-center text-xs uppercase tracking-[0.14em] text-dym hover:text-kosc"
-      >
-        Wróć do sanktuarium
-      </Link>
+      <Wroc href="/app/admin">Wróć do sanktuarium</Wroc>
     </Ekran>
   );
 }
