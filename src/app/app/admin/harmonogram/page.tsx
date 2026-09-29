@@ -14,7 +14,7 @@ export default async function AdminHarmonogramPage() {
   const [{ data, error }, { data: start }] = await Promise.all([
     supabase
       .from("harmonogram")
-      .select("id, dzien, godzina, tytul, opis")
+      .select("id, dzien, godzina, tytul, opis, na_landingu")
       .order("dzien")
       .order("godzina", { nullsFirst: true }),
     supabase.from("app_settings").select("value").eq("key", "data_jwk").maybeSingle(),

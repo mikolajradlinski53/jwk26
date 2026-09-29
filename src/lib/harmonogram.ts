@@ -5,6 +5,8 @@ export type PunktHarmonogramu = {
   godzina: string | null; // HH:MM:SS
   tytul: string;
   opis: string | null;
+  /** Punkt pokazywany publicznie w planie na landingu. */
+  na_landingu?: boolean;
 };
 
 export type DzienHarmonogramu = { dzien: string; punkty: PunktHarmonogramu[] };

@@ -34,14 +34,14 @@ function przesuniecieWarszawy(lokalna: string): string {
   return dopasowanie ? dopasowanie[0] : "+01:00";
 }
 
-function naDatetimeLocal(iso: string | null): string {
+export function naDatetimeLocal(iso: string | null): string {
   if (!iso) return "";
   // <input type="datetime-local"> nie przyjmuje wartości ze strefą —
   // obcinamy przesunięcie ("+02:00" na końcu) przy odczycie.
   return iso.replace(/[+-]\d{2}:\d{2}$/, "");
 }
 
-function naIso(lokalna: string): string {
+export function naIso(lokalna: string): string {
   // Wartość z <input type="datetime-local"> to zwykle "YYYY-MM-DDTHH:mm",
   // rzadziej (gdy przeglądarka pokaże sekundy) "YYYY-MM-DDTHH:mm:ss" —
   // sekundy dokładamy tylko wtedy, gdy ich brakuje.
@@ -124,13 +124,13 @@ export function Formularz({ poczatkowe }: { poczatkowe: Ustawienia }) {
       />
       <Field
         label="Nazwa miejsca"
-        placeholder="OW Zielone Wzgórze"
+        placeholder="Nazwa ośrodka"
         value={miejsceNazwa}
         onChange={(e) => setMiejsceNazwa(e.target.value)}
       />
       <Field
         label="Adres miejsca"
-        placeholder="Poznańska 5, 58-540 Karpacz"
+        placeholder="Ulica 1, 00-000 Miasto"
         value={miejsceAdres}
         onChange={(e) => setMiejsceAdres(e.target.value)}
       />

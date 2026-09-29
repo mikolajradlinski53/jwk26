@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Formularz } from "./Formularz";
 import { FormularzPrzelewu } from "./FormularzPrzelewu";
+import { FormularzOdslon } from "./FormularzOdslon";
 import type { Ustawienia } from "@/lib/ustawienia";
 import { Wroc } from "@/components/Wroc";
 
@@ -26,12 +27,17 @@ export default async function UstawieniaPage() {
       "przelew_numer_konta",
       "przelew_odbiorca",
       "przelew_kwota",
+      "odslona_osrodek",
+      "odslona_cena",
+      "odslona_zapisy",
+      "social_instagram",
+      "social_facebook",
     ]);
 
   if (error) {
     console.error("Nie udało się wczytać ustawień wydarzenia (admin):", error);
     return (
-      <Ekran tytul="Ustawienia" podtytul="Daty i miejsce wydarzenia">
+      <Ekran tytul="Ustawienia" podtytul="Daty, miejsce, odsłony i profile">
         <p className="szklo rounded-md px-4 py-3.5 text-sm text-krew-jasna">
           Nie udało się wczytać ustawień. Odśwież stronę albo spróbuj później.
         </p>
@@ -51,13 +57,22 @@ export default async function UstawieniaPage() {
   const kwota = Number(mapa.get("przelew_kwota"));
 
   return (
-    <Ekran tytul="Ustawienia" podtytul="Daty i miejsce wydarzenia">
+    <Ekran tytul="Ustawienia" podtytul="Daty, miejsce, odsłony i profile">
       <Formularz poczatkowe={poczatkowe} />
       <FormularzPrzelewu
         poczatkowe={{
           konto: String(mapa.get("przelew_numer_konta") ?? ""),
           odbiorca: String(mapa.get("przelew_odbiorca") ?? ""),
           kwota: Number.isFinite(kwota) && kwota > 0 ? kwota : null,
+        }}
+      />
+      <FormularzOdslon
+        poczatkowe={{
+          osrodek: mapa.get("odslona_osrodek") || null,
+          cena: mapa.get("odslona_cena") || null,
+          zapisy: mapa.get("odslona_zapisy") || null,
+          instagram: String(mapa.get("social_instagram") ?? ""),
+          facebook: String(mapa.get("social_facebook") ?? ""),
         }}
       />
       {WroccLink}

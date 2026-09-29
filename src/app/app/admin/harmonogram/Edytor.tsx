@@ -29,6 +29,7 @@ export function FormularzPunktu({
   const [godzina, setGodzina] = useState(krotkaGodzina(punkt?.godzina ?? null) ?? "");
   const [tytul, setTytul] = useState(punkt?.tytul ?? "");
   const [opis, setOpis] = useState(punkt?.opis ?? "");
+  const [naLandingu, setNaLandingu] = useState(punkt?.na_landingu ?? false);
   const [blad, setBlad] = useState<string | null>(null);
   const [czeka, setCzeka] = useState(false);
   const wToku = useRef(false);
@@ -47,7 +48,13 @@ export function FormularzPunktu({
 
     wToku.current = true;
     setCzeka(true);
-    const wiersz = { dzien, godzina: godzina || null, tytul: tytul.trim(), opis: opis.trim() || null };
+    const wiersz = {
+      dzien,
+      godzina: godzina || null,
+      tytul: tytul.trim(),
+      opis: opis.trim() || null,
+      na_landingu: naLandingu,
+    };
     const tabela = createClient().from("harmonogram");
     const { error } = punkt ? await tabela.update(wiersz).eq("id", punkt.id) : await tabela.insert(wiersz);
     setCzeka(false);
@@ -63,6 +70,7 @@ export function FormularzPunktu({
       setGodzina("");
       setTytul("");
       setOpis("");
+      setNaLandingu(false);
     }
     onGotowe?.();
     router.refresh();
@@ -94,6 +102,22 @@ export function FormularzPunktu({
           placeholder="Miejsce, co zabrać, kto prowadzi…"
           className="szklo w-full rounded-sm px-3.5 py-2.5 text-sm text-kosc outline-none placeholder:text-dym focus-visible:border-krew"
         />
+      </label>
+
+      {/* Publiczne — landing pokazuje ten punkt każdemu, bez logowania. */}
+      <label className="flex min-h-11 items-start gap-3 text-sm text-kosc">
+        <input
+          type="checkbox"
+          checked={naLandingu}
+          onChange={(e) => setNaLandingu(e.target.checked)}
+          className="mt-0.5 size-5 shrink-0 accent-[var(--color-krew)]"
+        />
+        <span>
+          Pokaż na landingu
+          <span className="block text-xs text-dym">
+            Publiczne — bez motywu wyjazdu i bez nazwy miejsca przed jego odsłoną.
+          </span>
+        </span>
       </label>
 
       {blad && (
@@ -159,6 +183,11 @@ export function PunktDoEdycji({ punkt }: { punkt: PunktHarmonogramu }) {
             </span>
             <div className="min-w-0 flex-1">
               <h3 className="text-sm font-bold text-kosc">{punkt.tytul}</h3>
+              {punkt.na_landingu && (
+                <p className="mt-1 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-krew-jasna">
+                  Na landingu
+                </p>
+              )}
               {punkt.opis && (
                 <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-popiol">{punkt.opis}</p>
               )}
