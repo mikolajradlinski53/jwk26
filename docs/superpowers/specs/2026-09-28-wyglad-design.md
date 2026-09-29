@@ -169,8 +169,9 @@ karcie przewijanej listy to za dużo rozmycia naraz dla słabszych telefonów.
 - **Wejście głębiej** (Więcej → Kasyno → Blackjack, Sanktuarium → Zapisy itd.):
   przesunięcie w lewo (`nav-forward`); **powrót** linkami „Wróć”: w prawo
   (`nav-back`). Linki dostają `transitionTypes`.
-- Pasek nawigacji i nagłówek ekranu stoją w miejscu (`viewTransitionName`
-  z wyłączoną animacją).
+- Pasek nawigacji stoi w miejscu (`viewTransitionName` z wyłączoną animacją).
+  Nagłówek ekranu jedzie razem z treścią — każdy ekran ma inny tytuł, więc
+  „zakotwiczony” nagłówek migałby przy podmianie.
 - `::view-transition { pointer-events: none }` — dotyk w trakcie animacji nie
   ginie.
 - `prefers-reduced-motion` — bez przesunięć, samo przenikanie skrócone do zera.
