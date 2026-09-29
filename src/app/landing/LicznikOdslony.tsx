@@ -5,12 +5,21 @@ import { useRouter } from "next/navigation";
 import { odliczanie } from "@/lib/odliczanie";
 import { tekstOdliczania } from "@/lib/odslony";
 
+// Chwila trzymana poza Reactem i zmieniana tylko przy tyknięciu: `getSnapshot`
+// musi zwracać tę samą wartość między tyknięciami, inaczej React ostrzega
+// o niebuforowanej migawce (i w skrajnym razie zapętla render).
+let teraz = Date.now();
+
 function subskrybuj(powiadom: () => void) {
-  const id = setInterval(powiadom, 1000);
+  teraz = Date.now();
+  const id = setInterval(() => {
+    teraz = Date.now();
+    powiadom();
+  }, 1000);
   return () => clearInterval(id);
 }
 function terazMs() {
-  return Date.now();
+  return teraz;
 }
 function terazNaSerwerze() {
   return null;
@@ -34,8 +43,8 @@ export function LicznikOdslony({
   className?: string;
 }) {
   const router = useRouter();
-  const teraz = useSyncExternalStore(subskrybuj, terazMs, terazNaSerwerze);
-  const w = teraz === null || !data ? null : odliczanie(data, new Date(teraz));
+  const chwila = useSyncExternalStore(subskrybuj, terazMs, terazNaSerwerze);
+  const w = chwila === null || !data ? null : odliczanie(data, new Date(chwila));
   const minelo = w?.minelo ?? false;
 
   useEffect(() => {

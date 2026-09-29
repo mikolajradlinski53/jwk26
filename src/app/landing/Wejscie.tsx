@@ -40,7 +40,13 @@ export function Wejscie({
 }) {
   return (
     <section className="relative w-full overflow-hidden">
-      <div className="relative aspect-[3/4] w-full min-[600px]:aspect-[16/10] min-[900px]:aspect-[21/9]">
+      {/* Minimalna wysokość obok proporcji: pod licznikiem doszły data
+          i licznik zapisów, a przy 21:9 na komputerze przycisk wjeżdżał
+          pod falę. Proporcja nadal rezerwuje miejsce w pierwszej klatce. */}
+      <div
+        className="relative aspect-[3/4] min-h-[600px] w-full min-[600px]:aspect-[16/10] min-[600px]:min-h-[720px]
+                   min-[900px]:aspect-[21/9]"
+      >
         <Image
           src="/hero/hero-8.jpg"
           alt="Grupa uczestników poprzedniego wyjazdu śmieje się na pomoście nad jesiennym jeziorem, w tle złote drzewa"

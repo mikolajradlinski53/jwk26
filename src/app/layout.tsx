@@ -19,14 +19,16 @@ const manrope = Manrope({
   variable: "--font-manrope",
 });
 
+// Neutralne domyślne — dziedziczą je strony publiczne (landing, regulamin,
+// polityka). Nazwa z motywem i manifest żyją w METADANE_APKI, podpiętych
+// wyłącznie pod /app i /wejscie.
 export const metadata: Metadata = {
-  title: "Sekta Wyjazdowa",
-  description: "Rytuał trwa.",
-  manifest: "/manifest.webmanifest",
+  title: "Jesienny Wyjazd Komisji 2026",
+  description: "Wyjazd integracyjny Samorządu Studentów Uniwersytetu Ekonomicznego we Wrocławiu.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Sekta",
+    title: "Jesienny Wyjazd Komisji",
   },
 };
 

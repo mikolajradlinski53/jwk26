@@ -5,6 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 import { ZamekInstalacji } from "@/components/ZamekInstalacji";
 import { ustawienia } from "@/lib/ustawienia";
 import { Logowanie } from "./Logowanie";
+import { METADANE_APKI } from "@/lib/metadaneApki";
+
+// Tu odbywa się instalacja na ekranie głównym — nazwa i manifest apki.
+export const metadata = METADANE_APKI;
 
 function dataWyjazdu(iso: string | null): string | null {
   if (!iso) return null;

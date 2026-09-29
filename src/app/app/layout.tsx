@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { KolejkiAdmina } from "@/components/KolejkiAdmina";
 import { PasekNawigacji } from "@/components/PasekNawigacji";
 import { ZamekInstalacji } from "@/components/ZamekInstalacji";
+import { METADANE_APKI } from "@/lib/metadaneApki";
+
+export const metadata = METADANE_APKI;
 
 export default async function ApkaLayout({
   children,

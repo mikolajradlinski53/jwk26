@@ -3,13 +3,22 @@
 import { useSyncExternalStore } from "react";
 import { odliczanie, type Odliczanie } from "@/lib/odliczanie";
 
+// Chwila trzymana poza Reactem i zmieniana tylko przy tyknięciu: `getSnapshot`
+// musi zwracać tę samą wartość między tyknięciami, inaczej React ostrzega
+// o niebuforowanej migawce (wyłapane przy przeglądzie planu 16a).
+let chwila = Date.now();
+
 function subskrybuj(powiadom: () => void) {
-  const id = setInterval(powiadom, 1000);
+  chwila = Date.now();
+  const id = setInterval(() => {
+    chwila = Date.now();
+    powiadom();
+  }, 1000);
   return () => clearInterval(id);
 }
 
 function terazMs() {
-  return Date.now();
+  return chwila;
 }
 
 // Serwer nie zna chwili, w której klient wykona hydratację — a `Date.now()`

@@ -37,7 +37,7 @@ export function CoZabrac({ miasto }: { miasto: string | null }) {
   return (
     <section id="co-zabrac" className="bg-jesien-tlo/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener wariant="szeroki">
-        <SekcjaNaglowek numer="06" nadtytul="Przygotowanie" tytul="Co zabrać" />
+        <SekcjaNaglowek numer="07" nadtytul="Przygotowanie" tytul="Co zabrać" />
 
         <p className="text-sm leading-relaxed text-jesien-kora">
           {miasto ? `${miasto} w drugiej połowie października` : "W górach w drugiej połowie października"}{" "}

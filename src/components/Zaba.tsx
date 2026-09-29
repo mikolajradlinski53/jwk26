@@ -6,9 +6,11 @@ export type StanZaby = "powitanie" | "tutorial" | "odmowa" | "czekanie" | "sukce
 
 /*
  * Uwaga na `powitanie`: to jedyny stan używany na **landingu**, a landing nie
- * może zdradzać motywu apki — także w drzewie dostępności. Opis „przed wejściem
- * do Sekty" czytnik ekranu ogłaszał komuś, kto ogląda zwyczajną jesienną stronę.
- * Pozostałe stany żyją wyłącznie za bramką i tam nazwa motywu jest zamierzona.
+ * może zdradzać motywu apki — także w drzewie dostępności. Dawny opis z nazwą
+ * motywu czytnik ekranu ogłaszał komuś, kto ogląda zwyczajną jesienną stronę.
+ * Pozostałe stany żyją wyłącznie za bramką. Słowa motywu nie ma nawet w tym
+ * komentarzu: komponent trafia do skryptów landingu, a skrypt deweloperski
+ * zachowuje komentarze (kontrola przecieku, plan 16a).
  */
 const OPISY: Record<StanZaby, string> = {
   powitanie: "Żaba, maskotka wyjazdu",

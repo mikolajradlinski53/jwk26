@@ -11,7 +11,11 @@ function Atrapa({ ksztalt }: { ksztalt: "osrodek" | "cena" }) {
   if (ksztalt === "osrodek") {
     return (
       <div className="grid gap-4">
-        <div className="grid grid-cols-[1.7fr_1fr] gap-2.5">
+        {/* minmax(0, …): pusty kafelek z aspect-ratio ma minimalną szerokość
+            liczoną z wysokości i rozpychał kolumny `fr` poza ekran (poziome
+            przewijanie na telefonie). W prawdziwej sekcji chroni przed tym
+            overflow-hidden kafelków ze zdjęciami. */}
+        <div className="grid grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] gap-2.5">
           <div className="aspect-[4/3] rounded-lg bg-jesien-kora/20" />
           <div className="aspect-[4/3] rounded-lg bg-jesien-mech/25" />
         </div>
