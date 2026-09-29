@@ -63,9 +63,10 @@ export function PasekNawigacji() {
       aria-label="Nawigacja główna"
       // Pasek pływa, nie dotyka krawędzi. To warunek działania szkła: docięty
       // do dołu nie ma pod sobą treści, więc rozmycie nie ma czego rozmywać.
-      className="szklo fixed inset-x-3.5 bottom-[calc(0.875rem+env(safe-area-inset-bottom,0px))]
-                 z-40 grid grid-cols-5 rounded-full p-1.5
-                 shadow-[inset_0_1px_0_rgb(255_255_255/0.34),0_14px_34px_rgb(0_0_0/0.5)]"
+      // Stała nazwa przejścia: przy zmianie ekranu pasek stoi, jedzie treść.
+      className="szklo-plynne fixed inset-x-3.5 bottom-[calc(0.875rem+env(safe-area-inset-bottom,0px))]
+                 z-40 grid grid-cols-5 rounded-full p-1.5"
+      style={{ viewTransitionName: "pasek" }}
     >
       {POZYCJE.map((p) => {
         // Ranking jest pod "/app", więc dopasowanie po prefiksie zapaliłoby go
@@ -86,19 +87,22 @@ export function PasekNawigacji() {
           <Link
             key={p.href}
             href={p.href}
+            // Zakładki paska to „to samo miejsce, inna zawartość” — przenikanie,
+            // nie przesunięcie (spec wyglądu, „Przejścia”).
+            transitionTypes={["zakladka"]}
             aria-current={aktywna ? "page" : undefined}
             className={
               "relative grid min-h-11 place-items-center rounded-full transition-colors " +
               "focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-krew " +
-              (aktywna ? "text-white" : "text-dym hover:text-kosc")
+              (aktywna ? "text-kosc" : "text-popiol/70 hover:text-kosc")
             }
           >
             {aktywna && (
               <span
                 aria-hidden="true"
                 className="absolute inset-y-0.5 inset-x-1.5 -z-10 rounded-full
-                           bg-gradient-to-b from-krew to-krew-glab
-                           shadow-[0_6px_18px_rgb(200_16_46/0.45),inset_0_1px_0_rgb(255_255_255/0.4)]"
+                           bg-gradient-to-b from-krew-jasna/60 to-krew/60
+                           shadow-[inset_0_1px_1px_rgb(255_255_255/0.55),0_6px_18px_rgb(200_16_46/0.35)]"
               />
             )}
             <svg
