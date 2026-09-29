@@ -19,8 +19,16 @@ const POLE =
  * Ogłoszenie push do wszystkich, drużyny albo puli. Wysłanego nie da się
  * cofnąć, więc przed wysyłką jest krok potwierdzenia z nazwą adresata.
  */
-export function Ogloszenie({ druzyny }: { druzyny: { id: string; name: string }[] }) {
+export function Ogloszenie({
+  druzyny,
+  zgodSms,
+}: {
+  druzyny: { id: string; name: string }[];
+  /** Ilu przyjętych ma zgodę na SMS i numer — tylu (najwyżej) dostanie SMS. */
+  zgodSms: number;
+}) {
   const router = useRouter();
+  const [sms, setSms] = useState(false);
   const [tytul, setTytul] = useState("");
   const [tresc, setTresc] = useState("");
   const [adresat, setAdresat] = useState<Adresat>("all");
@@ -60,6 +68,7 @@ export function Ogloszenie({ druzyny }: { druzyny: { id: string; name: string }[
       p_adresat: adresat,
       p_druzyna: adresat === "team" ? druzyna : null,
       p_pula: adresat === "pula" ? pula : null,
+      p_sms: sms,
     });
 
     setCzeka(false);
@@ -73,6 +82,7 @@ export function Ogloszenie({ druzyny }: { druzyny: { id: string; name: string }[
     }
     setTytul("");
     setTresc("");
+    setSms(false);
     setUdane(true);
     router.refresh();
   }
@@ -133,6 +143,22 @@ export function Ogloszenie({ druzyny }: { druzyny: { id: string; name: string }[
         )}
       </div>
 
+      {/* SMS kosztuje — domyślnie wyłączony i gaśnie po każdej wysyłce. */}
+      <label className="flex min-h-11 items-start gap-3 text-sm text-kosc">
+        <input
+          type="checkbox"
+          checked={sms}
+          onChange={(e) => setSms(e.target.checked)}
+          className="mt-0.5 size-5 shrink-0 accent-[var(--color-krew)]"
+        />
+        <span>
+          Wyślij też SMS-em
+          <span className="block text-xs text-dym">
+            Tylko do osób ze zgodą na SMS ({zgodSms} przyjętych). Płatne — na pilne sprawy.
+          </span>
+        </span>
+      </label>
+
       {blad && (
         <p role="alert" className="text-sm text-krew-jasna">
           {blad}
@@ -147,7 +173,7 @@ export function Ogloszenie({ druzyny }: { druzyny: { id: string; name: string }[
       {pyta ? (
         <div className="szklo grid gap-3 rounded-md px-4 py-3.5">
           <p aria-live="polite" className="text-sm text-kosc">
-            Wysłać do {komu}? Tego nie da się cofnąć.
+            Wysłać do {komu}{sms ? " — także SMS-em" : ""}? Tego nie da się cofnąć.
           </p>
           <div className="grid grid-cols-2 gap-3">
             <Button variant="szklo" onClick={() => setPyta(false)} disabled={czeka}>

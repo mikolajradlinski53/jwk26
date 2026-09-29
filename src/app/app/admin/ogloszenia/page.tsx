@@ -9,6 +9,7 @@ import { Pusto } from "@/components/Pusto";
 
 type Wpis = {
   id: number;
+  kanal: "push" | "sms" | "in_app";
   tytul: string;
   body: string | null;
   adresat: string;
@@ -30,19 +31,27 @@ const CZAS = new Intl.DateTimeFormat("pl-PL", {
 
 export default async function OgloszeniaPage() {
   const supabase = await createClient();
-  const [{ data: druzynyRaw }, { data: historiaRaw, error }] = await Promise.all([
+  const [{ data: druzynyRaw }, { data: historiaRaw, error }, { count: zgodSms }] = await Promise.all([
     supabase.from("teams").select("id, name").order("name"),
     supabase
       .from("powiadomienia")
-      .select("id, tytul, body, adresat, adresat_id, pula, created_at, wyslane_at, wyslane_do, proby")
+      .select("id, kanal, tytul, body, adresat, adresat_id, pula, created_at, wyslane_at, wyslane_do, proby")
       .eq("ref_type", "ogloszenie")
       .order("id", { ascending: false })
       .limit(20),
+    supabase
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "approved")
+      .eq("sms_consent", true)
+      .not("phone", "is", null),
   ]);
 
   const druzyny = (druzynyRaw ?? []) as { id: string; name: string }[];
   const historia = (historiaRaw ?? []) as Wpis[];
   const nazwaDruzyny = new Map(druzyny.map((d) => [d.id, d.name]));
+  // Strona dynamiczna, liczona per żądanie — chwila renderu to chwila odczytu.
+  const teraz = new Date().getTime();
 
   function komu(w: Wpis) {
     if (w.adresat === "team") return nazwaDruzyny.get(w.adresat_id ?? "") ?? "drużyna";
@@ -51,6 +60,14 @@ export default async function OgloszeniaPage() {
   }
 
   function stan(w: Wpis) {
+    if (w.kanal === "sms") {
+      if (w.wyslane_at) return `SMS do ${w.wyslane_do ?? 0} numerów`;
+      // Po godzinie wysyłka odpuszcza (pobierz_sms) — najczęściej dlatego,
+      // że SMSAPI nie jest jeszcze podpięte (docs/sms.md).
+      const przeterminowany = teraz - new Date(w.created_at).getTime() > 3600_000;
+      if (w.proby >= 5 || przeterminowany) return "SMS nie wyszedł";
+      return "SMS w drodze…";
+    }
     if (w.wyslane_at) return `dotarło do ${w.wyslane_do ?? 0} urządzeń`;
     // Po pięciu próbach wysyłka się poddaje (pobierz_push) — to trzeba widzieć.
     if (w.proby >= 5) return "nie udało się wysłać";
@@ -59,7 +76,7 @@ export default async function OgloszeniaPage() {
 
   return (
     <Ekran tytul="Ogłoszenia" podtytul="Powiadomienia push">
-      <Ogloszenie druzyny={druzyny} />
+      <Ogloszenie druzyny={druzyny} zgodSms={zgodSms ?? 0} />
 
       <NaglowekSekcji>Wysłane</NaglowekSekcji>
       {error && (
