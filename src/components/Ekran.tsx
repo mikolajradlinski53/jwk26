@@ -4,7 +4,12 @@ import { ViewTransition } from "react";
 // wejście głębiej odjeżdża w lewo, powrót w prawo. Bez typu (odświeżenie,
 // systemowe „wstecz”) — bez animacji. Opakowanie jest tutaj, w ekranie, a nie
 // w layoucie: layout przeżywa nawigację, więc enter/exit by się nie odpaliły.
-const RUCH = {
+//
+// Ta sama mapa w `default`, nie tylko w enter/exit: przy zmianie strony Next
+// potrafi potraktować ekran jako aktualizację, a nie wymianę — wtedy liczy
+// się `default`, a z „none” nie działo się nic poza domyślnym przenikaniem
+// całej strony (sprawdzone pomiarem animacji w Chrome).
+export const RUCH = {
   "nav-forward": "nav-forward",
   "nav-back": "nav-back",
   zakladka: "przenikanie",
@@ -21,7 +26,7 @@ export function Ekran({
   children: React.ReactNode;
 }) {
   return (
-    <ViewTransition enter={RUCH} exit={RUCH} default="none">
+    <ViewTransition enter={RUCH} exit={RUCH} default={RUCH}>
       <section className="mx-auto w-full max-w-md px-4 pb-10">
         {/* Odstęp na wcięcie ekranu daje `body` przez env(safe-area-inset-top),
             więc tutaj zostaje tylko oddech typograficzny. Wcześniejsze `pt-7`

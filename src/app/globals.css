@@ -606,6 +606,18 @@ body {
   /* Dotyk w trakcie animacji nie ginie. */
   pointer-events: none;
 }
+/*
+ * Bez domyślnego przenikania całej strony. Przeglądarka robi je przy każdym
+ * przejściu (półprzezroczysta stara strona na nowej, 250 ms) — to ono dawało
+ * efekt „jedno na drugim”, zwłaszcza w Safari. Tło i tak jest wspólne, a to,
+ * co ma się ruszać, ma własne przejście (ekran, pasek).
+ */
+::view-transition-old(root) {
+  display: none;
+}
+::view-transition-new(root) {
+  animation: none;
+}
 ::view-transition-group(pasek) {
   animation: none;
   z-index: 100;
@@ -619,8 +631,9 @@ body {
 ::view-transition-old(.przenikanie) {
   animation: 150ms ease-out both vt-zanik;
 }
+/* Nowy wchodzi dopiero, gdy stary zniknął — bez chwili, w której widać oba. */
 ::view-transition-new(.przenikanie) {
-  animation: 210ms ease-in 60ms both vt-pojaw;
+  animation: 210ms ease-out 150ms both vt-pojaw;
 }
 ::view-transition-old(.nav-forward) {
   --przesuniecie: -60px;
