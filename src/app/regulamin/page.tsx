@@ -32,7 +32,14 @@ export default async function RegulaminPage() {
   const zatwierdzony = data?.value === true;
 
   return (
-    <main className="jesien mx-auto w-full max-w-2xl px-4 pb-16 pt-10">
+    <>
+      {/* Jesienne tło pod całym oknem, nie tylko pod kolumną treści. Regulamin
+          jest podpięty pod landing, a tam motyw sekty jest tajemnicą — wcześniej
+          po bokach (komputer) i w wcięciu nad treścią (iPhone) prześwitywało
+          ciemne tło apki. `fixed` przykrywa też to, co odsłania przewijanie
+          poza krawędź. */}
+      <div aria-hidden="true" className="fixed inset-0 z-0 bg-jesien-tlo" />
+      <main className="jesien relative z-10 mx-auto w-full max-w-2xl px-4 pb-16 pt-10">
       <Link href="/" className="text-sm text-jesien-rdza underline underline-offset-2">
         ← Wróć na start
       </Link>
@@ -131,6 +138,7 @@ export default async function RegulaminPage() {
       >
         ← Wróć na start
       </Link>
-    </main>
+      </main>
+    </>
   );
 }
