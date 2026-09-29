@@ -1,7 +1,8 @@
 import Image from "next/image";
-import Link from "next/link";
 import { odliczanie } from "@/lib/odliczanie";
+import { DATY_WYJAZDU, type OdslonaWidok } from "@/lib/odslony";
 import { Licznik } from "./Licznik";
+import { PrzyciskZapisu } from "./PrzyciskZapisu";
 
 /**
  * Sekcja wejściowa — pierwsze, co widać po otwarciu landingu. Zdjęcie
@@ -27,7 +28,16 @@ import { Licznik } from "./Licznik";
  * jego czytelność nie zależy od zdjęcia w ogóle — przyciemnienie chroni
  * logo i przycisk.
  */
-export function Wejscie({ dataJwk }: { dataJwk: string | null }) {
+export function Wejscie({
+  dataJwk,
+  zapisy,
+  miasto,
+}: {
+  dataJwk: string | null;
+  zapisy: OdslonaWidok;
+  /** `null` przed odsłoną ośrodka. */
+  miasto: string | null;
+}) {
   return (
     <section className="relative w-full overflow-hidden">
       <div className="relative aspect-[3/4] w-full min-[600px]:aspect-[16/10] min-[900px]:aspect-[21/9]">
@@ -58,23 +68,19 @@ export function Wejscie({ dataJwk }: { dataJwk: string | null }) {
           />
 
           <div className="grid justify-items-center gap-6">
-            <Licznik
-              docelowa={dataJwk}
-              etykieta="Do wyjazdu"
-              poTerminie="Trwa"
-              poczatkowe={odliczanie(dataJwk, new Date())}
-              rozmiar="duzy"
-            />
-
-            <Link
-              href="/wejscie"
-              className="flex min-h-12 w-[min(280px,80vw)] items-center justify-center rounded-full
-                         border border-jesien-rdza/40 bg-jesien-rdza px-5 text-sm font-bold text-white
-                         shadow-[0_14px_30px_-12px_rgb(12_7_9/0.6)] transition hover:brightness-110
-                         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            >
-              Zapisz się
-            </Link>
+            <div className="grid justify-items-center gap-3">
+              <Licznik
+                docelowa={dataJwk}
+                etykieta="Do wyjazdu"
+                poTerminie="Trwa"
+                poczatkowe={odliczanie(dataJwk, new Date())}
+                rozmiar="duzy"
+              />
+              <p className="text-sm font-bold text-white drop-shadow-[0_1px_6px_rgb(0_0_0/0.6)]">
+                {DATY_WYJAZDU} · {miasto ?? "miejsce wkrótce"}
+              </p>
+            </div>
+            <PrzyciskZapisu odslona={zapisy} wariant="hero" />
           </div>
         </div>
       </div>
