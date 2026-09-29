@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { komunikat } from "@/lib/zapisy/bledy";
 import { KROK_S, SWIAT, krok, nowyStan, type Stan } from "@/lib/kruk/fizyka";
-import { rysuj, type Paleta } from "./rysuj";
+import { rysuj, wczytajObrazy, type ObrazyGry, type Paleta } from "./rysuj";
 
 type Faza = "czeka" | "leci" | "pauza" | "koniec";
 
@@ -54,6 +54,22 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
   const [wynik, setWynik] = useState(0);
   const [rekord, setRekord] = useState<number | null>(rekordPoczatkowy);
   const [uwaga, setUwaga] = useState<string | null>(null);
+  const obrazyRef = useRef<ObrazyGry | null>(null);
+
+  // Grafiki raz na wejście na ekran. Do czasu wczytania gra rysuje wersję
+  // wektorową — słaba sieć niczego nie blokuje (spec wyglądu, „Kruk”). Osobny
+  // efekt, bez `runda`: „Jeszcze raz” nie ciągnie grafik od nowa.
+  useEffect(() => {
+    let zyje = true;
+    wczytajObrazy()
+      .then((o) => {
+        if (zyje) obrazyRef.current = o;
+      })
+      .catch((e) => console.error("Grafiki kruka się nie wczytały:", e));
+    return () => {
+      zyje = false;
+    };
+  }, []);
 
   useEffect(() => {
     const el = canvasRef.current;
@@ -171,7 +187,7 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
         czas: teraz / 1000,
         unosi: aktualna === "czeka",
         pokazWynik: aktualna !== "czeka",
-      });
+      }, obrazyRef.current);
       ramka = requestAnimationFrame(klatka);
     }
 
