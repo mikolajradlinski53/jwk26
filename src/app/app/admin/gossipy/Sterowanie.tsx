@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { komunikat } from "@/lib/zapisy/bledy";
 import type { KategoriaGossipow } from "@/lib/gossipy";
 
-type Wpis = { id: string; autor: string; na_kogo: string; tekst: string; ukryte: boolean };
+type Wpis = { id: string; autor: string; na_kogo: string; tekst: string; ukryte: boolean; przejrzane: boolean };
 
 /**
  * Zmiana statusu kategorii i moderacja uzasadnień. Ujawnienie wysyła push
@@ -80,20 +80,37 @@ export function Sterowanie({ kategoria, wpisy }: { kategoria: KategoriaGossipow;
         <ul className="grid gap-2">
           {wpisy.map((w) => (
             <li key={w.id} className={`rounded-sm border border-white/10 p-3 ${w.ukryte ? "opacity-50" : ""}`}>
-              <p className="text-xs text-dym">
+              <p className="flex items-center gap-1.5 text-xs text-dym">
+                {/* Nowe — jeszcze nieprzejrzane; to one zapalają licznik w pasku. */}
+                {!w.przejrzane && !w.ukryte && (
+                  <span aria-label="nowe" className="inline-block size-2 flex-none rounded-full bg-krew" />
+                )}
                 {w.autor} → {w.na_kogo}
                 {w.ukryte && " · ukryte"}
               </p>
               <p className="mt-1 text-sm leading-relaxed text-kosc">{w.tekst}</p>
-              <button
-                type="button"
-                onClick={() => void wykonaj("ukryj_uzasadnienie", { p_glos: w.id, p_ukryte: !w.ukryte })}
-                disabled={czeka}
-                className="mt-2 min-h-11 rounded-full border border-white/20 px-4 text-xs font-bold text-kosc
-                           hover:bg-white/10 disabled:opacity-40"
-              >
-                {w.ukryte ? "Pokaż" : "Ukryj uzasadnienie"}
-              </button>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {!w.przejrzane && !w.ukryte && (
+                  <button
+                    type="button"
+                    onClick={() => void wykonaj("oznacz_przejrzane", { p_glos: w.id })}
+                    disabled={czeka}
+                    className="min-h-11 rounded-full border border-white/20 px-4 text-xs font-bold text-kosc
+                               hover:bg-white/10 disabled:opacity-40"
+                  >
+                    Przejrzane
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => void wykonaj("ukryj_uzasadnienie", { p_glos: w.id, p_ukryte: !w.ukryte })}
+                  disabled={czeka}
+                  className="min-h-11 rounded-full border border-white/20 px-4 text-xs font-bold text-kosc
+                             hover:bg-white/10 disabled:opacity-40"
+                >
+                  {w.ukryte ? "Pokaż" : "Ukryj uzasadnienie"}
+                </button>
+              </div>
             </li>
           ))}
         </ul>

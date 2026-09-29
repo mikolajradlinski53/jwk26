@@ -28,7 +28,7 @@ export default async function AdminGossipyPage() {
   const moderacja = await Promise.all(
     kategorie.map(async (k) => {
       const { data } = await supabase.rpc("moderacja_gossipow", { p_kategoria: k.id });
-      return [k.id, (data ?? []) as { id: string; autor: string; na_kogo: string; tekst: string; ukryte: boolean }[]] as const;
+      return [k.id, (data ?? []) as { id: string; autor: string; na_kogo: string; tekst: string; ukryte: boolean; przejrzane: boolean }[]] as const;
     }),
   );
   const wpisy = new Map(moderacja);
