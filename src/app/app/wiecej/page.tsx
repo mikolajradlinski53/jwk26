@@ -87,6 +87,7 @@ export default async function WiecejPage() {
           zewnetrzny
         />
         <PozycjaMenu href="tel:+48608008363" ikona="telefon" nazwa="Zadzwoń" opis="Dawid Rutkowski · 608 008 363" zewnetrzny />
+        <PozycjaMenu href="/app/harmonogram" ikona="zegar" nazwa="Harmonogram" opis="Co, kiedy i gdzie" />
       </nav>
 
       <form action="/auth/signout" method="post" className="mt-8">
