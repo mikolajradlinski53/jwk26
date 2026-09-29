@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bodoni_Moda, Manrope } from "next/font/google";
+import { preload } from "react-dom";
 import "./globals.css";
 
 // Oś `opsz` celowo pominięta: poprawia rysunek w dużych rozmiarach, ale dokłada
@@ -39,33 +40,31 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Tło widać na każdym ekranie — niech przeglądarka zacznie je ciągnąć
+  // razem z HTML-em, a nie dopiero po sparsowaniu stylów.
+  preload("/grafika/tlo-apki.webp", { as: "image", type: "image/webp" });
+
   return (
     <html lang="pl" className={`${bodoni.variable} ${manrope.variable}`}>
       <body>
         {/*
-          Poświata mieszka w warstwie globalnej, nie na ekranach. Bez niej
-          backdrop-filter nie ma czego rozmywać i szkło zamienia się w szarą
-          płytę. Jedno tło znaczy też, że każdy nowy ekran jest szklany od razu.
+          Tło apki mieszka w warstwie globalnej, nie na ekranach. To ono jest
+          tym, co rozmywa szkło — bez niego backdrop-filter nie ma czego
+          rozmywać i szkło zamienia się w szarą płytę. Jedno tło znaczy też,
+          że każdy nowy ekran jest szklany od razu.
 
-          Bez `blur`: trzy radialne gradienty są już z natury miękkie, a filtr
-          rozmycia na powierzchni większej niż ekran to jedna z najdroższych
-          rzeczy, jakie można kazać zrobić GPU telefonu — i dokłada się do
-          każdego backdrop-filter w interfejsie. Jeśli na prawdziwym urządzeniu
-          widać pasmowanie, dopiero wtedy dodaj `blur-2xl`.
+          Obraz z Higgsfielda (Dym, spec wyglądu §4), 9 KB. `fixed` na
+          elemencie, nie `background-attachment: fixed` — iOS tamto ignoruje.
+          Kolor pod spodem to --color-noc: zanim obraz dojdzie, ekran wygląda
+          jak ciemniejsza wersja siebie, a nie jak błąd.
 
-          Kolory powtarzają --color-krew i --color-krew-glab, bo gradient
-          potrzebuje ich z kanałem alfa, a tokeny są nieprzezroczyste.
-          Zmieniając paletę, zmień oba miejsca.
+          Landing maluje własne tło na całą wysokość (.jesien) i tę warstwę
+          przykrywa.
         */}
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed inset-[-30%] -z-10"
-          style={{
-            background:
-              "radial-gradient(circle at 24% 12%, rgb(200 16 46 / 0.5) 0%, transparent 44%)," +
-              "radial-gradient(circle at 84% 30%, rgb(110 10 26 / 0.55) 0%, transparent 42%)," +
-              "radial-gradient(circle at 50% 96%, rgb(200 16 46 / 0.3) 0%, transparent 46%)",
-          }}
+          className="pointer-events-none fixed inset-0 -z-10 bg-noc bg-cover bg-center"
+          style={{ backgroundImage: "url(/grafika/tlo-apki.webp)" }}
         />
         {children}
       </body>
