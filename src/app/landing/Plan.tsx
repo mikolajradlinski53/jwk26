@@ -1,12 +1,28 @@
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
 import { Kontener } from "./Kontener";
+import { Zaslona } from "./Zaslona";
 import { grupujPoDniach, krotkaGodzina, nazwaDnia, type PunktHarmonogramu } from "@/lib/harmonogram";
+import type { OdslonaWidok } from "@/lib/odslony";
 
 /**
  * Plan z harmonogramu — wyłącznie punkty oznaczone przez admina „na landing”
- * (odczyt `anon` i tak nie widzi innych). Bez punktów sekcji nie ma.
+ * (odczyt `anon` i tak nie widzi innych). Do odsłony planu (dzień wyjazdu,
+ * 14:00) zasłona z licznikiem; po odsłonie bez punktów sekcji nie ma.
  */
-export function Plan({ punkty }: { punkty: PunktHarmonogramu[] }) {
+export function Plan({ punkty, odslona }: { punkty: PunktHarmonogramu[]; odslona: OdslonaWidok }) {
+  if (!odslona.odsloniete) {
+    return (
+      <Zaslona
+        id="plan"
+        numer="02"
+        nadtytul="Program"
+        tytul="Plan wyjazdu"
+        tlo="bg-jesien-karta/70"
+        ksztalt="plan"
+        odslona={odslona}
+      />
+    );
+  }
   const dni = grupujPoDniach(punkty);
   if (dni.length === 0) return null;
 

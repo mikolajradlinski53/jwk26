@@ -53,6 +53,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   for (const [k, v] of Object.entries(DOMYSLNE)) await ustawUstawienie(k, v);
+  await ustawUstawienie("odslona_plan", "2026-10-23T14:00:00+02:00");
   if (poprzedniaKwota === null) await admin.from("app_settings").delete().eq("key", "przelew_kwota");
   else await ustawUstawienie("przelew_kwota", poprzedniaKwota);
   await ustawUstawienie("social_instagram", "");
@@ -101,6 +102,18 @@ describe("zasłony w bazie", () => {
     expect(o.osrodek).toEqual({ data: null, odsloniete: true });
     expect(o.cena.odsloniete).toBe(false);
     expect(new Date(o.cena.data!).getTime()).toBe(new Date(PRZYSZLOSC).getTime());
+  });
+
+  it("plan ma własny termin — odsłona zapisów go nie odsłania", async () => {
+    await odslony(PRZYSZLOSC, PRZYSZLOSC, PRZESZLOSC);
+    await ustawUstawienie("odslona_plan", PRZYSZLOSC);
+    const { data } = await anonimowy().rpc("odslony");
+    const o = data as Record<string, { odsloniete: boolean }>;
+    expect(o.cena.odsloniete).toBe(true);
+    expect(o.plan.odsloniete).toBe(false);
+    await ustawUstawienie("odslona_plan", PRZESZLOSC);
+    const { data: po } = await anonimowy().rpc("odslony");
+    expect((po as Record<string, { odsloniete: boolean }>).plan.odsloniete).toBe(true);
   });
 
   it("adres social tylko z właściwej domeny albo pusty", async () => {

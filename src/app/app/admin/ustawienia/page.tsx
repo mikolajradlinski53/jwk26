@@ -30,6 +30,7 @@ export default async function UstawieniaPage() {
       "odslona_osrodek",
       "odslona_cena",
       "odslona_zapisy",
+      "odslona_plan",
       "social_instagram",
       "social_facebook",
     ]);
@@ -71,6 +72,7 @@ export default async function UstawieniaPage() {
           osrodek: mapa.get("odslona_osrodek") || null,
           cena: mapa.get("odslona_cena") || null,
           zapisy: mapa.get("odslona_zapisy") || null,
+          plan: mapa.get("odslona_plan") || null,
           instagram: String(mapa.get("social_instagram") ?? ""),
           facebook: String(mapa.get("social_facebook") ?? ""),
         }}

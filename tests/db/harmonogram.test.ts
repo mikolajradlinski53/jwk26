@@ -5,6 +5,7 @@ import {
   signIn,
   anonimowy,
   ustawJakoZaakceptowany,
+  ustawUstawienie,
   sprzatanieUzytkownikow,
 } from "../helpers/supabase";
 
@@ -29,7 +30,10 @@ afterEach(async () => {
   await admin.from("harmonogram").delete().like("tytul", "%(test)");
 });
 
-afterAll(posprzataj);
+afterAll(async () => {
+  await ustawUstawienie("odslona_plan", "2026-10-23T14:00:00+02:00");
+  await posprzataj();
+});
 
 async function dodaj(client: SupabaseClient, tytul = TYTUL) {
   return client
@@ -71,7 +75,18 @@ describe("harmonogram", () => {
     expect((await czekajacy.from("harmonogram").select("id").like("tytul", "%(test)")).data).toEqual([]);
   });
 
+  it("przed odsłoną planu niezalogowany nie widzi nawet punktów na landing", async () => {
+    await ustawUstawienie("odslona_plan", "2099-01-01T12:00:00+01:00");
+    await szef
+      .from("harmonogram")
+      .insert({ dzien: "2026-10-24", godzina: "10:00", tytul: "Jawny punkt (test)", na_landingu: true });
+    const { data, error } = await anonimowy().from("harmonogram").select("id").like("tytul", "%(test)");
+    expect(error).toBeNull();
+    expect(data).toEqual([]);
+  });
+
   it("niezalogowany widzi wyłącznie punkty oznaczone na landing", async () => {
+    await ustawUstawienie("odslona_plan", "2020-01-01T12:00:00+01:00");
     const { data: ukryty } = await dodaj(szef);
     const { data: jawny } = await szef
       .from("harmonogram")

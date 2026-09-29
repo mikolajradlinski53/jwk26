@@ -8,15 +8,19 @@ const teraz = new Date("2026-10-01T12:00:00+02:00");
 
 describe("czyOdsloniete — lustro reguły z bazy", () => {
   it("własna data decyduje, gdy zapisy przed nami", () => {
-    expect(czyOdsloniete({ osrodek: W, cena: P, zapisy: P }, "osrodek", teraz)).toBe(true);
-    expect(czyOdsloniete({ osrodek: W, cena: P, zapisy: P }, "cena", teraz)).toBe(false);
+    expect(czyOdsloniete({ osrodek: W, cena: P, zapisy: P, plan: P }, "osrodek", teraz)).toBe(true);
+    expect(czyOdsloniete({ osrodek: W, cena: P, zapisy: P, plan: P }, "cena", teraz)).toBe(false);
   });
   it("odsłona zapisów odsłania wszystko", () => {
-    expect(czyOdsloniete({ osrodek: P, cena: P, zapisy: W }, "cena", teraz)).toBe(true);
+    expect(czyOdsloniete({ osrodek: P, cena: P, zapisy: W, plan: P }, "cena", teraz)).toBe(true);
+  });
+  it("plan nie odsłania się z zapisami", () => {
+    expect(czyOdsloniete({ osrodek: P, cena: P, zapisy: W, plan: P }, "plan", teraz)).toBe(false);
+    expect(czyOdsloniete({ osrodek: P, cena: P, zapisy: P, plan: W }, "plan", teraz)).toBe(true);
   });
   it("pusta data znaczy odsłonięte", () => {
-    expect(czyOdsloniete({ osrodek: null, cena: P, zapisy: P }, "osrodek", teraz)).toBe(true);
-    expect(czyOdsloniete({ osrodek: P, cena: P, zapisy: null }, "osrodek", teraz)).toBe(true);
+    expect(czyOdsloniete({ osrodek: null, cena: P, zapisy: P, plan: P }, "osrodek", teraz)).toBe(true);
+    expect(czyOdsloniete({ osrodek: P, cena: P, zapisy: null, plan: P }, "osrodek", teraz)).toBe(true);
   });
 });
 

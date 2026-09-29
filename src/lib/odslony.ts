@@ -3,7 +3,7 @@ import { odliczanie, type Odliczanie } from "@/lib/odliczanie";
 
 type Klient = Awaited<ReturnType<typeof createClient>>;
 
-export type Co = "osrodek" | "cena" | "zapisy";
+export type Co = "osrodek" | "cena" | "zapisy" | "plan";
 export type Odslona = { data: string | null; odsloniete: boolean };
 export type Odslony = Record<Co, Odslona>;
 
@@ -14,7 +14,7 @@ export type OdslonyWidok = Record<Co, OdslonaWidok>;
 /** Daty wyjazdu jak w regulaminie (§ 1 ust. 3) — jawne od początku. */
 export const DATY_WYJAZDU = "23–25 października";
 
-const CO: Co[] = ["osrodek", "cena", "zapisy"];
+const CO: Co[] = ["osrodek", "cena", "zapisy", "plan"];
 
 /**
  * Awaria odczytu = wszystko zakryte. Bezpieczniej pokazać zasłonę za długo,
@@ -24,6 +24,7 @@ export const WSZYSTKO_ZAKRYTE: Odslony = {
   osrodek: { data: null, odsloniete: false },
   cena: { data: null, odsloniete: false },
   zapisy: { data: null, odsloniete: false },
+  plan: { data: null, odsloniete: false },
 };
 
 /**
@@ -32,6 +33,8 @@ export const WSZYSTKO_ZAKRYTE: Odslony = {
  */
 export function czyOdsloniete(daty: Record<Co, string | null>, co: Co, teraz: Date): boolean {
   const minela = (d: string | null) => d === null || d === "" || teraz.getTime() >= new Date(d).getTime();
+  // Plan ma własny termin (dzień wyjazdu) i nie odsłania się z zapisami.
+  if (co === "plan") return minela(daty.plan);
   return minela(daty[co]) || minela(daty.zapisy);
 }
 

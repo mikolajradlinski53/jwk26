@@ -7,7 +7,27 @@ import type { OdslonaWidok } from "@/lib/odslony";
  * Rozmyte kształty udające treść. Nie powstają z prawdziwej treści — to
  * stały rysunek, więc nic nie da się z niego odczytać.
  */
-function Atrapa({ ksztalt }: { ksztalt: "osrodek" | "cena" }) {
+function Atrapa({ ksztalt }: { ksztalt: "osrodek" | "cena" | "plan" }) {
+  if (ksztalt === "plan") {
+    return (
+      <div className="grid gap-4 min-[850px]:grid-cols-3">
+        {[0, 1, 2].map((d) => (
+          <div key={d} className="grid gap-3 rounded-lg border border-jesien-kora/15 bg-jesien-tlo/80 p-5">
+            <div className="h-2.5 w-2/5 rounded-full bg-jesien-rdza/30" />
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="flex gap-3">
+                <div className="h-3.5 w-10 rounded-full bg-jesien-rdza/25" />
+                <div className="grid flex-1 gap-1.5">
+                  <div className="h-3 w-3/5 rounded-full bg-jesien-atrament/25" />
+                  <div className="h-2.5 w-4/5 rounded-full bg-jesien-kora/20" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  }
   if (ksztalt === "osrodek") {
     return (
       <div className="grid gap-4">
@@ -56,7 +76,7 @@ export function Zaslona({
   tytul: string;
   /** Klasa tła sekcji, ta sama co w odsłoniętej wersji — rytm strony się nie zmienia. */
   tlo: string;
-  ksztalt: "osrodek" | "cena";
+  ksztalt: "osrodek" | "cena" | "plan";
   odslona: OdslonaWidok;
   /** Treść jawna przed odsłoną, nad atrapą (np. daty w „Kiedy i gdzie”). */
   children?: React.ReactNode;

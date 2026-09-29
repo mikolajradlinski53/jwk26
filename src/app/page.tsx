@@ -97,7 +97,10 @@ export default async function Landing({
   const osrodekJawny = odslony.osrodek.odsloniete;
   const cenaJawna = odslony.cena.odsloniete;
   const miasto = osrodekJawny ? miastoZAdresu(miejsceAdres) : null;
-  const plan = (planRaw ?? []) as PunktHarmonogramu[];
+  // Przed odsłoną planu nic z harmonogramu nie idzie do strony — także
+  // zalogowanemu przyjętemu, który w bazie widzi więcej niż anonim.
+  const plan = odslony.plan.odsloniete ? ((planRaw ?? []) as PunktHarmonogramu[]) : [];
+  const pokazPlan = !odslony.plan.odsloniete || plan.length > 0;
 
   return (
     <div className="jesien relative">
@@ -120,11 +123,11 @@ export default async function Landing({
 
         <Opis kwota={cenaJawna ? (przelew?.kwota ?? null) : null} miasto={miasto} />
         {/* Trasa tuż przed zasłoniętą sekcją: żaba staje i wskazuje. */}
-        <DzielnikSzewron trasa={plan.length === 0 && !osrodekJawny ? "wskazuj" : "idz"} />
+        <DzielnikSzewron trasa={!odslony.plan.odsloniete || (!pokazPlan && !osrodekJawny) ? "wskazuj" : "idz"} />
 
-        {plan.length > 0 && (
+        {pokazPlan && (
           <>
-            <Plan punkty={plan} />
+            <Plan punkty={plan} odslona={odslony.plan} />
             <DzielnikSkos
               kolorKlasa="bg-jesien-tlo"
               tloKlasa="bg-jesien-karta"
@@ -161,7 +164,7 @@ export default async function Landing({
 
         <Dokumenty />
 
-        <Stopka zapisy={odslony.zapisy} social={adresySocial} maPlan={plan.length > 0} />
+        <Stopka zapisy={odslony.zapisy} social={adresySocial} maPlan={pokazPlan} />
       </div>
     </div>
   );
