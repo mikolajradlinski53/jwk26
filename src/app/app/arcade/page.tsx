@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
-import { Ikona, type NazwaIkony } from "@/components/Ikona";
+import { type NazwaIkony } from "@/components/Ikona";
+import { PozycjaMenu } from "@/components/PozycjaMenu";
 import { Wroc } from "@/components/Wroc";
 import type { UserScore } from "@/types/db";
 
@@ -40,22 +40,7 @@ export default async function ArcadePage() {
 
       <nav className="grid gap-2.5">
         {GRY.map((g) => (
-          <Link
-            key={g.href}
-            href={g.href}
-            transitionTypes={["nav-forward"]}
-            className="szklo flex items-center gap-3.5 rounded-md px-4 py-3.5
-                       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
-          >
-            <Ikona nazwa={g.ikona} className="size-11 flex-none text-kosc" />
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-bold">{g.nazwa}</span>
-              <span className="block text-xs text-dym">{g.opis}</span>
-            </span>
-            <span aria-hidden="true" className="text-dym">
-              →
-            </span>
-          </Link>
+          <PozycjaMenu key={g.href} href={g.href} ikona={g.ikona} nazwa={g.nazwa} opis={g.opis} />
         ))}
       </nav>
 

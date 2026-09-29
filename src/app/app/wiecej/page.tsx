@@ -1,5 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { LicznikKolejki } from "@/components/KolejkiAdmina";
+import { NaglowekSekcji } from "@/components/NaglowekSekcji";
+import { PozycjaMenu } from "@/components/PozycjaMenu";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Button } from "@/components/ui/Button";
@@ -48,37 +50,42 @@ export default async function WiecejPage() {
         </strong>
       </div>
 
-      <nav className="grid gap-2.5">
-        {jestAdminem && (
-          <Link
+      {/* Sekcje zamiast worka na wszystko (spec porządku, „Więcej”). Nagłówki
+          „Powiadomienia” i „Twoje zgody” mają same komponenty — nie dublujemy
+          ich nagłówkiem „Ustawienia”. */}
+      {jestAdminem && (
+        <>
+          <NaglowekSekcji>Organizator</NaglowekSekcji>
+          <PozycjaMenu
             href="/app/admin"
-          transitionTypes={["nav-forward"]}
-            className="szklo flex min-h-12 items-center rounded-md px-4 text-sm font-bold
-                       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
-          >
-            Sanktuarium
-          </Link>
-        )}
-        <Link
-          href="/app/arcade"
-          transitionTypes={["nav-forward"]}
-          className="szklo flex min-h-12 items-center rounded-md px-4 text-sm font-bold
-                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
-        >
-          Kasyno
-        </Link>
-        <Link
-          href="/app/gossip"
-          transitionTypes={["nav-forward"]}
-          className="szklo flex min-h-12 items-center rounded-md px-4 text-sm font-bold
-                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
-        >
-          Gossipy
-        </Link>
+            ikona="oko"
+            nazwa="Sanktuarium"
+            opis="Panel organizatora"
+            licznik={<LicznikKolejki ktora="suma" />}
+          />
+        </>
+      )}
+
+      <NaglowekSekcji>Zabawa</NaglowekSekcji>
+      <nav className="grid gap-2.5">
+        <PozycjaMenu href="/app/arcade" ikona="karty" nazwa="Kasyno" opis="Sloty, blackjack i kruk" />
+        <PozycjaMenu href="/app/gossip" ikona="gwiazda" nazwa="Gossipy" opis="Anonimowe głosowania" />
       </nav>
 
       <Powiadomienia />
       <TwojeZgody {...zgody} />
+
+      <NaglowekSekcji>Informacje</NaglowekSekcji>
+      <nav className="grid gap-2.5">
+        <PozycjaMenu href="/regulamin" ikona="zwoj" nazwa="Regulamin" opis="Zasady wyjazdu" />
+        <PozycjaMenu
+          href="mailto:samorzad@samorzad.ue.wroc.pl"
+          ikona="list"
+          nazwa="Kontakt"
+          opis="samorzad@samorzad.ue.wroc.pl"
+          zewnetrzny
+        />
+      </nav>
 
       <form action="/auth/signout" method="post" className="mt-8">
         <Button variant="cichy" type="submit">

@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useKolejki } from "./KolejkiAdmina";
+import { Znacznik } from "./Znacznik";
 
 type Pozycja = { href: string; nazwa: string; ikona: React.ReactNode };
 
@@ -57,6 +59,8 @@ const POZYCJE: Pozycja[] = [
 
 export function PasekNawigacji() {
   const sciezka = usePathname();
+  // Suma kolejek admina — u uczestnika zawsze 0, więc znacznika nie ma.
+  const { suma } = useKolejki();
 
   return (
     <nav
@@ -118,6 +122,13 @@ export function PasekNawigacji() {
               {p.ikona}
             </svg>
             <span className="sr-only">{p.nazwa}</span>
+            {p.href === "/app/wiecej" && (
+              <Znacznik
+                liczba={suma}
+                etykieta={`${suma} spraw czeka na organizatora`}
+                className="absolute right-2 top-0"
+              />
+            )}
           </Link>
         );
       })}
