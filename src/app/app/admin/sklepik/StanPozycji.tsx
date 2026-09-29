@@ -38,12 +38,13 @@ export function StanPozycji({ pozycja }: { pozycja: ShopItem }) {
 
   return (
     <div className="mt-2 flex items-center gap-2">
-      <label className="flex items-center gap-1.5 text-xs text-dym">
+      {/* Etykieta 44 px wysokości: to ona jest celem dotyku, nie 20-pikselowe pole. */}
+      <label className="flex min-h-11 items-center gap-2 pr-1 text-xs text-dym">
         <input
           type="checkbox"
           checked={pozycja.active}
           onChange={(e) => void zapisz({ active: e.target.checked })}
-          className="size-4 accent-krew"
+          className="size-5 accent-krew"
         />
         na półce
       </label>
@@ -59,7 +60,7 @@ export function StanPozycji({ pozycja }: { pozycja: ShopItem }) {
           if (v === "" || /^\d*$/.test(v)) setStan(v);
         }}
         onBlur={() => void zapisz({ stock: stan === "" ? null : Number(stan) })}
-        className="szklo min-h-9 w-24 rounded-sm px-2.5 text-xs text-kosc
+        className="szklo min-h-11 w-24 rounded-sm px-2.5 text-xs text-kosc
                    outline-none placeholder:text-dym focus-visible:border-krew"
       />
 
