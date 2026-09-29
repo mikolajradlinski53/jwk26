@@ -6,9 +6,21 @@ import type { TeamScore } from "@/types/db";
 
 const RZYMSKIE = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
 
-export function RankingNaZywo({ poczatkowe }: { poczatkowe: TeamScore[] }) {
+export type Czlonek = { user_id: string; display_name: string | null; team_id: string; score: number };
+
+export function RankingNaZywo({
+  poczatkowe,
+  czlonkowiePoczatkowi,
+  mojeId,
+}: {
+  poczatkowe: TeamScore[];
+  czlonkowiePoczatkowi: Czlonek[];
+  mojeId: string;
+}) {
   const [wyniki, setWyniki] = useState(poczatkowe);
+  const [czlonkowie, setCzlonkowie] = useState(czlonkowiePoczatkowi);
   const [podswietlone, setPodswietlone] = useState<Set<string>>(new Set());
+  const [rozwiniete, setRozwiniete] = useState<Set<string>>(new Set());
 
   // Poprzednie wyniki trzymamy w ref, nie w stanie: służą wyłącznie do
   // porównania i nie mają powodu wywoływać renderu same z siebie.
@@ -17,10 +29,16 @@ export function RankingNaZywo({ poczatkowe }: { poczatkowe: TeamScore[] }) {
   );
 
   const odswiez = useCallback(async () => {
-    const { data } = await createClient()
-      .from("team_scores")
-      .select("*")
-      .order("score", { ascending: false });
+    const supabase = createClient();
+    const [{ data }, { data: osoby }] = await Promise.all([
+      supabase.from("team_scores").select("*").order("score", { ascending: false }),
+      supabase
+        .from("user_scores")
+        .select("user_id, display_name, team_id, score")
+        .not("team_id", "is", null)
+        .order("score", { ascending: false }),
+    ]);
+    if (osoby) setCzlonkowie(osoby as Czlonek[]);
     if (!data) return;
 
     const nowe = data as TeamScore[];
@@ -72,41 +90,109 @@ export function RankingNaZywo({ poczatkowe }: { poczatkowe: TeamScore[] }) {
     };
   }, [odswiez]);
 
+  function przelacz(id: string) {
+    setRozwiniete((stare) => {
+      const nowe = new Set(stare);
+      if (nowe.has(id)) nowe.delete(id);
+      else nowe.add(id);
+      return nowe;
+    });
+  }
+
   return (
     <ol className="grid gap-2.5">
       {wyniki.map((w, i) => {
         const lider = i === 0;
+        const otwarta = rozwiniete.has(w.team_id);
+        const sklad = czlonkowie.filter((c) => c.team_id === w.team_id);
+        const idListy = `sklad-${w.team_id}`;
         return (
           <li
             key={w.team_id}
             className={
-              "szklo flex items-center gap-3 rounded-md px-3.5 py-3.5 " +
+              "szklo overflow-hidden rounded-md " +
               (lider
                 ? "border-krew/55 shadow-[inset_0_1px_0_rgb(255_255_255/0.34),0_0_28px_rgb(200_16_46/0.3)] "
                 : "") +
               (podswietlone.has(w.team_id) ? "blysk" : "")
             }
           >
-            <span
+            {/* Dotknięcie sekty rozwija jej skład (zgłoszenie Mikołaja). */}
+            <button
+              type="button"
+              onClick={() => przelacz(w.team_id)}
+              aria-expanded={otwarta}
+              aria-controls={idListy}
+              className="flex w-full items-center gap-3 px-3.5 py-3.5 text-left
+                         focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-krew"
+            >
+              <span
+                className={
+                  "w-6 flex-none text-center font-tytul text-xl leading-none tabular-nums " +
+                  (lider ? "text-krew-jasna" : "text-dym")
+                }
+              >
+                {RZYMSKIE[i] ?? i + 1}
+              </span>
+              <span className="min-w-0 flex-1">
+                <b className="block text-sm font-bold">{w.name}</b>
+                <span className="block text-[0.62rem] text-dym">{w.motto}</span>
+              </span>
+              <span
+                className={
+                  "flex-none font-tytul text-xl leading-none tabular-nums " +
+                  (lider ? "text-krew-jasna" : "")
+                }
+              >
+                {w.score}
+              </span>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className={"size-4 flex-none text-dym transition-transform duration-300 " + (otwarta ? "rotate-180" : "")}
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+
+            {/* grid-rows 0fr → 1fr: płynne rozwinięcie bez mierzenia wysokości. */}
+            <div
+              id={idListy}
               className={
-                "w-6 flex-none text-center font-tytul text-xl leading-none tabular-nums " +
-                (lider ? "text-krew-jasna" : "text-dym")
+                "grid transition-[grid-template-rows] duration-300 ease-out " +
+                (otwarta ? "grid-rows-[1fr]" : "grid-rows-[0fr]")
               }
             >
-              {RZYMSKIE[i] ?? i + 1}
-            </span>
-            <span className="min-w-0 flex-1">
-              <b className="block text-sm font-bold">{w.name}</b>
-              <span className="block text-[0.62rem] text-dym">{w.motto}</span>
-            </span>
-            <span
-              className={
-                "flex-none font-tytul text-xl leading-none tabular-nums " +
-                (lider ? "text-krew-jasna" : "")
-              }
-            >
-              {w.score}
-            </span>
+              <div className="min-h-0 overflow-hidden">
+                {sklad.length === 0 ? (
+                  <p className="px-4 pb-3.5 text-xs text-dym">W tej sekcie nikogo jeszcze nie ma.</p>
+                ) : (
+                  <ol className="grid gap-0.5 border-t border-white/10 px-3.5 pb-3 pt-2">
+                    {sklad.map((c, j) => (
+                      <li
+                        key={c.user_id}
+                        className={
+                          "flex items-baseline gap-3 rounded-sm px-1.5 py-1.5 text-sm " +
+                          (c.user_id === mojeId ? "bg-white/8 font-bold text-kosc" : "text-popiol")
+                        }
+                      >
+                        <span className="w-5 flex-none text-right text-xs tabular-nums text-dym">{j + 1}.</span>
+                        <span className="min-w-0 flex-1 truncate">
+                          {c.display_name ?? "Uczestnik"}
+                          {c.user_id === mojeId && <span className="ml-1.5 text-xs font-normal text-dym">(Ty)</span>}
+                        </span>
+                        <span className="flex-none tabular-nums">{c.score}</span>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </div>
+            </div>
           </li>
         );
       })}
