@@ -7,27 +7,17 @@ import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { komunikat } from "@/lib/zapisy/bledy";
 
-/** Nowa kategoria z 2–8 nominowanymi spośród przyjętych. Startuje otwarta. */
-export function NowaKategoria({ uczestnicy }: { uczestnicy: { id: string; nazwa: string }[] }) {
+/**
+ * Nowa kategoria — sama nazwa i opis. Nominują uczestnicy; kategoria startuje
+ * otwarta, a wszyscy dostają powiadomienie.
+ */
+export function NowaKategoria() {
   const router = useRouter();
   const [tytul, setTytul] = useState("");
   const [opis, setOpis] = useState("");
-  const [wybrani, setWybrani] = useState<Set<string>>(new Set());
-  const [szukaj, setSzukaj] = useState("");
   const [blad, setBlad] = useState<string | null>(null);
   const [czeka, setCzeka] = useState(false);
   const wToku = useRef(false);
-
-  const widoczni = uczestnicy.filter((u) => u.nazwa.toLowerCase().includes(szukaj.trim().toLowerCase()));
-
-  function przelacz(id: string) {
-    setWybrani((w) => {
-      const n = new Set(w);
-      if (n.has(id)) n.delete(id);
-      else n.add(id);
-      return n;
-    });
-  }
 
   async function utworz() {
     if (wToku.current) return;
@@ -36,17 +26,12 @@ export function NowaKategoria({ uczestnicy }: { uczestnicy: { id: string; nazwa:
       setBlad("Podaj nazwę kategorii");
       return;
     }
-    if (wybrani.size < 2 || wybrani.size > 8) {
-      setBlad("Wybierz od 2 do 8 nominowanych");
-      return;
-    }
 
     wToku.current = true;
     setCzeka(true);
     const { error } = await createClient().rpc("utworz_kategorie", {
       p_tytul: tytul.trim(),
       p_opis: opis.trim() || null,
-      p_nominowani: [...wybrani],
     });
     setCzeka(false);
     wToku.current = false;
@@ -58,7 +43,6 @@ export function NowaKategoria({ uczestnicy }: { uczestnicy: { id: string; nazwa:
     }
     setTytul("");
     setOpis("");
-    setWybrani(new Set());
     router.refresh();
   }
 
@@ -80,36 +64,17 @@ export function NowaKategoria({ uczestnicy }: { uczestnicy: { id: string; nazwa:
         onChange={(e) => setOpis(e.target.value)}
       />
 
-      <div className="grid gap-2">
-        <Field
-          label={`Nominowani (${wybrani.size} z 2–8)`}
-          placeholder="Szukaj po nazwie w apce"
-          value={szukaj}
-          onChange={(e) => setSzukaj(e.target.value)}
-        />
-        <div className="grid max-h-64 gap-0.5 overflow-y-auto">
-          {widoczni.map((u) => (
-            <label key={u.id} className="flex min-h-11 items-center gap-3 text-sm text-kosc">
-              <input
-                type="checkbox"
-                checked={wybrani.has(u.id)}
-                onChange={() => przelacz(u.id)}
-                className="size-5 shrink-0 accent-[var(--color-krew)]"
-              />
-              <span>{u.nazwa}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
       {blad && (
         <p role="alert" className="text-sm text-krew-jasna">
           {blad}
         </p>
       )}
       <Button onClick={() => void utworz()} disabled={czeka}>
-        {czeka ? "Tworzę…" : "Utwórz i otwórz głosowanie"}
+        {czeka ? "Tworzę…" : "Utwórz i otwórz nominacje"}
       </Button>
+      <p className="text-xs leading-relaxed text-dym">
+        Uczestnicy dostaną powiadomienie i sami nominują — każdy jedną osobę, z uzasadnieniem.
+      </p>
     </section>
   );
 }

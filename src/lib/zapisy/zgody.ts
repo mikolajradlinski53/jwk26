@@ -10,12 +10,13 @@
  * 2026-09-28.2 dopisuje Google (arkusz zespołu) jako podmiot przetwarzający.
  *
  * 2026-09-29.1 wprowadza pełny regulamin (§ 1–22) i oświadczenie o szkodach
- * bez odpowiedzialności solidarnej za pokój.
+ * bez odpowiedzialności solidarnej za pokój. 2026-09-29.2 — § 19 mówi
+ * o nominacjach (ze zdjęciami) zamiast o głosowaniach.
  *
  * Zmiana treści regulaminu (src/lib/regulamin.ts) też wymaga podbicia
  * WERSJA_ZGOD, bo strona regulaminu pokazuje tę wersję.
  */
-export const WERSJA_ZGOD = "2026-09-29.1";
+export const WERSJA_ZGOD = "2026-09-29.2";
 
 export const KONTAKT_IOD = "iod@ue.wroc.pl";
 

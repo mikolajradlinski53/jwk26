@@ -39,12 +39,13 @@ export function komunikat(e: unknown): string {
   if (/juz zapisany/i.test(t)) return "Wynik tego lotu jest już zapisany.";
   if (/niemozliwy w tym czasie/i.test(t)) return "Serwer nie uznał tego wyniku.";
   // Gossipy
-  if (/na siebie/i.test(t)) return "Nie możesz głosować na siebie.";
-  if (/juz oddany/i.test(t)) return "Twój głos w tej kategorii jest już oddany.";
-  if (/nie jest otwarta/i.test(t)) return "Głosowanie w tej kategorii jest już zamknięte.";
+  if (/nominowac siebie/i.test(t)) return "Nie możesz nominować siebie.";
+  if (/juz oddana/i.test(t)) return "Twoja nominacja w tej kategorii jest już oddana.";
+  if (/nie jest otwarta/i.test(t)) return "Nominacje w tej kategorii są już zamknięte.";
+  if (/przyjetego uczestnika/i.test(t)) return "Tej osoby nie ma wśród przyjętych uczestników.";
+  if (/Nieprawidlowe zdjecie/i.test(t)) return "Zdjęcie nie dotarło. Wybierz je jeszcze raz.";
   const minimum = t.match(/co najmniej (\d+) znakow/i);
   if (minimum) return `Uzasadnienie musi mieć co najmniej ${minimum[1]} znaków.`;
-  if (/od 2 do 8/i.test(t)) return "Wybierz od 2 do 8 nominowanych spośród przyjętych uczestników.";
   if (/one_pending|duplicate key/i.test(t)) {
     return "Masz już zgłoszenie, które czeka na rozpatrzenie.";
   }

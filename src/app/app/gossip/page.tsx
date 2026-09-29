@@ -2,8 +2,13 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { OdswiezPrzyPowrocie } from "@/components/OdswiezPrzyPowrocie";
-import { NAZWY_STATUSU, type KategoriaGossipow } from "@/lib/gossipy";
-import { Glosowanie } from "./Glosowanie";
+import {
+  NAZWY_STATUSU,
+  adresZdjeciaGossipu,
+  type Kandydat,
+  type KategoriaGossipow,
+} from "@/lib/gossipy";
+import { Nominacja } from "./Nominacja";
 import { Wroc } from "@/components/Wroc";
 import { Pusto } from "@/components/Pusto";
 
@@ -14,15 +19,17 @@ export default async function GossipPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/wejscie");
 
-  const [{ data, error }, { data: ustawienie }] = await Promise.all([
+  const [{ data, error }, { data: kandydaciRaw }, { data: ustawienie }] = await Promise.all([
     supabase.rpc("gossipy"),
+    supabase.rpc("kandydaci_gossipow"),
     supabase.from("app_settings").select("value").eq("key", "gossip_min_justification").maybeSingle(),
   ]);
   const kategorie = (data ?? []) as KategoriaGossipow[];
+  const kandydaci = (kandydaciRaw ?? []) as Kandydat[];
   const minimum = Number(ustawienie?.value ?? 200) || 200;
 
   return (
-    <Ekran tytul="Gossipy" podtytul="Anonimowe głosowania">
+    <Ekran tytul="Gossipy" podtytul="Anonimowe nominacje">
       {error && (
         <p className="szklo rounded-md px-4 py-3.5 text-sm text-krew-jasna">
           Nie udało się wczytać gossipów. Odśwież stronę.
@@ -45,20 +52,33 @@ export default async function GossipPage() {
 
             {k.status === "ujawniona" && k.zwyciezcy && (
               <div className="grid gap-3">
-                <p className="text-sm text-dym">
-                  {k.zwyciezcy.length > 1 ? "Ex aequo:" : "Wygrywa:"}{" "}
-                  <strong className="text-lg text-krew-jasna">
-                    {k.zwyciezcy.map((z) => z.nazwa).join(" i ")}
-                  </strong>
-                </p>
+                {k.zwyciezcy.length === 0 ? (
+                  <p className="text-sm text-dym">Nikt nie został nominowany.</p>
+                ) : (
+                  <p className="text-sm text-dym">
+                    {k.zwyciezcy.length > 1 ? "Ex aequo:" : "Wygrywa:"}{" "}
+                    <strong className="text-lg text-krew-jasna">
+                      {k.zwyciezcy.map((z) => z.nazwa).join(" i ")}
+                    </strong>
+                  </p>
+                )}
                 {(k.uzasadnienia ?? []).length > 0 && (
-                  <ul className="grid gap-2">
+                  <ul className="grid gap-3">
                     {k.uzasadnienia!.map((u, i) => (
                       <li
                         key={i}
-                        className="rounded-sm border-l-2 border-krew/60 pl-3 text-sm leading-relaxed text-kosc"
+                        className="grid gap-2 rounded-sm border-l-2 border-krew/60 pl-3 text-sm leading-relaxed text-kosc"
                       >
-                        {u}
+                        <p>{u.tekst}</p>
+                        {u.zdjecie && (
+                          // eslint-disable-next-line @next/next/no-img-element -- prywatna trasa z sesją, bez optymalizatora
+                          <img
+                            src={adresZdjeciaGossipu(u.zdjecie)}
+                            alt="Zdjęcie dołączone do nominacji"
+                            loading="lazy"
+                            className="max-h-80 w-full rounded-sm object-cover"
+                          />
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -68,11 +88,12 @@ export default async function GossipPage() {
 
             {k.status === "otwarta" && k.moj_glos && (
               <p className="text-sm text-dym">
-                Twój głos jest oddany. Wynik zobaczysz, gdy organizator go ujawni.
+                Nominujesz: <strong className="text-kosc">{k.moj_typ}</strong>. Wynik zobaczysz, gdy
+                organizator go ujawni.
               </p>
             )}
             {k.status === "otwarta" && !k.moj_glos && (
-              <Glosowanie kategoria={k.id} nominowani={k.nominowani} ja={user.id} minimum={minimum} />
+              <Nominacja kategoria={k.id} kandydaci={kandydaci} minimum={minimum} />
             )}
             {k.status === "zamknieta" && (
               <p className="text-sm text-dym">Wynik zobaczysz, gdy organizator go ujawni.</p>

@@ -5,9 +5,17 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { komunikat } from "@/lib/zapisy/bledy";
-import type { KategoriaGossipow } from "@/lib/gossipy";
+import { adresZdjeciaGossipu, type KategoriaGossipow } from "@/lib/gossipy";
 
-type Wpis = { id: string; autor: string; na_kogo: string; tekst: string; ukryte: boolean; przejrzane: boolean };
+export type Wpis = {
+  id: string;
+  autor: string;
+  na_kogo: string;
+  tekst: string;
+  zdjecie: string | null;
+  ukryte: boolean;
+  przejrzane: boolean;
+};
 
 /**
  * Zmiana statusu kategorii i moderacja uzasadnień. Ujawnienie wysyła push
@@ -43,7 +51,7 @@ export function Sterowanie({ kategoria, wpisy }: { kategoria: KategoriaGossipow;
     <div className="grid gap-3">
       {kategoria.status === "otwarta" && (
         <Button variant="szklo" onClick={() => void status("zamknieta")} disabled={czeka}>
-          Zamknij głosowanie
+          Zamknij nominacje
         </Button>
       )}
       {kategoria.status === "zamknieta" && !pyta && (
@@ -74,9 +82,9 @@ export function Sterowanie({ kategoria, wpisy }: { kategoria: KategoriaGossipow;
 
       <details>
         <summary className="flex min-h-11 cursor-pointer items-center text-xs text-dym">
-          Głosy i moderacja ({wpisy.length})
+          Nominacje i moderacja ({wpisy.length})
         </summary>
-        {wpisy.length === 0 && <p className="text-sm text-dym">Brak głosów.</p>}
+        {wpisy.length === 0 && <p className="text-sm text-dym">Brak nominacji.</p>}
         <ul className="grid gap-2">
           {wpisy.map((w) => (
             <li key={w.id} className={`rounded-sm border border-white/10 p-3 ${w.ukryte ? "opacity-50" : ""}`}>
@@ -89,6 +97,17 @@ export function Sterowanie({ kategoria, wpisy }: { kategoria: KategoriaGossipow;
                 {w.ukryte && " · ukryte"}
               </p>
               <p className="mt-1 text-sm leading-relaxed text-kosc">{w.tekst}</p>
+              {w.zdjecie && (
+                <a href={adresZdjeciaGossipu(w.zdjecie)} target="_blank" rel="noreferrer" className="mt-2 block w-fit">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- prywatna trasa z sesją, bez optymalizatora */}
+                  <img
+                    src={adresZdjeciaGossipu(w.zdjecie)}
+                    alt="Zdjęcie z nominacji"
+                    loading="lazy"
+                    className="size-24 rounded-sm object-cover"
+                  />
+                </a>
+              )}
               <div className="mt-2 flex flex-wrap gap-2">
                 {!w.przejrzane && !w.ukryte && (
                   <button
@@ -108,7 +127,7 @@ export function Sterowanie({ kategoria, wpisy }: { kategoria: KategoriaGossipow;
                   className="min-h-11 rounded-full border border-white/20 px-4 text-xs font-bold text-kosc
                              hover:bg-white/10 disabled:opacity-40"
                 >
-                  {w.ukryte ? "Pokaż" : "Ukryj uzasadnienie"}
+                  {w.ukryte ? "Pokaż" : w.zdjecie ? "Ukryj tekst i zdjęcie" : "Ukryj uzasadnienie"}
                 </button>
               </div>
             </li>

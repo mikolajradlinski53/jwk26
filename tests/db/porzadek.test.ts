@@ -57,12 +57,11 @@ async function licz(tabela: string, status: string): Promise<number> {
   return count ?? 0;
 }
 
-/** Kategoria z jednym głosem Ali — zwraca id głosu. */
+/** Kategoria z jedną nominacją Ali — zwraca id głosu. */
 async function glosDoModeracji(): Promise<string> {
   const { data: kat, error } = await szefClient.rpc("utworz_kategorie", {
     p_tytul: "Król parkietu",
     p_opis: null,
-    p_nominowani: [ala.id, ola.id],
   });
   if (error) throw error;
   kategorie.push(kat as string);
