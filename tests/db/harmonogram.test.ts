@@ -66,10 +66,24 @@ describe("harmonogram", () => {
     expect(poProbie!.tytul).toBe(TYTUL);
   });
 
-  it("czekający na akceptację i niezalogowany nie widzą programu", async () => {
+  it("czekający na akceptację nie widzi programu", async () => {
     await dodaj(szef);
-    expect((await czekajacy.from("harmonogram").select("id")).data).toEqual([]);
-    expect((await anonimowy().from("harmonogram").select("id")).error).not.toBeNull();
+    expect((await czekajacy.from("harmonogram").select("id").like("tytul", "%(test)")).data).toEqual([]);
+  });
+
+  it("niezalogowany widzi wyłącznie punkty oznaczone na landing", async () => {
+    const { data: ukryty } = await dodaj(szef);
+    const { data: jawny } = await szef
+      .from("harmonogram")
+      .insert({ dzien: "2026-10-24", godzina: "10:00", tytul: "Jawny punkt (test)", na_landingu: true })
+      .select("id")
+      .single();
+
+    const { data, error } = await anonimowy().from("harmonogram").select("id, tytul").like("tytul", "%(test)");
+    expect(error).toBeNull();
+    const id = (data ?? []).map((w) => w.id);
+    expect(id).toContain(jawny!.id);
+    expect(id).not.toContain(ukryty!.id);
   });
 
   it("tytuł jest wymagany", async () => {
