@@ -26,6 +26,14 @@ export const SZCZELINA = 140;
 /** Najmniejszy odstęp szczeliny od sufitu i od ziemi. */
 export const MARGINES_SZCZELINY = 40;
 
+/**
+ * Kapitel kolumny w jednostkach świata (grafika public/grafika/kruk/kolumna.webp:
+ * wysięg ~14, wysokość szerokiej części ~23). Kolizja lekko łaskawsza od rysunku.
+ * Bez tego kruk przelatywałby przez widoczny kamień (spec wyglądu, D5).
+ */
+export const KAPITEL_WYSTAJE = 12;
+export const KAPITEL_WYS = 22;
+
 export type Kolumna = { x: number; srodek: number; minieta: boolean };
 
 export type Stan = {
@@ -69,7 +77,14 @@ function uderza(y: number, k: Kolumna): boolean {
   const gora = k.srodek - SZCZELINA / 2;
   const dol = k.srodek + SZCZELINA / 2;
   const x1 = k.x + SZER_KOLUMNY;
-  return styka(y, k.x, 0, x1, gora) || styka(y, k.x, dol, x1, SWIAT.wys);
+  const kx0 = k.x - KAPITEL_WYSTAJE;
+  const kx1 = x1 + KAPITEL_WYSTAJE;
+  return (
+    styka(y, k.x, 0, x1, gora) ||
+    styka(y, k.x, dol, x1, SWIAT.wys) ||
+    styka(y, kx0, gora - KAPITEL_WYS, kx1, gora) ||
+    styka(y, kx0, dol, kx1, dol + KAPITEL_WYS)
+  );
 }
 
 /**

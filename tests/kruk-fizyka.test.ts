@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import {
+  KAPITEL_WYS,
+  KAPITEL_WYSTAJE,
   KROK_S,
   KRUK_R,
   KRUK_X,
@@ -57,6 +59,27 @@ describe("kolumny", () => {
       kolumny: [{ x: KRUK_X - 20, srodek: 110, minieta: false }],
     };
     expect(krok(s, KROK_S, false, srodek).rozbity).toBe(true);
+  });
+
+  it("kapitel rozbija kruka, który mija sam trzon", () => {
+    // Trzon zaczyna się tuż za krukiem, ale kapitel wystaje w jego stronę.
+    const kolumna = { x: KRUK_X + KRUK_R + 5, srodek: 200, minieta: false };
+    const dol = kolumna.srodek + 70; // SZCZELINA / 2
+    const przyKapitelu: Stan = {
+      ...bezKolumn(nowyStan()),
+      y: dol + KAPITEL_WYS / 2,
+      kolumny: [kolumna],
+    };
+    expect(krok(przyKapitelu, KROK_S, false, srodek).rozbity).toBe(true);
+
+    // Ta sama kolumna, kruk w środku szczeliny — przelatuje.
+    const wSzczelinie: Stan = { ...przyKapitelu, y: kolumna.srodek };
+    expect(krok(wSzczelinie, KROK_S, false, srodek).rozbity).toBe(false);
+  });
+
+  it("stałe kapitelu są dodatnie i mniejsze od szczeliny", () => {
+    expect(KAPITEL_WYSTAJE).toBeGreaterThan(0);
+    expect(KAPITEL_WYS * 2).toBeLessThan(140);
   });
 
   it("przelot przez szczelinę dolicza dokładnie jeden punkt", () => {
