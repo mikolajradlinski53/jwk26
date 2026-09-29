@@ -159,9 +159,11 @@ export function Plansza({
     }
     const nowe = zapalone.filter((id) => !widziane.includes(id));
     nowe.forEach((id, i) => {
-      const kreska = document.querySelector<SVGElement>(`[data-pole="${id}"] .skreslenie`);
-      if (!kreska) return;
-      kreska.style.setProperty("--opoznienie", `${i * 150}ms`);
+      const pole = document.querySelector<HTMLElement>(`[data-pole="${id}"]`);
+      const kreska = pole?.querySelector<SVGElement>(".skreslenie");
+      if (!pole || !kreska) return;
+      // Na polu, nie na kresce: puls pola i rysowanie kreski czytają to samo.
+      pole.style.setProperty("--opoznienie", `${i * 250}ms`);
       kreska.classList.add("skreslenie-rysuj");
     });
     try {
@@ -305,16 +307,17 @@ export function Plansza({
                   viewBox="0 0 100 100"
                   preserveAspectRatio="none"
                   aria-hidden="true"
-                  className="skreslenie pointer-events-none absolute inset-1.5 text-kosc/85"
+                  className="skreslenie pointer-events-none absolute inset-1 text-kosc"
                 >
-                  {/* Lekko nieregularna, jak odręczna. pathLength=100 — stała
-                      długość do animacji niezależnie od rozmiaru pola. */}
+                  {/* Ukośna, lekko nieregularna, jak odręczna — przez całe pole,
+                      nie tylko przez napis. pathLength=100 — stała długość do
+                      animacji niezależnie od rozmiaru pola. */}
                   <path
-                    d="M6 60 C 30 53, 56 51, 94 42"
+                    d="M8 80 C 30 62, 58 40, 92 18"
                     pathLength={100}
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="4"
+                    strokeWidth="5"
                     strokeLinecap="round"
                     vectorEffect="non-scaling-stroke"
                   />
