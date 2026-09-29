@@ -3,6 +3,7 @@ import { odliczanie } from "@/lib/odliczanie";
 import { DATY_WYJAZDU, type OdslonaWidok } from "@/lib/odslony";
 import { Licznik } from "./Licznik";
 import { PrzyciskZapisu } from "./PrzyciskZapisu";
+import { ZabaStala } from "./zaba/ZabaStala";
 
 /**
  * Sekcja wejściowa — pierwsze, co widać po otwarciu landingu. Zdjęcie
@@ -74,7 +75,10 @@ export function Wejscie({
           />
 
           <div className="grid justify-items-center gap-6">
-            <div className="grid justify-items-center gap-3">
+            <div className="relative grid justify-items-center gap-3">
+              {/* Przewodnik wita, siedząc na rogu karty licznika; dalej po
+                  stronie chodzi jego wędrująca wersja (zaba/Przewodnik.tsx). */}
+              <ZabaStala poza="siedzi" skala={0.75} className="absolute -top-[52px] right-1 z-10" />
               <Licznik
                 docelowa={dataJwk}
                 etykieta="Do wyjazdu"

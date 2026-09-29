@@ -749,3 +749,14 @@ body {
     animation-delay: 0s !important;
   }
 }
+
+/* Żaba w hero macha: dwie klatki paska na zmianę (ZabaStala, plan 16b).
+   step-end — bez przenikania klatek; ograniczony ruch zatrzymuje na pierwszej. */
+@keyframes zaba-machanie {
+  0% { background-position: 0% 0; }
+  50% { background-position: 100% 0; }
+  100% { background-position: 100% 0; }
+}
+.zaba-machanie {
+  animation: zaba-machanie 0.9s step-end infinite;
+}

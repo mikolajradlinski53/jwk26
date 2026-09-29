@@ -8,19 +8,38 @@
  * Każdy dzielnik przyjmuje kolor przez klasę tekstową (`kolorKlasa`, np.
  * "text-jesien-karta") i maluje nim przez `fill="currentColor"` albo
  * `background: currentColor` — bez powielania wartości barw w kilku miejscach.
+ *
+ * Każdy dzielnik jest też trasą żaby-przewodnika (`zaba/Przewodnik.tsx`):
+ * `data-trasa-zaby` mówi, czy żaba ma tu tylko przejść, czy stanąć
+ * i wskazać zasłoniętą sekcję pod spodem; `data-podloze` — na jakiej
+ * wysokości dzielnika (ułamek) stawia stopy.
  */
+
+/** `brak` — dzielnik nie jest trasą (np. fala pod hero, gdzie żaba siedzi). */
+export type Trasa = "idz" | "wskazuj" | "brak";
+
+function atrybutyTrasy(trasa: Trasa, podloze: number) {
+  if (trasa === "brak") return {};
+  return { "data-trasa-zaby": trasa, "data-podloze": String(podloze) };
+}
 
 export function DzielnikFala({
   kolorKlasa,
   tloKlasa = "",
+  trasa = "idz",
 }: {
   /** Klasa koloru tekstu — staje się kolorem wypełnienia fali. */
   kolorKlasa: string;
   /** Opcjonalne tło elementu-nosiciela, gdy fala ma "wypływać" z innego koloru. */
   tloKlasa?: string;
+  trasa?: Trasa;
 }) {
   return (
-    <div className={`relative h-12 w-full overflow-hidden min-[600px]:h-16 ${tloKlasa}`} aria-hidden="true">
+    <div
+      className={`relative h-12 w-full overflow-hidden min-[600px]:h-16 ${tloKlasa}`}
+      aria-hidden="true"
+      {...atrybutyTrasy(trasa, 0.7)}
+    >
       <svg
         viewBox="0 0 1440 74"
         preserveAspectRatio="none"
@@ -48,9 +67,13 @@ function Szewrony() {
   );
 }
 
-export function DzielnikSzewron() {
+export function DzielnikSzewron({ trasa = "idz" }: { trasa?: Trasa }) {
   return (
-    <div className="mx-auto flex w-full max-w-md items-center gap-4 px-4 py-2 min-[850px]:max-w-[1000px]" aria-hidden="true">
+    <div
+      className="mx-auto flex w-full max-w-md items-center gap-4 px-4 py-2 min-[850px]:max-w-[1000px]"
+      aria-hidden="true"
+      {...atrybutyTrasy(trasa, 0.5)}
+    >
       <div className="h-px flex-1 bg-jesien-kora/20" />
       <Szewrony />
       <div className="h-px flex-1 bg-jesien-kora/20" />
@@ -59,9 +82,13 @@ export function DzielnikSzewron() {
 }
 
 /** Cienka linia z liściem pośrodku — echo kanwy `Liscie` w statycznej formie. */
-export function DzielnikLisc() {
+export function DzielnikLisc({ trasa = "idz" }: { trasa?: Trasa }) {
   return (
-    <div className="mx-auto flex w-full max-w-md items-center gap-4 px-4 py-2 min-[850px]:max-w-[1000px]" aria-hidden="true">
+    <div
+      className="mx-auto flex w-full max-w-md items-center gap-4 px-4 py-2 min-[850px]:max-w-[1000px]"
+      aria-hidden="true"
+      {...atrybutyTrasy(trasa, 0.5)}
+    >
       <div className="h-px flex-1 bg-jesien-kora/20" />
       <svg viewBox="0 0 24 24" className="size-4 text-jesien-mech" fill="currentColor">
         <path d="M12 2c5 3 8 7 8 12a8 8 0 0 1-16 0c0-5 3-9 8-12Z" opacity="0.8" />
@@ -81,12 +108,14 @@ export function DzielnikLisc() {
 export function DzielnikSkos({
   kolorKlasa,
   tloKlasa,
+  trasa = "idz",
 }: {
   kolorKlasa: string;
   tloKlasa: string;
+  trasa?: Trasa;
 }) {
   return (
-    <div className={`h-10 w-full min-[600px]:h-14 ${tloKlasa}`} aria-hidden="true">
+    <div className={`h-10 w-full min-[600px]:h-14 ${tloKlasa}`} aria-hidden="true" {...atrybutyTrasy(trasa, 0.6)}>
       <div className={`dzielnik-skos h-full w-full ${kolorKlasa}`} />
     </div>
   );

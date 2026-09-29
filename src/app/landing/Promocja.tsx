@@ -1,4 +1,4 @@
-import { Zaba } from "@/components/Zaba";
+import { ZabaStala } from "./zaba/ZabaStala";
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
 import { Kontener } from "./Kontener";
 import { Galeria } from "./Galeria";
@@ -42,15 +42,13 @@ export function Promocja() {
               <source src={FILM.src} type="video/mp4" />
             </video>
           ) : (
-            <div className="rounded-lg border-2 border-dashed border-jesien-dynia/60 bg-jesien-tlo/70 py-5 pl-24 pr-5">
+            <div className="relative rounded-lg border-2 border-dashed border-jesien-dynia/60 bg-jesien-tlo/70 py-5 pl-24 pr-5">
               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-jesien-rdza">Wkrótce</p>
               <p className="text-sm text-jesien-kora">Film tej edycji pojawi się tutaj, gdy tylko powstanie.</p>
+              {/* Żaba z rękami w górze „trzyma” górną krawędź paska. */}
+              <ZabaStala poza="ramka" skala={0.7} className="absolute bottom-0 left-3" />
             </div>
           )}
-          <Zaba
-            stan="powitanie"
-            className="absolute -top-5 left-3 size-16 text-jesien-mech drop-shadow-[0_6px_14px_rgb(47_33_24/0.3)]"
-          />
         </div>
       </Kontener>
     </section>
