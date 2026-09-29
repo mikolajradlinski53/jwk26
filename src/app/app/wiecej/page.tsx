@@ -78,6 +78,7 @@ export default async function WiecejPage() {
       <NaglowekSekcji>Informacje</NaglowekSekcji>
       <nav className="grid gap-2.5">
         <PozycjaMenu href="/regulamin" ikona="zwoj" nazwa="Regulamin" opis="Zasady wyjazdu" />
+        <PozycjaMenu href="/prywatnosc" ikona="tarcza" nazwa="Prywatność" opis="Jak przetwarzamy Twoje dane" />
         {/* Koordynator — ten sam kontakt, który podaje regulamin (§ 17, § 19). */}
         <PozycjaMenu
           href="mailto:dawid.rutkowski@samorzad.ue.wroc.pl"

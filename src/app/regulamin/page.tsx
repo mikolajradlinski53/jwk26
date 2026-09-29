@@ -82,12 +82,14 @@ export default async function RegulaminPage() {
         ))}
       </article>
 
-      <Link
-        href="/"
-        className="mt-10 inline-block text-sm text-jesien-rdza underline underline-offset-2"
-      >
-        ← Wróć na start
-      </Link>
+      <p className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+        <Link href="/" className="text-jesien-rdza underline underline-offset-2">
+          ← Wróć na start
+        </Link>
+        <Link href="/prywatnosc" className="text-jesien-rdza underline underline-offset-2">
+          Polityka prywatności
+        </Link>
+      </p>
       </main>
     </>
   );

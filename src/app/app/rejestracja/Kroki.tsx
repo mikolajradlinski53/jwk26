@@ -18,6 +18,7 @@ import {
   ZGODA_WIZERUNEK,
   KLAUZULA_ZDROWIE,
   ZGODA_ART9,
+  ZGODA_SMS,
   POTWIERDZENIE_ICE,
   INFORMACJA_DLA_ICE,
 } from "@/lib/zapisy/zgody";
@@ -311,7 +312,7 @@ export function KrokDane({ dane, zmien, bledy, dataJwk }: PropsKroku & { dataJwk
         error={bledy.telefon}
       />
       <Zgoda zaznaczona={dane.zgodaSms} onZmiana={(v) => zmien("zgodaSms", v)}>
-        Zgadzam się na SMS-y z komunikatami organizacyjnymi (dobrowolnie).
+        {ZGODA_SMS}
       </Zgoda>
     </div>
   );

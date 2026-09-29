@@ -11,12 +11,14 @@
  *
  * 2026-09-29.1 wprowadza pełny regulamin (§ 1–22) i oświadczenie o szkodach
  * bez odpowiedzialności solidarnej za pokój. 2026-09-29.2 — § 19 mówi
- * o nominacjach (ze zdjęciami) zamiast o głosowaniach.
+ * o nominacjach (ze zdjęciami) zamiast o głosowaniach. 2026-09-29.3 —
+ * zgody z kanałami i adresatem (wizerunek, art. 9, SMS), pełniejsza
+ * informacja dla ICE, Resend i SMSAPI wśród odbiorców, odesłanie do polityki.
  *
  * Zmiana treści regulaminu (src/lib/regulamin.ts) też wymaga podbicia
  * WERSJA_ZGOD, bo strona regulaminu pokazuje tę wersję.
  */
-export const WERSJA_ZGOD = "2026-09-29.2";
+export const WERSJA_ZGOD = "2026-09-29.3";
 
 export const KONTAKT_IOD = "iod@ue.wroc.pl";
 
@@ -50,11 +52,14 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
     "(art. 9 ust. 2 lit. a RODO), żeby przygotować odpowiednie posiłki " +
     "i udzielić pomocy w sytuacji wyjątkowej. Wizerunek rozpowszechniamy " +
     "wyłącznie na podstawie zgody (art. 6 ust. 1 lit. a RODO i art. 81 ustawy " +
-    "o prawie autorskim i prawach pokrewnych). Zgoda na SMS-y organizacyjne " +
-    "również jest dobrowolna.",
+    "o prawie autorskim i prawach pokrewnych). Numer telefonu do SMS-ów " +
+    "z komunikatami organizacyjnymi wykorzystujemy wyłącznie na podstawie " +
+    "Twojej zgody (art. 6 ust. 1 lit. a RODO).",
   "Dane widzą organizatorzy wyjazdu. Ośrodek otrzymuje wyłącznie informacje " +
     "o diecie i alergiach. Dane są przechowywane u dostawców infrastruktury " +
-    "(Supabase, Vercel), którzy przetwarzają je na nasze zlecenie. Listę zgłoszeń " +
+    "(Supabase, Vercel), którzy przetwarzają je na nasze zlecenie; e-maile " +
+    "z kodem logowania wysyła Resend, a SMS-y — jeśli się na nie zgodzisz — " +
+    "operator usługi SMSAPI (LINK Mobility Poland). Listę zgłoszeń " +
     "— łącznie z informacjami o diecie, alergiach, chorobach, lekach i kontakcie " +
     "ICE — prowadzimy też w arkuszu Google (Google Workspace), do którego dostęp " +
     "mają wyłącznie imiennie wskazani organizatorzy; Google przetwarza te dane na " +
@@ -74,8 +79,11 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
     "zgodność z prawem przetwarzania sprzed wycofania.",
   "Podanie danych z kroków „Dane” i „O tobie” jest warunkiem udziału " +
     "w wyjeździe, z wyjątkiem zwolnienia rektorskiego i pytania o alkohol. " +
-    "Te dwie odpowiedzi, kontakt ICE, informacje o zdrowiu i zgoda na " +
-    "wizerunek są dobrowolne — bez nich też pojedziesz.",
+    "Te dwie odpowiedzi, kontakt ICE, informacje o zdrowiu, zgoda na " +
+    "wizerunek i na SMS-y są dobrowolne — bez nich też pojedziesz.",
+  "Jak przetwarzamy dane podczas korzystania z aplikacji (zdjęcia, " +
+    "komentarze, nominacje, gry, powiadomienia), opisuje polityka prywatności: " +
+    "www.jwk26.pl/prywatnosc.",
 ];
 
 // Bez odpowiedzialności solidarnej za pokój: regulamin § 13 ust. 4 wprost ją
@@ -89,28 +97,49 @@ export const OSWIADCZENIE_SZKODY =
   "i Kadrze szkody, które spowodowałem(-am) lub zauważyłem(-am), oraz " +
   "współdziałać przy ich dokumentowaniu.";
 
+// Kanały nazwane wprost — „materiały promocyjne” bez adresata zgody i bez
+// kanałów to zgoda, której zakresu nie da się potem wykazać. Zdjęcia
+// w samej aplikacji (widoczne tylko dla uczestników) reguluje regulamin § 19.
 export const ZGODA_WIZERUNEK =
-  "Zgadzam się na nieodpłatne rozpowszechnianie mojego wizerunku utrwalonego " +
-  "podczas JWK26 na stronie internetowej, w materiałach promocyjnych, " +
-  "w materiałach dotyczących współprac partnerskich oraz w serwisie JWK26. " +
-  "Zgoda jest dobrowolna i mogę ją w każdej chwili wycofać.";
+  "Zgadzam się, żeby Uniwersytet Ekonomiczny we Wrocławiu (Samorząd Studentów " +
+  "UEW) nieodpłatnie rozpowszechniał mój wizerunek utrwalony na zdjęciach " +
+  "i nagraniach z JWK26 — w mediach społecznościowych i na stronach " +
+  "internetowych Samorządu Studentów UEW oraz w jego materiałach informacyjnych " +
+  "i promocyjnych, także dotyczących współpracy z partnerami. Zgoda jest " +
+  "dobrowolna, nie jest warunkiem udziału i mogę ją w każdej chwili wycofać " +
+  "w aplikacji (Więcej → Twoje zgody); wycofanie nie wpływa na materiały " +
+  "rozpowszechnione wcześniej.";
 
 export const KLAUZULA_ZDROWIE =
-  "Te informacje są dobrowolne. Służą wyłącznie przygotowaniu odpowiednich " +
-  "posiłków i udzieleniu pomocy w sytuacji wyjątkowej. Widzą je tylko " +
-  "organizatorzy, a ośrodek — wyłącznie dietę i alergie. Kasujemy je 14 dni " +
-  "po wyjeździe. Zgodę możesz wycofać w aplikacji w każdej chwili.";
+  "Te informacje są dobrowolne i nie są warunkiem udziału. Służą wyłącznie " +
+  "przygotowaniu odpowiednich posiłków i udzieleniu Ci pomocy w nagłej " +
+  "sytuacji. Widzą je tylko organizatorzy, a ośrodek — wyłącznie dietę " +
+  "i alergie. Usuwamy je automatycznie 14 dni po wyjeździe. Zgodę możesz " +
+  "wycofać w aplikacji w każdej chwili — wtedy od razu je kasujemy.";
 
 export const ZGODA_ART9 =
-  "Wyrażam wyraźną zgodę na przetwarzanie podanych wyżej danych o moim zdrowiu " +
-  "w celach opisanych powyżej.";
+  "Wyrażam wyraźną zgodę na przetwarzanie przez Uniwersytet Ekonomiczny " +
+  "we Wrocławiu podanych wyżej informacji o moim zdrowiu (dieta, alergie, " +
+  "choroby przewlekłe, przyjmowane leki) w celu przygotowania posiłków " +
+  "i udzielenia mi pomocy w nagłej sytuacji podczas JWK26 (art. 9 ust. 2 " +
+  "lit. a RODO).";
+
+export const ZGODA_SMS =
+  "Zgadzam się na otrzymywanie na podany numer SMS-ów z pilnymi komunikatami " +
+  "organizacyjnymi JWK26 (dobrowolnie, mogę wycofać w aplikacji).";
 
 export const POTWIERDZENIE_ICE =
   "Ta osoba wie, że podaję jej numer, i zgadza się na kontakt w nagłym wypadku.";
 
-/** Co uczestnik ma przekazać osobie ICE — organizator nie ma jak zrobić tego sam (art. 14 RODO). */
+/**
+ * Co uczestnik ma przekazać osobie ICE (art. 14 RODO). Organizator nie ma jak
+ * zrobić tego sam przed wyjazdem, więc pełna informacja leży też publicznie
+ * w polityce prywatności — tu jest jej skrót z adresem.
+ */
 export const INFORMACJA_DLA_ICE =
-  `Przekaż tej osobie: organizator JWK26 (${ADMINISTRATOR}, kontakt z IOD: ` +
-  `${KONTAKT_IOD}) ma jej imię i numer telefonu wyłącznie po to, żeby ` +
-  "powiadomić ją, gdyby coś Ci się stało w czasie wyjazdu. Usuniemy je 14 dni " +
-  "po wyjeździe. Wcześniejszego usunięcia może zażądać, pisząc do IOD.";
+  `Przekaż tej osobie: administrator danych (${ADMINISTRATOR}, kontakt z IOD: ` +
+  `${KONTAKT_IOD}) ma jej imię, numer telefonu i informację, kim dla Ciebie ` +
+  "jest, wyłącznie po to, żeby ją powiadomić, gdyby coś Ci się stało w czasie " +
+  "wyjazdu. Widzą je tylko organizatorzy; usuniemy je 14 dni po wyjeździe. " +
+  "Może zażądać dostępu do nich, sprostowania, wcześniejszego usunięcia albo " +
+  "wnieść sprzeciw — pisząc do IOD. Pełna informacja: www.jwk26.pl/prywatnosc.";
