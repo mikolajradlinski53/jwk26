@@ -9,10 +9,13 @@
  * rektorskie (z godzinami) i odpowiedź na pytanie o alkohol. Wersja
  * 2026-09-28.2 dopisuje Google (arkusz zespołu) jako podmiot przetwarzający.
  *
- * Zmiana treści regulaminu (src/app/regulamin/page.tsx) też wymaga podbicia
+ * 2026-09-29.1 wprowadza pełny regulamin (§ 1–22) i oświadczenie o szkodach
+ * bez odpowiedzialności solidarnej za pokój.
+ *
+ * Zmiana treści regulaminu (src/lib/regulamin.ts) też wymaga podbicia
  * WERSJA_ZGOD, bo strona regulaminu pokazuje tę wersję.
  */
-export const WERSJA_ZGOD = "2026-09-28.2";
+export const WERSJA_ZGOD = "2026-09-29.1";
 
 export const KONTAKT_IOD = "iod@ue.wroc.pl";
 
@@ -74,15 +77,16 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
     "wizerunek są dobrowolne — bez nich też pojedziesz.",
 ];
 
+// Bez odpowiedzialności solidarnej za pokój: regulamin § 13 ust. 4 wprost ją
+// wyklucza, a oświadczenie nie może być surowsze niż regulamin, do którego
+// odsyła. Roszczenia zgłasza podmiot uprawniony (§ 13 ust. 6), nie Kadra.
 export const OSWIADCZENIE_SZKODY =
-  "Oświadczam, że odpowiadam za szkody w mieniu ośrodka wyrządzone przeze mnie " +
-  "w czasie wyjazdu. Jeżeli szkoda powstanie w pokoju, w którym mam przydzielone " +
-  "miejsce według listy zakwaterowania prowadzonej przez organizatora, a osoby, " +
-  "która ją wyrządziła, nie da się ustalić albo nikt nie przyzna się do jej " +
-  "wyrządzenia, odpowiadam za nią solidarnie z pozostałymi osobami, które mają " +
-  "miejsce w tym pokoju. Organizator — Uniwersytet Ekonomiczny we Wrocławiu, " +
-  "reprezentowany przez koordynatora wyjazdu — może żądać pokrycia szkody, " +
-  "a w razie odmowy dochodzić jej na drodze postępowania cywilnego.";
+  "Oświadczam, że zapoznałem(-am) się z § 13 Regulaminu i przyjmuję do " +
+  "wiadomości, że odpowiadam za szkody w mieniu Obiektu lub innych osób " +
+  "wyrządzone przeze mnie w czasie Wydarzenia, na zasadach określonych " +
+  "w przepisach prawa. Zobowiązuję się niezwłocznie zgłaszać obsłudze Obiektu " +
+  "i Kadrze szkody, które spowodowałem(-am) lub zauważyłem(-am), oraz " +
+  "współdziałać przy ich dokumentowaniu.";
 
 export const ZGODA_WIZERUNEK =
   "Zgadzam się na nieodpłatne rozpowszechnianie mojego wizerunku utrwalonego " +
