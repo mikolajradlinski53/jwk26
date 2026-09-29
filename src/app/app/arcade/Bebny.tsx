@@ -71,7 +71,7 @@ export function Bebny({
           <div
             key={i}
             className={
-              "grid place-items-center rounded-sm border border-white/10 py-4 " +
+              "beben grid place-items-center rounded-sm py-4 " +
               (wynik && wynik.wyplata > 0 ? "text-krew-jasna" : "text-kosc")
             }
           >

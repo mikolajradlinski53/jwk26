@@ -33,13 +33,17 @@ const KOLOR: Record<string, string> = { s: "♠", h: "♥", d: "♦", c: "♣" }
 
 function Karta({ karta }: { karta: string | null }) {
   if (!karta) {
-    // Zakryta karta krupiera: rysujemy grzbiet, żeby było widać, że jest.
+    // Zakryta karta krupiera: ta sama szklana tafla z ornamentem zamiast rangi,
+    // żeby było widać, że karta jest, ale nie co to za karta.
     return (
       <span
         aria-label="karta zakryta"
-        className="grid h-20 w-14 place-items-center rounded-md border border-white/20 bg-krew-glab/60 text-lg text-kosc/60"
+        className="karta-szklo grid h-20 w-14 place-items-center rounded-lg text-popiol/70"
       >
-        ?
+        <svg viewBox="0 0 24 24" className="size-7" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+          <path d="M12 3 20 12 12 21 4 12Z" />
+          <path d="M12 8 16 12 12 16 8 12Z" fill="currentColor" stroke="none" />
+        </svg>
       </span>
     );
   }
@@ -47,13 +51,12 @@ function Karta({ karta }: { karta: string | null }) {
   const ranga = karta.slice(0, -1);
   const czerwona = kolor === "h" || kolor === "d";
   return (
-    <span
-      aria-label={`${ranga} ${KOLOR[kolor]}`}
-      className={`grid h-20 w-14 place-items-center rounded-md bg-kosc text-xl font-bold shadow ${
-        czerwona ? "text-krew" : "text-noc"
-      }`}
-    >
-      <span className="leading-none">
+    <span aria-label={`${ranga} ${KOLOR[kolor]}`} className="karta-szklo grid h-20 w-14 place-items-center rounded-lg">
+      <span
+        className={
+          "text-center font-tytul text-xl leading-none " + (czerwona ? "text-krew-jasna" : "text-kosc")
+        }
+      >
         {ranga}
         <br />
         {KOLOR[kolor]}
