@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useCallback, useRef } from "react";
+import type { OdslonaWidok } from "@/lib/odslony";
+import { PrzyciskZapisu } from "./PrzyciskZapisu";
 
 /**
  * Panel wezwania — jesienny gradient (`dynia` → `rdza` → `kora` → `atrament`,
@@ -28,7 +29,7 @@ import { useCallback, useRef } from "react";
  * automatycznie. Tego samego zerowania NIE dostaje obsługa kursora (to logika
  * JS, nie CSS), więc `naRuchWskaznika` sprawdza `matchMedia` sam.
  */
-export function PanelWezwania() {
+export function PanelWezwania({ zapisy }: { zapisy: OdslonaWidok }) {
   const panelRef = useRef<HTMLDivElement | null>(null);
 
   const naRuchWskaznika = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
@@ -104,17 +105,9 @@ export function PanelWezwania() {
           Zgłoszenia zamykamy, gdy skończą się miejsca. Wejdź, wypełnij formularz i miej to z głowy.
         </p>
 
-        <Link
-          href="/wejscie"
-          className="stopka-cta group relative mt-[31px] flex h-[42px] min-w-[120px] items-center
-                     justify-center overflow-hidden rounded-sm bg-white px-6 text-[12px]
-                     font-semibold text-jesien-atrament
-                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white
-                     min-[600px]:mt-6"
-        >
-          <span className="relative z-10">Zapisz się</span>
-          <span className="stopka-cta-blask" aria-hidden="true" />
-        </Link>
+        <div className="mt-[31px] min-[600px]:mt-6">
+          <PrzyciskZapisu odslona={zapisy} wariant="panel" />
+        </div>
       </div>
     </div>
   );

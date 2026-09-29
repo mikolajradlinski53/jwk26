@@ -8,49 +8,46 @@ import {
   ZnakMarki,
   type Odnosnik,
 } from "./StopkaElementy";
+import { KOORDYNATOR_MAIL } from "@/lib/regulamin";
+import type { Social } from "@/lib/ustawienia";
+import type { OdslonaWidok } from "@/lib/odslony";
 
-// Placeholdery do podmiany: wydarzenie na Facebooku i profil „Nastukana"
-// na Instagramie. Puste znaczy „nie pokazuj tej ikony" — lepszy brak
-// odnośnika niż odnośnik prowadzący donikąd.
-const SPOLECZNOSCI = {
-  instagram: "https://www.instagram.com/",
-  facebook: "https://www.facebook.com/",
-} as const;
+const KLASA_LINKU_DOLNEGO =
+  "flex min-h-11 w-fit items-center text-[10.5px] text-jesien-kora underline underline-offset-[3px] transition " +
+  "hover:text-jesien-atrament focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jesien-rdza";
 
-const KONTAKT_MAIL = "samorzad@samorzad.ue.wroc.pl";
-
-// Wyłącznie trasy i kotwice, które naprawdę istnieją: `/wejscie`, `/regulamin`
-// i identyfikatory sekcji nadane w `src/app/page.tsx`, `Opis.tsx`,
-// `Promocja.tsx` i `KiedyGdzie.tsx`. Żadnych wymyślonych stron.
-const NAWIGACJA_WYJAZD: Odnosnik[] = [
-  { etykieta: "Czym to jest", href: "#o-wyjezdzie" },
-  { etykieta: "Kiedy i gdzie", href: "#kiedy-gdzie" },
-  { etykieta: "Zdjęcia", href: "#promocja" },
-  { etykieta: "Regulamin", href: "/regulamin" },
-];
-
-// Kolumna „Samorząd” z briefu miałaby wyłącznie jeden odnośnik (Kontakt) —
-// ikony społecznościowe siedzą już w kolumnie marki. Kolumna z jednym linkiem
-// to dokładnie ten „ubogi” przypadek, przed którym ostrzega brief: zamiast
-// dopychać ją wymyśloną treścią, Kontakt dołącza do „Zgłoszenia” i prawa
-// strona zostaje dwiema kolumnami, nie trzema.
-const NAWIGACJA_ZGLOSZENIE: Odnosnik[] = [
-  { etykieta: "Zapisz się", href: "/wejscie" },
-  { etykieta: "Kontakt", href: `mailto:${KONTAKT_MAIL}` },
-  { etykieta: "Regulamin", href: "/regulamin" },
-];
+const KLASA_IKONY =
+  "flex size-11 items-center justify-center text-jesien-atrament transition duration-200 hover:-translate-y-[3px] " +
+  "hover:opacity-[0.56] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jesien-rdza";
 
 /**
- * Stopka landingu: ciemny panel wezwania (zapowiedź apki), jasny pasek
- * rozdzielający, pływająca karta z marką/nawigacją/copyrightem i gigantyczne
- * wyblakłe „JWK26" w tle.
+ * Stopka landingu: panel wezwania, jasny pasek rozdzielający, pływająca karta
+ * z marką/nawigacją/copyrightem i gigantyczne wyblakłe „JWK26" w tle.
+ *
+ * Nawigacja wskazuje wyłącznie kotwice i trasy, które istnieją. „Zapisy”
+ * prowadzą na `/wejscie` dopiero po odsłonie zapisów — przedtem do sekcji
+ * z licznikiem. Ikony społecznościowe biorą adresy z Ustawień; pusty adres
+ * = brak ikony (lepszy brak odnośnika niż odnośnik donikąd).
  */
-export function Stopka() {
-  const maSpolecznosci = SPOLECZNOSCI.instagram || SPOLECZNOSCI.facebook;
+export function Stopka({ zapisy, social, maPlan }: { zapisy: OdslonaWidok; social: Social; maPlan: boolean }) {
+  const nawigacjaWyjazd: Odnosnik[] = [
+    { etykieta: "Czym to jest", href: "#o-wyjezdzie" },
+    ...(maPlan ? [{ etykieta: "Plan", href: "#plan" }] : []),
+    { etykieta: "Kiedy i gdzie", href: "#kiedy-gdzie" },
+    { etykieta: "Zdjęcia", href: "#promocja" },
+  ];
+  const nawigacjaZgloszenie: Odnosnik[] = [
+    { etykieta: "Zapisy", href: zapisy.odsloniete ? "/wejscie" : "#zapisy" },
+    { etykieta: "Pytania", href: "#pytania" },
+    { etykieta: "Kontakt", href: `mailto:${KOORDYNATOR_MAIL}` },
+    { etykieta: "Regulamin", href: "/regulamin" },
+    { etykieta: "Polityka prywatności", href: "/prywatnosc" },
+  ];
+  const maSpolecznosci = social.instagram || social.facebook;
 
   return (
     <footer className="relative mt-16 w-full pb-16">
-      <PanelWezwania />
+      <PanelWezwania zapisy={zapisy} />
 
       <div className="stopka-pasek mx-4 mt-[14px]" aria-hidden="true" />
 
@@ -67,37 +64,33 @@ export function Stopka() {
             </div>
 
             <p className="mt-[27px] max-w-[420px] text-[11.5px] leading-[1.55] text-jesien-kora">
-              Jesienny Wyjazd Komisji to trzy dni w Karpaczu, na które jedzie samorząd
-              Uniwersytetu Ekonomicznego we Wrocławiu. Integracja, rywalizacja i kilka
-              rzeczy, o których lepiej nie pisać.
+              Jesienny Wyjazd Komisji to trzy dni w górach, na które jedzie Samorząd Studentów
+              Uniwersytetu Ekonomicznego we Wrocławiu. Integracja, rywalizacja i kilka rzeczy,
+              o których lepiej nie pisać.
             </p>
 
             {maSpolecznosci ? (
               <div className="mt-[21px] flex items-center gap-[13px]">
-                {SPOLECZNOSCI.instagram && (
+                {social.instagram && (
                   <a
-                    href={SPOLECZNOSCI.instagram}
+                    href={social.instagram}
                     target="_blank"
                     rel="noreferrer"
                     aria-label="JWK26 na Instagramie"
-                    className="flex size-11 items-center justify-center text-jesien-atrament
-                               transition duration-200 hover:-translate-y-[3px] hover:opacity-[0.56]
-                               focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jesien-rdza"
+                    className={KLASA_IKONY}
                   >
                     <span className="size-[17px]">
                       <IkonaInstagram />
                     </span>
                   </a>
                 )}
-                {SPOLECZNOSCI.facebook && (
+                {social.facebook && (
                   <a
-                    href={SPOLECZNOSCI.facebook}
+                    href={social.facebook}
                     target="_blank"
                     rel="noreferrer"
                     aria-label="JWK26 na Facebooku"
-                    className="flex size-11 items-center justify-center text-jesien-atrament
-                               transition duration-200 hover:-translate-y-[3px] hover:opacity-[0.56]
-                               focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jesien-rdza"
+                    className={KLASA_IKONY}
                   >
                     <span className="size-[17px]">
                       <IkonaFacebook />
@@ -108,27 +101,24 @@ export function Stopka() {
             ) : null}
           </div>
 
-          {/* Nawigacja — dwie kolumny, patrz komentarz przy NAWIGACJA_ZGLOSZENIE */}
           <div className="grid grid-cols-2 gap-x-[clamp(30px,4vw,54px)] gap-y-[38px] min-[600px]:gap-y-6">
-            <KolumnaNawigacji tytul="Wyjazd" odnosniki={NAWIGACJA_WYJAZD} />
-            <KolumnaNawigacji tytul="Zgłoszenie" odnosniki={NAWIGACJA_ZGLOSZENIE} />
+            <KolumnaNawigacji tytul="Wyjazd" odnosniki={nawigacjaWyjazd} />
+            <KolumnaNawigacji tytul="Zgłoszenie" odnosniki={nawigacjaZgloszenie} />
           </div>
         </div>
 
         <div className="mt-[33px] mb-[27px] h-px bg-jesien-atrament/[0.11]" />
 
         <div className="flex flex-col gap-4 min-[600px]:flex-row min-[600px]:items-center min-[600px]:justify-between">
-          <p className="text-[10.5px] text-jesien-kora">
-            © 2026 Samorząd Studencki UE we Wrocławiu
-          </p>
-          <Link
-            href="/regulamin"
-            className="flex min-h-11 w-fit items-center text-[10.5px] text-jesien-kora underline
-                       underline-offset-[3px] transition hover:text-jesien-atrament
-                       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jesien-rdza"
-          >
-            Regulamin wyjazdu
-          </Link>
+          <p className="text-[10.5px] text-jesien-kora">© 2026 Samorząd Studentów UE we Wrocławiu</p>
+          <div className="flex flex-wrap gap-x-5">
+            <Link href="/regulamin" className={KLASA_LINKU_DOLNEGO}>
+              Regulamin wyjazdu
+            </Link>
+            <Link href="/prywatnosc" className={KLASA_LINKU_DOLNEGO}>
+              Polityka prywatności
+            </Link>
+          </div>
         </div>
       </KartaStopki>
 

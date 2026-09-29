@@ -82,11 +82,11 @@ const ZDJECIA: ZdjecieDane[] = [
   },
 ];
 
-// Ile kafelków widać, zanim ktoś kliknie „Pokaż więcej". Siedem zdjęć w
-// siatce murowanej (2 kolumny na telefonie) to już cztery-pięć rzędów —
-// właściciel wcześniej skarżył się, że galeria „przykrywa swoją objętością
-// treść", więc na start widać tylko pięć, reszta doczytuje się na żądanie.
-const WIDOCZNE_NA_START = 5;
+// Ile kafelków widać, zanim ktoś kliknie „Pokaż więcej". Galeria nie może
+// „przykrywać objętością treści” (uwaga właściciela), więc na start cztery:
+// na telefonie dwa rzędy po dwa, na komputerze jeden pełny rząd — przy pięciu
+// piąte zdjęcie wisiało samo pod spodem.
+const WIDOCZNE_NA_START = 4;
 
 /**
  * Galeria zdjęć z poprzednich edycji — murowana siatka (CSS `columns`),

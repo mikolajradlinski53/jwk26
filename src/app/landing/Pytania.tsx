@@ -1,38 +1,45 @@
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
 import { Kontener } from "./Kontener";
+import { KOORDYNATOR_MAIL, KOORDYNATOR_TELEFON } from "@/lib/regulamin";
 
+// Odpowiedzi oparte na regulaminie i formularzu zapisów — nic, czego system
+// albo regulamin nie mówi. Poprawki treści idą przez rozmowę z właścicielem.
 const PYTANIA = [
   {
-    pytanie: "Czy trzeba być w Samorządzie?",
+    pytanie: "Kto może jechać?",
     odpowiedz:
-      "Tak — wyjazd jest dla osób z Samorządu Studenckiego UE we Wrocławiu. " +
-      "Logowanie w formularzu wymaga adresu w domenie @samorzad.ue.wroc.pl.",
+      "Pełnoletnie osoby z komisji, jednostek i projektów Samorządu, świeżaki przyjęci w tegorocznej " +
+      "rekrutacji i Alumni — wszyscy logują się kontem @samorzad.ue.wroc.pl. Szczegóły w § 3 regulaminu.",
+  },
+  {
+    pytanie: "Co, jeśli tura jest pełna?",
+    odpowiedz:
+      "Zapiszesz się na listę rezerwową bez wpłaty. Gdy zwolni się miejsce, organizator przesuwa kolejną " +
+      "osobę z rezerwy i prosi ją o wpłatę.",
   },
   {
     pytanie: "Co, jeśli zrezygnuję?",
     odpowiedz:
-      "Zasady zwrotu wpłaty ustala organizator. Zgłoś rezygnację jak najszybciej, " +
-      "jak tylko wiesz, że nie jedziesz.",
+      "Napisz do koordynatora jak najszybciej. Skutki finansowe rezygnacji określają warunki płatności " +
+      "przekazane przed wpłatą (§ 17 regulaminu).",
   },
   {
     pytanie: "Jak dojeżdżamy?",
-    odpowiedz: "Szczegóły transportu poda organizator przed wyjazdem.",
+    odpowiedz:
+      "Autokarem albo własnym transportem — w formularzu wybierasz autokar w obie strony, tylko tam, tylko " +
+      "z powrotem albo dojazd własny. Godzinę i miejsce zbiórki podamy przed wyjazdem.",
   },
   {
     pytanie: "Co z jedzeniem i dietami?",
-    odpowiedz:
-      "O szczególnych potrzebach żywieniowych — diecie, alergiach — trzeba " +
-      "poinformować organizatora.",
+    odpowiedz: "Dietę i alergie podajesz w formularzu, dobrowolnie. Ośrodek dostaje wyłącznie te informacje.",
   },
   {
     pytanie: "Czy zgłoszenie może zostać odrzucone?",
     odpowiedz:
-      "Tak, jeśli w formularzu czegoś zabraknie albo nie da się zweryfikować " +
-      "potwierdzenia przelewu. Decyzję zobaczysz po zalogowaniu w aplikacji.",
+      "Tak, jeśli w formularzu czegoś zabraknie albo nie da się zweryfikować potwierdzenia przelewu. " +
+      "Decyzję zobaczysz po zalogowaniu w aplikacji.",
   },
 ] as const;
-
-const KONTAKT_MAIL = "samorzad@samorzad.ue.wroc.pl";
 
 /**
  * „Najczęstsze pytania" — natywne `<details>`/`<summary>`: działają bez
@@ -40,18 +47,20 @@ const KONTAKT_MAIL = "samorzad@samorzad.ue.wroc.pl";
  * potrzebują żadnego stanu Reacta do otwierania/zamykania. Domyślny
  * trójkącik znacznika jest ukryty i zastąpiony własnym, obracanym przez
  * `group-open:` — więc nie wygląda jak nieostylowany widget przeglądarki.
+ *
+ * Kontakt pod listą to koordynator z regulaminu (§ 17, § 20) — te same stałe.
  */
 export function Pytania() {
   return (
-    <section id="pytania" className="bg-jesien-tlo/70 mx-auto w-full scroll-mt-20 px-4 py-14">
+    <section id="pytania" className="bg-jesien-karta/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener>
-        <SekcjaNaglowek numer="07" nadtytul="Pytania" tytul="Najczęstsze pytania" />
+        <SekcjaNaglowek numer="08" nadtytul="Pytania" tytul="Najczęstsze pytania" />
 
         <div className="grid gap-3">
           {PYTANIA.map((p) => (
             <details
               key={p.pytanie}
-              className="group rounded-lg border border-jesien-kora/15 bg-jesien-karta px-5 py-4"
+              className="group rounded-lg border border-jesien-kora/15 bg-jesien-tlo/80 px-5 py-4"
             >
               <summary
                 className="flex min-h-11 list-none items-center justify-between gap-3 text-sm
@@ -78,15 +87,23 @@ export function Pytania() {
           ))}
         </div>
 
-        <p className="mt-6 text-sm leading-relaxed text-jesien-kora">
-          Nie znalazłeś odpowiedzi?{" "}
+        <div className="mt-6 grid gap-1 rounded-lg border border-jesien-kora/15 bg-jesien-tlo/80 p-5 text-sm">
+          <p className="font-bold text-jesien-atrament">
+            Nie znalazłeś odpowiedzi? Koordynator wyjazdu: Dawid Rutkowski
+          </p>
           <a
-            href={`mailto:${KONTAKT_MAIL}`}
-            className="font-bold text-jesien-rdza underline underline-offset-2"
+            href={`mailto:${KOORDYNATOR_MAIL}`}
+            className="w-fit font-bold text-jesien-rdza underline underline-offset-2"
           >
-            {KONTAKT_MAIL}
+            {KOORDYNATOR_MAIL}
           </a>
-        </p>
+          <a
+            href={`tel:${KOORDYNATOR_TELEFON.replace(/\s/g, "")}`}
+            className="w-fit text-jesien-rdza underline underline-offset-2"
+          >
+            {KOORDYNATOR_TELEFON}
+          </a>
+        </div>
       </Kontener>
     </section>
   );
