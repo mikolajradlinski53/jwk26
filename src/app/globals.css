@@ -621,6 +621,16 @@ body {
 ::view-transition-group(pasek) {
   animation: none;
   z-index: 100;
+  /*
+   * Przycięcie do kształtu paska. Na czas przejścia przeglądarka pokazuje
+   * „zdjęcie” paska, a Safari robi je prostokątne, razem z tym, co widać przez
+   * szkło — w prawym dolnym rogu tła jest czerwona poświata, więc przy każdym
+   * dotknięciu zakładki wychodził czerwony prostokąt łamiący zaokrąglenie
+   * (zgłoszenie Mikołaja z iPhone'a). Przycięcie zamyka też cień i poświatę
+   * aktywnej zakładki w granicach kapsuły.
+   */
+  border-radius: 9999px;
+  overflow: clip;
 }
 ::view-transition-old(pasek) {
   display: none;
