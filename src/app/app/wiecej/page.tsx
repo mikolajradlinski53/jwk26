@@ -78,13 +78,15 @@ export default async function WiecejPage() {
       <NaglowekSekcji>Informacje</NaglowekSekcji>
       <nav className="grid gap-2.5">
         <PozycjaMenu href="/regulamin" ikona="zwoj" nazwa="Regulamin" opis="Zasady wyjazdu" />
+        {/* Koordynator — ten sam kontakt, który podaje regulamin (§ 17, § 19). */}
         <PozycjaMenu
-          href="mailto:samorzad@samorzad.ue.wroc.pl"
+          href="mailto:dawid.rutkowski@samorzad.ue.wroc.pl"
           ikona="list"
-          nazwa="Kontakt"
-          opis="samorzad@samorzad.ue.wroc.pl"
+          nazwa="Napisz do organizatora"
+          opis="dawid.rutkowski@samorzad.ue.wroc.pl"
           zewnetrzny
         />
+        <PozycjaMenu href="tel:+48608008363" ikona="telefon" nazwa="Zadzwoń" opis="Dawid Rutkowski · 608 008 363" zewnetrzny />
       </nav>
 
       <form action="/auth/signout" method="post" className="mt-8">

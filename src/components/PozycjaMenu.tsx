@@ -22,8 +22,10 @@ export function PozycjaMenu({
   /** `mailto:` i adresy spoza apki — zwykły <a>, bez przejścia. */
   zewnetrzny?: boolean;
 }) {
+  // `min-w-0`: w siatce element domyślnie rośnie do szerokości treści, więc
+  // długi opis (adres mailowy) wypychał wiersz poza ekran zamiast się uciąć.
   const klasy =
-    "szklo flex min-h-14 items-center gap-3 rounded-md px-4 py-3 " +
+    "szklo flex min-h-14 min-w-0 items-center gap-3 rounded-md px-4 py-3 " +
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew";
   const tresc = (
     <>
