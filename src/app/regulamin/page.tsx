@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { OSWIADCZENIE_SZKODY, WERSJA_ZGOD } from "@/lib/zapisy/zgody";
-import { REGULAMIN } from "@/lib/regulamin";
+import { regulaminDoWyswietlenia } from "@/lib/regulamin";
+import { wczytajOdslony } from "@/lib/odslony";
 
 // `description` nadpisany osobno — bez tego strona dziedziczyłaby po
 // `layout.tsx` opis napisany z myślą o mrocznej apce.
@@ -31,6 +32,9 @@ export default async function RegulaminPage() {
     .eq("key", "regulamin_zatwierdzony")
     .maybeSingle();
   const zatwierdzony = data?.value === true;
+  // Przed odsłoną ośrodka § 1 ust. 3 nie podaje miejsca (spec landingu).
+  const odslony = await wczytajOdslony(supabase);
+  const paragrafy = regulaminDoWyswietlenia(odslony.osrodek.odsloniete);
 
   return (
     <>
@@ -60,7 +64,7 @@ export default async function RegulaminPage() {
       )}
 
       <article className="mt-8 grid max-w-[65ch] gap-8 text-sm leading-relaxed text-jesien-kora">
-        {REGULAMIN.map((p) => (
+        {paragrafy.map((p) => (
           <section key={p.numer} id={`par-${p.numer}`}>
             <h2 className="font-tytul text-lg text-jesien-atrament">
               § {p.numer}. {p.tytul}

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { czyOdsloniete, miastoZAdresu, kiedyOdslona, tekstOdliczania } from "../src/lib/odslony";
+import { REGULAMIN, regulaminDoWyswietlenia } from "../src/lib/regulamin";
 
 const P = "2099-01-01T12:00:00+01:00";
 const W = "2020-01-01T12:00:00+01:00";
@@ -33,5 +34,19 @@ describe("teksty", () => {
   it("odliczanie w skrócie", () => {
     expect(tekstOdliczania({ minelo: false, dni: 3, godziny: 4, minuty: 5, sekundy: 6 })).toBe("3 d 04:05:06");
     expect(tekstOdliczania({ minelo: true, dni: 0, godziny: 0, minuty: 0, sekundy: 0 })).toBe("za chwilę");
+  });
+});
+
+describe("regulamin przed odsłoną ośrodka", () => {
+  it("§ 1 ust. 3 bez nazwy, adresu i miasta; reszta bez zmian", () => {
+    const zakryty = regulaminDoWyswietlenia(false);
+    const ust3 = zakryty[0].ustepy[2];
+    expect(ust3).not.toMatch(/Karpacz|Zielone|Poznańsk/);
+    expect(ust3).toMatch(/ogłosi przed rozpoczęciem zapisów/);
+    expect(zakryty[0].ustepy[0]).toBe(REGULAMIN[0].ustepy[0]);
+    expect(zakryty.slice(1)).toEqual(REGULAMIN.slice(1));
+  });
+  it("po odsłonie pełna treść", () => {
+    expect(regulaminDoWyswietlenia(true)).toBe(REGULAMIN);
   });
 });

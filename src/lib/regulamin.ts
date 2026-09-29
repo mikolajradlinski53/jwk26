@@ -248,3 +248,19 @@ export const REGULAMIN: Paragraf[] = [
     ],
   },
 ];
+
+/** § 1 ust. 3 przed odsłoną ośrodka (spec landingu, sekcja 1). */
+const USTEP_MIEJSCA_ZAKRYTY =
+  "Wydarzenie odbywa się od dnia 23 października 2026 r. do dnia 25 października 2026 r. w ośrodku wypoczynkowym, którego nazwę i adres Organizator ogłosi przed rozpoczęciem zapisów, a także w innych miejscach, w których jest realizowany ogłoszony program.";
+
+/**
+ * Regulamin do pokazania. Przed odsłoną ośrodka § 1 ust. 3 nie podaje
+ * miejsca. Wersja zgód się nie zmienia: odsłona zapisów odsłania też ośrodek,
+ * więc każdy, kto akceptuje regulamin, widzi go w pełnym brzmieniu.
+ */
+export function regulaminDoWyswietlenia(osrodekOdsloniety: boolean): Paragraf[] {
+  if (osrodekOdsloniety) return REGULAMIN;
+  return REGULAMIN.map((p) =>
+    p.numer === 1 ? { ...p, ustepy: p.ustepy.map((u, i) => (i === 2 ? USTEP_MIEJSCA_ZAKRYTY : u)) } : p,
+  );
+}
