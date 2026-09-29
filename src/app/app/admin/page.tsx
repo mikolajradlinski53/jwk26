@@ -1,20 +1,21 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
+import { Ikona, type NazwaIkony } from "@/components/Ikona";
 import { LicznikZamowien } from "./LicznikZamowien";
 
-const WEJSCIA = [
-  { href: "/app/admin/zapisy", nazwa: "Zapisy", opis: "Tury, miejsca i rezerwa" },
-  { href: "/app/admin/rejestracje", nazwa: "Zgłoszenia", opis: "Kolejka oczekujących" },
-  { href: "/app/admin/uczestnicy", nazwa: "Uczestnicy", opis: "Przyjęci: diety, ICE, zwolnienia, CSV" },
-  { href: "/app/admin/ogloszenia", nazwa: "Ogłoszenia", opis: "Powiadomienia push do wszystkich, drużyny, puli" },
-  { href: "/app/admin/gossipy", nazwa: "Gossipy", opis: "Kategorie, ujawnianie, moderacja" },
-  { href: "/app/admin/bingo", nazwa: "Bingo", opis: "Kolejka zdjęć z planszy" },
-  { href: "/app/admin/sklepik", nazwa: "Sklepik", opis: "Kolejka wydań i stan półki" },
-  { href: "/app/admin/punkty", nazwa: "Punkty", opis: "Przyznaj lub odbierz" },
-  { href: "/app/admin/druzyny", nazwa: "Drużyny", opis: "Kapitani i salda" },
-  { href: "/app/admin/historia", nazwa: "Historia", opis: "Ostatnie wpisy w księdze" },
-  { href: "/app/admin/ustawienia", nazwa: "Ustawienia", opis: "Daty i miejsce wydarzenia" },
+const WEJSCIA: { href: string; nazwa: string; opis: string; ikona: NazwaIkony }[] = [
+  { href: "/app/admin/zapisy", nazwa: "Zapisy", opis: "Tury, miejsca i rezerwa", ikona: "zwoj" },
+  { href: "/app/admin/rejestracje", nazwa: "Zgłoszenia", opis: "Kolejka oczekujących", ikona: "list" },
+  { href: "/app/admin/uczestnicy", nazwa: "Uczestnicy", opis: "Przyjęci: diety, ICE, zwolnienia, CSV", ikona: "osoby" },
+  { href: "/app/admin/ogloszenia", nazwa: "Ogłoszenia", opis: "Powiadomienia push do wszystkich, drużyny, puli", ikona: "dzwonek" },
+  { href: "/app/admin/gossipy", nazwa: "Gossipy", opis: "Kategorie, ujawnianie, moderacja", ikona: "gwiazda" },
+  { href: "/app/admin/bingo", nazwa: "Bingo", opis: "Kolejka zdjęć z planszy", ikona: "plansza" },
+  { href: "/app/admin/sklepik", nazwa: "Sklepik", opis: "Kolejka wydań i stan półki", ikona: "torba" },
+  { href: "/app/admin/punkty", nazwa: "Punkty", opis: "Przyznaj lub odbierz", ikona: "plus" },
+  { href: "/app/admin/druzyny", nazwa: "Drużyny", opis: "Kapitani i salda", ikona: "tarcza" },
+  { href: "/app/admin/historia", nazwa: "Historia", opis: "Ostatnie wpisy w księdze", ikona: "zegar" },
+  { href: "/app/admin/ustawienia", nazwa: "Ustawienia", opis: "Daty i miejsce wydarzenia", ikona: "zebatka" },
 ];
 
 export default async function AdminPage() {
@@ -39,7 +40,8 @@ export default async function AdminPage() {
             className="szklo flex items-center gap-3 rounded-md px-4 py-3.5
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
           >
-            <span className="min-w-0">
+            <Ikona nazwa={w.ikona} className="size-10 flex-none text-kosc" />
+            <span className="min-w-0 flex-1">
               <span className="block text-sm font-bold">{w.nazwa}</span>
               <span className="block text-xs text-dym">{w.opis}</span>
             </span>
