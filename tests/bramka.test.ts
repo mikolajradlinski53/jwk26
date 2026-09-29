@@ -8,7 +8,8 @@ const KORZEN = resolve(__dirname, "../src/app");
  * Ekrany dostępne bez zalogowania. Każdy inny musi siedzieć pod /app,
  * bo tylko ten prefiks obejmuje bramka w proxy.ts.
  */
-const PUBLICZNE_EKRANY = new Set(["/", "/wejscie", "/regulamin"]);
+// /prywatnosc — polityka musi być dostępna przed zalogowaniem (landing, osoba ICE).
+const PUBLICZNE_EKRANY = new Set(["/", "/wejscie", "/regulamin", "/prywatnosc"]);
 
 /**
  * Uchwyty tras dostępne bez zalogowania — osobna lista, bo osobne ryzyko.
@@ -22,7 +23,8 @@ const PUBLICZNE_EKRANY = new Set(["/", "/wejscie", "/regulamin"]);
  */
 // /api/push woła baza (pg_net, pg_cron), nie przeglądarka — bez sesji, za to
 // z sekretem w nagłówku `x-push-sekret`; bez niego trasa odpowiada 401.
-const PUBLICZNE_UCHWYTY = new Set(["/auth/callback", "/auth/signout", "/api/push"]);
+// /api/sms tak samo, z nagłówkiem `x-sms-sekret`.
+const PUBLICZNE_UCHWYTY = new Set(["/auth/callback", "/auth/signout", "/api/push", "/api/sms"]);
 
 type Trasa = { sciezka: string; rodzaj: "ekran" | "uchwyt" };
 

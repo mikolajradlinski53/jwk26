@@ -72,6 +72,7 @@ export const POLITYKA: SekcjaPolityki[] = [
           "Informacje o zdrowiu i kontakt alarmowy — usuwamy automatycznie 14 dni po zakończeniu wyjazdu.",
           "Pozostałe dane zgłoszenia, w tym potwierdzenie przelewu — do 31 grudnia 2027 r., żeby móc rozliczyć ewentualne szkody z ośrodkiem.",
           "Treści z zabaw (zdjęcia, komentarze, nominacje, historia gier, punkty i zamówienia) — do 31 stycznia 2027 r.",
+          "Konto w aplikacji (adres e-mail i nazwa) — do 31 grudnia 2027 r., razem z danymi zgłoszenia, chyba że wcześniej poprosisz o jego usunięcie. Konta organizatorów usuwamy po zakończeniu ich funkcji.",
           "Subskrypcje powiadomień — do wyłączenia powiadomień, wylogowania albo wygaśnięcia subskrypcji po stronie urządzenia.",
           "Korespondencja — przez czas potrzebny do obsługi sprawy, a potem do upływu terminu przedawnienia ewentualnych roszczeń.",
         ],
