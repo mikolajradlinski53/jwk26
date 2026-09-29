@@ -229,6 +229,19 @@ body {
       inset 0 0 0 1px rgb(255 255 255 / 0.18),
       0 10px 28px rgb(200 16 46 / 0.35);
   }
+  /*
+   * Skreślenie zaliczonego pola bingo (spec porządku, D7). Kreska w kolorze
+   * kości — czerwona na czerwonym kaflu by zniknęła. Rysuje się tylko przy
+   * polach zaliczonych od ostatniej wizyty; później stoi bez animacji.
+   */
+  .skreslenie path {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+  .skreslenie-rysuj path {
+    animation: rysuj-kreske 450ms ease-out var(--opoznienie, 0ms) both;
+  }
+
   /* Karta blackjacka w szkle (spec wyglądu, D6). */
   .karta-szklo {
     position: relative;
@@ -592,6 +605,14 @@ body {
 }
 
 /* Keyframes nie należą do warstw — trzymamy je poza. */
+@keyframes rysuj-kreske {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
 @keyframes blysk {
   0%   { background-color: rgb(200 16 46 / 0.32); }
   100% { background-color: var(--szklo); }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { skompresuj } from "@/lib/obrazy";
@@ -143,6 +143,34 @@ export function Plansza({
     return mapa;
   }, [zgloszenia]);
 
+  // Pola zaliczone od ostatniej wizyty tej osoby skreślają się po kolei
+  // (spec porządku, D7). Lista obejrzanych w localStorage, osobno na drużynę.
+  // Zmiana klas w DOM zamiast stanu Reacta — to jednorazowy efekt wizualny,
+  // a efekt układu (przed malowaniem) nie pozwala kresce mignąć narysowaną.
+  // Brak dostępu do localStorage (tryb prywatny) — bez animacji, nie błąd.
+  useLayoutEffect(() => {
+    const klucz = `bingo-widziane-${teamId}`;
+    const zapalone = zgloszenia.filter((z) => z.status === "approved").map((z) => z.task_id);
+    let widziane: string[];
+    try {
+      widziane = JSON.parse(localStorage.getItem(klucz) ?? "[]") as string[];
+    } catch {
+      return;
+    }
+    const nowe = zapalone.filter((id) => !widziane.includes(id));
+    nowe.forEach((id, i) => {
+      const kreska = document.querySelector<SVGElement>(`[data-pole="${id}"] .skreslenie`);
+      if (!kreska) return;
+      kreska.style.setProperty("--opoznienie", `${i * 150}ms`);
+      kreska.classList.add("skreslenie-rysuj");
+    });
+    try {
+      localStorage.setItem(klucz, JSON.stringify(zapalone));
+    } catch {
+      // Zapis nieudany — przy następnym wejściu animacja zagra jeszcze raz.
+    }
+  }, [zgloszenia, teamId]);
+
   const otwarty = zadania.find((z) => z.id === otwarteId) ?? null;
   const zgloszenieOtwartego = otwarty ? zgloszeniaByTask.get(otwarty.id) : undefined;
   const stanOtwartego = stanPola(zgloszenieOtwartego);
@@ -248,8 +276,9 @@ export function Plansza({
                 gridRow: Math.floor(task.position / 5) + 1,
               }}
               aria-label={`${task.title} — ${opisStanu(stan, wlasne)}`}
+              data-pole={task.id}
               className={
-                "flex aspect-square min-h-11 min-w-11 flex-col items-center justify-center gap-1 " +
+                "relative flex aspect-square min-h-11 min-w-11 flex-col items-center justify-center gap-1 " +
                 "rounded-sm p-1 text-center transition-colors " +
                 "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew " +
                 KLASY_STANU[stan]
@@ -259,6 +288,26 @@ export function Plansza({
               <span className="line-clamp-3 text-[0.55rem] font-bold uppercase leading-[1.15] tracking-wide">
                 {task.title}
               </span>
+              {stan === "zapalone" && (
+                <svg
+                  viewBox="0 0 100 100"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                  className="skreslenie pointer-events-none absolute inset-1.5 text-kosc/85"
+                >
+                  {/* Lekko nieregularna, jak odręczna. pathLength=100 — stała
+                      długość do animacji niezależnie od rozmiaru pola. */}
+                  <path
+                    d="M6 60 C 30 53, 56 51, 94 42"
+                    pathLength={100}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </svg>
+              )}
             </button>
           );
         })}
