@@ -575,6 +575,79 @@ body {
   100% { background-color: var(--szklo); }
 }
 
+/*
+ * Przejścia między ekranami (spec wyglądu, „Przejścia”). Czasy za przewodnikiem
+ * Next: wyjście 150 ms, wejście 210 ms z opóźnieniem na wyjście, ruch 400 ms,
+ * przesunięcie 60 px — dość, żeby było widać kierunek, za mało, żeby śledzić.
+ */
+::view-transition {
+  /* Dotyk w trakcie animacji nie ginie. */
+  pointer-events: none;
+}
+::view-transition-group(pasek) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(pasek) {
+  display: none;
+}
+::view-transition-new(pasek) {
+  animation: none;
+}
+::view-transition-old(.przenikanie) {
+  animation: 150ms ease-out both vt-zanik;
+}
+::view-transition-new(.przenikanie) {
+  animation: 210ms ease-in 60ms both vt-pojaw;
+}
+::view-transition-old(.nav-forward) {
+  --przesuniecie: -60px;
+  animation:
+    150ms ease-in both vt-zanik,
+    400ms ease-in-out both vt-przesun reverse;
+}
+::view-transition-new(.nav-forward) {
+  --przesuniecie: 60px;
+  animation:
+    210ms ease-out 150ms both vt-pojaw,
+    400ms ease-in-out both vt-przesun;
+}
+::view-transition-old(.nav-back) {
+  --przesuniecie: 60px;
+  animation:
+    150ms ease-in both vt-zanik,
+    400ms ease-in-out both vt-przesun reverse;
+}
+::view-transition-new(.nav-back) {
+  --przesuniecie: -60px;
+  animation:
+    210ms ease-out 150ms both vt-pojaw,
+    400ms ease-in-out both vt-przesun;
+}
+@keyframes vt-zanik {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-pojaw {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+@keyframes vt-przesun {
+  from {
+    translate: var(--przesuniecie);
+  }
+  to {
+    translate: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -582,5 +655,11 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
   }
 }

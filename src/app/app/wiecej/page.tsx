@@ -52,6 +52,7 @@ export default async function WiecejPage() {
         {jestAdminem && (
           <Link
             href="/app/admin"
+          transitionTypes={["nav-forward"]}
             className="szklo flex min-h-12 items-center rounded-md px-4 text-sm font-bold
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
           >
@@ -60,6 +61,7 @@ export default async function WiecejPage() {
         )}
         <Link
           href="/app/arcade"
+          transitionTypes={["nav-forward"]}
           className="szklo flex min-h-12 items-center rounded-md px-4 text-sm font-bold
                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
         >
@@ -67,6 +69,7 @@ export default async function WiecejPage() {
         </Link>
         <Link
           href="/app/gossip"
+          transitionTypes={["nav-forward"]}
           className="szklo flex min-h-12 items-center rounded-md px-4 text-sm font-bold
                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
         >

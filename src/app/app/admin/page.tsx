@@ -35,6 +35,7 @@ export default async function AdminPage() {
           <Link
             key={w.href}
             href={w.href}
+            transitionTypes={["nav-forward"]}
             className="szklo flex items-center gap-3 rounded-md px-4 py-3.5
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
           >
