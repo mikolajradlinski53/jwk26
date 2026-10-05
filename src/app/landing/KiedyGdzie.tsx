@@ -13,7 +13,7 @@ function Daty() {
 }
 
 /**
- * „Kiedy i gdzie”. Daty jawne zawsze; ośrodek (zdjęcia, nazwa, adres, mapa)
+ * „Gdzie się widzimy?” (dawniej „Kiedy i gdzie”). Daty jawne zawsze; ośrodek (zdjęcia, nazwa, adres, mapa)
  * dopiero po odsłonie. Zdjęcia leżą pod losowymi nazwami, a ich opisy nie
  * trafiają na stronę przed odsłoną - renderuje je tylko druga gałąź.
  *
@@ -34,7 +34,7 @@ export function KiedyGdzie({
         id="kiedy-gdzie"
         numer="03"
         nadtytul="Lokalizacja"
-        tytul="Kiedy i gdzie"
+        tytul="Gdzie się widzimy?"
         tlo={TLO}
         ksztalt="osrodek"
         odslona={odslona}
@@ -48,7 +48,7 @@ export function KiedyGdzie({
   return (
     <section id="kiedy-gdzie" className={`${TLO} mx-auto w-full scroll-mt-20 px-4 py-14`}>
       <Kontener wariant="szeroki">
-        <SekcjaNaglowek numer="03" nadtytul="Lokalizacja" tytul="Kiedy i gdzie" zaba={<ZabaStala poza="lornetka" skala={1} />} />
+        <SekcjaNaglowek numer="03" nadtytul="Lokalizacja" tytul="Gdzie się widzimy?" zaba={<ZabaStala poza="lornetka" skala={1} />} />
         <Daty />
         <div className="mt-4 grid grid-cols-[1.7fr_1fr] gap-2.5">
           <div className="relative aspect-[4/3] overflow-hidden rounded-lg">

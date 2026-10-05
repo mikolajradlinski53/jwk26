@@ -6,6 +6,13 @@ import { PrzyciskZapisu } from "./PrzyciskZapisu";
 import { ZabaStala } from "./zaba/ZabaStala";
 
 /**
+ * Zdjęcie tła hero. `null` = placeholder (gradient) - dotychczasowe zdjęcie
+ * `hero-8` przeszło do galerii 2026-10-05, nowe dopiero będzie. Podmiana:
+ * plik w `public/hero/` i ścieżka tutaj, np. `"/hero/hero-30.jpg"`.
+ */
+const ZDJECIE_HERO: string | null = null;
+
+/**
  * Sekcja wejściowa - pierwsze, co widać po otwarciu landingu. Zdjęcie
  * z poprzedniej edycji jako tło, logo, licznik, przycisk zapisu i
  * „Aktualności” (skok do materiałów tej edycji) na nim.
@@ -21,7 +28,8 @@ import { ZabaStala } from "./zaba/ZabaStala";
  *   pokazywałby kreskę, dopóki nie doładuje się JavaScript.
  *
  * Kontrast tekstu na zdjęciu: `.hero-przyciemnienie` w globals.css to gradient
- * czerni zmierzony względem najjaśniejszego piksela `hero-8.jpg` (prawie
+ * czerni zmierzony względem najjaśniejszego piksela dawnego `hero-8.jpg`
+ * (przy nowym zdjęciu sprawdzić ponownie) (prawie
  * czysta biel, ok. 249/255, w górnej jednej dziesiątej kadru), nie względem
  * średniej jasności zdjęcia - przy 62% na tym pikselu wychodzi kontrast
  * ok. 6,2:1 dla białego tekstu, z zapasem nad progiem 4,5:1. Sam licznik
@@ -48,17 +56,27 @@ export function Wejscie({
         className="relative aspect-[3/4] min-h-[600px] w-full min-[600px]:aspect-[16/10] min-[600px]:min-h-[720px]
                    min-[900px]:aspect-[21/9]"
       >
-        <Image
-          src="/hero/hero-8.jpg"
-          alt=""
-          fill
-          preload
-          fetchPriority="high"
-          sizes="100vw"
-          className="object-cover"
-        />
+        {ZDJECIE_HERO ? (
+          <Image
+            src={ZDJECIE_HERO}
+            alt=""
+            fill
+            preload
+            fetchPriority="high"
+            sizes="100vw"
+            className="object-cover"
+          />
+        ) : (
+          // Placeholder do czasu nowego zdjęcia: jesienna poświata nad nocą,
+          // ciemny dół jak u zdjęcia, żeby fala pod hero dalej z niego wypływała.
+          <div
+            className="absolute inset-0 bg-noc bg-[radial-gradient(ellipse_at_30%_20%,rgb(200_95_45/0.55),transparent_60%),radial-gradient(ellipse_at_80%_70%,rgb(140_60_30/0.45),transparent_55%)]"
+            aria-hidden="true"
+          />
+        )}
 
-        <div className="hero-przyciemnienie absolute inset-0" aria-hidden="true" />
+        {/* Przyciemnienie tylko pod zdjęcie - placeholder jest ciemny sam z siebie. */}
+        {ZDJECIE_HERO && <div className="hero-przyciemnienie absolute inset-0" aria-hidden="true" />}
 
         <div
           className="relative z-10 flex h-full flex-col items-center justify-between gap-6

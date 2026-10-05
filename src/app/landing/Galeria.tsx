@@ -10,8 +10,8 @@ type ZdjecieDane = {
 };
 
 /**
- * Siedem zdjęć z poprzednich edycji, wybrane po obejrzeniu całego zestawu
- * `public/hero/hero-1..10`. Trzy pominięte celowo:
+ * Zdjęcia z poprzednich edycji. Z pierwszego zestawu (`public/hero/hero-1..10`)
+ * dwa pominięte celowo:
  *
  * - `hero-1` - wypalona data „25 10 2025" w kadrze i rozebrany uczestnik
  *   w żartobliwej pozie na ławce. Nie nadaje się na oficjalny landing.
@@ -19,54 +19,31 @@ type ZdjecieDane = {
  *   kompozycję zjada dłoń z zegarkiem wepchnięta tuż przed obiektyw.
  *   `hero-4` jest niemal równie ciemne (28/255), ale bez tej wady kadru,
  *   więc zostaje - jako jedyny nocny akcent poza `hero-2`.
- * - `hero-8` - już zajęte: to zdjęcie hero na samej górze strony
- *   (`Wejscie.tsx`). Powtórzenie go w galerii, którą widać kilka sekcji
- *   niżej na tej samej stronie, tylko zabierałoby miejsce jednemu z siedmiu
- *   unikalnych kadrów.
+ *
+ * 2026-10-05 doszło `hero-8` (dotąd tło hero, teraz hero ma placeholder)
+ * i pięć zdjęć od Mikołaja: `hero-20`, `-21`, `-22`, `-23`, `-25`.
  *
  * Bez opisów (alt i podpisy) - decyzja Mikołaja 2026-10-05; zdjęcia są
  * dekoracją galerii, kafelek ma tylko etykietę „Powiększ zdjęcie N”.
  *
- * Kolejność: dzień na start (`hero-7`, `hero-6`), potem wnętrza i wieczory,
- * kończąc na dwóch najciemniejszych ujęciach - naturalny łuk od jasnego
- * do nocnego nastroju, nie przypadkowa kolejność plików.
+ * Kolejność: na start cztery najmocniejsze dzienne kadry grupowe, potem
+ * wnętrza i wieczory, kończąc na dwóch najciemniejszych ujęciach - naturalny
+ * łuk od jasnego do nocnego nastroju, nie przypadkowa kolejność plików.
  */
 const ZDJECIA: ZdjecieDane[] = [
-  {
-    plik: "hero-7",
-    szerokosc: 1781,
-    wysokosc: 1800,
-  },
-  {
-    plik: "hero-6",
-    szerokosc: 1350,
-    wysokosc: 1800,
-  },
-  {
-    plik: "hero-9",
-    szerokosc: 1800,
-    wysokosc: 1013,
-  },
-  {
-    plik: "hero-5",
-    szerokosc: 1350,
-    wysokosc: 1800,
-  },
-  {
-    plik: "hero-10",
-    szerokosc: 1350,
-    wysokosc: 1800,
-  },
-  {
-    plik: "hero-2",
-    szerokosc: 1800,
-    wysokosc: 1350,
-  },
-  {
-    plik: "hero-4",
-    szerokosc: 1800,
-    wysokosc: 1350,
-  },
+  { plik: "hero-8", szerokosc: 1800, wysokosc: 1350 },
+  { plik: "hero-7", szerokosc: 1781, wysokosc: 1800 },
+  { plik: "hero-20", szerokosc: 1350, wysokosc: 1800 },
+  { plik: "hero-25", szerokosc: 1800, wysokosc: 1350 },
+  { plik: "hero-6", szerokosc: 1350, wysokosc: 1800 },
+  { plik: "hero-21", szerokosc: 1350, wysokosc: 1800 },
+  { plik: "hero-9", szerokosc: 1800, wysokosc: 1013 },
+  { plik: "hero-22", szerokosc: 1800, wysokosc: 1350 },
+  { plik: "hero-5", szerokosc: 1350, wysokosc: 1800 },
+  { plik: "hero-10", szerokosc: 1350, wysokosc: 1800 },
+  { plik: "hero-23", szerokosc: 1350, wysokosc: 1800 },
+  { plik: "hero-2", szerokosc: 1800, wysokosc: 1350 },
+  { plik: "hero-4", szerokosc: 1800, wysokosc: 1350 },
 ];
 
 // Ile kafelków widać, zanim ktoś kliknie „Pokaż więcej". Galeria nie może
@@ -77,8 +54,8 @@ const WIDOCZNE_NA_START = 4;
 
 /**
  * Galeria zdjęć z poprzednich edycji - murowana siatka (CSS `columns`),
- * nie sztywne kafelki 4:3. Cztery z siedmiu zdjęć są pionowe albo prawie
- * kwadratowe (patrz `ZDJECIA`); wymuszenie ich w jeden kształt obcinałoby
+ * nie sztywne kafelki 4:3. Większość zdjęć jest pionowa albo prawie
+ * kwadratowa (patrz `ZDJECIA`); wymuszenie ich w jeden kształt obcinałoby
  * głowy, więc każdy kafelek dostaje własny `aspect-ratio` policzony
  * z prawdziwych wymiarów pliku i **nic nie jest kadrowane**.
  *

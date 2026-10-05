@@ -32,7 +32,7 @@ export function Stopka({ zapisy, social, maPlan }: { zapisy: OdslonaWidok; socia
   const nawigacjaWyjazd: Odnosnik[] = [
     { etykieta: "Trochę o JWK", href: "#o-wyjezdzie" },
     ...(maPlan ? [{ etykieta: "Harmonogram", href: "#plan" }] : []),
-    { etykieta: "Kiedy i gdzie", href: "#kiedy-gdzie" },
+    { etykieta: "Gdzie się widzimy?", href: "#kiedy-gdzie" },
     { etykieta: "Wspomnienia", href: "#wspomnienia" },
     { etykieta: "Infopack", href: "#infopack" },
     { etykieta: "Aktualności", href: "#aktualnosci" },
