@@ -15,12 +15,13 @@ import { cyfry, kontoCzytelne, kontoPoprawne } from "@/lib/zapisy/qrPrzelewu";
 export function FormularzPrzelewu({
   poczatkowe,
 }: {
-  poczatkowe: { konto: string; odbiorca: string; kwota: number | null };
+  poczatkowe: { konto: string; odbiorca: string; kwota: number | null; telefon: string };
 }) {
   const router = useRouter();
   const [konto, setKonto] = useState(poczatkowe.konto ? kontoCzytelne(poczatkowe.konto) : "");
   const [odbiorca, setOdbiorca] = useState(poczatkowe.odbiorca);
   const [kwota, setKwota] = useState(poczatkowe.kwota === null ? "" : String(poczatkowe.kwota));
+  const [telefon, setTelefon] = useState(poczatkowe.telefon);
   const [blad, setBlad] = useState<string | null>(null);
   const [udane, setUdane] = useState(false);
   const [czeka, setCzeka] = useState(false);
@@ -40,6 +41,10 @@ export function FormularzPrzelewu({
       setBlad("Podaj odbiorcę - bez niego bank nie przyjmie przelewu z kodu QR");
       return;
     }
+    if (telefon.trim() !== "" && !/^\+?[0-9 ()-]{9,20}$/.test(telefon.trim())) {
+      setBlad("Numer telefonu to 9 cyfr, ewentualnie z +48 i spacjami");
+      return;
+    }
     if (!Number.isFinite(liczba) || liczba <= 0 || liczba > 10000) {
       setBlad("Kwota to liczba złotych większa od zera");
       return;
@@ -48,7 +53,7 @@ export function FormularzPrzelewu({
     wToku.current = true;
     setCzeka(true);
 
-    // Jedno zapytanie na trzy klucze, jak w formularzu dat - pętla update
+    // Jedno zapytanie na wszystkie klucze, jak w formularzu dat - pętla update
     // zostawiała bazę w stanie mieszanym, gdy padało któreś z kolei.
     const { error } = await createClient()
       .from("app_settings")
@@ -57,6 +62,7 @@ export function FormularzPrzelewu({
           { key: "przelew_numer_konta", value: cyfry(konto) },
           { key: "przelew_odbiorca", value: odbiorca.trim() },
           { key: "przelew_kwota", value: Math.round(liczba * 100) / 100 },
+          { key: "przelew_telefon", value: telefon.trim() },
         ],
         { onConflict: "key" },
       );
@@ -98,6 +104,13 @@ export function FormularzPrzelewu({
         inputMode="decimal"
         value={kwota}
         onChange={(e) => setKwota(e.target.value)}
+      />
+      <Field
+        label="Numer telefonu (opcjonalnie)"
+        inputMode="tel"
+        placeholder="500 600 700"
+        value={telefon}
+        onChange={(e) => setTelefon(e.target.value)}
       />
       <p className="-mt-2 px-1 text-xs leading-relaxed text-dym">
         W kodzie QR odbiorca mieści się w 20 znakach, a polskie litery idą bez ogonków -

@@ -4,15 +4,24 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
-export type Odnosnik = { etykieta: string; href: string };
+/** `noweOkno` - dokumenty (regulamin, polityka) otwierają się w nowej karcie. */
+export type Odnosnik = { etykieta: string; href: string; noweOkno?: boolean };
 
-export function OdnosnikNawigacji({ etykieta, href }: Odnosnik) {
+export function OdnosnikNawigacji({ etykieta, href, noweOkno }: Odnosnik) {
   // Dotyk min. 44px dotyczy też odnośników nawigacji - stąd `min-h-11
   // flex items-center` na każdym linku, nawet kosztem gęstości listy.
   const klasa =
     "flex min-h-11 items-center text-[11.5px] text-jesien-kora transition duration-200 " +
     "hover:translate-x-[3px] hover:text-jesien-atrament " +
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jesien-rdza";
+
+  if (noweOkno) {
+    return (
+      <a href={href} target="_blank" rel="noopener" className={klasa}>
+        {etykieta}
+      </a>
+    );
+  }
 
   if (href.startsWith("/")) {
     return (

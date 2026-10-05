@@ -7,6 +7,7 @@ export const KLUCZE_PRZELEWU = [
   "przelew_numer_konta",
   "przelew_odbiorca",
   "przelew_kwota",
+  "przelew_telefon",
 ] as const;
 
 /**
@@ -19,11 +20,12 @@ export function danePrzelewuZUstawien(mapa: Map<string, unknown>): DanePrzelewu 
   const konto = String(mapa.get("przelew_numer_konta") ?? "");
   const odbiorca = String(mapa.get("przelew_odbiorca") ?? "").trim();
   const kwota = Number(mapa.get("przelew_kwota"));
+  const telefon = String(mapa.get("przelew_telefon") ?? "").trim();
 
   if (!kontoPoprawne(konto) || !odbiorca || !Number.isFinite(kwota) || kwota <= 0) {
     return null;
   }
-  return { konto, odbiorca, kwota };
+  return { konto, odbiorca, kwota, ...(telefon ? { telefon } : {}) };
 }
 
 /** Odczyt dla stron serwerowych. Błąd odczytu degraduje do „wkrótce", jak brak danych. */

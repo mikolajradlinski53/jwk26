@@ -15,8 +15,8 @@ const PRZYSZLOSC = "2099-01-01T12:00:00+01:00";
 const PRZESZLOSC = "2020-01-01T12:00:00+01:00";
 const DOMYSLNE = {
   odslona_osrodek: "2026-10-05T18:00:00+02:00",
-  odslona_cena: "2026-10-08T18:00:00+02:00",
-  odslona_zapisy: "2026-10-12T18:00:00+02:00",
+  odslona_cena: "2026-10-11T12:00:00+02:00",
+  odslona_zapisy: "2026-10-12T12:00:00+02:00",
 };
 
 let uczestnik: SupabaseClient;
@@ -33,7 +33,15 @@ async function widzi(client: SupabaseClient): Promise<Set<string>> {
   const { data, error } = await client
     .from("app_settings")
     .select("key")
-    .in("key", ["miejsce_nazwa", "miejsce_adres", "przelew_kwota", "data_jwk", "odslona_osrodek", "social_instagram"]);
+    .in("key", [
+      "miejsce_nazwa",
+      "miejsce_adres",
+      "przelew_kwota",
+      "przelew_telefon",
+      "data_jwk",
+      "odslona_osrodek",
+      "social_instagram",
+    ]);
   if (error) throw error;
   return new Set((data ?? []).map((w) => w.key as string));
 }
@@ -53,7 +61,8 @@ beforeAll(async () => {
 
 afterAll(async () => {
   for (const [k, v] of Object.entries(DOMYSLNE)) await ustawUstawienie(k, v);
-  await ustawUstawienie("odslona_plan", "2026-10-23T14:00:00+02:00");
+  await ustawUstawienie("odslona_plan", "2026-10-22T12:00:00+02:00");
+  await ustawUstawienie("odslona_infopack", "2026-10-22T12:00:00+02:00");
   if (poprzedniaKwota === null) await admin.from("app_settings").delete().eq("key", "przelew_kwota");
   else await ustawUstawienie("przelew_kwota", poprzedniaKwota);
   await ustawUstawienie("social_instagram", "");
@@ -67,6 +76,7 @@ describe("zasłony w bazie", () => {
     expect(w.has("miejsce_nazwa")).toBe(false);
     expect(w.has("miejsce_adres")).toBe(false);
     expect(w.has("przelew_kwota")).toBe(false);
+    expect(w.has("przelew_telefon")).toBe(false);
     expect(w.has("data_jwk")).toBe(true);
     expect(w.has("odslona_osrodek")).toBe(true);
     expect(w.has("social_instagram")).toBe(true);
@@ -84,6 +94,7 @@ describe("zasłony w bazie", () => {
     const w = await widzi(anonimowy());
     expect(w.has("miejsce_nazwa")).toBe(true);
     expect(w.has("przelew_kwota")).toBe(true);
+    expect(w.has("przelew_telefon")).toBe(true);
   });
 
   it("zalogowany uczestnik jak niezalogowany; admin widzi zawsze", async () => {
@@ -114,6 +125,16 @@ describe("zasłony w bazie", () => {
     await ustawUstawienie("odslona_plan", PRZESZLOSC);
     const { data: po } = await anonimowy().rpc("odslony");
     expect((po as Record<string, { odsloniete: boolean }>).plan.odsloniete).toBe(true);
+  });
+
+  it("infopack ma własny termin - odsłona zapisów go nie odsłania", async () => {
+    await odslony(PRZYSZLOSC, PRZYSZLOSC, PRZESZLOSC);
+    await ustawUstawienie("odslona_infopack", PRZYSZLOSC);
+    const { data } = await anonimowy().rpc("odslony");
+    expect((data as Record<string, { odsloniete: boolean }>).infopack.odsloniete).toBe(false);
+    await ustawUstawienie("odslona_infopack", PRZESZLOSC);
+    const { data: po } = await anonimowy().rpc("odslony");
+    expect((po as Record<string, { odsloniete: boolean }>).infopack.odsloniete).toBe(true);
   });
 
   it("adres social tylko z właściwej domeny albo pusty", async () => {

@@ -3,11 +3,23 @@ import { Kontener } from "./Kontener";
 import { LicznikOdslony } from "./LicznikOdslony";
 import type { OdslonaWidok } from "@/lib/odslony";
 
+type Ksztalt = "osrodek" | "cena" | "plan" | "infopack";
+
 /**
  * Rozmyte kształty udające treść. Nie powstają z prawdziwej treści - to
  * stały rysunek, więc nic nie da się z niego odczytać.
  */
-function Atrapa({ ksztalt }: { ksztalt: "osrodek" | "cena" | "plan" }) {
+function Atrapa({ ksztalt }: { ksztalt: Ksztalt }) {
+  if (ksztalt === "infopack") {
+    return (
+      <div className="grid gap-3 rounded-lg border border-jesien-kora/15 bg-jesien-karta p-5">
+        <div className="h-3.5 w-2/5 rounded-full bg-jesien-atrament/25" />
+        <div className="h-3 w-4/5 rounded-full bg-jesien-kora/20" />
+        <div className="h-3 w-3/5 rounded-full bg-jesien-kora/20" />
+        <div className="mt-2 h-11 w-48 rounded-full bg-jesien-rdza/30" />
+      </div>
+    );
+  }
   if (ksztalt === "plan") {
     return (
       <div className="grid gap-4 min-[850px]:grid-cols-3">
@@ -77,7 +89,7 @@ export function Zaslona({
   tytul: string;
   /** Klasa tła sekcji, ta sama co w odsłoniętej wersji - rytm strony się nie zmienia. */
   tlo: string;
-  ksztalt: "osrodek" | "cena" | "plan";
+  ksztalt: Ksztalt;
   odslona: OdslonaWidok;
   /** Treść jawna przed odsłoną, nad atrapą (np. daty w „Kiedy i gdzie”). */
   children?: React.ReactNode;

@@ -19,8 +19,10 @@
  * WERSJA_ZGOD, bo strona regulaminu pokazuje tę wersję.
  *
  * 2026-09-29.4 - wszędzie zwykłe myślniki zamiast długich (bez zmian treści).
+ * 2026-10-05.1 - regulamin § 3 ust. 5: brak potwierdzenia wpłaty = odrzucenie;
+ *                Resend wysyła też powiadomienia organizatorom o zgłoszeniach.
  */
-export const WERSJA_ZGOD = "2026-09-29.4";
+export const WERSJA_ZGOD = "2026-10-05.1";
 
 export const KONTAKT_IOD = "iod@ue.wroc.pl";
 
@@ -60,7 +62,8 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
   "Dane widzą organizatorzy wyjazdu. Ośrodek otrzymuje wyłącznie informacje " +
     "o diecie i alergiach. Dane są przechowywane u dostawców infrastruktury " +
     "(Supabase, Vercel), którzy przetwarzają je na nasze zlecenie; e-maile " +
-    "z kodem logowania wysyła Resend, a SMS-y - jeśli się na nie zgodzisz - " +
+    "z kodem logowania i powiadomienia organizatorów o nowych zgłoszeniach " +
+    "(imię, nazwisko, tura) wysyła Resend, a SMS-y - jeśli się na nie zgodzisz - " +
     "operator usługi SMSAPI (LINK Mobility Poland). Listę zgłoszeń " +
     "- łącznie z informacjami o diecie, alergiach, chorobach, lekach i kontakcie " +
     "ICE - prowadzimy też w arkuszu Google (Google Workspace), do którego dostęp " +

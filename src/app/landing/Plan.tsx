@@ -6,9 +6,9 @@ import { grupujPoDniach, krotkaGodzina, nazwaDnia, type PunktHarmonogramu } from
 import type { OdslonaWidok } from "@/lib/odslony";
 
 /**
- * Plan z harmonogramu - wyłącznie punkty oznaczone przez admina „na landing”
- * (odczyt `anon` i tak nie widzi innych). Do odsłony planu (dzień wyjazdu,
- * 14:00) zasłona z licznikiem; po odsłonie bez punktów sekcji nie ma.
+ * Harmonogram - wyłącznie punkty oznaczone przez admina „na landing”
+ * (odczyt `anon` i tak nie widzi innych). Do odsłony (czwartek przed
+ * wyjazdem) zasłona z licznikiem; po odsłonie bez punktów sekcji nie ma.
  */
 export function Plan({ punkty, odslona }: { punkty: PunktHarmonogramu[]; odslona: OdslonaWidok }) {
   if (!odslona.odsloniete) {
@@ -17,7 +17,7 @@ export function Plan({ punkty, odslona }: { punkty: PunktHarmonogramu[]; odslona
         id="plan"
         numer="02"
         nadtytul="Program"
-        tytul="Plan wyjazdu"
+        tytul="Harmonogram"
         tlo="bg-jesien-karta/70"
         ksztalt="plan"
         odslona={odslona}
@@ -31,7 +31,7 @@ export function Plan({ punkty, odslona }: { punkty: PunktHarmonogramu[]; odslona
   return (
     <section id="plan" className="bg-jesien-karta/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener wariant="szeroki">
-        <SekcjaNaglowek numer="02" nadtytul="Program" tytul="Plan wyjazdu" />
+        <SekcjaNaglowek numer="02" nadtytul="Program" tytul="Harmonogram" />
         <div className="grid gap-4 min-[850px]:grid-cols-3">
           {dni.map((d) => (
             <div key={d.dzien} className="rounded-lg border border-jesien-kora/15 bg-jesien-tlo/80 p-5">

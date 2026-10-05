@@ -7,6 +7,8 @@ export type DanePrzelewu = {
   odbiorca: string;
   /** Kwota w złotych. */
   kwota: number;
+  /** Numer telefonu odbiorcy (np. do BLIK-a); pusty = nie pokazujemy. */
+  telefon?: string;
 };
 
 /**
@@ -22,9 +24,13 @@ export function bezOgonkow(s: string): string {
     .replace(/[̀-ͯ]/g, "");
 }
 
-/** Tytuł przelewu z imieniem i nazwiskiem - po nim organizator paruje wpłatę ze zgłoszeniem. */
+/**
+ * Tytuł przelewu „Wyjazd - Imię Nazwisko” - po nim organizator paruje wpłatę
+ * ze zgłoszeniem. Bez imienia i nazwiska samo „Wyjazd”.
+ */
 export function tytulPrzelewu(imie: string, nazwisko: string): string {
-  return ["JWK26", imie.trim(), nazwisko.trim()].filter(Boolean).join(" ");
+  const kto = [imie.trim(), nazwisko.trim()].filter(Boolean).join(" ");
+  return kto ? `Wyjazd - ${kto}` : "Wyjazd";
 }
 
 export function cyfry(konto: string): string {

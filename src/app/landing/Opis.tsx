@@ -16,18 +16,20 @@ export function Opis({ kwota, miasto }: { kwota: number | null; miasto: string |
   return (
     <section id="o-wyjezdzie" className="bg-jesien-tlo/70 mx-auto w-full scroll-mt-20 px-4 py-14">
       <Kontener>
-        <SekcjaNaglowek numer="01" nadtytul="Wyjazd" tytul="Czym to jest" zaba={<ZabaStala poza="opiera" skala={1} />} />
+        <SekcjaNaglowek numer="01" nadtytul="Wyjazd" tytul="Trochę o JWK…" zaba={<ZabaStala poza="opiera" skala={1} />} />
         <div className="grid gap-3 text-sm leading-relaxed text-jesien-kora">
           <p>
-            Raz w roku Komisja znika z uczelni na trzy dni. JWK to nie jest
-            szkolenie ani konferencja - to wyjazd, na który się jedzie, żeby
-            naprawdę się poznać, zanim znowu zderzymy się na korytarzu
-            z terminami.
+            Zanim rok akademicki na dobre się rozkręci, chcemy dobrze się do
+            niego przygotować. JWK to coś więcej niż szkolenia - to ludzie,
+            odpowiednia dawka merytoryki i zabawy. Wspomnienia z gry wyjazdowej
+            czy wieczorów integracyjnych towarzyszą nam przez cały rok.
           </p>
           <p>
-            Nikt nie jedzie sam. Drużyny, gry, szkolenia i wieczory, o których
-            mówi się potem cały rok. Tydzień wcześniej przyjmujemy świeżaków -
-            kto się załapie, jedzie razem z nami.
+            Poznasz tu mnóstwo osób, z którymi zbudujesz wartościowe więzi
+            i spędzisz czas w gronie samych Działaczy.
+          </p>
+          <p className="font-bold text-jesien-atrament">
+            Nie daj się zbyt długo namawiać. Do zobaczenia na miejscu!
           </p>
         </div>
         <dl className="mt-6 grid grid-cols-3 gap-2.5">

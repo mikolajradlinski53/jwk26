@@ -37,11 +37,14 @@ const STYLE = {
 export function DanePrzelewu({
   dane,
   tytul,
+  tytulQr = tytul,
   wariant = "noc",
   przypisTytulu,
 }: {
   dane: Dane | null;
   tytul: string;
+  /** Tytuł w kodzie QR, gdy na ekranie stoi wzór do uzupełnienia (landing). */
+  tytulQr?: string;
   wariant?: keyof typeof STYLE;
   /** Dopisek pod tytułem, np. na landingu, gdzie nie znamy imienia. */
   przypisTytulu?: string;
@@ -59,7 +62,7 @@ export function DanePrzelewu({
     );
   }
 
-  const { rozmiar, d } = sciezkaQr(ladunekQr(dane, tytul));
+  const { rozmiar, d } = sciezkaQr(ladunekQr(dane, tytulQr));
 
   return (
     <div className={`${s.ramka} grid gap-4`}>
@@ -94,6 +97,15 @@ export function DanePrzelewu({
               <KopiujMaly tekst={cyfry(dane.konto)} co="numer konta" />
             </dd>
           </div>
+          {dane.telefon && (
+            <div>
+              <dt className={s.przypis}>Numer telefonu</dt>
+              <dd className={`flex items-center justify-between gap-3 ${s.wartosc}`}>
+                <span className="tabular-nums">{dane.telefon}</span>
+                <KopiujMaly tekst={dane.telefon.replace(/\s/g, "")} co="numer telefonu" />
+              </dd>
+            </div>
+          )}
           <div>
             <dt className={s.przypis}>Tytuł przelewu</dt>
             <dd className={`flex items-center justify-between gap-3 ${s.wartosc}`}>

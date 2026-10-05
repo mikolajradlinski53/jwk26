@@ -12,6 +12,7 @@ export type PoczatkoweOdslony = {
   cena: string | null;
   zapisy: string | null;
   plan: string | null;
+  infopack: string | null;
   instagram: string;
   facebook: string;
 };
@@ -27,6 +28,7 @@ export function FormularzOdslon({ poczatkowe }: { poczatkowe: PoczatkoweOdslony 
   const [cena, setCena] = useState(naDatetimeLocal(poczatkowe.cena));
   const [zapisy, setZapisy] = useState(naDatetimeLocal(poczatkowe.zapisy));
   const [plan, setPlan] = useState(naDatetimeLocal(poczatkowe.plan));
+  const [infopack, setInfopack] = useState(naDatetimeLocal(poczatkowe.infopack));
   const [instagram, setInstagram] = useState(poczatkowe.instagram);
   const [facebook, setFacebook] = useState(poczatkowe.facebook);
   const [blad, setBlad] = useState<string | null>(null);
@@ -54,6 +56,7 @@ export function FormularzOdslon({ poczatkowe }: { poczatkowe: PoczatkoweOdslony 
       odslona_cena: cena ? naIso(cena) : "",
       odslona_zapisy: zapisy ? naIso(zapisy) : "",
       odslona_plan: plan ? naIso(plan) : "",
+      odslona_infopack: infopack ? naIso(infopack) : "",
       social_instagram: instagram.trim(),
       social_facebook: facebook.trim(),
     };
@@ -80,16 +83,22 @@ export function FormularzOdslon({ poczatkowe }: { poczatkowe: PoczatkoweOdslony 
       <h2 className="text-sm font-bold">Odsłony na landingu</h2>
       <p className="text-xs leading-relaxed text-dym">
         Do tych chwil landing pokazuje zasłonę z licznikiem. Otwarcie zapisów odsłania też ośrodek i cenę;
-        plan wyjazdu ma własny termin. Puste pole = odsłonięte od razu.
+        harmonogram i infopack mają własne terminy. Puste pole = odsłonięte od razu.
       </p>
       <Field label="Ośrodek i miasto" type="datetime-local" value={osrodek} onChange={(e) => setOsrodek(e.target.value)} />
       <Field label="Cena i dane do przelewu" type="datetime-local" value={cena} onChange={(e) => setCena(e.target.value)} />
       <Field label="Zapisy" type="datetime-local" value={zapisy} onChange={(e) => setZapisy(e.target.value)} />
       <Field
-        label="Plan wyjazdu (niezależnie od zapisów)"
+        label="Harmonogram (niezależnie od zapisów)"
         type="datetime-local"
         value={plan}
         onChange={(e) => setPlan(e.target.value)}
+      />
+      <Field
+        label="Infopack (niezależnie od zapisów)"
+        type="datetime-local"
+        value={infopack}
+        onChange={(e) => setInfopack(e.target.value)}
       />
 
       <h2 className="mt-4 text-sm font-bold">Profile w stopce</h2>

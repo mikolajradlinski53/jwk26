@@ -27,10 +27,12 @@ export default async function UstawieniaPage() {
       "przelew_numer_konta",
       "przelew_odbiorca",
       "przelew_kwota",
+      "przelew_telefon",
       "odslona_osrodek",
       "odslona_cena",
       "odslona_zapisy",
       "odslona_plan",
+      "odslona_infopack",
       "social_instagram",
       "social_facebook",
     ]);
@@ -65,6 +67,7 @@ export default async function UstawieniaPage() {
           konto: String(mapa.get("przelew_numer_konta") ?? ""),
           odbiorca: String(mapa.get("przelew_odbiorca") ?? ""),
           kwota: Number.isFinite(kwota) && kwota > 0 ? kwota : null,
+          telefon: String(mapa.get("przelew_telefon") ?? ""),
         }}
       />
       <FormularzOdslon
@@ -73,6 +76,7 @@ export default async function UstawieniaPage() {
           cena: mapa.get("odslona_cena") || null,
           zapisy: mapa.get("odslona_zapisy") || null,
           plan: mapa.get("odslona_plan") || null,
+          infopack: mapa.get("odslona_infopack") || null,
           instagram: String(mapa.get("social_instagram") ?? ""),
           facebook: String(mapa.get("social_facebook") ?? ""),
         }}

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { PanelWezwania } from "./PanelWezwania";
 import {
   IkonaFacebook,
@@ -31,17 +30,19 @@ const KLASA_IKONY =
  */
 export function Stopka({ zapisy, social, maPlan }: { zapisy: OdslonaWidok; social: Social; maPlan: boolean }) {
   const nawigacjaWyjazd: Odnosnik[] = [
-    { etykieta: "Czym to jest", href: "#o-wyjezdzie" },
-    ...(maPlan ? [{ etykieta: "Plan", href: "#plan" }] : []),
+    { etykieta: "Trochę o JWK", href: "#o-wyjezdzie" },
+    ...(maPlan ? [{ etykieta: "Harmonogram", href: "#plan" }] : []),
     { etykieta: "Kiedy i gdzie", href: "#kiedy-gdzie" },
-    { etykieta: "Zdjęcia", href: "#promocja" },
+    { etykieta: "Wspomnienia", href: "#wspomnienia" },
+    { etykieta: "Infopack", href: "#infopack" },
+    { etykieta: "Aktualności", href: "#aktualnosci" },
   ];
   const nawigacjaZgloszenie: Odnosnik[] = [
     { etykieta: "Zapisy", href: zapisy.odsloniete ? "/wejscie" : "#zapisy" },
-    { etykieta: "Pytania", href: "#pytania" },
+    { etykieta: "Cena", href: "#cena-i-wplata" },
     { etykieta: "Kontakt", href: `mailto:${KOORDYNATOR_MAIL}` },
-    { etykieta: "Regulamin", href: "/regulamin" },
-    { etykieta: "Polityka prywatności", href: "/prywatnosc" },
+    { etykieta: "Regulamin", href: "/regulamin", noweOkno: true },
+    { etykieta: "Polityka prywatności", href: "/prywatnosc", noweOkno: true },
   ];
   const maSpolecznosci = social.instagram || social.facebook;
 
@@ -112,12 +113,12 @@ export function Stopka({ zapisy, social, maPlan }: { zapisy: OdslonaWidok; socia
         <div className="flex flex-col gap-4 min-[600px]:flex-row min-[600px]:items-center min-[600px]:justify-between">
           <p className="text-[10.5px] text-jesien-kora">© 2026 Samorząd Studentów UE we Wrocławiu</p>
           <div className="flex flex-wrap gap-x-5">
-            <Link href="/regulamin" className={KLASA_LINKU_DOLNEGO}>
+            <a href="/regulamin" target="_blank" rel="noopener" className={KLASA_LINKU_DOLNEGO}>
               Regulamin wyjazdu
-            </Link>
-            <Link href="/prywatnosc" className={KLASA_LINKU_DOLNEGO}>
+            </a>
+            <a href="/prywatnosc" target="_blank" rel="noopener" className={KLASA_LINKU_DOLNEGO}>
               Polityka prywatności
-            </Link>
+            </a>
           </div>
         </div>
       </KartaStopki>

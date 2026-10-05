@@ -7,8 +7,8 @@ import { ZabaStala } from "./zaba/ZabaStala";
 
 /**
  * Sekcja wejściowa - pierwsze, co widać po otwarciu landingu. Zdjęcie
- * `hero-8` (grupowe selfie na pomoście, złote drzewa) jako tło, logo, licznik
- * i przycisk wejścia na nim.
+ * z poprzedniej edycji jako tło, logo, licznik, przycisk zapisu i
+ * „Aktualności” (skok do materiałów tej edycji) na nim.
  *
  * Musi być czytelna w pierwszej klatce:
  * - Żadnej sekcji na `100vh` - wysokość idzie z `aspect-*` (rezerwuje miejsce
@@ -50,7 +50,7 @@ export function Wejscie({
       >
         <Image
           src="/hero/hero-8.jpg"
-          alt="Grupa uczestników poprzedniego wyjazdu śmieje się na pomoście nad jesiennym jeziorem, w tle złote drzewa"
+          alt=""
           fill
           preload
           fetchPriority="high"
@@ -90,7 +90,18 @@ export function Wejscie({
                 {DATY_WYJAZDU} · {miasto ?? "miejsce wkrótce"}
               </p>
             </div>
-            <PrzyciskZapisu odslona={zapisy} wariant="hero" />
+            <div className="grid justify-items-center gap-3">
+              <PrzyciskZapisu odslona={zapisy} wariant="hero" />
+              <a
+                href="#aktualnosci"
+                className="flex min-h-12 w-[min(280px,80vw)] items-center justify-center rounded-full border
+                           border-white/70 bg-white/10 px-5 text-sm font-bold text-white backdrop-blur-sm transition
+                           hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2
+                           focus-visible:outline-white"
+              >
+                Aktualności
+              </a>
+            </div>
           </div>
         </div>
       </div>

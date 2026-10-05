@@ -7,8 +7,6 @@ type ZdjecieDane = {
   plik: string;
   szerokosc: number;
   wysokosc: number;
-  etykieta: string;
-  alt: string;
 };
 
 /**
@@ -26,6 +24,9 @@ type ZdjecieDane = {
  *   niżej na tej samej stronie, tylko zabierałoby miejsce jednemu z siedmiu
  *   unikalnych kadrów.
  *
+ * Bez opisów (alt i podpisy) - decyzja Mikołaja 2026-10-05; zdjęcia są
+ * dekoracją galerii, kafelek ma tylko etykietę „Powiększ zdjęcie N”.
+ *
  * Kolejność: dzień na start (`hero-7`, `hero-6`), potem wnętrza i wieczory,
  * kończąc na dwóch najciemniejszych ujęciach - naturalny łuk od jasnego
  * do nocnego nastroju, nie przypadkowa kolejność plików.
@@ -35,50 +36,36 @@ const ZDJECIA: ZdjecieDane[] = [
     plik: "hero-7",
     szerokosc: 1781,
     wysokosc: 1800,
-    etykieta: "Na polu",
-    alt: "Duża grupa uczestników pozuje na polnej drodze wśród ściernisk, w słoneczny dzień pod błękitnym niebem",
   },
   {
     plik: "hero-6",
     szerokosc: 1350,
     wysokosc: 1800,
-    etykieta: "Jesienny spacer",
-    alt: "Dwóch uczestników rozmawia na jesiennym spacerze, w tle kolorowy las",
   },
   {
     plik: "hero-9",
     szerokosc: 1800,
     wysokosc: 1013,
-    etykieta: "Wieczorna sala",
-    alt: "Duża grupa uczestników poprzedniej edycji pozuje razem we wspólnej sali ośrodka",
   },
   {
     plik: "hero-5",
     szerokosc: 1350,
     wysokosc: 1800,
-    etykieta: "Przebranie",
-    alt: "Troje uczestników w strojach na tematyczną imprezę pozuje z butelkami oranżady",
   },
   {
     plik: "hero-10",
     szerokosc: 1350,
     wysokosc: 1800,
-    etykieta: "Wieczorna zabawa",
-    alt: "Dwoje uczestników w opaskach z uszami pozuje razem na wieczornej imprezie",
   },
   {
     plik: "hero-2",
     szerokosc: 1800,
     wysokosc: 1350,
-    etykieta: "Ekipa",
-    alt: "Trzy uczestniczki w kapturach uśmiechają się wieczorem przed budynkiem ośrodka",
   },
   {
     plik: "hero-4",
     szerokosc: 1800,
     wysokosc: 1350,
-    etykieta: "Poprzednie lata",
-    alt: "Troje uczestników uśmiecha się na wspólnym zdjęciu zrobionym wieczorem",
   },
 ];
 
@@ -176,7 +163,7 @@ export function Galeria() {
               kafelkiRefy.current[i] = el;
             }}
             onClick={() => otworz(i)}
-            aria-label={`Powiększ zdjęcie: ${zdjecie.alt}`}
+            aria-label={`Powiększ zdjęcie ${i + 1}`}
             className="group mb-3 block w-full break-inside-avoid-column overflow-hidden rounded-lg
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jesien-rdza"
           >
@@ -186,7 +173,7 @@ export function Galeria() {
             >
               <Image
                 src={`/hero/${zdjecie.plik}.jpg`}
-                alt={zdjecie.alt}
+                alt=""
                 fill
                 loading={i < 2 ? "eager" : "lazy"}
                 sizes="(min-width: 1200px) 235px, (min-width: 850px) 30vw, (min-width: 480px) 215px, 46vw"
@@ -220,7 +207,7 @@ export function Galeria() {
           <div
             role="dialog"
             aria-modal="true"
-            aria-label={aktywne.etykieta}
+            aria-label="Podgląd zdjęcia"
             onClick={(event) => event.stopPropagation()}
             className="relative flex max-w-[92vw] flex-col items-center min-[850px]:max-w-[900px]"
           >
@@ -246,13 +233,12 @@ export function Galeria() {
 
             <Image
               src={`/hero/${aktywne.plik}.jpg`}
-              alt={aktywne.alt}
+              alt=""
               width={aktywne.szerokosc}
               height={aktywne.wysokosc}
               sizes="90vw"
               className="max-h-[80vh] max-w-[92vw] rounded-lg object-contain min-[850px]:max-w-[900px]"
             />
-            <p className="mt-2 text-center text-xs text-jesien-tlo/90">{aktywne.etykieta}</p>
           </div>
         </div>
       )}

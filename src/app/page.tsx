@@ -12,9 +12,9 @@ import { Plan } from "./landing/Plan";
 import { KiedyGdzie } from "./landing/KiedyGdzie";
 import { Zapisy } from "./landing/Zapisy";
 import { CenaIWplata } from "./landing/CenaIWplata";
-import { Promocja } from "./landing/Promocja";
-import { CoZabrac } from "./landing/CoZabrac";
-import { Pytania } from "./landing/Pytania";
+import { Wspomnienia } from "./landing/Wspomnienia";
+import { Infopack } from "./landing/Infopack";
+import { Aktualnosci } from "./landing/Aktualnosci";
 import { Dokumenty } from "./landing/Dokumenty";
 import { Liscie } from "./landing/Liscie";
 import { Stopka } from "./landing/Stopka";
@@ -146,13 +146,13 @@ export default async function Landing({
         <CenaIWplata odslona={odslony.cena} przelew={cenaJawna ? przelew : null} />
         <DzielnikFala kolorKlasa="text-jesien-karta" tloKlasa="bg-jesien-tlo" />
 
-        <Promocja />
+        <Wspomnienia />
         <DzielnikLisc />
 
-        <CoZabrac miasto={miasto} />
-        <DzielnikSzewron />
+        <Infopack odslona={odslony.infopack} />
+        <DzielnikFala kolorKlasa="text-jesien-karta" tloKlasa="bg-jesien-tlo" />
 
-        <Pytania />
+        <Aktualnosci />
         <DzielnikSzewron />
 
         <Dokumenty />

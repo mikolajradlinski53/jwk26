@@ -9,7 +9,7 @@
 import { KOORDYNATOR_MAIL, KOORDYNATOR_TELEFON } from "@/lib/regulamin";
 import { KONTAKT_IOD } from "@/lib/zapisy/zgody";
 
-export const AKTUALIZACJA_POLITYKI = "29 września 2026 r.";
+export const AKTUALIZACJA_POLITYKI = "5 października 2026 r.";
 
 /** Akapit albo lista punktów - tyle potrzebuje ten tekst, bez własnego języka znaczników. */
 export type Blok = string | { punkty: string[] };
@@ -57,7 +57,7 @@ export const POLITYKA: SekcjaPolityki[] = [
           "Inni uczestnicy - Twoją nazwę w aplikacji, drużynę, punkty w rankingu, zdjęcia i podpisy z bingo, komentarze i polubienia. Nominacje w gossipach są dla nich anonimowe; po ujawnieniu wyniku widać tylko uzasadnienia i zdjęcia dotyczące zwycięzcy.",
           "Organizatorzy (Kadra i administratorzy aplikacji) - dane potrzebne do organizacji wyjazdu i moderacji treści. Autora nominacji mogą ustalić wyłącznie w celu reakcji na treść naruszającą regulamin.",
           "Ośrodek - wyłącznie informacje o diecie i alergiach.",
-          "Podmioty przetwarzające dane na nasze zlecenie: Supabase Inc. (baza danych, logowanie, przechowywanie plików - serwery we Frankfurcie), Vercel Inc. (hosting aplikacji - funkcje uruchamiane we Frankfurcie), Google LLC / Google Ireland Ltd. (logowanie kontem Google, arkusz zgłoszeń w Google Workspace dostępny wyłącznie imiennie wskazanym organizatorom), Resend Inc. (wysyłka e-maili z kodem logowania), a po uruchomieniu SMS-ów - LINK Mobility Poland sp. z o.o. (usługa SMSAPI).",
+          "Podmioty przetwarzające dane na nasze zlecenie: Supabase Inc. (baza danych, logowanie, przechowywanie plików - serwery we Frankfurcie), Vercel Inc. (hosting aplikacji - funkcje uruchamiane we Frankfurcie), Google LLC / Google Ireland Ltd. (logowanie kontem Google, arkusz zgłoszeń w Google Workspace dostępny wyłącznie imiennie wskazanym organizatorom), Resend Inc. (wysyłka e-maili z kodem logowania oraz powiadomień dla organizatorów o nowych zgłoszeniach - z imieniem, nazwiskiem i turą), a po uruchomieniu SMS-ów - LINK Mobility Poland sp. z o.o. (usługa SMSAPI).",
           "Operatorzy usług push (Apple, Google, Mozilla - zależnie od Twojego urządzenia) przekazują powiadomienie na Twoje urządzenie; treść jest szyfrowana.",
         ],
       },

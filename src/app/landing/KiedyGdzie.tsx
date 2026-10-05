@@ -54,7 +54,7 @@ export function KiedyGdzie({
           <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
             <Image
               src="/hero/o-4c8e1a.jpg"
-              alt="Front budynku ośrodka w słoneczny dzień - biała willa z drewnianym gankiem, czerwonymi parasolami tarasowymi i różami przy wejściu"
+              alt=""
               fill
               sizes="(min-width: 850px) 460px, 55vw"
               className="object-cover"
@@ -63,7 +63,7 @@ export function KiedyGdzie({
           <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
             <Image
               src="/hero/o-9b2d7f.jpg"
-              alt="Brama wjazdowa i podjazd prowadzący do budynku ośrodka"
+              alt=""
               fill
               sizes="(min-width: 850px) 220px, 33vw"
               className="object-cover"
