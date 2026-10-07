@@ -40,10 +40,13 @@ const TYTULY: Record<Krok, string> = {
  */
 export function Formularz({
   pule,
+  samorzadowe,
   dataJwk,
   przelew,
 }: {
   pule: StanPuli[];
+  /** Konto @samorzad.ue.wroc.pl; prywatny mail zapisuje się tylko do Świeżaków. */
+  samorzadowe: boolean;
   dataJwk: string;
   /** `null`, dopóki admin nie poda numeru konta - krok pokazuje wtedy „wkrótce". */
   przelew: DanePrzelewuTyp | null;
@@ -265,7 +268,7 @@ export function Formularz({
         </div>
       </div>
 
-      {krok === "pula" && <KrokPula {...wspolne} pule={pule} />}
+      {krok === "pula" && <KrokPula {...wspolne} pule={pule} samorzadowe={samorzadowe} />}
       {krok === "zasady" && <KrokZasady {...wspolne} />}
       {krok === "dane" && <KrokDane {...wspolne} />}
       {krok === "ice" && <KrokIce {...wspolne} />}

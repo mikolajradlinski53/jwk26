@@ -6,6 +6,7 @@ import { TwojeZgody } from "@/components/TwojeZgody";
 import { Powiadomienia } from "@/components/Powiadomienia";
 import { OdswiezPrzyPowrocie } from "@/components/OdswiezPrzyPowrocie";
 import { stanZgod, type StanZgod } from "@/lib/zapisy/stanZgod";
+import { kontoSamorzadowe, TURA_DLA_PRYWATNYCH } from "@/lib/konto";
 import { Formularz } from "./Formularz";
 import { DolaczPrzelew } from "./DolaczPrzelew";
 import { wczytajDanePrzelewu } from "@/lib/zapisy/przelewUstawienia";
@@ -155,7 +156,10 @@ export default async function RejestracjaPage() {
     );
   }
 
-  const otwarte = stan.some((p) => p.otwarta);
+  // Z prywatnego maila zapisuje się wyłącznie tura Świeżaków - dla takiej
+  // osoby „zapisy otwarte” znaczy „otwarta tura Świeżaków”.
+  const samorzadowe = kontoSamorzadowe(user.email);
+  const otwarte = stan.some((p) => p.otwarta && (samorzadowe || p.klucz === TURA_DLA_PRYWATNYCH));
   // Odrzucone zgłoszenie mogło zostawić dane zdrowotne albo aktywne zgody -
   // brama wpuszcza taką osobę wyłącznie tu, więc to jedyne miejsce, gdzie
   // może je wycofać.
@@ -177,13 +181,15 @@ export default async function RejestracjaPage() {
       {otwarte ? (
         <Formularz
           pule={stan}
+          samorzadowe={samorzadowe}
           dataJwk={(ustawienie?.value as string | undefined) ?? DATA_JWK_ZAPASOWA}
           przelew={przelew}
         />
       ) : (
         <p className="szklo rounded-md px-4 py-6 text-center text-sm leading-relaxed text-dym">
-          Zapisy jeszcze się nie zaczęły albo wszystkie tury są zamknięte. Zajrzyj
-          tu, gdy organizator ogłosi otwarcie.
+          {samorzadowe
+            ? "Zapisy jeszcze się nie zaczęły albo wszystkie tury są zamknięte. Zajrzyj tu, gdy organizator ogłosi otwarcie."
+            : "Z prywatnego maila zapiszesz się do tury Świeżaków - ruszy po przyjęciu Świeżaków. Jeśli jesteś Działaczem albo Alumnem, wyloguj się i zaloguj kontem @samorzad.ue.wroc.pl."}
         </p>
       )}
       {zgodyOstatnie && <TwojeZgody {...zgodyOstatnie} />}

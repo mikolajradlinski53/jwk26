@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { Zaba } from "@/components/Zaba";
 
-const DOMENA = "@samorzad.ue.wroc.pl";
 
 // Kod OTP zamiast magic linka: na telefonie przepisanie kilku cyfr jest
 // wygodniejsze niż skakanie między aplikacją pocztową a przeglądarką.
@@ -68,10 +67,10 @@ export function Logowanie() {
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        // `hd` to wyłącznie podpowiedź dla ekranu wyboru konta - prawdziwą
-        // bramką jest wyzwalacz w bazie. `select_account` wymusza wybór konta
-        // u kogoś, kto ma zalogowane prywatne i uczelniane naraz.
-        queryParams: { hd: "samorzad.ue.wroc.pl", prompt: "select_account" },
+        // Bez `hd`: od 2026-10-07 Świeżaki logują się prywatnymi kontami.
+        // `select_account` wymusza wybór konta u kogoś, kto ma zalogowane
+        // prywatne i samorządowe naraz - Działacz ma wybrać samorządowe.
+        queryParams: { prompt: "select_account" },
       },
     });
     if (error) {
@@ -82,8 +81,8 @@ export function Logowanie() {
 
   async function wyslijKod() {
     setBlad(null);
-    if (!email.trim().toLowerCase().endsWith(DOMENA)) {
-      setBlad(`Wpuszczamy wyłącznie adresy ${DOMENA}`);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setBlad("Wpisz pełny adres e-mail");
       return;
     }
     setCzeka(true);
@@ -159,7 +158,7 @@ export function Logowanie() {
 
       {!awaria && (
         <Button variant="cichy" onClick={() => setAwaria(true)}>
-          Nie mogę się zalogować
+          Nie masz konta Google? Zaloguj kodem na maila
         </Button>
       )}
 
@@ -167,7 +166,7 @@ export function Logowanie() {
         (etap === "email" ? (
           <div className="grid gap-5">
             <p className="text-center text-xs text-dym">
-              albo kodem na maila - furtka awaryjna
+              albo kodem na maila - przyjdzie na adres, który wpiszesz
             </p>
 
             <Field
@@ -175,7 +174,7 @@ export function Logowanie() {
               type="email"
               inputMode="email"
               autoComplete="email"
-              placeholder={`imie.nazwisko${DOMENA}`}
+              placeholder="twoj@adres.pl"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               error={blad}

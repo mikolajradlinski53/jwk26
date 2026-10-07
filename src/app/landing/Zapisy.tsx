@@ -9,10 +9,10 @@ import type { OdslonaWidok } from "@/lib/odslony";
 const KROKI = [
   {
     numer: "01",
-    tytul: "Zaloguj się kontem Samorządowym",
+    tytul: "Zaloguj się",
     opis:
-      "Logujesz się jednym dotknięciem przez Google, swoim adresem @samorzad.ue.wroc.pl - " +
-      "także jeśli jesteś Alumnem.",
+      "Działacze i Alumni logują się jednym dotknięciem przez Google, adresem @samorzad.ue.wroc.pl. " +
+      "Świeżaki - dowolnym adresem e-mail, przez Google albo kodem wysłanym na maila.",
   },
   {
     numer: "02",

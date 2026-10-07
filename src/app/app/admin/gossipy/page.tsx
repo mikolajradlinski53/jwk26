@@ -22,7 +22,7 @@ export default async function AdminGossipyPage() {
   const wpisy = new Map(moderacja);
 
   return (
-    <Ekran tytul="Gossipy" podtytul="Kategorie, nominacje i moderacja">
+    <Ekran tytul="JWK Awards" podtytul="Kategorie, nominacje i moderacja">
       <NowaKategoria />
 
       {error && (

@@ -18,6 +18,9 @@ export function komunikat(e: unknown): string {
   if (/PULA_ZAMKNIETA/.test(t)) {
     return "Ta tura jest zamknięta. Wróć do pierwszego kroku i sprawdź, które są otwarte.";
   }
+  if (/TURA_TYLKO_SAMORZAD/.test(t)) {
+    return "Z prywatnego maila zapiszesz się tylko do tury Świeżaków. Działacze i Alumni - zaloguj się kontem @samorzad.ue.wroc.pl.";
+  }
   if (/PRZELEW_WYMAGANY/.test(t)) return "W tej puli zwolniło się miejsce - dołącz potwierdzenie przelewu.";
   if (/NIEPELNOLETNI/.test(t)) {
     return "Na JWK26 jadą osoby, które w dniu wyjazdu mają skończone 18 lat.";

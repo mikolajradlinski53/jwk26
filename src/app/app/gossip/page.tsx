@@ -29,10 +29,10 @@ export default async function GossipPage() {
   const minimum = Number(ustawienie?.value ?? 200) || 200;
 
   return (
-    <Ekran tytul="Gossipy" podtytul="Anonimowe nominacje">
+    <Ekran tytul="JWK Awards" podtytul="Anonimowe nominacje">
       {error && (
         <p className="szklo rounded-md px-4 py-3.5 text-sm text-krew-jasna">
-          Nie udało się wczytać gossipów. Odśwież stronę.
+          Nie udało się wczytać kategorii JWK Awards. Odśwież stronę.
         </p>
       )}
       {!error && kategorie.length === 0 && (

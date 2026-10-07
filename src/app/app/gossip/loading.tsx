@@ -1,9 +1,9 @@
 import { Pasek, SzkieletEkranu } from "@/components/Szkielet";
 
-/** Gossipy: karty kategorii - status, tytuł, opis, formularz nominacji. */
+/** JWK Awards (dawniej „Gossipy”): karty kategorii - status, tytuł, opis, formularz nominacji. */
 export default function Ladowanie() {
   return (
-    <SzkieletEkranu tytul="Gossipy" podtytul="Anonimowe nominacje">
+    <SzkieletEkranu tytul="JWK Awards" podtytul="Anonimowe nominacje">
       <div className="grid gap-4">
         {[0, 1].map((i) => (
           <div key={i} className="szklo grid animate-pulse gap-3 rounded-md px-4 py-4">

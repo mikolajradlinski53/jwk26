@@ -9,7 +9,7 @@ const WEJSCIA: { href: string; nazwa: string; opis: string; ikona: NazwaIkony; k
   { href: "/app/admin/uczestnicy", nazwa: "Uczestnicy", opis: "Przyjęci: diety, ICE, zwolnienia, CSV", ikona: "osoby" },
   { href: "/app/admin/ogloszenia", nazwa: "Ogłoszenia", opis: "Powiadomienia push do wszystkich, drużyny, puli", ikona: "dzwonek" },
   { href: "/app/admin/harmonogram", nazwa: "Harmonogram", opis: "Program wyjazdu dzień po dniu", ikona: "zegar" },
-  { href: "/app/admin/gossipy", nazwa: "Gossipy", opis: "Kategorie, ujawnianie, moderacja", ikona: "gwiazda", kolejka: "gossipy" },
+  { href: "/app/admin/gossipy", nazwa: "JWK Awards", opis: "Kategorie, ujawnianie, moderacja", ikona: "gwiazda", kolejka: "gossipy" },
   { href: "/app/admin/bingo", nazwa: "Bingo", opis: "Kolejka zdjęć z planszy", ikona: "plansza", kolejka: "bingo" },
   { href: "/app/admin/sklepik", nazwa: "Sklepik", opis: "Kolejka wydań i stan półki", ikona: "torba", kolejka: "sklepik" },
   { href: "/app/admin/punkty", nazwa: "Punkty", opis: "Przyznaj lub odbierz", ikona: "plus" },

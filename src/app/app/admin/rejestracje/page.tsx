@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { PrzyciskiDecyzji } from "./PrzyciskiDecyzji";
+import { kontoSamorzadowe } from "@/lib/konto";
 import { NAZWY_PUL, etykietaAlkoholu, etykietaDojazdu } from "@/lib/zapisy/formularz";
 import type { DaneWrazliwe, Registration, Team } from "@/types/db";
 
@@ -26,7 +27,7 @@ export default async function KolejkaRejestracji() {
 
   // Podpisane URL-e żyją godzinę; równolegle, bo przy kilkudziesięciu
   // zgłoszeniach sekwencyjne podpisywanie widać gołym okiem.
-  const [podpisy, { data: wrazliweRaw, error: wrazliweError }] = await Promise.all([
+  const [podpisy, { data: wrazliweRaw, error: wrazliweError }, { data: profileRaw }] = await Promise.all([
     Promise.all(
       zgloszenia.map(async (z) => {
         if (!z.proof_path) return [z.id, null] as const;
@@ -43,7 +44,16 @@ export default async function KolejkaRejestracji() {
         "registration_id",
         zgloszenia.map((z) => z.id),
       ),
+    // Adres logowania - przy prywatnym mailu admin musi sprawdzić, czy to Świeżak.
+    supabase
+      .from("profiles")
+      .select("id, email")
+      .in(
+        "id",
+        zgloszenia.map((z) => z.user_id),
+      ),
   ]);
+  const maile = new Map(((profileRaw ?? []) as { id: string; email: string }[]).map((p) => [p.id, p.email]));
   const podglady = new Map(podpisy);
   const wrazliwe = new Map(
     ((wrazliweRaw ?? []) as DaneWrazliwe[]).map((w) => [w.registration_id, w]),
@@ -86,7 +96,17 @@ export default async function KolejkaRejestracji() {
               <p className="font-tytul tracking-wider text-kosc">{nazwa}</p>
               {z.ksywka && <p className="text-sm text-dym">Na identyfikatorze: {z.ksywka}</p>}
 
+              {/* Prywatny mail (od 2026-10-07 dozwolony dla Świeżaków) - na
+                  wierzchu, bo konto może założyć każdy z internetu. */}
+              {!kontoSamorzadowe(maile.get(z.user_id)) && (
+                <p className="mt-2 inline-block rounded-sm border border-krew/50 px-2 py-1 text-xs font-bold text-krew-jasna">
+                  Mail spoza Samorządu - sprawdź, czy to Świeżak
+                </p>
+              )}
+
               <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+                <dt className="text-dym">E-mail</dt>
+                <dd className="break-all text-kosc">{maile.get(z.user_id) ?? "-"}</dd>
                 <dt className="text-dym">Telefon</dt>
                 <dd className="text-kosc">{z.phone ?? "-"}</dd>
                 {z.nr_indeksu && (

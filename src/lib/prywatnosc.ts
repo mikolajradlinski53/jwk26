@@ -35,11 +35,11 @@ export const POLITYKA: SekcjaPolityki[] = [
     bloki: [
       {
         punkty: [
-          "Konto i logowanie - adres e-mail w domenie samorzad.ue.wroc.pl, a przy logowaniu kontem Google także imię i nazwisko przekazane przez Google. Cel: zalogowanie i rozpoznanie Cię w aplikacji. Podstawa: art. 6 ust. 1 lit. b RODO - korzystasz z aplikacji na własne żądanie, w związku z udziałem w wyjeździe.",
+          "Konto i logowanie - adres e-mail, którym się logujesz (Działacze i Alumni - w domenie samorzad.ue.wroc.pl, Świeżaki - dowolny), a przy logowaniu kontem Google także imię i nazwisko przekazane przez Google. Cel: zalogowanie i rozpoznanie Cię w aplikacji. Podstawa: art. 6 ust. 1 lit. b RODO - korzystasz z aplikacji na własne żądanie, w związku z udziałem w wyjeździe.",
           "Zgłoszenie na wyjazd - dane z formularza zapisów, potwierdzenie przelewu i tekst z niego odczytany. Cel: kwalifikacja, organizacja wyjazdu i rozliczenie wpłaty. Podstawa: art. 6 ust. 1 lit. b RODO.",
           "Informacje o zdrowiu (dieta, alergie, choroby przewlekłe, leki) - wyłącznie jeśli je podasz. Cel: przygotowanie posiłków i pomoc w nagłej sytuacji. Podstawa: Twoja wyraźna zgoda, art. 9 ust. 2 lit. a RODO.",
           "Kontakt alarmowy (ICE) - imię, telefon i relacja osoby, którą wskażesz. Cel: powiadomienie jej, gdyby coś Ci się stało. Podstawa: art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes: ochrona Twojego bezpieczeństwa).",
-          "Udział w zabawach - nazwa w aplikacji, drużyna, punkty i ich historia, zdjęcia i podpisy z bingo, komentarze i polubienia, nominacje w gossipach (uzasadnienia i zdjęcia), przebieg gier w kasynie i w grze „Kruk”, zamówienia w sklepiku drużynowym. Cel: przeprowadzenie zabaw będących częścią programu wyjazdu. Podstawa: art. 6 ust. 1 lit. b RODO - udział w zabawach jest dobrowolny i następuje na Twoje żądanie.",
+          "Udział w zabawach - nazwa w aplikacji, drużyna, punkty i ich historia, zdjęcia i podpisy z bingo, komentarze i polubienia, nominacje w JWK Awards (uzasadnienia i zdjęcia), przebieg gier w kasynie i w grze „Kruk”, zamówienia w sklepiku drużynowym. Cel: przeprowadzenie zabaw będących częścią programu wyjazdu. Podstawa: art. 6 ust. 1 lit. b RODO - udział w zabawach jest dobrowolny i następuje na Twoje żądanie.",
           "Wizerunek - zdjęcia, które Ty lub inni uczestnicy wgracie do aplikacji, widzą wyłącznie zalogowani uczestnicy i Kadra (regulamin, § 19). Rozpowszechnianie wizerunku poza aplikacją, np. w mediach społecznościowych Samorządu, odbywa się tylko na podstawie Twojej zgody (art. 6 ust. 1 lit. a RODO i art. 81 ustawy o prawie autorskim i prawach pokrewnych).",
           "Powiadomienia push - adres subskrypcji Twojego urządzenia i klucze szyfrujące. Cel: wysyłanie ogłoszeń organizatorów i informacji z zabaw. Podstawa: art. 6 ust. 1 lit. b RODO - powiadomienia włączasz sam(a) i możesz je wyłączyć w ustawieniach urządzenia.",
           "SMS-y - numer telefonu, wyłącznie jeśli wyrazisz zgodę. Cel: pilne komunikaty organizacyjne. Podstawa: zgoda, art. 6 ust. 1 lit. a RODO.",
@@ -54,7 +54,7 @@ export const POLITYKA: SekcjaPolityki[] = [
     bloki: [
       {
         punkty: [
-          "Inni uczestnicy - Twoją nazwę w aplikacji, drużynę, punkty w rankingu, zdjęcia i podpisy z bingo, komentarze i polubienia. Nominacje w gossipach są dla nich anonimowe; po ujawnieniu wyniku widać tylko uzasadnienia i zdjęcia dotyczące zwycięzcy.",
+          "Inni uczestnicy - Twoją nazwę w aplikacji, drużynę, punkty w rankingu, zdjęcia i podpisy z bingo, komentarze i polubienia. Nominacje w JWK Awards są dla nich anonimowe; po ujawnieniu wyniku widać tylko uzasadnienia i zdjęcia dotyczące zwycięzcy.",
           "Organizatorzy (Kadra i administratorzy aplikacji) - dane potrzebne do organizacji wyjazdu i moderacji treści. Autora nominacji mogą ustalić wyłącznie w celu reakcji na treść naruszającą regulamin.",
           "Ośrodek - wyłącznie informacje o diecie i alergiach.",
           "Podmioty przetwarzające dane na nasze zlecenie: Supabase Inc. (baza danych, logowanie, przechowywanie plików - serwery we Frankfurcie), Vercel Inc. (hosting aplikacji - funkcje uruchamiane we Frankfurcie), Google LLC / Google Ireland Ltd. (logowanie kontem Google, arkusz zgłoszeń w Google Workspace dostępny wyłącznie imiennie wskazanym organizatorom), Resend Inc. (wysyłka e-maili z kodem logowania oraz powiadomień dla organizatorów o nowych zgłoszeniach - z imieniem, nazwiskiem i turą), a po uruchomieniu SMS-ów - LINK Mobility Poland sp. z o.o. (usługa SMSAPI).",

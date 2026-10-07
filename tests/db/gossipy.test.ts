@@ -136,7 +136,7 @@ describe("kategorie", () => {
       .select("kanal, adresat, tytul")
       .eq("ref_type", "gossip")
       .eq("ref_id", k);
-    expect(data).toEqual([{ kanal: "push", adresat: "all", tytul: "Nowe gossipy" }]);
+    expect(data).toEqual([{ kanal: "push", adresat: "all", tytul: "JWK Awards" }]);
   });
 });
 

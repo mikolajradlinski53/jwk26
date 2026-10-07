@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Field } from "@/components/ui/Field";
+import { DOMENA_SAMORZADU, TURA_DLA_PRYWATNYCH } from "@/lib/konto";
 import {
   ALKOHOL,
   DOJAZDY,
@@ -154,19 +155,28 @@ function Tekst({ children }: { children: ReactNode }) {
   );
 }
 
-export function KrokPula({ dane, zmien, bledy, pule }: PropsKroku & { pule: StanPuli[] }) {
+export function KrokPula({
+  dane,
+  zmien,
+  bledy,
+  pule,
+  samorzadowe,
+}: PropsKroku & { pule: StanPuli[]; samorzadowe: boolean }) {
   return (
     <fieldset className="grid gap-3">
       <legend className="mb-2 text-sm text-dym">Z której puli jedziesz?</legend>
       {pule.map((p) => {
         const pelna = p.zajete >= p.miejsca;
         const wybrana = dane.pula === p.klucz;
+        // Prywatny mail - tylko Świeżaki (to samo pilnuje zloz_zgloszenie).
+        const tylkoSamorzad = !samorzadowe && p.klucz !== TURA_DLA_PRYWATNYCH;
+        const dostepna = p.otwarta && !tylkoSamorzad;
         return (
           <label
             key={p.klucz}
             className={
               "szklo flex min-h-14 items-center gap-3 rounded-md px-4 py-3 " +
-              (p.otwarta ? "" : "opacity-40 ") +
+              (dostepna ? "" : "opacity-40 ") +
               (wybrana ? "border-krew" : "")
             }
           >
@@ -174,14 +184,16 @@ export function KrokPula({ dane, zmien, bledy, pule }: PropsKroku & { pule: Stan
               type="radio"
               name="pula"
               checked={wybrana}
-              disabled={!p.otwarta}
+              disabled={!dostepna}
               onChange={() => zmien("pula", p.klucz)}
               className="size-5 shrink-0 accent-[var(--color-krew)]"
             />
             <span className="min-w-0">
               <span className="block text-sm font-bold">{p.nazwa}</span>
               <span className="block text-xs text-dym">
-                {!p.otwarta
+                {tylkoSamorzad
+                  ? `Tylko dla kont ${DOMENA_SAMORZADU}`
+                  : !p.otwarta
                   ? "Zamknięta"
                   : pelna
                     ? `Pełna, zapis na rezerwę (${p.w_rezerwie} w kolejce)`
