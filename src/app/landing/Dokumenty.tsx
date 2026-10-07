@@ -1,6 +1,9 @@
 import { SekcjaNaglowek } from "./SekcjaNaglowek";
 import { Kontener } from "./Kontener";
 import { ZabaStala } from "./zaba/ZabaStala";
+import { KopiujMaly } from "@/components/KopiujMaly";
+import { AdresEmail } from "@/components/AdresEmail";
+import { KOORDYNATOR, KOORDYNATOR_MAIL, KOORDYNATOR_TELEFON } from "@/lib/regulamin";
 
 const DOKUMENTY = [
   {
@@ -18,6 +21,10 @@ const DOKUMENTY = [
 /**
  * Regulamin i polityka prywatności - osobne trasy, żeby dało się je linkować.
  * Otwierają się w nowej karcie, żeby czytający nie gubił miejsca na landingu.
+ *
+ * Pod nimi kontakt do koordynatora (tu prowadzi „Kontakt” ze stopki). Adres
+ * do skopiowania, nie `mailto:` - na części telefonów link otwierał
+ * nieskonfigurowaną albo przypadkową aplikację.
  */
 export function Dokumenty() {
   return (
@@ -40,6 +47,26 @@ export function Dokumenty() {
               <span className="mt-1 text-sm font-bold text-jesien-rdza">Przeczytaj →</span>
             </a>
           ))}
+        </div>
+
+        <div
+          id="kontakt"
+          className="mt-3 grid scroll-mt-24 gap-1.5 rounded-lg border border-jesien-kora/15 bg-jesien-karta p-5"
+        >
+          <span className="font-tytul text-lg text-jesien-atrament">Kontakt</span>
+          <span className="text-sm text-jesien-kora">{KOORDYNATOR}, koordynator wyjazdu</span>
+          <p className="flex items-center justify-between gap-3 text-sm text-jesien-atrament">
+            <AdresEmail adres={KOORDYNATOR_MAIL} />
+            <span className="text-jesien-rdza">
+              <KopiujMaly tekst={KOORDYNATOR_MAIL} co="adres e-mail" />
+            </span>
+          </p>
+          <a
+            href={`tel:${KOORDYNATOR_TELEFON.replace(/\s/g, "")}`}
+            className="w-fit text-sm font-bold text-jesien-rdza underline underline-offset-2"
+          >
+            {KOORDYNATOR_TELEFON}
+          </a>
         </div>
       </Kontener>
     </section>

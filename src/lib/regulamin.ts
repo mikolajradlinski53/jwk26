@@ -7,6 +7,7 @@
  */
 export type Paragraf = { numer: number; tytul: string; ustepy: string[] };
 
+export const KOORDYNATOR = "Dawid Rutkowski";
 export const KOORDYNATOR_MAIL = "dawid.rutkowski@samorzad.ue.wroc.pl";
 export const KOORDYNATOR_TELEFON = "+48 608 008 363";
 

@@ -7,7 +7,6 @@ import {
   ZnakMarki,
   type Odnosnik,
 } from "./StopkaElementy";
-import { KOORDYNATOR_MAIL } from "@/lib/regulamin";
 import type { Social } from "@/lib/ustawienia";
 import type { OdslonaWidok } from "@/lib/odslony";
 
@@ -40,7 +39,7 @@ export function Stopka({ zapisy, social, maPlan }: { zapisy: OdslonaWidok; socia
   const nawigacjaZgloszenie: Odnosnik[] = [
     { etykieta: "Zapisy", href: zapisy.odsloniete ? "/wejscie" : "#zapisy" },
     { etykieta: "Cena", href: "#cena-i-wplata" },
-    { etykieta: "Kontakt", href: `mailto:${KOORDYNATOR_MAIL}` },
+    { etykieta: "Kontakt", href: "#kontakt" },
     { etykieta: "Regulamin", href: "/regulamin", noweOkno: true },
     { etykieta: "Polityka prywatności", href: "/prywatnosc", noweOkno: true },
   ];

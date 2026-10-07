@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { KopiujMaly } from "@/components/KopiujMaly";
+import { AdresEmail } from "@/components/AdresEmail";
 import { komunikat } from "@/lib/zapisy/bledy";
 import { KOORDYNATOR_MAIL } from "@/lib/regulamin";
 import type { StanZgod } from "@/lib/zapisy/stanZgod";
@@ -136,7 +137,7 @@ export function TwojeZgody({ maDaneZdrowotne, zgodaWizerunek, zgodaSms }: StanZg
         <div className="grid gap-1 px-1 text-xs leading-relaxed text-dym">
           <p>Zgodę możesz też wycofać mailowo - napisz do koordynatora wyjazdu:</p>
           <p className="flex items-center gap-2 text-kosc">
-            <span className="select-all break-all">{KOORDYNATOR_MAIL}</span>
+            <AdresEmail adres={KOORDYNATOR_MAIL} />
             <KopiujMaly tekst={KOORDYNATOR_MAIL} co="adres e-mail" />
           </p>
         </div>
