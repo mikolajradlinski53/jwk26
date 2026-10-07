@@ -142,10 +142,16 @@ export function Logowanie() {
         </div>
       )}
 
+      {/* Dwie drogi podpisane, dla kogo są (2026-10-07): projekt Google na
+          produkcji jest wewnętrzny dla Workspace'u Samorządu, więc prywatne
+          konto Google dostałoby „dostęp zablokowany”. Świeżaki - kod na maila. */}
+      <p className="text-center text-[0.62rem] font-bold uppercase tracking-[0.14em] text-dym">
+        Działacze i Alumni
+      </p>
       <Button
         onClick={zalogujGoogle}
         disabled={czeka || czekaGoogle}
-        className="flex items-center justify-center gap-2.5"
+        className="-mt-2 flex items-center justify-center gap-2.5"
       >
         <svg viewBox="0 0 24 24" className="size-5" aria-hidden="true">
           <path
@@ -153,20 +159,28 @@ export function Logowanie() {
             d="M21.35 11.1H12v2.98h5.35c-.23 1.4-1.62 4.1-5.35 4.1-3.22 0-5.85-2.67-5.85-5.96S8.78 6.26 12 6.26c1.83 0 3.06.78 3.76 1.45l2.57-2.47C16.68 3.7 14.54 2.8 12 2.8 6.92 2.8 2.8 6.92 2.8 12s4.12 9.2 9.2 9.2c5.31 0 8.83-3.73 8.83-8.99 0-.6-.07-1.06-.15-1.51Z"
           />
         </svg>
-        {czekaGoogle ? "Łączę z Google..." : "Zaloguj przez Google"}
+        {czekaGoogle ? "Łączę z Google..." : "Zaloguj kontem @samorzad przez Google"}
       </Button>
 
       {!awaria && (
-        <Button variant="cichy" onClick={() => setAwaria(true)}>
-          Nie masz konta Google? Zaloguj kodem na maila
-        </Button>
+        <>
+          <p className="mt-2 text-center text-[0.62rem] font-bold uppercase tracking-[0.14em] text-dym">
+            Świeżaki
+          </p>
+          <Button variant="szklo" className="-mt-2" onClick={() => setAwaria(true)}>
+            Zaloguj kodem na maila
+          </Button>
+          <p className="-mt-2 text-center text-xs text-dym">
+            Działa z każdym adresem - także gdy Google nie wpuszcza.
+          </p>
+        </>
       )}
 
       {awaria &&
         (etap === "email" ? (
           <div className="grid gap-5">
             <p className="text-center text-xs text-dym">
-              albo kodem na maila - przyjdzie na adres, który wpiszesz
+              Kod przyjdzie na adres, który wpiszesz - sprawdź też spam
             </p>
 
             <Field

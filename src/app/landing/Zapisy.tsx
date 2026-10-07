@@ -12,7 +12,7 @@ const KROKI = [
     tytul: "Zaloguj się",
     opis:
       "Działacze i Alumni logują się jednym dotknięciem przez Google, adresem @samorzad.ue.wroc.pl. " +
-      "Świeżaki - dowolnym adresem e-mail, przez Google albo kodem wysłanym na maila.",
+      "Świeżaki - kodem wysłanym na dowolny adres e-mail.",
   },
   {
     numer: "02",

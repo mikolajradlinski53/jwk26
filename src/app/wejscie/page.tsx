@@ -61,8 +61,8 @@ export default async function WejsciePage() {
           </p>
           <p className="szklo mt-2.5 rounded-md px-4 py-3.5 text-sm leading-relaxed text-kosc/85">
             Działacze i Alumni - kontem{" "}
-            <strong className="text-kosc">@samorzad.ue.wroc.pl</strong>. Świeżaki - dowolnym
-            adresem e-mail.
+            <strong className="text-kosc">@samorzad.ue.wroc.pl</strong>. Świeżaki - kodem
+            wysłanym na dowolny adres e-mail.
           </p>
           <div className="mt-1.5 w-full">
             {/* Logowanie czyta błąd z adresu przez useSearchParams, a to wymaga
