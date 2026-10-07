@@ -38,7 +38,7 @@ export function KiedyGdzie({
         tlo={TLO}
         ksztalt="osrodek"
         odslona={odslona}
-        zaba={<ZabaStala poza="lornetka" skala={0.95} polozenie={{ bottom: 0, right: "calc(100% + 8px)" }} />}
+        zaba={<ZabaStala poza="lornetka" skala={0.95} polozenie={{ bottom: "calc(100% - 6px)", left: 4 }} />}
       >
         <Daty />
       </Zaslona>

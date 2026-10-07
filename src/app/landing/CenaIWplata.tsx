@@ -25,7 +25,7 @@ export function CenaIWplata({ odslona, przelew }: { odslona: OdslonaWidok; przel
         tlo={TLO}
         ksztalt="cena"
         odslona={odslona}
-        zaba={<ZabaStala poza="skarbonka" skala={0.9} polozenie={{ bottom: 0, left: "calc(100% + 8px)" }} />}
+        zaba={<ZabaStala poza="skarbonka" skala={0.9} polozenie={{ bottom: "calc(100% - 6px)", right: 4 }} />}
       />
     );
   }

@@ -60,12 +60,12 @@ export default function RootLayout({
           Kolor pod spodem to --color-noc: zanim obraz dojdzie, ekran wygląda
           jak ciemniejsza wersja siebie, a nie jak błąd.
 
-          Landing maluje własne tło na całą wysokość (.jesien) i tę warstwę
-          przykrywa.
+          Landing maluje własne tło na całą wysokość (.jesien), a tę warstwę
+          wyłącza w globals.css (`html:has(.jesien) .tlo-apki`).
         */}
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed inset-0 -z-10 bg-noc bg-cover bg-center"
+          className="tlo-apki pointer-events-none fixed inset-0 -z-10 bg-noc bg-cover bg-center"
           style={{ backgroundImage: "url(/grafika/tlo-apki.webp)" }}
         />
         {children}

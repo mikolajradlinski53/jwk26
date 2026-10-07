@@ -69,21 +69,55 @@ const WIDOCZNE_NA_START = 4;
  *
  * Kliknięcie/Enter na kafelku otwiera lightbox z większym podglądem -
  * Escape zamyka, focus po otwarciu ląduje na przycisku zamknięcia, po
- * zamknięciu wraca na kafelek, który go otworzył. Strzałki lewo/prawo
- * przełączają zdjęcie w lightboksie.
+ * zamknięciu wraca na kafelek, który go otworzył. W lightboksie chodzi się
+ * po wszystkich zdjęciach (także schowanych pod „Pokaż więcej”): strzałkami
+ * na klawiaturze, przyciskami po bokach albo przesunięciem palcem - zdjęcie
+ * jedzie za palcem, a puszczone dalej niż `PROG_PRZESUNIECIA` przeskakuje
+ * na następne. `touch-action: pan-y pinch-zoom` oddaje nam ruch poziomy,
+ * a przybliżanie dwoma palcami zostawia przeglądarce.
  *
- * `react-hooks/set-state-in-effect` jest w tym repo twardym błędem: jedyne
- * wywołania `setOtwarteIndeks`/`setRozwinieta` poniżej siedzą w callbackach
- * zdarzeń (klik, `keydown`), nigdy w ciele efektu.
+ * `react-hooks/set-state-in-effect` jest w tym repo twardym błędem: wszystkie
+ * wywołania `set…` poniżej siedzą w callbackach zdarzeń (klik, `keydown`,
+ * dotyk), nigdy w ciele efektu.
  */
+const PROG_PRZESUNIECIA = 50;
+
+function Strzalka({ kierunek, onClick }: { kierunek: "lewo" | "prawo"; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={kierunek === "lewo" ? "Poprzednie zdjęcie" : "Następne zdjęcie"}
+      className={`absolute top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-jesien-tlo/85
+                  text-jesien-atrament shadow-md transition hover:bg-jesien-tlo focus-visible:outline-2
+                  focus-visible:outline-offset-2 focus-visible:outline-jesien-rdza
+                  ${kierunek === "lewo" ? "left-2" : "right-2"}`}
+    >
+      <svg aria-hidden="true" viewBox="0 0 20 20" className="size-4">
+        <path
+          d={kierunek === "lewo" ? "M12.5 4.5L7 10l5.5 5.5" : "M7.5 4.5L13 10l-5.5 5.5"}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+        />
+      </svg>
+    </button>
+  );
+}
+
 export function Galeria() {
   const [rozwinieta, setRozwinieta] = useState(false);
   const [otwarteIndeks, setOtwarteIndeks] = useState<number | null>(null);
+  const [przesuniecie, setPrzesuniecie] = useState(0);
   const kafelkiRefy = useRef<(HTMLButtonElement | null)[]>([]);
   const zamknijRef = useRef<HTMLButtonElement | null>(null);
   const ostatniFokusRef = useRef<HTMLButtonElement | null>(null);
+  const dotykRef = useRef<{ x: number; y: number; poziomo: boolean | null } | null>(null);
 
   const widoczne = rozwinieta ? ZDJECIA : ZDJECIA.slice(0, WIDOCZNE_NA_START);
+  const ile = ZDJECIA.length;
 
   useEffect(() => {
     if (otwarteIndeks === null) return;
@@ -100,9 +134,9 @@ export function Galeria() {
         setOtwarteIndeks(null);
         ostatniFokusRef.current?.focus();
       } else if (event.key === "ArrowRight") {
-        setOtwarteIndeks((i) => (i === null ? i : (i + 1) % widoczne.length));
+        setOtwarteIndeks((i) => (i === null ? i : (i + 1) % ile));
       } else if (event.key === "ArrowLeft") {
-        setOtwarteIndeks((i) => (i === null ? i : (i - 1 + widoczne.length) % widoczne.length));
+        setOtwarteIndeks((i) => (i === null ? i : (i - 1 + ile) % ile));
       }
     }
 
@@ -111,7 +145,7 @@ export function Galeria() {
       document.body.style.overflow = poprzednieOverflow;
       document.removeEventListener("keydown", naKlawisz);
     };
-  }, [otwarteIndeks, widoczne.length]);
+  }, [otwarteIndeks, ile]);
 
   function otworz(i: number) {
     ostatniFokusRef.current = kafelkiRefy.current[i];
@@ -123,7 +157,35 @@ export function Galeria() {
     ostatniFokusRef.current?.focus();
   }
 
-  const aktywne = otwarteIndeks !== null ? widoczne[otwarteIndeks] : null;
+  function przesun(o: number) {
+    setPrzesuniecie(0);
+    setOtwarteIndeks((i) => (i === null ? i : (i + o + ile) % ile));
+  }
+
+  function naStartDotyku(e: React.TouchEvent) {
+    if (e.touches.length !== 1) return;
+    dotykRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, poziomo: null };
+  }
+
+  function naRuchDotyku(e: React.TouchEvent) {
+    const d = dotykRef.current;
+    if (!d || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - d.x;
+    const dy = e.touches[0].clientY - d.y;
+    // Kierunek ustalany raz, po pierwszych kilku pikselach - ruch w pionie
+    // nie przesuwa zdjęcia na boki.
+    if (d.poziomo === null && Math.abs(dx) + Math.abs(dy) > 8) d.poziomo = Math.abs(dx) > Math.abs(dy);
+    if (d.poziomo) setPrzesuniecie(dx);
+  }
+
+  function naKoniecDotyku() {
+    const d = dotykRef.current;
+    dotykRef.current = null;
+    if (d?.poziomo && Math.abs(przesuniecie) > PROG_PRZESUNIECIA) przesun(przesuniecie < 0 ? 1 : -1);
+    else setPrzesuniecie(0);
+  }
+
+  const aktywne = otwarteIndeks !== null ? ZDJECIA[otwarteIndeks] : null;
 
   return (
     <div>
@@ -176,15 +238,20 @@ export function Galeria() {
         </div>
       )}
 
-      {aktywne && (
+      {aktywne && otwarteIndeks !== null && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-jesien-atrament/90 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-jesien-atrament/90 p-4
+                     [touch-action:pan-y_pinch-zoom]"
           onClick={zamknij}
+          onTouchStart={naStartDotyku}
+          onTouchMove={naRuchDotyku}
+          onTouchEnd={naKoniecDotyku}
+          onTouchCancel={naKoniecDotyku}
         >
           <div
             role="dialog"
             aria-modal="true"
-            aria-label="Podgląd zdjęcia"
+            aria-label={`Podgląd zdjęcia ${otwarteIndeks + 1} z ${ile}`}
             onClick={(event) => event.stopPropagation()}
             className="relative flex max-w-[92vw] flex-col items-center min-[850px]:max-w-[900px]"
           >
@@ -193,7 +260,7 @@ export function Galeria() {
               ref={zamknijRef}
               onClick={zamknij}
               aria-label="Zamknij podgląd"
-              className="absolute -top-3 -right-3 z-10 grid size-9 place-items-center rounded-full bg-jesien-tlo
+              className="absolute -top-3 -right-3 z-20 grid size-9 place-items-center rounded-full bg-jesien-tlo
                          text-jesien-atrament shadow-md focus-visible:outline-2 focus-visible:outline-offset-2
                          focus-visible:outline-jesien-rdza"
             >
@@ -208,14 +275,24 @@ export function Galeria() {
               </svg>
             </button>
 
+            <Strzalka kierunek="lewo" onClick={() => przesun(-1)} />
+            <Strzalka kierunek="prawo" onClick={() => przesun(1)} />
+
             <Image
+              key={aktywne.plik}
               src={`/hero/${aktywne.plik}.jpg`}
               alt=""
               width={aktywne.szerokosc}
               height={aktywne.wysokosc}
               sizes="90vw"
-              className="max-h-[80vh] max-w-[92vw] rounded-lg object-contain min-[850px]:max-w-[900px]"
+              draggable={false}
+              style={{ transform: `translateX(${przesuniecie}px)` }}
+              className={`max-h-[80vh] max-w-[92vw] select-none rounded-lg object-contain min-[850px]:max-w-[900px]
+                          ${przesuniecie === 0 ? "transition-transform duration-200 ease-out" : ""}`}
             />
+            <p aria-hidden="true" className="mt-2 text-xs tabular-nums text-jesien-tlo/80">
+              {otwarteIndeks + 1} / {ile}
+            </p>
           </div>
         </div>
       )}

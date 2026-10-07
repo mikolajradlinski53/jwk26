@@ -27,7 +27,7 @@ export function Infopack({ odslona }: { odslona: OdslonaWidok }) {
         tlo={TLO}
         ksztalt="infopack"
         odslona={odslona}
-        zaba={<ZabaStala poza="plecak" skala={0.85} polozenie={{ bottom: 0, left: "calc(100% + 8px)" }} />}
+        zaba={<ZabaStala poza="plecak" skala={0.85} polozenie={{ bottom: "calc(100% - 6px)", right: 4 }} />}
       />
     );
   }

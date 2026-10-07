@@ -116,6 +116,28 @@ body {
 }
 
 /*
+ * Landing na iPhonie: `body` ma odstęp na wcięcie (patrz wyżej, dla apki),
+ * a `.jesien` zaczyna się dopiero pod nim - w tym pasku prześwitywało
+ * ciemne tło apki. Tak samo przy „gumowym" przewinięciu poza krawędź, gdzie
+ * iOS pokazuje tło `html`. Na stronie z `.jesien` odstęp znika (nagłówek
+ * landingu sam dolicza wcięcie), `html` dostaje jesienne tło, a warstwa
+ * tła apki nie jest w ogóle malowana.
+ *
+ * Poza `@layer`, celowo: reguły `html` i `body` wyżej też są poza warstwą,
+ * a reguła z warstwy przegrywa z każdą regułą spoza niej.
+ */
+html:has(.jesien) {
+  color-scheme: light;
+  background-color: var(--color-jesien-tlo);
+}
+body:has(.jesien) {
+  padding-top: 0;
+}
+html:has(.jesien) .tlo-apki {
+  display: none;
+}
+
+/*
  * Szkło jako jedna klasa, nie powtarzane utility.
  * Cztery właściwości muszą występować razem, a rozsypane po komponentach
  * rozjeżdżają się przy pierwszej zmianie.
@@ -294,6 +316,13 @@ body {
     min-height: 100dvh;
     background: var(--color-jesien-tlo);
     color: var(--color-jesien-atrament);
+    /*
+     * Nic nie może poszerzyć strony w poziomie: żaba wystająca o 16 px poza
+     * ekran pozwalała na iPhonie przesuwać landing na boki i odsłaniała pasek
+     * bez tła. `clip`, nie `hidden` - `hidden` robi z tego kontener
+     * przewijania i psuje przyklejony nagłówek.
+     */
+    overflow-x: clip;
   }
 
   /*
