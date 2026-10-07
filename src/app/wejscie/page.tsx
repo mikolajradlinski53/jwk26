@@ -41,7 +41,8 @@ export default async function WejsciePage() {
   const data = dataWyjazdu((await ustawienia()).dataJwk);
 
   return (
-    <ZamekInstalacji>
+    // Bez zamka instalacji: o 12:00 liczy się szybkość zapisu (ZamekKlient).
+    <ZamekInstalacji zwolnione>
       <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5">
         <div className="flex flex-1 flex-col items-center justify-center gap-3.5 py-10 text-center">
           {/* eslint-disable-next-line @next/next/no-img-element -- statyczny plik z public, bez optymalizacji */}

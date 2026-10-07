@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { Ekran } from "@/components/Ekran";
 import { PrzyciskKopiuj } from "@/components/PrzyciskKopiuj";
 import { Zaba } from "@/components/Zaba";
+import { ZamekKlient } from "@/components/ZamekKlient";
 import { system, wbudowanaPrzegladarka, type System } from "@/lib/urzadzenie";
 
 const KROKI: Record<System, string[]> = {
@@ -27,8 +28,9 @@ function Tutorial({ sys, wAplikacji, adres }: { sys: System; wAplikacji: boolean
       <div className="szklo grid gap-4 rounded-lg p-5">
         <Zaba stan="tutorial" className="mx-auto size-16 text-kosc" />
         <p className="text-sm text-kosc">
-          Otworzyłeś to w przeglądarce Instagrama, a ona nie potrafi dodawać
-          aplikacji do ekranu głównego. Otwórz ten adres w Safari albo Chrome.
+          Otworzyłeś to w przeglądarce wbudowanej w aplikację (np. Instagrama),
+          a ona nie obsługuje logowania kontem Google ani dodawania aplikacji
+          do ekranu głównego. Skopiuj adres i otwórz go w Safari albo Chrome.
         </p>
         <PrzyciskKopiuj adres={adres} />
       </div>
@@ -65,25 +67,35 @@ function Tutorial({ sys, wAplikacji, adres }: { sys: System; wAplikacji: boolean
  * Musi obejmować **całą** apkę, nie sam ekran wejścia. Przegląd wykazał, że
  * nałożony wyłącznie na `/wejscie` niczego nie zamyka: zalogowany otwierał
  * `/app/feed` w zwykłej karcie Safari i dostawał pełną treść.
+ *
+ * Wyjątki (ekran wejścia z `zwolnione` i formularz zapisu) rozstrzyga
+ * `ZamekKlient` - zapis ma działać w zwykłej przeglądarce, bez instalacji.
  */
-export async function ZamekInstalacji({ children }: { children: React.ReactNode }) {
+export async function ZamekInstalacji({
+  children,
+  zwolnione = false,
+}: {
+  children: React.ReactNode;
+  zwolnione?: boolean;
+}) {
   const naglowki = await headers();
   const ua = naglowki.get("user-agent") ?? "";
   const gospodarz = naglowki.get("host") ?? "";
   const protokol = naglowki.get("x-forwarded-proto") ?? "https";
 
+  const wbudowana = wbudowanaPrzegladarka(ua);
+
   return (
-    <>
-      <div className="tylko-w-przegladarce">
-        <Ekran tytul="Wstąp do Sekty" podtytul="Najpierw przypnij">
-          <Tutorial
-            sys={system(ua)}
-            wAplikacji={wbudowanaPrzegladarka(ua)}
-            adres={`${protokol}://${gospodarz}`}
-          />
+    <ZamekKlient
+      wbudowana={wbudowana}
+      zwolnione={zwolnione}
+      tutorial={
+        <Ekran tytul="Wstąp do Sekty" podtytul={wbudowana ? "Otwórz w przeglądarce" : "Najpierw przypnij"}>
+          <Tutorial sys={system(ua)} wAplikacji={wbudowana} adres={`${protokol}://${gospodarz}`} />
         </Ekran>
-      </div>
-      <div className="tylko-w-apce">{children}</div>
-    </>
+      }
+    >
+      {children}
+    </ZamekKlient>
   );
 }
