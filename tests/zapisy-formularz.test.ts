@@ -2,6 +2,10 @@ import { describe, it, expect } from "vitest";
 import {
   progPelnoletnosci,
   komunikatWieku,
+  maskaDaty,
+  dataZMaski,
+  wartoscPolaDaty,
+  wyswietlDate,
   waliduj,
   doRpc,
   kroki,
@@ -108,8 +112,15 @@ describe("walidacja kroków", () => {
   it("data urodzenia sprzed 1900 roku jest odrzucana, sam 1900-01-01 przechodzi", () => {
     expect(
       waliduj("dane", { ...pelne, dataUrodzenia: "1899-12-31" }, JWK).dataUrodzenia,
-    ).toBe("Podaj datę urodzenia");
+    ).toBe("Sprawdź rok urodzenia");
     expect(waliduj("dane", { ...pelne, dataUrodzenia: "1900-01-01" }, JWK)).toEqual({});
+  });
+
+  it("pusta, niepełna i nieistniejąca data mają osobne komunikaty", () => {
+    const blad = (d: string) => waliduj("dane", { ...pelne, dataUrodzenia: d }, JWK).dataUrodzenia;
+    expect(blad("")).toBe("Podaj datę urodzenia");
+    expect(blad("15.03")).toMatch(/pełną datę/);
+    expect(blad("31.02.2004")).toMatch(/Nie ma takiej daty/);
   });
 
   it("numer indeksu jest opcjonalny tylko w puli Alumni", () => {
@@ -219,5 +230,46 @@ describe("zgody i komunikaty", () => {
     expect(komunikat(new Error("cos zupelnie innego"))).toMatch(/Spróbuj jeszcze raz/);
     expect(komunikat({ message: "PRZELEW_WYMAGANY" })).toMatch(/dołącz potwierdzenie/);
     expect(komunikat(new TypeError("Load failed"))).toMatch(/połączenie/);
+  });
+});
+
+describe("data urodzenia wpisywana jako DD.MM.RRRR", () => {
+  it("maska wstawia kropki między grupami, nigdy na końcu", () => {
+    expect(maskaDaty("15032004")).toBe("15.03.2004");
+    expect(maskaDaty("1")).toBe("1");
+    expect(maskaDaty("15")).toBe("15");
+    expect(maskaDaty("150")).toBe("15.0");
+    expect(maskaDaty("1503")).toBe("15.03");
+    // Wklejone z kreskami, spacjami albo za długie - liczą się cyfry, najwyżej 8.
+    expect(maskaDaty("15-03-2004")).toBe("15.03.2004");
+    expect(maskaDaty("15 03 2004 12")).toBe("15.03.2004");
+    expect(maskaDaty("")).toBe("");
+  });
+
+  it("tylko pełna, istniejąca data zamienia się na RRRR-MM-DD", () => {
+    expect(dataZMaski("15.03.2004")).toBe("2004-03-15");
+    expect(dataZMaski("29.02.2004")).toBe("2004-02-29");
+    expect(dataZMaski("29.02.2005")).toBeNull();
+    expect(dataZMaski("31.04.2004")).toBeNull();
+    expect(dataZMaski("00.01.2004")).toBeNull();
+    expect(dataZMaski("15.13.2004")).toBeNull();
+    expect(dataZMaski("15.03.20")).toBeNull();
+  });
+
+  it("pole trzyma RRRR-MM-DD po pełnym wpisie, a do tego czasu wpis z maską", () => {
+    expect(wartoscPolaDaty("15032004")).toBe("2004-03-15");
+    expect(wartoscPolaDaty("1503")).toBe("15.03");
+    expect(wartoscPolaDaty("31022004")).toBe("31.02.2004");
+    expect(wyswietlDate("2004-03-15")).toBe("15.03.2004");
+    expect(wyswietlDate("15.03")).toBe("15.03");
+    expect(wyswietlDate("")).toBe("");
+  });
+
+  it("kasowanie z pełnej daty nie zakleszcza się na kropce", () => {
+    // Pole pokazuje 15.03.2004; Backspace pięć razy zostawia „15.03” itd.
+    expect(wartoscPolaDaty("15.03.200")).toBe("15.03.200");
+    expect(wartoscPolaDaty("15.03.")).toBe("15.03");
+    expect(wartoscPolaDaty("15.0")).toBe("15.0");
+    expect(wartoscPolaDaty("15.")).toBe("15");
   });
 });

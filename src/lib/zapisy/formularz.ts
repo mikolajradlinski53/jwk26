@@ -30,9 +30,9 @@ export const GODZINY_ZWOLNIENIA: string[] = Array.from({ length: 13 }, (_, i) =>
 });
 
 export const ALKOHOL: { wartosc: Alkohol; etykieta: string }[] = [
-  { wartosc: "nie", etykieta: "Nie, jestem abstynentem" },
-  { wartosc: "czasami", etykieta: "Czasami :)" },
-  { wartosc: "tak", etykieta: "TAK, i to chętnie ;)" },
+  { wartosc: "nie", etykieta: "Nie piję" },
+  { wartosc: "czasami", etykieta: "Okazjonalnie" },
+  { wartosc: "tak", etykieta: "Tak" },
 ];
 
 export function etykietaAlkoholu(a: Alkohol): string {
@@ -149,6 +149,42 @@ export function progPelnoletnosci(dataJwkIso: string): string {
   return `${Number(rok) - 18}-${miesiac}-${dzien}`;
 }
 
+/**
+ * Data urodzenia wpisywana jako DD.MM.RRRR w zwykłym polu z klawiaturą
+ * numeryczną - systemowy kalendarz kazał przewijać dwadzieścia lat wstecz.
+ * Kropki wstawiają się same, ale tylko między grupami cyfr: kropka na końcu
+ * („15.”) blokowałaby kasowanie, bo maska dopisywałaby ją z powrotem.
+ */
+export function maskaDaty(wpis: string): string {
+  const c = wpis.replace(/\D/g, "").slice(0, 8);
+  return [c.slice(0, 2), c.slice(2, 4), c.slice(4)].filter(Boolean).join(".");
+}
+
+/** `RRRR-MM-DD` z pełnej, istniejącej daty DD.MM.RRRR; inaczej `null` (np. 31.02). */
+export function dataZMaski(tekst: string): string | null {
+  const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(tekst);
+  if (!m) return null;
+  const [, dd, mm, rrrr] = m;
+  const d = new Date(Date.UTC(Number(rrrr), Number(mm) - 1, Number(dd)));
+  const istnieje =
+    d.getUTCFullYear() === Number(rrrr) && d.getUTCMonth() === Number(mm) - 1 && d.getUTCDate() === Number(dd);
+  return istnieje ? `${rrrr}-${mm}-${dd}` : null;
+}
+
+/**
+ * Pole `dataUrodzenia` trzyma `RRRR-MM-DD`, gdy wpis jest pełną datą, a do
+ * tego czasu surowy wpis z maską - więc pole da się wyświetlić bez osobnego
+ * stanu, a walidacja wie, czy ktoś nic nie wpisał, czy wpisał za mało.
+ */
+export function wartoscPolaDaty(wpis: string): string {
+  const tekst = maskaDaty(wpis);
+  return dataZMaski(tekst) ?? tekst;
+}
+
+export function wyswietlDate(dataUrodzenia: string): string {
+  return DATA.test(dataUrodzenia) ? dataUrodzenia.split("-").reverse().join(".") : dataUrodzenia;
+}
+
 export function komunikatWieku(dataJwkIso: string): string {
   const slownie = new Intl.DateTimeFormat("pl-PL", {
     timeZone: "Europe/Warsaw",
@@ -197,8 +233,13 @@ export function waliduj(krok: Krok, d: DaneFormularza, dataJwkIso: string): Bled
         b.nrIndeksu = "Numer indeksu to od 4 do 10 cyfr";
       }
 
-      if (!DATA.test(d.dataUrodzenia) || d.dataUrodzenia < "1900-01-01") {
+      if (puste(d.dataUrodzenia)) {
         b.dataUrodzenia = "Podaj datę urodzenia";
+      } else if (!DATA.test(d.dataUrodzenia)) {
+        b.dataUrodzenia =
+          d.dataUrodzenia.length < 10 ? "Wpisz pełną datę, np. 15.03.2004" : "Nie ma takiej daty - sprawdź dzień i miesiąc";
+      } else if (d.dataUrodzenia < "1900-01-01") {
+        b.dataUrodzenia = "Sprawdź rok urodzenia";
       } else if (d.dataUrodzenia > progPelnoletnosci(dataJwkIso)) {
         b.dataUrodzenia = komunikatWieku(dataJwkIso);
       }

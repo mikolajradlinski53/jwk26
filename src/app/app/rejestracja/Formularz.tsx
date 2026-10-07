@@ -267,7 +267,7 @@ export function Formularz({
 
       {krok === "pula" && <KrokPula {...wspolne} pule={pule} />}
       {krok === "zasady" && <KrokZasady {...wspolne} />}
-      {krok === "dane" && <KrokDane {...wspolne} dataJwk={dataJwk} />}
+      {krok === "dane" && <KrokDane {...wspolne} />}
       {krok === "ice" && <KrokIce {...wspolne} />}
       {krok === "zdrowie" && <KrokZdrowie {...wspolne} />}
       {krok === "oTobie" && <KrokOTobie {...wspolne} />}

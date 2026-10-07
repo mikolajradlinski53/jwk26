@@ -7,8 +7,9 @@ import {
   ALKOHOL,
   DOJAZDY,
   GODZINY_ZWOLNIENIA,
-  progPelnoletnosci,
   pytaOZwolnienie,
+  wartoscPolaDaty,
+  wyswietlDate,
   type Bledy,
   type DaneFormularza,
 } from "@/lib/zapisy/formularz";
@@ -264,7 +265,7 @@ export function KrokZasady({ dane, zmien, bledy }: PropsKroku) {
   );
 }
 
-export function KrokDane({ dane, zmien, bledy, dataJwk }: PropsKroku & { dataJwk: string }) {
+export function KrokDane({ dane, zmien, bledy }: PropsKroku) {
   return (
     <div className="grid gap-5">
       <Field
@@ -293,12 +294,14 @@ export function KrokDane({ dane, zmien, bledy, dataJwk }: PropsKroku & { dataJwk
       />
       <Field
         label="Data urodzenia"
-        type="date"
-        // Kalendarz nie podsunie dat za młodych. Walidacja i tak to powtarza,
-        // bo `max` da się ominąć wpisaniem z klawiatury.
-        max={progPelnoletnosci(dataJwk)}
-        value={dane.dataUrodzenia}
-        onChange={(e) => zmien("dataUrodzenia", e.target.value)}
+        // Zwykłe pole zamiast kalendarza: wpisanie 8 cyfr jest szybsze niż
+        // przewijanie lat wstecz. Kropki dokłada maska (maskaDaty).
+        inputMode="numeric"
+        autoComplete="bday"
+        placeholder="DD.MM.RRRR"
+        maxLength={10}
+        value={wyswietlDate(dane.dataUrodzenia)}
+        onChange={(e) => zmien("dataUrodzenia", wartoscPolaDaty(e.target.value))}
         error={bledy.dataUrodzenia}
       />
       <Field
@@ -471,7 +474,7 @@ export function KrokOTobie({ dane, zmien, bledy }: PropsKroku) {
       )}
 
       <fieldset className="grid gap-2">
-        <legend className={ETYKIETA}>Czy pijasz alkohol? - dobrowolnie</legend>
+        <legend className={ETYKIETA}>Czy pijesz alkohol? - dobrowolnie</legend>
         {[...ALKOHOL, { wartosc: "" as const, etykieta: "Wolę nie odpowiadać" }].map((a) => (
           <label
             key={a.wartosc || "brak"}

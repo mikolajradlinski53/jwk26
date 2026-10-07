@@ -9,7 +9,7 @@
 import { KOORDYNATOR_MAIL, KOORDYNATOR_TELEFON } from "@/lib/regulamin";
 import { KONTAKT_IOD } from "@/lib/zapisy/zgody";
 
-export const AKTUALIZACJA_POLITYKI = "5 października 2026 r.";
+export const AKTUALIZACJA_POLITYKI = "7 października 2026 r.";
 
 /** Akapit albo lista punktów - tyle potrzebuje ten tekst, bez własnego języka znaczników. */
 export type Blok = string | { punkty: string[] };
@@ -82,7 +82,7 @@ export const POLITYKA: SekcjaPolityki[] = [
   {
     tytul: "Twoje prawa",
     bloki: [
-      "Masz prawo dostępu do danych, ich sprostowania, usunięcia, ograniczenia przetwarzania i przenoszenia, a wobec przetwarzania na podstawie prawnie uzasadnionego interesu - prawo sprzeciwu. Zgodę na przetwarzanie informacji o zdrowiu, na wizerunek i na SMS-y możesz wycofać w każdej chwili w aplikacji (Więcej → Twoje zgody); wycofanie nie wpływa na zgodność z prawem przetwarzania sprzed wycofania.",
+      "Masz prawo dostępu do danych, ich sprostowania, usunięcia, ograniczenia przetwarzania i przenoszenia, a wobec przetwarzania na podstawie prawnie uzasadnionego interesu - prawo sprzeciwu. Zgodę na przetwarzanie informacji o zdrowiu, na wizerunek i na SMS-y możesz wycofać w każdej chwili w aplikacji (Więcej → Zarządzaj zgodami) albo mailowo u koordynatora wyjazdu; wycofanie nie wpływa na zgodność z prawem przetwarzania sprzed wycofania.",
       "Treść, którą ktoś zamieścił o Tobie w aplikacji, usuniemy na Twoje zgłoszenie do Kadry albo na adres koordynatora.",
       "Przysługuje Ci skarga do Prezesa Urzędu Ochrony Danych Osobowych (ul. Stawki 2, 00-193 Warszawa).",
     ],

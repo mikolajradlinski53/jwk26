@@ -21,8 +21,10 @@
  * 2026-09-29.4 - wszędzie zwykłe myślniki zamiast długich (bez zmian treści).
  * 2026-10-05.1 - regulamin § 3 ust. 5: brak potwierdzenia wpłaty = odrzucenie;
  *                Resend wysyła też powiadomienia organizatorom o zgłoszeniach.
+ * 2026-10-07.1 - wycofanie zgód: „Więcej → Zarządzaj zgodami” albo mailowo
+ *                u koordynatora (sekcja w apce zwinięta, decyzja Mikołaja).
  */
-export const WERSJA_ZGOD = "2026-10-05.1";
+export const WERSJA_ZGOD = "2026-10-07.1";
 
 export const KONTAKT_IOD = "iod@ue.wroc.pl";
 
@@ -80,7 +82,8 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
   "Masz prawo dostępu do swoich danych, ich sprostowania, usunięcia, " +
     "ograniczenia przetwarzania i wniesienia sprzeciwu, a także prawo " +
     "wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych. Każdą zgodę " +
-    "możesz wycofać w dowolnym momencie w aplikacji; wycofanie nie wpływa na " +
+    "możesz wycofać w dowolnym momencie w aplikacji (Więcej → Zarządzaj " +
+    "zgodami) albo mailowo u koordynatora wyjazdu; wycofanie nie wpływa na " +
     "zgodność z prawem przetwarzania sprzed wycofania.",
   "Podanie danych z kroków „Dane” i „O tobie” jest warunkiem udziału " +
     "w wyjeździe, z wyjątkiem zwolnienia rektorskiego i pytania o alkohol. " +
@@ -112,7 +115,8 @@ export const ZGODA_WIZERUNEK =
   "internetowych Samorządu Studentów UEW oraz w jego materiałach informacyjnych " +
   "i promocyjnych, także dotyczących współpracy z partnerami. Zgoda jest " +
   "dobrowolna, nie jest warunkiem udziału i mogę ją w każdej chwili wycofać " +
-  "w aplikacji (Więcej → Twoje zgody); wycofanie nie wpływa na materiały " +
+  "w aplikacji (Więcej → Zarządzaj zgodami) albo mailowo u koordynatora " +
+  "wyjazdu; wycofanie nie wpływa na materiały " +
   "rozpowszechnione wcześniej.";
 
 export const KLAUZULA_ZDROWIE =

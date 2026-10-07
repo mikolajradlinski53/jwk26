@@ -198,7 +198,7 @@ export type KluczPuli = "dzialacze" | "swiezaki" | "alumni";
 
 export type Dojazd = "autokar_oba" | "autokar_tam" | "autokar_powrot" | "wlasny";
 
-/** Odpowiedź na „Czy pijasz alkohol?" - dobrowolna, więc w bazie może być NULL. */
+/** Odpowiedź na „Czy pijesz alkohol?" - dobrowolna, więc w bazie może być NULL. */
 export type Alkohol = "nie" | "czasami" | "tak";
 
 /** Wiersz `stan_pul()` - liczby bez nazwisk, czytelne dla uczestnika. */

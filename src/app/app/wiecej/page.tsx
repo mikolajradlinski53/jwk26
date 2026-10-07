@@ -51,7 +51,7 @@ export default async function WiecejPage() {
       </div>
 
       {/* Sekcje zamiast worka na wszystko (spec porządku, „Więcej”). Nagłówki
-          „Powiadomienia” i „Twoje zgody” mają same komponenty - nie dublujemy
+          „Powiadomienia” i „Zarządzaj zgodami” mają same komponenty - nie dublujemy
           ich nagłówkiem „Ustawienia”. */}
       {jestAdminem && (
         <>

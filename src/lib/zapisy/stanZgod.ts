@@ -9,7 +9,7 @@ export type StanZgod = {
 };
 
 /**
- * Czy użytkownik ma coś, co może wycofać - dla sekcji „Twoje zgody".
+ * Czy użytkownik ma coś, co może wycofać - dla sekcji „Zarządzaj zgodami".
  *
  * Dane zdrowotne sprawdzamy po wszystkich zgłoszeniach tej osoby, nie tylko
  * po przekazanym: `wycofaj_zgode_zdrowie` czyści je naraz we wszystkich, a

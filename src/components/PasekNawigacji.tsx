@@ -62,6 +62,12 @@ export function PasekNawigacji() {
   // Suma kolejek admina - u uczestnika zawsze 0, więc znacznika nie ma.
   const { suma } = useKolejki();
 
+  // Na formularzu zapisu paska nie ma: osoba czekająca i tak nie wejdzie
+  // nigdzie indziej (bramka odsyła ją z powrotem), a formularz nie trzyma
+  // szkicu - przypadkowe stuknięcie w ikonę kasowało wszystko, co wpisała.
+  // Pasek zasłaniał też dół formularza na małych ekranach.
+  if (sciezka === "/app/rejestracja") return null;
+
   return (
     <nav
       aria-label="Nawigacja główna"
