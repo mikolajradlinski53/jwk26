@@ -6,11 +6,12 @@ import { PrzyciskZapisu } from "./PrzyciskZapisu";
 import { ZabaStala } from "./zaba/ZabaStala";
 
 /**
- * Zdjęcie tła hero. `null` = placeholder (gradient) - dotychczasowe zdjęcie
- * `hero-8` przeszło do galerii 2026-10-05, nowe dopiero będzie. Podmiana:
- * plik w `public/hero/` i ścieżka tutaj, np. `"/hero/hero-30.jpg"`.
+ * Zdjęcie tła hero: zdjęcie grupowe przed ośrodkiem z flagą Samorządu
+ * (od 2026-10-07; wcześniej `hero-8`, teraz w galerii). `null` = placeholder
+ * (gradient). Podmiana: nowy plik pod nową nazwą w `public/hero/` (cache
+ * przeglądarki trzyma pliki 30 dni) i ścieżka tutaj.
  */
-const ZDJECIE_HERO: string | null = null;
+const ZDJECIE_HERO: string | null = "/hero/hero-30.jpg";
 
 /**
  * Sekcja wejściowa - pierwsze, co widać po otwarciu landingu. Zdjęcie
@@ -28,9 +29,8 @@ const ZDJECIE_HERO: string | null = null;
  *   pokazywałby kreskę, dopóki nie doładuje się JavaScript.
  *
  * Kontrast tekstu na zdjęciu: `.hero-przyciemnienie` w globals.css to gradient
- * czerni zmierzony względem najjaśniejszego piksela dawnego `hero-8.jpg`
- * (przy nowym zdjęciu sprawdzić ponownie) (prawie
- * czysta biel, ok. 249/255, w górnej jednej dziesiątej kadru), nie względem
+ * czerni zmierzony względem najjaśniejszego piksela zdjęcia (`hero-30.jpg`:
+ * niebo w górnej jednej dziesiątej kadru, czysta biel 255/255), nie względem
  * średniej jasności zdjęcia - przy 62% na tym pikselu wychodzi kontrast
  * ok. 6,2:1 dla białego tekstu, z zapasem nad progiem 4,5:1. Sam licznik
  * i tak siedzi na własnej nieprzezroczystej karcie (`jesien-karta`), więc
