@@ -10,10 +10,11 @@ export function StanPozycji({ pozycja }: { pozycja: ShopItem }) {
   const [stan, setStan] = useState(
     pozycja.stock === null ? "" : String(pozycja.stock),
   );
+  const [cena, setCena] = useState(String(pozycja.price));
   const [blad, setBlad] = useState<string | null>(null);
   const wToku = useRef(false);
 
-  async function zapisz(zmiana: Partial<Pick<ShopItem, "active" | "stock">>) {
+  async function zapisz(zmiana: Partial<Pick<ShopItem, "active" | "stock" | "ukryta" | "price">>) {
     if (wToku.current) return;
     wToku.current = true;
     setBlad(null);
@@ -37,7 +38,7 @@ export function StanPozycji({ pozycja }: { pozycja: ShopItem }) {
   }
 
   return (
-    <div className="mt-2 flex items-center gap-2">
+    <div className="mt-2 flex flex-wrap items-center gap-2">
       {/* Etykieta 44 px wysokości: to ona jest celem dotyku, nie 20-pikselowe pole. */}
       <label className="flex min-h-11 items-center gap-2 pr-1 text-xs text-dym">
         <input
@@ -47,6 +48,42 @@ export function StanPozycji({ pozycja }: { pozycja: ShopItem }) {
           className="size-5 accent-krew"
         />
         na półce
+      </label>
+
+      {/* Ukryta = uczestnicy widzą „Tajemniczą nagrodę” bez nazwy i ceny,
+          a kupić się jej nie da. Odznaczenie odsłania pozycję wszystkim. */}
+      <label className="flex min-h-11 items-center gap-2 pr-1 text-xs text-dym">
+        <input
+          type="checkbox"
+          checked={pozycja.ukryta}
+          onChange={(e) => void zapisz({ ukryta: e.target.checked })}
+          className="size-5 accent-krew"
+        />
+        ukryta
+      </label>
+
+      <label className="flex min-h-11 items-center gap-1.5 text-xs text-dym">
+        <input
+          type="text"
+          inputMode="numeric"
+          value={cena}
+          aria-label={`Cena pozycji ${pozycja.name}`}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (/^\d*$/.test(v)) setCena(v);
+          }}
+          onBlur={() => {
+            const n = Number(cena);
+            if (!cena || n <= 0 || n > 100000) {
+              setCena(String(pozycja.price));
+              setBlad("Cena: od 1 do 100 000 pkt");
+              return;
+            }
+            if (n !== pozycja.price) void zapisz({ price: n });
+          }}
+          className="szklo min-h-11 w-20 rounded-sm px-2.5 text-xs text-kosc outline-none focus-visible:border-krew"
+        />
+        pkt
       </label>
 
       <input

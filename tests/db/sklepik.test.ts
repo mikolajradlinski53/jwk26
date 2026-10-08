@@ -728,3 +728,30 @@ describe("wydanie i anulowanie", () => {
     expect(error!.message).toMatch(/oczekuj/i);
   });
 });
+
+describe("ukryte nagrody", () => {
+  it("uczestnik nie dostaje ukrytej pozycji, tylko ich liczbę; kupić się jej nie da", async () => {
+    const itemId = await nowaPozycja({ name: "Wielka Tajemnica", kind: "physical", price: 10 });
+    const { error: e1 } = await admin.from("shop_items").update({ ukryta: true }).eq("id", itemId);
+    expect(e1).toBeNull();
+    await dosypPunkty(mojaDruzyna, 100);
+
+    const { data: widziane } = await kapitanClient.from("shop_items").select("id, name, price").eq("id", itemId);
+    expect(widziane).toEqual([]);
+
+    const { data: ile } = await kapitanClient.rpc("liczba_ukrytych_nagrod");
+    expect(ile).toBeGreaterThanOrEqual(1);
+
+    const { error } = await kapitanClient.rpc("kup_z_polki", { p_item_id: itemId });
+    expect(error!.message).toMatch(/niedostepna/);
+
+    // Admin widzi pozycję z nazwą - musi móc ją odsłonić.
+    const { data: adminWidzi } = await szefClient.from("shop_items").select("name").eq("id", itemId).single();
+    expect(adminWidzi!.name).toBe("Wielka Tajemnica");
+
+    // Po odsłonięciu pozycja wraca na półkę dla wszystkich.
+    await admin.from("shop_items").update({ ukryta: false }).eq("id", itemId);
+    const { data: poOdslonie } = await kapitanClient.from("shop_items").select("name").eq("id", itemId);
+    expect(poOdslonie).toEqual([{ name: "Wielka Tajemnica" }]);
+  });
+});

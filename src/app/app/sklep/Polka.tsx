@@ -13,8 +13,11 @@ export function Polka({
   jestKapitanem,
   nazwaKapitana,
   obceDruzyny,
+  ukrytych = 0,
 }: {
   pozycje: ShopItem[];
+  /** Ile tajemniczych nagród czeka - sama liczba, bez nazw i cen. */
+  ukrytych?: number;
   saldo: number;
   jestKapitanem: boolean;
   nazwaKapitana: string | null;
@@ -176,6 +179,21 @@ export function Polka({
           </div>
         );
       })}
+
+      {/* Tajemnicze nagrody: baza nie wydaje uczestnikowi ani nazwy, ani ceny
+          (polityka shop_items_read) - tylko liczbę. Odsłania je admin. */}
+      {Array.from({ length: ukrytych }, (_, i) => (
+        <div
+          key={`ukryta-${i}`}
+          className="szklo rounded-md border border-dashed border-white/25 px-3.5 py-3.5"
+        >
+          <div className="flex items-baseline justify-between gap-3">
+            <span className="text-sm font-bold">Tajemnicza nagroda</span>
+            <span className="text-sm font-bold tabular-nums text-dym">??? pkt</span>
+          </div>
+          <p className="mt-1 text-xs leading-relaxed text-dym">Co to i ile kosztuje - odsłonimy wkrótce.</p>
+        </div>
+      ))}
     </div>
   );
 }

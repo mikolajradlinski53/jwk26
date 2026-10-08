@@ -131,6 +131,8 @@ export type ShopItem = {
    * półki.
    */
   ikona: string | null;
+  /** Tajemnicza nagroda: uczestnik nie dostaje wiersza, widzi tylko kartę „???”. */
+  ukryta: boolean;
 };
 
 export type ShopOrder = {

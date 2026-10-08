@@ -51,11 +51,14 @@ export default async function SklepPage() {
     { data: pozycje },
     { data: efekty },
     { data: kronika },
+    { data: ukrytych },
   ] = await Promise.all([
     supabase.from("teams").select("*").order("name"),
     supabase.from("team_scores").select("*").eq("team_id", mojaDruzyna).maybeSingle(),
     supabase.from("user_scores").select("*").eq("team_id", mojaDruzyna),
-    supabase.from("shop_items").select("*").eq("active", true).order("position"),
+    // `ukryta = false` jawnie: admin czyta całą tabelę (RLS), a na półce ma
+    // widzieć to samo co uczestnicy.
+    supabase.from("shop_items").select("*").eq("active", true).eq("ukryta", false).order("position"),
     // Widok `czynne_efekty` odsiewa zużyte i przedawnione po stronie bazy -
     // patrz komentarz w migracji 20260925120400.
     supabase.from("czynne_efekty").select("*").eq("subject_id", mojaDruzyna),
@@ -64,6 +67,7 @@ export default async function SklepPage() {
       .select("*")
       .order("created_at", { ascending: false })
       .limit(30),
+    supabase.rpc("liczba_ukrytych_nagrod"),
   ]);
 
   const wszystkie = (druzyny ?? []) as Team[];
@@ -106,6 +110,7 @@ export default async function SklepPage() {
         jestKapitanem={jestKapitanem}
         nazwaKapitana={nazwaKapitana}
         obceDruzyny={wszystkie.filter((d) => d.id !== mojaDruzyna)}
+        ukrytych={typeof ukrytych === "number" ? ukrytych : 0}
       />
 
       <NaglowekSekcji>Kronika</NaglowekSekcji>
