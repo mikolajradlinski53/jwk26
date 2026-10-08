@@ -31,14 +31,22 @@ const WYNIK: Record<NonNullable<RekaBj["wynik"]>, string> = {
 
 const KOLOR: Record<string, string> = { s: "♠", h: "♥", d: "♦", c: "♣" };
 
+/**
+ * Karta jak prawdziwa: kremowa twarz, ciemne piki i trefle, głęboko czerwone
+ * kiery i kara (kontrast 6-17:1). Wcześniej szklana tafla z różowym kierem na
+ * szarym tle - ok. 3:1, trzeba się było przyglądać. Ranga w rogu i duży kolor
+ * pośrodku: rozpoznaje się ją z odległości wyciągniętej ręki.
+ */
 function Karta({ karta }: { karta: string | null }) {
   if (!karta) {
-    // Zakryta karta krupiera: ta sama szklana tafla z ornamentem zamiast rangi,
-    // żeby było widać, że karta jest, ale nie co to za karta.
+    // Zakryta karta krupiera: ciemny rewers z czerwonym wzorem - od razu widać,
+    // że karta jest, i że to nie jest odkryta karta.
     return (
       <span
         aria-label="karta zakryta"
-        className="karta-szklo grid h-20 w-14 place-items-center rounded-lg text-popiol/70"
+        className="grid h-24 w-16 place-items-center rounded-[10px] border-2 border-krew-jasna/60 bg-krew-glab
+                   bg-[repeating-linear-gradient(45deg,rgb(255_255_255/0.08)_0_4px,transparent_4px_9px)]
+                   text-krew-jasna shadow-[0_8px_18px_rgb(0_0_0/0.4)]"
       >
         <svg viewBox="0 0 24 24" className="size-7" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
           <path d="M12 3 20 12 12 21 4 12Z" />
@@ -51,26 +59,49 @@ function Karta({ karta }: { karta: string | null }) {
   const ranga = karta.slice(0, -1);
   const czerwona = kolor === "h" || kolor === "d";
   return (
-    <span aria-label={`${ranga} ${KOLOR[kolor]}`} className="karta-szklo grid h-20 w-14 place-items-center rounded-lg">
-      <span
-        className={
-          "text-center font-tytul text-xl leading-none " + (czerwona ? "text-krew-jasna" : "text-kosc")
-        }
-      >
+    <span
+      aria-label={`${ranga} ${KOLOR[kolor]}`}
+      className={
+        "relative grid h-24 w-16 place-items-center rounded-[10px] border border-black/10 bg-[#f4eeeb] " +
+        "shadow-[0_8px_18px_rgb(0_0_0/0.4)] " +
+        (czerwona ? "text-[#b3192b]" : "text-[#1a1214]")
+      }
+    >
+      <span aria-hidden="true" className="absolute left-1.5 top-1 text-center font-tytul text-base font-bold leading-none">
         {ranga}
         <br />
+        <span className="text-sm">{KOLOR[kolor]}</span>
+      </span>
+      <span aria-hidden="true" className="text-3xl leading-none">
         {KOLOR[kolor]}
       </span>
     </span>
   );
 }
 
-function Reka({ tytul, karty, punkty, zakryta }: { tytul: string; karty: string[]; punkty: number | null; zakryta: boolean }) {
+function Reka({
+  tytul,
+  karty,
+  punkty,
+  zakryta,
+  stawka,
+}: {
+  tytul: string;
+  karty: string[];
+  punkty: number | null;
+  zakryta: boolean;
+  stawka?: number;
+}) {
   return (
     <div className="grid gap-2">
-      <p className="text-xs uppercase tracking-[0.14em] text-dym">
+      <p className="flex flex-wrap items-baseline gap-x-2 text-xs uppercase tracking-[0.14em] text-dym">
         {tytul}
-        {punkty !== null && <span className="ml-2 font-tytul text-base text-kosc tabular-nums">{punkty}</span>}
+        {punkty !== null && (
+          <span className="normal-case tracking-normal">
+            suma <span className="font-tytul text-base text-kosc tabular-nums">{punkty}</span>
+          </span>
+        )}
+        {stawka !== undefined && <span className="normal-case tracking-normal">· stawka {stawka} pkt</span>}
       </p>
       <div className="flex flex-wrap gap-2">
         {karty.map((k, i) => (
@@ -127,7 +158,7 @@ export function Stol({ poczatkowa, saldo }: { poczatkowa: RekaBj | null; saldo: 
             punkty={reka.punkty_krupiera}
             zakryta={trwa}
           />
-          <Reka tytul={`Ty · stawka ${reka.stawka}`} karty={reka.gracz} punkty={reka.punkty_gracza} zakryta={false} />
+          <Reka tytul="Ty" karty={reka.gracz} punkty={reka.punkty_gracza} zakryta={false} stawka={reka.stawka} />
 
           {reka.status === "settled" && reka.wynik && (
             <p
