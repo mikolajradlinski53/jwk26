@@ -6,8 +6,9 @@ import { createClient } from "@/lib/supabase/client";
 import { podglad, skompresuj } from "@/lib/obrazy";
 import { Button } from "@/components/ui/Button";
 import type { BingoSubmission, BingoTask } from "@/types/db";
+import { klasaTytuluPola } from "@/lib/bingo";
 
-type Stan = "puste" | "oczekujace" | "zapalone";
+type Stan = "puste" | "oczekujace" | "zapalone" | "odrzucone";
 
 /**
  * Tłumaczy błąd techniczny na zdanie, z którym uczestnik ma co zrobić.
@@ -35,15 +36,36 @@ function komunikat(e: unknown): string {
   return "Coś poszło nie tak. Spróbuj jeszcze raz.";
 }
 
-function stanPola(zgloszenie: BingoSubmission | undefined): Stan {
-  if (!zgloszenie) return "puste";
+/**
+ * `odrzucone` - drużyna nie ma na tym polu żywego zgłoszenia, a ostatnie
+ * zostało odrzucone. Pole jest wolne (można wrzucić nowe zdjęcie), ale musi
+ * to być widać: wcześniej odrzucenie po prostu znikało i nikt nie wiedział
+ * ani że, ani dlaczego.
+ */
+function stanPola(zgloszenie: BingoSubmission | undefined, odrzucone?: BingoSubmission): Stan {
+  if (!zgloszenie) return odrzucone ? "odrzucone" : "puste";
   return zgloszenie.status === "approved" ? "zapalone" : "oczekujace";
 }
 
 // Stan pola NIE może wynikać wyłącznie z koloru (obramowanie w kolorze krwi
-// bywa nieodróżnialne od wypełnienia dla daltonisty) - stąd trzy różne kształty
-// ikon obok trzech różnych klas tła/obramowania.
+// bywa nieodróżnialne od wypełnienia dla daltonisty) - stąd różne kształty
+// ikon obok różnych klas tła/obramowania.
 function Ikona({ stan }: { stan: Stan }) {
+  if (stan === "odrzucone") {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        aria-hidden="true"
+        className="size-3.5 shrink-0"
+      >
+        <path d="M7 7l10 10M17 7L7 17" />
+      </svg>
+    );
+  }
   if (stan === "zapalone") {
     return (
       <svg
@@ -94,6 +116,7 @@ function Ikona({ stan }: { stan: Stan }) {
 
 const KLASY_STANU: Record<Stan, string> = {
   puste: "szklo text-dym hover:bg-white/12",
+  odrzucone: "szklo border border-dashed border-krew-jasna/70 text-krew-jasna",
   oczekujace: "border-2 border-krew bg-transparent text-kosc",
   zapalone:
     "border border-white/20 bg-gradient-to-b from-krew/90 to-krew-glab/90 text-white " +
@@ -102,6 +125,7 @@ const KLASY_STANU: Record<Stan, string> = {
 
 function opisStanu(stan: Stan, wlasne: boolean): string {
   if (stan === "zapalone") return "zaliczone";
+  if (stan === "odrzucone") return "odrzucone, dotknij, by zobaczyć powód i wrzucić nowe zdjęcie";
   if (stan === "oczekujace") {
     return wlasne ? "twoje zgłoszenie czeka na akceptację" : "czeka na akceptację";
   }
@@ -143,6 +167,18 @@ export function Plansza({
     return mapa;
   }, [zgloszenia]);
 
+  // Ostatnie odrzucone zgłoszenie na pole - pokazujemy je tylko tam, gdzie
+  // nie ma żywego (stanPola), żeby powód odrzucenia nie zniknął bez śladu.
+  const odrzuconeByTask = useMemo(() => {
+    const mapa = new Map<string, BingoSubmission>();
+    for (const z of zgloszenia) {
+      if (z.status !== "rejected") continue;
+      const dotad = mapa.get(z.task_id);
+      if (!dotad || (z.reviewed_at ?? z.created_at) > (dotad.reviewed_at ?? dotad.created_at)) mapa.set(z.task_id, z);
+    }
+    return mapa;
+  }, [zgloszenia]);
+
   // Pola zaliczone od ostatniej wizyty tej osoby skreślają się po kolei
   // (spec porządku, D7). Lista obejrzanych w localStorage, osobno na drużynę.
   // Zmiana klas w DOM zamiast stanu Reacta - to jednorazowy efekt wizualny,
@@ -175,7 +211,8 @@ export function Plansza({
 
   const otwarty = zadania.find((z) => z.id === otwarteId) ?? null;
   const zgloszenieOtwartego = otwarty ? zgloszeniaByTask.get(otwarty.id) : undefined;
-  const stanOtwartego = stanPola(zgloszenieOtwartego);
+  const odrzuconeOtwartego = otwarty ? odrzuconeByTask.get(otwarty.id) : undefined;
+  const stanOtwartego = stanPola(zgloszenieOtwartego, odrzuconeOtwartego);
   const wlasneOtwarte = zgloszenieOtwartego?.user_id === userId;
 
   useEffect(() => {
@@ -277,7 +314,7 @@ export function Plansza({
       <div className="grid grid-cols-5 gap-1.5" role="group" aria-label="Plansza bingo">
         {zadania.map((task) => {
           const zgloszenie = zgloszeniaByTask.get(task.id);
-          const stan = stanPola(zgloszenie);
+          const stan = stanPola(zgloszenie, odrzuconeByTask.get(task.id));
           const wlasne = zgloszenie?.user_id === userId;
 
           return (
@@ -299,7 +336,11 @@ export function Plansza({
               }
             >
               <Ikona stan={stan} />
-              <span className="line-clamp-3 text-[0.55rem] font-bold uppercase leading-[1.15] tracking-wide">
+              {/* Zwykłe litery zamiast wersalików (te są szersze), rozmiar
+                  z najdłuższego wyrazu - pole ma ok. 64 px na telefonie,
+                  a przeglądarki nie dzielą polskich wyrazów. Pełny tytuł jest
+                  po dotknięciu. */}
+              <span className={`line-clamp-3 w-full font-bold leading-[1.15] ${klasaTytuluPola(task.title)}`}>
                 {task.title}
               </span>
               {stan === "zapalone" && (
@@ -390,7 +431,19 @@ export function Plansza({
 
             <p className="mb-5 text-sm leading-relaxed text-kosc">{otwarty.description}</p>
 
-            {stanOtwartego === "puste" && (
+            {stanOtwartego === "odrzucone" && odrzuconeOtwartego && (
+              <div className="mb-4 rounded-sm border border-dashed border-krew-jasna/70 px-3.5 py-3">
+                <p className="text-[0.6rem] font-bold uppercase tracking-[0.14em] text-krew-jasna">
+                  Poprzednie zdjęcie odrzucone
+                </p>
+                <p className="mt-1 text-sm text-kosc">
+                  {odrzuconeOtwartego.review_note?.trim() || "Bez podania powodu."}
+                </p>
+                <p className="mt-1 text-xs text-dym">Możesz wrzucić nowe zdjęcie.</p>
+              </div>
+            )}
+
+            {(stanOtwartego === "puste" || stanOtwartego === "odrzucone") && (
               <div className="grid gap-3">
                 <label className="block">
                   <span className="mb-1.5 block pl-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-dym">

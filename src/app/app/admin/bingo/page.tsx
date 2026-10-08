@@ -5,6 +5,7 @@ import { DecyzjaBingo } from "./DecyzjaBingo";
 
 type ZgloszenieSurowe = {
   id: string;
+  user_id: string;
   photo_path: string;
   caption: string | null;
   created_at: string;
@@ -37,7 +38,7 @@ export default async function KolejkaBingo() {
   const { data: zgloszeniaRaw, error: bladOdczytu } = await supabase
     .from("bingo_submissions")
     .select(
-      "id, photo_path, caption, created_at, " +
+      "id, user_id, photo_path, caption, created_at, " +
         "bingo_tasks(title, description, points), teams(name, color), " +
         "profiles!bingo_submissions_user_id_fkey(display_name)",
     )
@@ -66,6 +67,23 @@ export default async function KolejkaBingo() {
   );
   const podglady = new Map(wpisy);
 
+  // Imię i nazwisko ze zgłoszenia na wyjazd - ksywka z identyfikatora
+  // („Brat Popiół”) nie zawsze mówi adminowi, kto to.
+  const { data: osobyRaw } = await supabase
+    .from("registrations")
+    .select("user_id, imie, nazwisko")
+    .eq("status", "approved")
+    .in(
+      "user_id",
+      zgloszenia.map((z) => z.user_id),
+    );
+  const nazwiska = new Map(
+    ((osobyRaw ?? []) as { user_id: string; imie: string | null; nazwisko: string | null }[]).map((o) => [
+      o.user_id,
+      [o.imie, o.nazwisko].filter(Boolean).join(" "),
+    ]),
+  );
+
   return (
     <Ekran tytul="Bingo" podtytul="Zdjęcia do rozpatrzenia">
       {zgloszenia.length === 0 && (
@@ -75,7 +93,9 @@ export default async function KolejkaBingo() {
       <ul className="grid gap-8">
         {zgloszenia.map((z) => {
           const tytulZadania = z.bingo_tasks?.title ?? "Zadanie";
-          const autor = z.profiles?.display_name ?? "Uczestnik";
+          const ksywka = z.profiles?.display_name ?? null;
+          const nazwisko = nazwiska.get(z.user_id) || null;
+          const autor = nazwisko && ksywka && ksywka !== nazwisko ? `${nazwisko} („${ksywka}”)` : nazwisko ?? ksywka ?? "Uczestnik";
           const druzyna = z.teams?.name ?? "Bez drużyny";
           const zdjecieUrl = podglady.get(z.id);
 

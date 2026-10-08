@@ -12,6 +12,7 @@ import {
   idZadania,
   zgloszenieBingoDla,
   zapal,
+  ustawJakoZaakceptowany,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -350,5 +351,39 @@ describe("akceptacja zgłoszeń bingo i bonusy", () => {
       .eq("id", zgloszenieId)
       .single();
     expect(data!.status).toBe("pending");
+  });
+
+  it("odrzucenie wysyła autorowi powiadomienie z powodem", async () => {
+    const teamId = await firstTeamId();
+    const autor = await nowyUzytkownik("odrzucony-bingo");
+    await ustawJakoZaakceptowany(autor, teamId);
+    const taskId = await idZadania(1);
+    const zgloszenieId = await wstawZgloszenie(autor, teamId, taskId);
+
+    const { error } = await adminClient.rpc("review_bingo", {
+      p_submission_id: zgloszenieId,
+      p_approve: false,
+      p_note: "Na zdjęciu nie widać całej drużyny",
+    });
+    expect(error).toBeNull();
+
+    const { data } = await admin
+      .from("powiadomienia")
+      .select("id, kanal, adresat, adresat_id, tytul, body")
+      .eq("ref_type", "bingo")
+      .eq("ref_id", zgloszenieId);
+    await admin.from("powiadomienia").delete().in("id", (data ?? []).map((p) => p.id));
+    expect(data).toHaveLength(1);
+    expect(data![0]).toMatchObject({ kanal: "push", adresat: "user", adresat_id: autor.id, tytul: "Pole bingo odrzucone" });
+    expect(data![0].body).toMatch(/Na zdjęciu nie widać całej drużyny/);
+
+    // Uczestnik z tej drużyny widzi odrzucone zgłoszenie razem z powodem -
+    // z tego plansza robi pole „odrzucone”.
+    const { data: widziane } = await (await signIn(autor))
+      .from("bingo_submissions")
+      .select("status, review_note")
+      .eq("id", zgloszenieId)
+      .single();
+    expect(widziane).toEqual({ status: "rejected", review_note: "Na zdjęciu nie widać całej drużyny" });
   });
 });

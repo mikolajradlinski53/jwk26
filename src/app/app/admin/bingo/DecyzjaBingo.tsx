@@ -72,12 +72,12 @@ export function DecyzjaBingo({ zgloszenieId }: { zgloszenieId: string }) {
     <div className="mt-4 grid gap-3">
       <label className="block">
         <span className="mb-1.5 block font-tytul text-xs uppercase tracking-widest text-dym">
-          Notatka
+          Powód odrzucenia (opcjonalnie)
         </span>
         <input
           value={notatka}
           onChange={(e) => setNotatka(e.target.value)}
-          placeholder="Widoczna dla uczestnika, zwłaszcza przy odrzuceniu"
+          placeholder="Np. na zdjęciu nie widać całej drużyny"
           disabled={czeka}
           className="szklo min-h-11 w-full rounded-sm px-3
                      text-kosc outline-none placeholder:text-dym
