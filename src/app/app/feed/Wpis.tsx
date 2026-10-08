@@ -84,6 +84,14 @@ function Wyslij() {
   );
 }
 
+/** „1 inna”, „2 inne”, „5 innych” - polska liczba mnoga po liczebniku. */
+function odmianaInnych(n: number): string {
+  if (n === 1) return "inna osoba";
+  const d = n % 10;
+  const s = n % 100;
+  return d >= 2 && d <= 4 && (s < 12 || s > 14) ? "inne osoby" : "innych osób";
+}
+
 export function Wpis({
   id,
   zdjecieUrl,
@@ -99,6 +107,7 @@ export function Wpis({
   mojeImie,
   isAdmin,
   initialLikes,
+  nazwyLubiacych,
   initialComments,
 }: {
   id: string;
@@ -115,6 +124,8 @@ export function Wpis({
   mojeImie: string;
   isAdmin: boolean;
   initialLikes: string[];
+  /** Nazwy z aplikacji osób, które polubiły (id → nazwa) - do „Lubią: …”. */
+  nazwyLubiacych: Record<string, string>;
   initialComments: KomentarzWpis[];
 }) {
   const [lajki, setLajki] = useState(initialLikes);
@@ -128,6 +139,16 @@ export function Wpis({
 
   const polubione = lajki.includes(userId);
   const liczbaLubien = lajki.length;
+  const [listaLubiacych, setListaLubiacych] = useState(false);
+  // Ja na początku listy - po stuknięciu serca widzę siebie od razu.
+  const lubiacy = [
+    ...(polubione ? [mojeImie] : []),
+    ...lajki.filter((uid) => uid !== userId).map((uid) => nazwyLubiacych[uid] ?? "Uczestnik"),
+  ];
+  const lubiacyKrotko =
+    lubiacy.length <= 2
+      ? lubiacy.join(" i ")
+      : `${lubiacy.slice(0, 2).join(", ")} i ${lubiacy.length - 2} ${odmianaInnych(lubiacy.length - 2)}`;
 
   // Czego użytkownik chce, i co już leży w bazie. Dwie osobne prawdy, bo
   // między stuknięciem a odpowiedzią serwera rozjeżdżają się na chwilę.
@@ -321,6 +342,24 @@ export function Wpis({
             <span className="text-sm font-bold tabular-nums">{liczbaLubien}</span>
           </button>
         </div>
+        {lubiacy.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setListaLubiacych((o) => !o)}
+            aria-expanded={listaLubiacych}
+            className="mt-1 block min-h-8 w-full text-left text-xs text-dym hover:text-kosc"
+          >
+            {listaLubiacych ? (
+              <>
+                Lubią: <span className="text-kosc">{lubiacy.join(", ")}</span>
+              </>
+            ) : (
+              <>
+                Lubią: <span className="text-kosc">{lubiacyKrotko}</span>
+              </>
+            )}
+          </button>
+        )}
         {bladLajku && <p className="mt-1 text-xs text-krew-jasna">{bladLajku}</p>}
 
         {komentarze.length > 0 && (

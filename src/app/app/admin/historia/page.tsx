@@ -62,7 +62,9 @@ export default async function HistoriaPage() {
               dateTime={w.created_at}
               className="flex-none text-[0.62rem] tabular-nums text-dym"
             >
+              {/* Strefa jawnie - serwer Vercela liczy w UTC (2 h do tyłu). */}
               {new Date(w.created_at).toLocaleTimeString("pl-PL", {
+                timeZone: "Europe/Warsaw",
                 hour: "2-digit",
                 minute: "2-digit",
               })}

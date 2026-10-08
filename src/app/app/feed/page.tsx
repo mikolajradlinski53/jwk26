@@ -38,6 +38,16 @@ function Awaria({ co }: { co: string }) {
 
 // Bez `export const dynamic`: klient serwerowy czyta cookies, co samo z siebie
 // czyni trasę dynamiczną. W Next 16 ta opcja i tak znika przy Cache Components.
+// Czas polski jawnie: serwery Vercela liczą w UTC, więc bez strefy wpis
+// z 14:05 pokazywał się jako 12:05. Dzień tygodnia zamiast daty - wyjazd
+// trwa trzy dni, „sob. 14:05” czyta się szybciej niż „24.10, 14:05”.
+const GODZINA_WPISU = new Intl.DateTimeFormat("pl-PL", {
+  timeZone: "Europe/Warsaw",
+  weekday: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
 export default async function FeedPage() {
   const supabase = await createClient();
 
@@ -133,6 +143,19 @@ export default async function FeedPage() {
     lajkiByWpis.set(l.submission_id, lista);
   }
 
+  // Nazwy osób, które polubiły - jedno zapytanie na cały feed. Przyjęty
+  // uczestnik czyta profile innych przyjętych (RLS), więc nic tu nie wycieka.
+  const idLubiacych = [...new Set(((lajkiRaw ?? []) as { user_id: string }[]).map((l) => l.user_id))];
+  const { data: lubiacyRaw } = idLubiacych.length
+    ? await supabase.from("profiles").select("id, display_name").in("id", idLubiacych)
+    : { data: [] };
+  const nazwyLubiacych: Record<string, string> = Object.fromEntries(
+    ((lubiacyRaw ?? []) as { id: string; display_name: string | null }[]).map((p) => [
+      p.id,
+      p.display_name ?? "Uczestnik",
+    ]),
+  );
+
   const komentarzeByWpis = new Map<string, KomentarzWpis[]>();
   for (const k of (komentarzeRaw ?? []) as unknown as KomentarzSurowy[]) {
     const lista = komentarzeByWpis.get(k.submission_id) ?? [];
@@ -156,12 +179,7 @@ export default async function FeedPage() {
               zdjecieUrl={`/app/feed/zdjecie/${w.id}`}
               podpis={w.caption}
               utworzonoIso={w.created_at}
-              utworzonoTekst={new Date(w.created_at).toLocaleString("pl-PL", {
-                day: "2-digit",
-                month: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              utworzonoTekst={GODZINA_WPISU.format(new Date(w.created_at))}
               zadanieTytul={w.bingo_tasks?.title ?? "Zadanie"}
               punkty={w.bingo_tasks?.points ?? 0}
               druzynaNazwa={w.teams?.name ?? "Bez drużyny"}
@@ -171,6 +189,7 @@ export default async function FeedPage() {
               mojeImie={mojeImie}
               isAdmin={jestAdminem}
               initialLikes={lajkiByWpis.get(w.id) ?? []}
+              nazwyLubiacych={nazwyLubiacych}
               initialComments={komentarzeByWpis.get(w.id) ?? []}
             />
           </li>
