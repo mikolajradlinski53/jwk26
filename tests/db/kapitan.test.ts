@@ -141,3 +141,51 @@ describe("głosowanie", () => {
     expect(data).toMatchObject({ glosow: 1 });
   });
 });
+
+describe("nazwa od kapitana", () => {
+  async function zKapitanem() {
+    await admin.from("teams").update({ glosowanie: "zakonczone", captain_id: id(0) }).eq("id", druzyna);
+  }
+  afterEach(async () => {
+    await admin.from("teams").update({ name: "Drużyna 9", motto: null, nazwa_nadana: false }).eq("id", druzyna);
+  });
+
+  it("nadaje tylko kapitan", async () => {
+    await zKapitanem();
+    const { error } = await ludzie[1].client.rpc("nadaj_nazwe_druzyny", { p_nazwa: "Zakon", p_motto: "" });
+    expect(error!.message).toMatch(/Nazwe nadaje kapitan/);
+  });
+
+  it("kapitan nadaje raz; nazwa i motto się zapisują, drugi raz odpada", async () => {
+    await zKapitanem();
+    const k = ludzie[0].client;
+    expect((await k.rpc("nadaj_nazwe_druzyny", { p_nazwa: "  Zakon Popiołu ", p_motto: "Z prochu" })).error).toBeNull();
+    const { data: t } = await admin.from("teams").select("name, motto, nazwa_nadana").eq("id", druzyna).single();
+    expect(t).toEqual({ name: "Zakon Popiołu", motto: "Z prochu", nazwa_nadana: true });
+    const { error } = await k.rpc("nadaj_nazwe_druzyny", { p_nazwa: "Inna", p_motto: "" });
+    expect(error!.message).toMatch(/NAZWA_JUZ_NADANA/);
+    const { data: push } = await admin.from("powiadomienia").select("body").eq("ref_type", "druzyna").eq("adresat_id", druzyna);
+    expect(push![0].body).toMatch(/Zakon Popiołu/);
+  });
+
+  it("puste, za długie i zajęte nazwy odpadają, a nazwa zostaje odblokowana", async () => {
+    await zKapitanem();
+    const k = ludzie[0].client;
+    expect((await k.rpc("nadaj_nazwe_druzyny", { p_nazwa: "   ", p_motto: "" })).error!.message).toMatch(/NAZWA_DLUGOSC/);
+    expect((await k.rpc("nadaj_nazwe_druzyny", { p_nazwa: "x".repeat(31), p_motto: "" })).error!.message).toMatch(/NAZWA_DLUGOSC/);
+    expect((await k.rpc("nadaj_nazwe_druzyny", { p_nazwa: "Ok", p_motto: "m".repeat(61) })).error!.message).toMatch(/MOTTO_DLUGOSC/);
+    expect((await k.rpc("nadaj_nazwe_druzyny", { p_nazwa: "drużyna 8", p_motto: "" })).error!.message).toMatch(/NAZWA_ZAJETA/);
+    const { data: t } = await admin.from("teams").select("nazwa_nadana").eq("id", druzyna).single();
+    expect(t!.nazwa_nadana).toBe(false);
+  });
+
+  it("admin odblokowuje - wraca „Drużyna N”, kapitan może nadać od nowa", async () => {
+    await zKapitanem();
+    await ludzie[0].client.rpc("nadaj_nazwe_druzyny", { p_nazwa: "Brzydka", p_motto: "" });
+    expect((await ludzie[0].client.rpc("odblokuj_nazwe", { p_team: druzyna })).error).not.toBeNull();
+    expect((await szefClient.rpc("odblokuj_nazwe", { p_team: druzyna })).error).toBeNull();
+    const { data: t } = await admin.from("teams").select("name, motto, nazwa_nadana").eq("id", druzyna).single();
+    expect(t).toEqual({ name: "Drużyna 9", motto: null, nazwa_nadana: false });
+    expect((await ludzie[0].client.rpc("nadaj_nazwe_druzyny", { p_nazwa: "Ładna", p_motto: "" })).error).toBeNull();
+  });
+});
