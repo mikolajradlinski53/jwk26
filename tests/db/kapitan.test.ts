@@ -179,6 +179,16 @@ describe("nazwa od kapitana", () => {
     expect(t!.nazwa_nadana).toBe(false);
   });
 
+  it("dokładnie 30 znaków nazwy i 60 znaków motta przechodzi", async () => {
+    await zKapitanem();
+    const k = ludzie[0].client;
+    const nazwa = "x".repeat(30);
+    const motto = "m".repeat(60);
+    expect((await k.rpc("nadaj_nazwe_druzyny", { p_nazwa: nazwa, p_motto: motto })).error).toBeNull();
+    const { data: t } = await admin.from("teams").select("name, motto, nazwa_nadana").eq("id", druzyna).single();
+    expect(t).toEqual({ name: nazwa, motto, nazwa_nadana: true });
+  });
+
   it("admin odblokowuje - wraca „Drużyna N”, kapitan może nadać od nowa", async () => {
     await zKapitanem();
     await ludzie[0].client.rpc("nadaj_nazwe_druzyny", { p_nazwa: "Brzydka", p_motto: "" });
