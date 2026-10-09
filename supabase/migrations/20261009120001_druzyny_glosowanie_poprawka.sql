@@ -2,10 +2,15 @@
 -- Sekta Wyjazdowa — poprawka: DELETE bez WHERE odpada w Supabase
 -- ============================================================
 --
--- `pg-safeupdate` blokuje DELETE/UPDATE bez klauzuli WHERE, więc
--- `delete from public.glosy_kapitan;` w 20261009120000 wywalało
--- rozpocznij_glosowanie() kodem 21000 ("DELETE requires a WHERE clause").
--- Poprawka kwalifikuje usunięcie, tak jak robi to resetuj() w testach.
+-- Dwa powody poprawki:
+-- 1. `pg-safeupdate` blokuje DELETE/UPDATE bez klauzuli WHERE, więc
+--    `delete from public.glosy_kapitan;` w 20261009120000 wywalało
+--    rozpocznij_glosowanie() kodem 21000 ("DELETE requires a WHERE clause").
+-- 2. To czyszczenie kasowało głosy WSZYSTKICH drużyn, nie tylko tych, które
+--    właśnie startują. Druga osoba wywołująca funkcję (np. admin rusza
+--    drużynę dodaną później, gdy inne już głosują) bezgłośnie wywalała
+--    tajne głosy drużyn, które mają etap 'trwa'. Poprawka ogranicza usunięcie
+--    do drużyn, które dopiero startują (etap 'nie_rozpoczete' w tym momencie).
 
 create or replace function public.rozpocznij_glosowanie()
 returns integer
@@ -20,7 +25,8 @@ begin
     raise exception 'Tylko admin rozpoczyna glosowanie';
   end if;
 
-  delete from public.glosy_kapitan where voter_id is not null;
+  delete from public.glosy_kapitan
+  where team_id in (select id from public.teams where glosowanie = 'nie_rozpoczete');
 
   with ruszone as (
     update public.teams set glosowanie = 'trwa'

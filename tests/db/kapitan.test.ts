@@ -10,7 +10,6 @@ let szef: TestUser;
 let szefClient: SupabaseClient;
 const ludzie: { user: TestUser; client: SupabaseClient }[] = [];
 let obcy: TestUser;
-let obcyClient: SupabaseClient;
 
 async function przyjmij(u: TestUser, team: string, imie: string) {
   const { error } = await admin.from("profiles").update({ status: "approved", team_id: team, display_name: imie }).eq("id", u.id);
@@ -35,7 +34,6 @@ beforeAll(async () => {
   }
   obcy = await createUser("kap-obcy");
   await przyjmij(obcy, inna, "Obcy");
-  obcyClient = await signIn(obcy);
   szef = await createUser("kap-szef");
   await makeAdmin(szef);
   szefClient = await signIn(szef);
@@ -132,5 +130,14 @@ describe("głosowanie", () => {
     const { data: t } = await admin.from("teams").select("glosowanie, captain_id").eq("id", druzyna).single();
     expect(t).toEqual({ glosowanie: "zakonczone", captain_id: null });
     expect((await glos(0, id(1))).error!.message).toMatch(/Glosowanie nie trwa/);
+  });
+
+  it("drugi start (np. drużyny dodanej później) nie kasuje głosów drużyny, która już głosuje", async () => {
+    await szefClient.rpc("rozpocznij_glosowanie");
+    await glos(0, id(1));
+    await admin.from("teams").update({ glosowanie: "nie_rozpoczete" }).eq("id", inna);
+    await szefClient.rpc("rozpocznij_glosowanie");
+    const { data } = await ludzie[1].client.rpc("stan_glosowania");
+    expect(data).toMatchObject({ glosow: 1 });
   });
 });
