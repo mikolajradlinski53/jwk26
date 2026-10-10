@@ -108,14 +108,17 @@ export function RankingNaZywo({
         const otwarta = rozwiniete.has(w.team_id);
         const sklad = czlonkowie.filter((c) => c.team_id === w.team_id);
         const idListy = `sklad-${w.team_id}`;
-        // Nazwa/motto czytane na bieżąco z propsów (świeże po router.refresh(),
-        // np. zaraz po nadaniu nazwy przez kapitana), nie ze stanu `wyniki` -
-        // ten odświeża tylko subskrypcja na points_ledger, która nazwy nie
-        // dotyczy. Kolejność i wynik zostają ze stanu, bo to on napędza
-        // podświetlenie zmiany punktów.
+        // Nazwa/motto są czytane całkowicie z propsów, nie ze stanu `wyniki` -
+        // propsy są świeże po router.refresh() (np. zaraz po nadaniu nazwy
+        // przez kapitana albo odblokowaniu jej przez admina) i autorytatywne
+        // dla name/motto. Branie wartości ze stanu choćby jako fallback (np.
+        // `?? w.motto`) przywracałoby starą treść po odblokowaniu, bo w propsach
+        // motto wraca jako null, a stan trzyma jeszcze poprzednie. Stan
+        // `wyniki` zostaje źródłem wyłącznie dla kolejności i wyniku, bo to on
+        // napędza subskrypcję na points_ledger i podświetlenie zmiany punktów.
         const zPropsow = poczatkowe.find((p) => p.team_id === w.team_id);
-        const nazwa = zPropsow?.name ?? w.name;
-        const motto = zPropsow?.motto ?? w.motto;
+        const nazwa = zPropsow ? zPropsow.name : w.name;
+        const motto = zPropsow ? zPropsow.motto : w.motto;
         return (
           <li
             key={w.team_id}
@@ -184,7 +187,7 @@ export function RankingNaZywo({
                 ) : (
                   // Punkty osób celowo niewidoczne (decyzja 2026-10-08) - każdy widzi swoje w kasynie i w „Więcej”.
                   <ol className="grid gap-0.5 border-t border-white/10 px-3.5 pb-3 pt-2">
-                    {sklad.map((c, j) => (
+                    {sklad.map((c) => (
                       <li
                         key={c.user_id}
                         className={
@@ -192,12 +195,14 @@ export function RankingNaZywo({
                           (c.user_id === mojeId ? "bg-white/8 font-bold text-kosc" : "text-popiol")
                         }
                       >
-                        <span className="w-5 flex-none text-right text-xs tabular-nums text-dym">{j + 1}.</span>
                         <span className="min-w-0 flex-1 truncate">
                           {c.display_name ?? "Uczestnik"}
                           {c.user_id === mojeId && <span className="ml-1.5 text-xs font-normal text-dym">(Ty)</span>}
                           {kapitanowie[w.team_id] === c.user_id && (
-                            <span className="ml-1.5 text-xs text-krew-jasna" aria-label="kapitan">♛</span>
+                            <span className="ml-1.5 text-xs text-krew-jasna">
+                              <span aria-hidden="true">♛</span>
+                              <span className="sr-only">kapitan</span>
+                            </span>
                           )}
                         </span>
                       </li>

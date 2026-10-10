@@ -63,6 +63,11 @@ export function StartGlosowania() {
 
 export function AkcjeDruzyny({ team, glosow, czlonkow }: { team: Team; glosow: number; czlonkow: number }) {
   const { blad, czeka, wykonaj } = useAkcja();
+  // Dwa niezależne potwierdzenia - obie akcje są nieodwracalne (zamknięcie
+  // liczy oddane głosy, odblokowanie kasuje nazwę i motto), jedno dotknięcie
+  // nie może ich wykonać od razu.
+  const [zamykam, setZamykam] = useState(false);
+  const [odblokowuje, setOdblokowuje] = useState(false);
   return (
     <div className="mt-2 grid gap-2">
       <p className="text-xs text-dym">
@@ -70,18 +75,42 @@ export function AkcjeDruzyny({ team, glosow, czlonkow }: { team: Team; glosow: n
         {team.glosowanie === "trwa" && ` · zagłosowało ${glosow} z ${czlonkow}`}
         {team.nazwa_nadana && " · nazwa nadana"}
       </p>
-      <div className="flex flex-wrap gap-2">
-        {team.glosowanie === "trwa" && (
-          <Button variant="szklo" onClick={() => void wykonaj("zamknij_glosowanie_teraz", { p_team: team.id })} disabled={czeka}>
+      {team.glosowanie === "trwa" &&
+        (zamykam ? (
+          <div className="grid gap-1.5">
+            <p className="px-1 text-xs text-dym">Zamknięcie liczy oddane głosy - nie da się go cofnąć.</p>
+            <div className="grid grid-cols-2 gap-3">
+              <Button variant="szklo" onClick={() => setZamykam(false)} disabled={czeka}>
+                Jeszcze nie
+              </Button>
+              <Button onClick={() => void wykonaj("zamknij_glosowanie_teraz", { p_team: team.id })} disabled={czeka}>
+                {czeka ? "Zamykam..." : "Tak, zamknij"}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Button variant="szklo" onClick={() => setZamykam(true)} disabled={czeka}>
             Zamknij teraz
           </Button>
-        )}
-        {team.nazwa_nadana && (
-          <Button variant="szklo" onClick={() => void wykonaj("odblokuj_nazwe", { p_team: team.id })} disabled={czeka}>
+        ))}
+      {team.nazwa_nadana &&
+        (odblokowuje ? (
+          <div className="grid gap-1.5">
+            <p className="px-1 text-xs text-dym">Nazwa i motto drużyny zostaną usunięte.</p>
+            <div className="grid grid-cols-2 gap-3">
+              <Button variant="szklo" onClick={() => setOdblokowuje(false)} disabled={czeka}>
+                Jeszcze nie
+              </Button>
+              <Button onClick={() => void wykonaj("odblokuj_nazwe", { p_team: team.id })} disabled={czeka}>
+                {czeka ? "Odblokowuję..." : "Tak, odblokuj"}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Button variant="szklo" onClick={() => setOdblokowuje(true)} disabled={czeka}>
             Odblokuj nazwę
           </Button>
-        )}
-      </div>
+        ))}
       {blad && <p className="text-sm text-krew-jasna">{blad}</p>}
     </div>
   );
