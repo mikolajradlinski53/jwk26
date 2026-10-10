@@ -108,6 +108,14 @@ export function RankingNaZywo({
         const otwarta = rozwiniete.has(w.team_id);
         const sklad = czlonkowie.filter((c) => c.team_id === w.team_id);
         const idListy = `sklad-${w.team_id}`;
+        // Nazwa/motto czytane na bieżąco z propsów (świeże po router.refresh(),
+        // np. zaraz po nadaniu nazwy przez kapitana), nie ze stanu `wyniki` -
+        // ten odświeża tylko subskrypcja na points_ledger, która nazwy nie
+        // dotyczy. Kolejność i wynik zostają ze stanu, bo to on napędza
+        // podświetlenie zmiany punktów.
+        const zPropsow = poczatkowe.find((p) => p.team_id === w.team_id);
+        const nazwa = zPropsow?.name ?? w.name;
+        const motto = zPropsow?.motto ?? w.motto;
         return (
           <li
             key={w.team_id}
@@ -137,8 +145,8 @@ export function RankingNaZywo({
                 {RZYMSKIE[i] ?? i + 1}
               </span>
               <span className="min-w-0 flex-1">
-                <b className="block text-sm font-bold">{w.name}</b>
-                <span className="block text-[0.62rem] text-dym">{w.motto}</span>
+                <b className="block text-sm font-bold">{nazwa}</b>
+                <span className="block text-[0.62rem] text-dym">{motto}</span>
               </span>
               <span
                 className={
