@@ -14,7 +14,7 @@ import {
   type Krok,
 } from "@/lib/zapisy/formularz";
 import { komunikat, tekstBledu } from "@/lib/zapisy/bledy";
-import { wgrajDowod, polaOcr, type WgranyDowod } from "@/lib/zapisy/przelew";
+import { wgrajZdjecie, dopiszOcr, type WgraneZdjecie } from "@/lib/zapisy/przelew";
 import { KrokPula, KrokZasady, KrokDane, KrokIce, KrokZdrowie, KrokOTobie } from "./Kroki";
 import { WyborZdjecia } from "./WyborZdjecia";
 import { DanePrzelewu } from "@/components/DanePrzelewu";
@@ -66,7 +66,7 @@ export function Formularz({
   const wToku = useRef(false);
   // Raz wgrane zdjęcie. Ponowna próba po błędzie albo przejście na rezerwę nie
   // wgrywają go drugi raz - przy rezerwie zostaje przy zgłoszeniu (D3).
-  const wgrane = useRef<WgranyDowod | null>(null);
+  const wgrane = useRef<WgraneZdjecie | null>(null);
   // Tytuł bieżącego kroku - cel skupienia po zmianie kroku, żeby czytnik
   // ekranu i klawiatura zaczynały od nagłówka, nie od miejsca sprzed kliknięcia.
   const tytulRef = useRef<HTMLParagraphElement>(null);
@@ -183,7 +183,7 @@ export function Formularz({
 
     try {
       if (plik && !wgrane.current) {
-        wgrane.current = await wgrajDowod(plik, setEtap);
+        wgrane.current = await wgrajZdjecie(plik, setEtap);
       }
 
       setEtap("Zapisuję zgłoszenie...");
@@ -192,10 +192,13 @@ export function Formularz({
         p_dane,
         p_wrazliwe,
         p_proof_path: wgrane.current?.sciezka ?? null,
-        ...polaOcr(wgrane.current),
         p_na_rezerwe: doRezerwy,
       });
       if (error) throw error;
+
+      // Miejsce zajęte - dopiero teraz czytamy zdjęcie, w tle. Obietnica żyje
+      // dalej, gdy serwer podmieni formularz na poczekalnię.
+      if (wgrane.current) void dopiszOcr(wgrane.current);
 
       // Rygiel zostaje zamknięty: strona serwerowa zaraz podmieni formularz
       // na poczekalnię.

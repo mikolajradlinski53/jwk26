@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { komunikat } from "@/lib/zapisy/bledy";
 import { Button } from "@/components/ui/Button";
 import type { Team } from "@/types/db";
 
@@ -44,9 +45,14 @@ export function PrzyciskiDecyzji({
 
     if (error) {
       console.error("Rozpatrzenie zgłoszenia nie przeszło:", error);
-      setBlad(error.message);
+      // Inny admin był szybszy - świeża lista pokaże jego decyzję. Pozostałe
+      // komunikaty bazy (rezerwa, brak przelewu) zostają dosłowne: adminowi
+      // mówią więcej niż ogólne „coś poszło nie tak”.
+      const rozpatrzone = /zostalo juz rozpatrzone/i.test(error.message);
+      setBlad(rozpatrzone ? komunikat(error) : error.message);
       setCzeka(false);
       wToku.current = false;
+      if (rozpatrzone) router.refresh();
       return;
     }
     router.refresh();
