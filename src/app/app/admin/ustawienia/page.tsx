@@ -33,6 +33,7 @@ export default async function UstawieniaPage() {
       "odslona_zapisy",
       "odslona_plan",
       "odslona_infopack",
+      "otwarcie_platformy",
       "social_instagram",
       "social_facebook",
     ]);
@@ -77,6 +78,7 @@ export default async function UstawieniaPage() {
           zapisy: mapa.get("odslona_zapisy") || null,
           plan: mapa.get("odslona_plan") || null,
           infopack: mapa.get("odslona_infopack") || null,
+          platforma: mapa.get("otwarcie_platformy") || null,
           instagram: String(mapa.get("social_instagram") ?? ""),
           facebook: String(mapa.get("social_facebook") ?? ""),
         }}

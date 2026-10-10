@@ -18,6 +18,10 @@ export function komunikat(e: unknown): string {
   if (/PULA_ZAMKNIETA/.test(t)) {
     return "Ta tura jest zamknięta. Wróć do pierwszego kroku i sprawdź, które są otwarte.";
   }
+  if (/FORMULARZ_NIEAKTUALNY/.test(t)) {
+    return "Formularz właśnie się zmienił - odśwież stronę i wypełnij zwolnienie jeszcze raz.";
+  }
+  if (/nieznany przedzial godzin/.test(t)) return "Zaznacz przedziały zwolnienia z listy.";
   if (/TURA_TYLKO_SAMORZAD/.test(t)) {
     return "Z prywatnego maila zapiszesz się tylko do tury Świeżaków. Działacze i Alumni - zaloguj się kontem @samorzad.ue.wroc.pl.";
   }

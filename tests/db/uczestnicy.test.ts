@@ -56,7 +56,13 @@ beforeAll(async () => {
     .from("registrations")
     .insert([
       wiersz(przyjety, { zwolnienie_od: "12:30", zwolnienie_do: "16:00", alkohol: "czasami" }),
-      wiersz(przyjeta, { pula: "swiezaki", imie: "Ala", nazwisko: "Alfa", zgoda_wizerunek: false }),
+      wiersz(przyjeta, {
+        pula: "swiezaki",
+        imie: "Ala",
+        nazwisko: "Alfa",
+        zgoda_wizerunek: false,
+        zwolnienie_sloty: ["11:30-13:00", "15:00-16:30"],
+      }),
       wiersz(czekajacy, { status: "pending", imie: "Ukryty", nazwisko: "Oczekujacy" }),
     ])
     .select("id, user_id");
@@ -100,6 +106,7 @@ describe("lista przyjętych", () => {
 
     const jan = lista.find((u) => u.userId === przyjety.id)!;
     expect(jan.druzyna).toBeTruthy();
+    // Stare zgłoszenie (od-do) i nowe (przedziały) - oba czytelne.
     expect(jan.zwolnienie).toBe("12:30-16:00");
     expect(jan.alkohol).toBe("czasami");
     expect(jan.wrazliwe).toMatchObject({
@@ -109,6 +116,7 @@ describe("lista przyjętych", () => {
     });
 
     const ala = lista.find((u) => u.userId === przyjeta.id)!;
+    expect(ala.zwolnienie).toBe("11:30-13:00, 15:00-16:30");
     expect(ala.wrazliwe).toBeNull();
     expect(ala.zgodaWizerunek).toBe(false);
   });

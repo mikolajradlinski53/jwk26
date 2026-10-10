@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { PrzyciskiDecyzji } from "./PrzyciskiDecyzji";
 import { kontoSamorzadowe } from "@/lib/konto";
-import { NAZWY_PUL, etykietaAlkoholu, etykietaDojazdu } from "@/lib/zapisy/formularz";
+import { NAZWY_PUL, etykietaAlkoholu, etykietaDojazdu, opisZwolnienia } from "@/lib/zapisy/formularz";
 import type { DaneWrazliwe, Registration, Team } from "@/types/db";
 
 // Bez `export const dynamic`: klient serwerowy czyta cookies, co samo z siebie
@@ -127,13 +127,10 @@ export default async function KolejkaRejestracji() {
                     <dd className="text-kosc">{etykietaDojazdu(z.dojazd)}</dd>
                   </>
                 )}
-                {z.zwolnienie_od && z.zwolnienie_do && (
+                {opisZwolnienia(z) && (
                   <>
                     <dt className="text-dym">Zwolnienie 23.10</dt>
-                    {/* Kolumna `time` przychodzi jako HH:MM:SS - sekundy są zawsze zerowe. */}
-                    <dd className="text-kosc">
-                      {z.zwolnienie_od.slice(0, 5)}-{z.zwolnienie_do.slice(0, 5)}
-                    </dd>
+                    <dd className="text-kosc">{opisZwolnienia(z)}</dd>
                   </>
                 )}
                 {z.alkohol && (

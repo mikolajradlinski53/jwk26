@@ -35,51 +35,42 @@ const pelne: DaneFormularza = {
 };
 
 describe("zwolnienie rektorskie i alkohol", () => {
-  const zwolnienie = { ...pelne, zwolnienie: true, zwolnienieOd: "12:30", zwolnienieDo: "16:00" };
+  const zwolnienie = { ...pelne, zwolnienie: true, zwolnienieSloty: ["13:15-14:45"] };
 
-  it("zwolnienie w przedziale 12:00-18:00 co pół godziny przechodzi", () => {
+  it("jeden albo kilka przedziałów z listy przechodzi", () => {
     expect(waliduj("oTobie", zwolnienie, JWK)).toEqual({});
     expect(
-      waliduj("oTobie", { ...zwolnienie, zwolnienieOd: "12:00", zwolnienieDo: "18:00" }, JWK),
+      waliduj("oTobie", { ...zwolnienie, zwolnienieSloty: ["11:30-13:00", "17:30-19:00"] }, JWK),
     ).toEqual({});
   });
 
-  it("zwolnienie bez godzin, odwrócone albo poza przedziałem nie przechodzi", () => {
+  it("zaznaczone zwolnienie bez przedziału albo z nieznanym przedziałem nie przechodzi", () => {
+    expect(waliduj("oTobie", { ...zwolnienie, zwolnienieSloty: [] }, JWK).zwolnienieSloty).toMatch(
+      /co najmniej jeden/,
+    );
     expect(
-      waliduj("oTobie", { ...zwolnienie, zwolnienieOd: "", zwolnienieDo: "" }, JWK).zwolnienieOd,
-    ).toBeDefined();
-    expect(
-      waliduj("oTobie", { ...zwolnienie, zwolnienieOd: "16:00", zwolnienieDo: "16:00" }, JWK)
-        .zwolnienieDo,
-    ).toBeDefined();
-    // Wyjazd rusza o 12:00 - wcześniejsza godzina nie ma sensu, nawet wpisana ręcznie.
-    expect(
-      waliduj("oTobie", { ...zwolnienie, zwolnienieOd: "11:30" }, JWK).zwolnienieOd,
-    ).toBeDefined();
-    expect(
-      waliduj("oTobie", { ...zwolnienie, zwolnienieDo: "18:30" }, JWK).zwolnienieDo,
+      waliduj("oTobie", { ...zwolnienie, zwolnienieSloty: ["12:00-18:00"] }, JWK).zwolnienieSloty,
     ).toBeDefined();
   });
 
   it("Alumni nie podają zwolnienia - pole nie idzie do bazy", () => {
-    const alumn = { ...zwolnienie, pula: "alumni" as const, zwolnienieOd: "", zwolnienieDo: "" };
+    const alumn = { ...zwolnienie, pula: "alumni" as const, zwolnienieSloty: [] };
     expect(waliduj("oTobie", alumn, JWK)).toEqual({});
-    expect(doRpc({ ...zwolnienie, pula: "alumni" }).p_dane).toMatchObject({
-      zwolnienie_od: null,
-      zwolnienie_do: null,
-    });
+    expect(doRpc({ ...zwolnienie, pula: "alumni" }).p_dane).toMatchObject({ zwolnienie_sloty: null });
   });
 
-  it("zwolnienie i alkohol trafiają do wywołania, brak odpowiedzi jako null", () => {
-    expect(doRpc({ ...zwolnienie, alkohol: "czasami" }).p_dane).toMatchObject({
-      zwolnienie_od: "12:30",
-      zwolnienie_do: "16:00",
+  it("przedziały w kolejności z listy, bez duplikatów; stare pola od-do nie idą do bazy", () => {
+    const p = doRpc({
+      ...zwolnienie,
+      zwolnienieSloty: ["17:30-19:00", "11:30-13:00", "17:30-19:00"],
       alkohol: "czasami",
-    });
-    // Odznaczone zwolnienie nie wysyła godzin, nawet jeśli wybrano je wcześniej.
+    }).p_dane;
+    expect(p).toMatchObject({ zwolnienie_sloty: ["11:30-13:00", "17:30-19:00"], alkohol: "czasami" });
+    expect(p).not.toHaveProperty("zwolnienie_od");
+    expect(p).not.toHaveProperty("zwolnienie_do");
+    // Odznaczone zwolnienie nie wysyła przedziałów, nawet jeśli wybrano je wcześniej.
     expect(doRpc({ ...zwolnienie, zwolnienie: false }).p_dane).toMatchObject({
-      zwolnienie_od: null,
-      zwolnienie_do: null,
+      zwolnienie_sloty: null,
       alkohol: null,
     });
   });

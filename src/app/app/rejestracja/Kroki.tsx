@@ -7,7 +7,7 @@ import { DOMENA_SAMORZADU, TURA_DLA_PRYWATNYCH } from "@/lib/konto";
 import {
   ALKOHOL,
   DOJAZDY,
-  GODZINY_ZWOLNIENIA,
+  PRZEDZIALY_ZWOLNIENIA,
   pytaOZwolnienie,
   wartoscPolaDaty,
   wyswietlDate,
@@ -44,42 +44,6 @@ function Blad({ tresc }: { tresc?: string }) {
       {tresc}
     </span>
   ) : null;
-}
-
-/** Wybór godziny z listy - natywny select, bo na telefonie otwiera systemowe koło. */
-function Godzina({
-  label,
-  value,
-  godziny,
-  onChange,
-  blad,
-}: {
-  label: string;
-  value: string;
-  godziny: string[];
-  onChange: (v: string) => void;
-  blad?: string;
-}) {
-  return (
-    <label className="block">
-      <span className={ETYKIETA}>{label}</span>
-      <select
-        value={godziny.includes(value) ? value : ""}
-        onChange={(e) => onChange(e.target.value)}
-        aria-invalid={blad ? true : undefined}
-        className="szklo min-h-11 w-full rounded-sm px-3 text-sm text-kosc
-                   outline-none focus-visible:border-krew"
-      >
-        <option value="">-</option>
-        {godziny.map((g) => (
-          <option key={g} value={g}>
-            {g}
-          </option>
-        ))}
-      </select>
-      <Blad tresc={blad} />
-    </label>
-  );
 }
 
 /** Checkbox z celem dotykowym na całą etykietę (44 px). */
@@ -452,35 +416,30 @@ export function KrokOTobie({ dane, zmien, bledy }: PropsKroku) {
             Potrzebuję zwolnienia rektorskiego na I dzień wyjazdu, tj. 23.10.2026.
           </Zgoda>
           {dane.zwolnienie && (
-            <div className="grid grid-cols-2 gap-3">
-              <Godzina
-                label="Od godziny"
-                value={dane.zwolnienieOd}
-                // Ostatnia godzina nie może być początkiem - po niej nie ma już końca.
-                godziny={GODZINY_ZWOLNIENIA.slice(0, -1)}
-                onChange={(v) => {
-                  zmien("zwolnienieOd", v);
-                  // „Do" spoza nowej listy znikłoby z selecta, a zostało w stanie -
-                  // lepiej je wyczyścić, niż pokazywać kreskę i zgłaszać błąd.
-                  if (v && dane.zwolnienieDo && dane.zwolnienieDo <= v) zmien("zwolnienieDo", "");
-                }}
-                blad={bledy.zwolnienieOd}
-              />
-              <Godzina
-                label="Do godziny"
-                value={dane.zwolnienieDo}
-                godziny={GODZINY_ZWOLNIENIA.filter(
-                  (g) => g > (dane.zwolnienieOd || GODZINY_ZWOLNIENIA[0]),
-                )}
-                onChange={(v) => zmien("zwolnienieDo", v)}
-                blad={bledy.zwolnienieDo}
-              />
-            </div>
-          )}
-          {dane.zwolnienie && (
-            <p className="-mt-1 text-xs text-dym">
-              Wyjazd rusza o 12:00, więc zwolnienie liczymy od południa do najpóźniej 18:00.
-            </p>
+            <fieldset className="grid gap-1">
+              <legend className="mb-1 text-xs text-dym">
+                Zaznacz zajęcia, z których potrzebujesz zwolnienia - można kilka.
+              </legend>
+              {PRZEDZIALY_ZWOLNIENIA.map((p) => (
+                <label key={p} className="flex min-h-11 items-center gap-3 text-sm text-kosc">
+                  <input
+                    type="checkbox"
+                    checked={dane.zwolnienieSloty.includes(p)}
+                    onChange={(e) =>
+                      zmien(
+                        "zwolnienieSloty",
+                        e.target.checked
+                          ? [...dane.zwolnienieSloty, p]
+                          : dane.zwolnienieSloty.filter((x) => x !== p),
+                      )
+                    }
+                    className="size-5 shrink-0 accent-[var(--color-krew)]"
+                  />
+                  <span className="tabular-nums">{p.replace("-", " - ")}</span>
+                </label>
+              ))}
+              <Blad tresc={bledy.zwolnienieSloty} />
+            </fieldset>
           )}
         </section>
       )}

@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { KolejkiAdmina } from "@/components/KolejkiAdmina";
 import { PasekNawigacji } from "@/components/PasekNawigacji";
 import { ZamekInstalacji } from "@/components/ZamekInstalacji";
+import { Poczekalnia } from "@/components/Poczekalnia";
+import { czekaNaOtwarcie } from "@/lib/poczekalnia";
 import { METADANE_APKI } from "@/lib/metadaneApki";
 
 export const metadata = METADANE_APKI;
@@ -18,8 +20,30 @@ export default async function ApkaLayout({
     data: { user },
   } = await supabase.auth.getUser();
   const { data: profil } = user
-    ? await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle()
+    ? await supabase.from("profiles").select("role, status").eq("id", user.id).maybeSingle()
     : { data: null };
+
+  // Poczekalnia: przyjęty uczestnik przed `otwarcie_platformy` widzi ekran
+  // z licznikiem zamiast apki. Ustawienie czytamy tylko dla przyjętych
+  // nie-adminów - reszta nie płaci za dodatkowe zapytanie.
+  const moglbyCzekac = profil?.status === "approved" && profil.role !== "admin";
+  const { data: otwarcie } = moglbyCzekac
+    ? await supabase.from("app_settings").select("value").eq("key", "otwarcie_platformy").maybeSingle()
+    : { data: null };
+  if (
+    czekaNaOtwarcie({
+      rola: profil?.role,
+      status: profil?.status,
+      otwarcie: otwarcie?.value,
+      teraz: new Date(),
+    })
+  ) {
+    return (
+      <ZamekInstalacji>
+        <Poczekalnia otwarcie={otwarcie!.value as string} />
+      </ZamekInstalacji>
+    );
+  }
 
   return (
     // Zamek obejmuje całą apkę, nie sam ekran wejścia. Nałożony wyłącznie tam

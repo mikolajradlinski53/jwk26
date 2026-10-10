@@ -19,15 +19,31 @@ export function etykietaDojazdu(d: Dojazd): string {
 }
 
 /**
- * Godziny zwolnienia rektorskiego na pierwszy dzień wyjazdu, co pół godziny.
- * Od 12:00, bo wtedy rusza wyjazd - wcześniejsze zajęcia nikomu nie kolidują;
- * do 18:00, bo później nie ma już czego zwalniać. Ten sam przedział pilnuje
- * `check` na registrations i zloz_zgloszenie().
+ * Przedziały zajęć do zwolnienia rektorskiego na pierwszy dzień wyjazdu
+ * (decyzja Mikołaja 2026-10-11) - zaznacza się jeden albo kilka. Ta sama
+ * lista pilnuje `check` na registrations.zwolnienie_sloty i zloz_zgloszenie().
  */
-export const GODZINY_ZWOLNIENIA: string[] = Array.from({ length: 13 }, (_, i) => {
-  const minuty = 12 * 60 + i * 30;
-  return `${String(Math.floor(minuty / 60)).padStart(2, "0")}:${minuty % 60 === 0 ? "00" : "30"}`;
-});
+export const PRZEDZIALY_ZWOLNIENIA = [
+  "11:30-13:00",
+  "13:15-14:45",
+  "15:00-16:30",
+  "16:45-17:15",
+  "17:30-19:00",
+] as const;
+
+/**
+ * Zwolnienie do wyświetlenia: przedziały („11:30-13:00, 15:00-16:30”), a dla
+ * zgłoszeń sprzed 2026-10-11 dawne „od-do”. NULL, gdy zwolnienie niepotrzebne.
+ */
+export function opisZwolnienia(r: {
+  zwolnienie_sloty?: string[] | null;
+  zwolnienie_od?: string | null;
+  zwolnienie_do?: string | null;
+}): string | null {
+  if (r.zwolnienie_sloty && r.zwolnienie_sloty.length > 0) return r.zwolnienie_sloty.join(", ");
+  if (r.zwolnienie_od && r.zwolnienie_do) return `${r.zwolnienie_od.slice(0, 5)}-${r.zwolnienie_do.slice(0, 5)}`;
+  return null;
+}
 
 export const ALKOHOL: { wartosc: Alkohol; etykieta: string }[] = [
   { wartosc: "nie", etykieta: "Nie piję" },
@@ -70,9 +86,8 @@ export type DaneFormularza = {
   ksywka: string;
   /** Dobrowolne: odznaczone znaczy „nie potrzebuję", a godziny wtedy nie idą do bazy. */
   zwolnienie: boolean;
-  /** `HH:MM` z GODZINY_ZWOLNIENIA albo pusty łańcuch. */
-  zwolnienieOd: string;
-  zwolnienieDo: string;
+  /** Zaznaczone przedziały z PRZEDZIALY_ZWOLNIENIA. */
+  zwolnienieSloty: string[];
   /** Pusty łańcuch = „wolę nie odpowiadać". */
   alkohol: Alkohol | "";
   piosenka: string;
@@ -102,8 +117,7 @@ export const PUSTY_FORMULARZ: DaneFormularza = {
   dojazd: "",
   ksywka: "",
   zwolnienie: false,
-  zwolnienieOd: "",
-  zwolnienieDo: "",
+  zwolnienieSloty: [],
   alkohol: "",
   piosenka: "",
   uwagi: "",
@@ -269,15 +283,10 @@ export function waliduj(krok: Krok, d: DaneFormularza, dataJwkIso: string): Bled
       else if (d.ksywka.trim().length > 24) b.ksywka = "Najwyżej 24 znaki";
 
       if (d.zwolnienie && pytaOZwolnienie(d.pula)) {
-        if (!GODZINY_ZWOLNIENIA.includes(d.zwolnienieOd)) {
-          b.zwolnienieOd = "Wybierz, od której godziny potrzebujesz zwolnienia";
-        }
-        if (!GODZINY_ZWOLNIENIA.includes(d.zwolnienieDo)) {
-          b.zwolnienieDo = "Wybierz, do której godziny potrzebujesz zwolnienia";
-        } else if (d.zwolnienieOd && d.zwolnienieDo <= d.zwolnienieOd) {
-          // `HH:MM` porównuje się tekstowo tak samo jak czasowo.
-          b.zwolnienieDo = "Koniec musi być później niż początek";
-        }
+        const znane = d.zwolnienieSloty.filter((s) =>
+          (PRZEDZIALY_ZWOLNIENIA as readonly string[]).includes(s),
+        );
+        if (znane.length === 0) b.zwolnienieSloty = "Zaznacz co najmniej jeden przedział zajęć";
       }
       break;
 
@@ -293,7 +302,7 @@ const alboNull = (s: string) => (puste(s) ? null : s.trim());
 
 /** Parametry `p_dane` i `p_wrazliwe` dla zloz_zgloszenie(). */
 export function doRpc(d: DaneFormularza) {
-  // Godziny tylko wtedy, gdy zwolnienie jest zaznaczone i pula o nie pyta -
+  // Przedziały tylko wtedy, gdy zwolnienie jest zaznaczone i pula o nie pyta -
   // wybrane wcześniej, a potem odznaczone nie mogą przeciec do bazy.
   const zwolnienie = d.zwolnienie && pytaOZwolnienie(d.pula);
 
@@ -307,8 +316,10 @@ export function doRpc(d: DaneFormularza) {
     sms_consent: d.zgodaSms,
     dojazd: d.dojazd,
     ksywka: d.ksywka.trim(),
-    zwolnienie_od: zwolnienie ? d.zwolnienieOd : null,
-    zwolnienie_do: zwolnienie ? d.zwolnienieDo : null,
+    // Kolejność jak na liście, bez duplikatów - tak samo zapisuje baza.
+    zwolnienie_sloty: zwolnienie
+      ? PRZEDZIALY_ZWOLNIENIA.filter((p) => d.zwolnienieSloty.includes(p))
+      : null,
     alkohol: d.alkohol === "" ? null : d.alkohol,
     piosenka: alboNull(d.piosenka),
     uwagi: alboNull(d.uwagi),

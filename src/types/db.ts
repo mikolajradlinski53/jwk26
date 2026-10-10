@@ -102,9 +102,11 @@ export type Registration = {
   zgoda_wizerunek_wycofana_at: string | null;
   rezerwa: boolean;
   kolejnosc_rezerwy: number | null;
-  /** `HH:MM:SS` z kolumny `time`; oba NULL, gdy zwolnienie niepotrzebne. */
+  /** Stare zgłoszenia (przed 2026-10-11): `HH:MM:SS`; nowe wypełniają zwolnienie_sloty. */
   zwolnienie_od: string | null;
   zwolnienie_do: string | null;
+  /** Przedziały zajęć z PRZEDZIALY_ZWOLNIENIA; NULL, gdy zwolnienie niepotrzebne. */
+  zwolnienie_sloty: string[] | null;
   alkohol: Alkohol | null;
 };
 

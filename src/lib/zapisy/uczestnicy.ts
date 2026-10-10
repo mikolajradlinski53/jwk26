@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { NAZWY_PUL, etykietaAlkoholu, etykietaDojazdu } from "./formularz";
+import { NAZWY_PUL, etykietaAlkoholu, etykietaDojazdu, opisZwolnienia } from "./formularz";
 import type { Alkohol, DaneWrazliwe, Dojazd, KluczPuli } from "@/types/db";
 
 /** Przyjęta osoba w kształcie gotowym do ekranu i do CSV. */
@@ -13,7 +13,7 @@ export type Uczestnik = {
   druzyna: string | null;
   telefon: string | null;
   dojazd: Dojazd | null;
-  /** „12:30-16:00" albo `null`, gdy zwolnienie niepotrzebne. */
+  /** „11:30-13:00, 15:00-16:30" (dawniej „12:30-16:00") albo `null`. */
   zwolnienie: string | null;
   alkohol: Alkohol | null;
   zgodaWizerunek: boolean;
@@ -58,6 +58,7 @@ type Surowy = {
   dojazd: Dojazd | null;
   zwolnienie_od: string | null;
   zwolnienie_do: string | null;
+  zwolnienie_sloty: string[] | null;
   alkohol: Alkohol | null;
   zgoda_wizerunek: boolean;
   diet_notes: string | null;
@@ -87,7 +88,7 @@ export async function wczytajUczestnikow(
     .from("registrations")
     .select(
       "id, user_id, imie, nazwisko, full_name, ksywka, pula, phone, dojazd, " +
-        "zwolnienie_od, zwolnienie_do, alkohol, zgoda_wizerunek, diet_notes, " +
+        "zwolnienie_od, zwolnienie_do, zwolnienie_sloty, alkohol, zgoda_wizerunek, diet_notes, " +
         "profil:profiles!registrations_user_id_fkey!inner(team_id, druzyna:teams!profiles_team_id_fkey(name)), " +
         "dane_wrazliwe(*)",
     )
@@ -112,10 +113,7 @@ export async function wczytajUczestnikow(
     druzyna: jeden(r.profil?.druzyna)?.name ?? null,
     telefon: r.phone,
     dojazd: r.dojazd,
-    zwolnienie:
-      r.zwolnienie_od && r.zwolnienie_do
-        ? `${r.zwolnienie_od.slice(0, 5)}-${r.zwolnienie_do.slice(0, 5)}`
-        : null,
+    zwolnienie: opisZwolnienia(r),
     alkohol: r.alkohol,
     zgodaWizerunek: r.zgoda_wizerunek,
     dietaStara: r.diet_notes,

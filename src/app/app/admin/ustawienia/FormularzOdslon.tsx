@@ -13,6 +13,8 @@ export type PoczatkoweOdslony = {
   zapisy: string | null;
   plan: string | null;
   infopack: string | null;
+  /** Otwarcie apki dla przyjętych - do tej chwili widzą poczekalnię. */
+  platforma: string | null;
   instagram: string;
   facebook: string;
 };
@@ -29,6 +31,7 @@ export function FormularzOdslon({ poczatkowe }: { poczatkowe: PoczatkoweOdslony 
   const [zapisy, setZapisy] = useState(naDatetimeLocal(poczatkowe.zapisy));
   const [plan, setPlan] = useState(naDatetimeLocal(poczatkowe.plan));
   const [infopack, setInfopack] = useState(naDatetimeLocal(poczatkowe.infopack));
+  const [platforma, setPlatforma] = useState(naDatetimeLocal(poczatkowe.platforma));
   const [instagram, setInstagram] = useState(poczatkowe.instagram);
   const [facebook, setFacebook] = useState(poczatkowe.facebook);
   const [blad, setBlad] = useState<string | null>(null);
@@ -57,6 +60,7 @@ export function FormularzOdslon({ poczatkowe }: { poczatkowe: PoczatkoweOdslony 
       odslona_zapisy: zapisy ? naIso(zapisy) : "",
       odslona_plan: plan ? naIso(plan) : "",
       odslona_infopack: infopack ? naIso(infopack) : "",
+      otwarcie_platformy: platforma ? naIso(platforma) : "",
       social_instagram: instagram.trim(),
       social_facebook: facebook.trim(),
     };
@@ -99,6 +103,18 @@ export function FormularzOdslon({ poczatkowe }: { poczatkowe: PoczatkoweOdslony 
         type="datetime-local"
         value={infopack}
         onChange={(e) => setInfopack(e.target.value)}
+      />
+
+      <h2 className="mt-4 text-sm font-bold">Otwarcie platformy</h2>
+      <p className="text-xs leading-relaxed text-dym">
+        Do tej chwili przyjęci uczestnicy widzą poczekalnię z licznikiem zamiast apki. Admini wchodzą
+        zawsze. Puste pole = platforma otwarta.
+      </p>
+      <Field
+        label="Otwarcie dla przyjętych"
+        type="datetime-local"
+        value={platforma}
+        onChange={(e) => setPlatforma(e.target.value)}
       />
 
       <h2 className="mt-4 text-sm font-bold">Profile w stopce</h2>

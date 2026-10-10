@@ -912,53 +912,73 @@ describe("retencja", () => {
 });
 
 describe("zwolnienie rektorskie i alkohol", () => {
-  it("zapisuje godziny zwolnienia i odpowiedź o alkohol", async () => {
+  it("zapisuje przedziały zwolnienia i odpowiedź o alkohol", async () => {
     await ustawPule("dzialacze", true, 10);
     const { data, error } = await zloz(alaClient, ala, {
-      dane: { zwolnienie_od: "12:30", zwolnienie_do: "16:00", alkohol: "czasami" },
+      dane: { zwolnienie_sloty: ["15:00-16:30", "11:30-13:00", "15:00-16:30"], alkohol: "czasami" },
     });
     expect(error).toBeNull();
 
     const { data: z } = await admin
       .from("registrations")
-      .select("zwolnienie_od, zwolnienie_do, alkohol")
+      .select("zwolnienie_sloty, zwolnienie_od, zwolnienie_do, alkohol")
       .eq("id", (data as { id: string }).id)
       .single();
-    expect(z).toEqual({ zwolnienie_od: "12:30:00", zwolnienie_do: "16:00:00", alkohol: "czasami" });
+    // Bez duplikatów, w kolejności dnia.
+    expect(z).toEqual({
+      zwolnienie_sloty: ["11:30-13:00", "15:00-16:30"],
+      zwolnienie_od: null,
+      zwolnienie_do: null,
+      alkohol: "czasami",
+    });
   });
 
-  it("obie odpowiedzi są dobrowolne", async () => {
+  it("wszystkie pięć przedziałów naraz przechodzi", async () => {
     await ustawPule("dzialacze", true, 10);
-    const { data, error } = await zloz(alaClient, ala);
+    const wszystkie = ["11:30-13:00", "13:15-14:45", "15:00-16:30", "16:45-17:15", "17:30-19:00"];
+    const { data, error } = await zloz(alaClient, ala, { dane: { zwolnienie_sloty: wszystkie } });
+    expect(error).toBeNull();
+    const { data: z } = await admin
+      .from("registrations")
+      .select("zwolnienie_sloty")
+      .eq("id", (data as { id: string }).id)
+      .single();
+    expect(z!.zwolnienie_sloty).toEqual(wszystkie);
+  });
+
+  it("obie odpowiedzi są dobrowolne, pusta lista = brak zwolnienia", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { data, error } = await zloz(alaClient, ala, { dane: { zwolnienie_sloty: [] } });
     expect(error).toBeNull();
 
     const { data: z } = await admin
       .from("registrations")
-      .select("zwolnienie_od, zwolnienie_do, alkohol")
+      .select("zwolnienie_sloty, alkohol")
       .eq("id", (data as { id: string }).id)
       .single();
-    expect(z).toEqual({ zwolnienie_od: null, zwolnienie_do: null, alkohol: null });
+    expect(z).toEqual({ zwolnienie_sloty: null, alkohol: null });
   });
 
-  it("zwolnienie poza 12:00-18:00, nie co pół godziny, odwrócone albo niepełne jest odbite", async () => {
+  it("nieznany przedział jest odbity", async () => {
     await ustawPule("dzialacze", true, 10);
-    const zle = [
-      { zwolnienie_od: "11:30", zwolnienie_do: "14:00" },
-      { zwolnienie_od: "13:00", zwolnienie_do: "18:30" },
-      { zwolnienie_od: "13:15", zwolnienie_do: "15:00" },
-      { zwolnienie_od: "16:00", zwolnienie_do: "14:00" },
-      { zwolnienie_od: "13:00", zwolnienie_do: null },
-    ];
-    for (const dane of zle) {
-      const { error } = await zloz(alaClient, ala, { dane });
-      expect(error?.message, JSON.stringify(dane)).toMatch(/zwolnieni/i);
+    for (const zwolnienie_sloty of [["12:00-13:00"], ["11:30-13:00", "19:00-20:00"]]) {
+      const { error } = await zloz(alaClient, ala, { dane: { zwolnienie_sloty } });
+      expect(error?.message, JSON.stringify(zwolnienie_sloty)).toMatch(/nieznany przedzial/);
     }
+  });
+
+  it("stary formularz (godziny od-do) dostaje prośbę o odświeżenie", async () => {
+    await ustawPule("dzialacze", true, 10);
+    const { error } = await zloz(alaClient, ala, {
+      dane: { zwolnienie_od: "12:30", zwolnienie_do: "16:00" },
+    });
+    expect(error!.message).toMatch(/FORMULARZ_NIEAKTUALNY/);
   });
 
   it("Alumni nie podają zwolnienia rektorskiego", async () => {
     await ustawPule("alumni", true, 10);
     const { error } = await zloz(alaClient, ala, {
-      dane: { pula: "alumni", nr_indeksu: null, zwolnienie_od: "13:00", zwolnienie_do: "15:00" },
+      dane: { pula: "alumni", nr_indeksu: null, zwolnienie_sloty: ["13:15-14:45"] },
     });
     expect(error!.message).toMatch(/zwolnieni/i);
   });
