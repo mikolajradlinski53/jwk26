@@ -32,6 +32,9 @@ async function zasiej() {
   await admin.from("feed_comments").insert({ submission_id: sub!.id, user_id: ala.id, body: "komentarz (retencja)" });
   await admin.from("gossip_categories").insert({ title: "Retencja (test)" });
   await admin.from("points_ledger").insert({ team_id: druzyna, user_id: ala.id, delta: 5, category: "zasiew_testowy" });
+  // upsert, nie insert: voter_id jest kluczem głównym, a zasiej() woła się
+  // kilka razy dla tego samego ala w tym pliku.
+  await admin.from("glosy_kapitan").upsert({ voter_id: ala.id, team_id: druzyna, kandydat_id: ala.id });
 }
 
 async function ile(tabela: string): Promise<number> {
@@ -70,7 +73,7 @@ describe("retencja treści z zabaw", () => {
     const { data, error } = await admin.rpc("sprzataj_zabawy");
     expect(error).toBeNull();
     expect((data as { wykonane: boolean }).wykonane).toBe(true);
-    for (const t of ["bingo_submissions", "feed_comments", "gossip_categories", "points_ledger", "powiadomienia"]) {
+    for (const t of ["bingo_submissions", "feed_comments", "gossip_categories", "points_ledger", "powiadomienia", "glosy_kapitan"]) {
       expect(await ile(t), t).toBe(0);
     }
     // Rzeczy bez danych osobowych zostają.

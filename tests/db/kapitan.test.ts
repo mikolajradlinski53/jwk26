@@ -148,6 +148,13 @@ describe("głosowanie", () => {
     expect((data as { team_id: string; glosow: number; czlonkow: number }[]).find((p) => p.team_id === druzyna)).toEqual({ team_id: druzyna, glosow: 1, czlonkow: 3 });
     expect((await ludzie[0].client.rpc("postep_glosowania")).error).not.toBeNull();
   });
+
+  it("zamknij_glosowanie_druzyny i glosy_waznych nie są wywoływalne przez RPC - nawet przez admina", async () => {
+    // Brak grantu execute dla authenticated: to funkcje pomocnicze wołane
+    // wewnętrznie, nie publiczne RPC. Każdy klient (tu: uczestnik) dostaje błąd.
+    expect((await ludzie[0].client.rpc("zamknij_glosowanie_druzyny", { p_team: druzyna })).error).not.toBeNull();
+    expect((await ludzie[0].client.rpc("glosy_waznych", { p_team: druzyna })).error).not.toBeNull();
+  });
 });
 
 describe("nazwa od kapitana", () => {
@@ -205,5 +212,26 @@ describe("nazwa od kapitana", () => {
     const { data: t } = await admin.from("teams").select("name, motto, nazwa_nadana").eq("id", druzyna).single();
     expect(t).toEqual({ name: "Drużyna 9", motto: null, nazwa_nadana: false });
     expect((await ludzie[0].client.rpc("nadaj_nazwe_druzyny", { p_nazwa: "Ładna", p_motto: "" })).error).toBeNull();
+  });
+
+  it("kapitan przeniesiony do innej drużyny nie nada nazwy tej, którą już nie prowadzi", async () => {
+    await zKapitanem();
+    await admin.from("profiles").update({ team_id: inna }).eq("id", id(0));
+    const { error } = await ludzie[0].client.rpc("nadaj_nazwe_druzyny", { p_nazwa: "Zbiegły", p_motto: "" });
+    expect(error!.message).toMatch(/Nazwe nadaje kapitan/);
+    await admin.from("profiles").update({ team_id: druzyna }).eq("id", id(0));
+  });
+
+  it("kapitan ustawiony w trakcie głosowania (nie zakończonego) nie nada nazwy", async () => {
+    await admin.from("teams").update({ glosowanie: "trwa", captain_id: id(0) }).eq("id", druzyna);
+    const { error } = await ludzie[0].client.rpc("nadaj_nazwe_druzyny", { p_nazwa: "Zbyt szybko", p_motto: "" });
+    expect(error!.message).toMatch(/Nazwe nadaje kapitan/);
+  });
+
+  it("nazwy-placeholdery „Drużyna N” są zarezerwowane, z akcentem i bez", async () => {
+    await zKapitanem();
+    const k = ludzie[0].client;
+    expect((await k.rpc("nadaj_nazwe_druzyny", { p_nazwa: "Drużyna 1", p_motto: "" })).error!.message).toMatch(/NAZWA_ZAJETA/);
+    expect((await k.rpc("nadaj_nazwe_druzyny", { p_nazwa: "druzyna 2", p_motto: "" })).error!.message).toMatch(/NAZWA_ZAJETA/);
   });
 });
