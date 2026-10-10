@@ -8,6 +8,11 @@ export type Team = {
   color: string;
   motto: string | null;
   captain_id: string | null;
+  /** 1-4 dla zasianych drużyn, do „Drużyna N”. */
+  numer: number | null;
+  /** Kapitan nadał nazwę - zablokowana. */
+  nazwa_nadana: boolean;
+  glosowanie: "nie_rozpoczete" | "trwa" | "zakonczone";
 };
 
 export type Profile = {

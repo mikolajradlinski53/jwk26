@@ -11,10 +11,12 @@ export type Czlonek = { user_id: string; display_name: string | null; team_id: s
 export function RankingNaZywo({
   poczatkowe,
   czlonkowiePoczatkowi,
+  kapitanowie,
   mojeId,
 }: {
   poczatkowe: TeamScore[];
   czlonkowiePoczatkowi: Czlonek[];
+  kapitanowie: Record<string, string>;
   mojeId: string;
 }) {
   const [wyniki, setWyniki] = useState(poczatkowe);
@@ -36,7 +38,7 @@ export function RankingNaZywo({
         .from("user_scores")
         .select("user_id, display_name, team_id, score")
         .not("team_id", "is", null)
-        .order("score", { ascending: false }),
+        .order("display_name"),
     ]);
     if (osoby) setCzlonkowie(osoby as Czlonek[]);
     if (!data) return;
@@ -172,6 +174,7 @@ export function RankingNaZywo({
                 {sklad.length === 0 ? (
                   <p className="px-4 pb-3.5 text-xs text-dym">W tej sekcie nikogo jeszcze nie ma.</p>
                 ) : (
+                  // Punkty osób celowo niewidoczne (decyzja 2026-10-08) - każdy widzi swoje w kasynie i w „Więcej”.
                   <ol className="grid gap-0.5 border-t border-white/10 px-3.5 pb-3 pt-2">
                     {sklad.map((c, j) => (
                       <li
@@ -185,8 +188,10 @@ export function RankingNaZywo({
                         <span className="min-w-0 flex-1 truncate">
                           {c.display_name ?? "Uczestnik"}
                           {c.user_id === mojeId && <span className="ml-1.5 text-xs font-normal text-dym">(Ty)</span>}
+                          {kapitanowie[w.team_id] === c.user_id && (
+                            <span className="ml-1.5 text-xs text-krew-jasna" aria-label="kapitan">♛</span>
+                          )}
                         </span>
-                        <span className="flex-none tabular-nums">{c.score}</span>
                       </li>
                     ))}
                   </ol>

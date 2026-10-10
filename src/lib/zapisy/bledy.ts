@@ -27,6 +27,13 @@ export function komunikat(e: unknown): string {
   }
   if (/REGULAMIN_ROBOCZY/.test(t)) return "Najpierw oznacz regulamin jako zatwierdzony.";
   if (/raz na minute/i.test(t)) return "Próbne powiadomienie możesz wysłać raz na minutę.";
+  // Drużyny
+  if (/NAZWA_ZAJETA/.test(t)) return "Ta nazwa jest już zajęta przez inną drużynę.";
+  if (/NAZWA_JUZ_NADANA/.test(t)) return "Drużyna już ma nazwę - zmienić ją może tylko organizator.";
+  if (/NAZWA_DLUGOSC/.test(t)) return "Nazwa ma od 1 do 30 znaków.";
+  if (/MOTTO_DLUGOSC/.test(t)) return "Motto ma najwyżej 60 znaków.";
+  if (/Glosowanie nie trwa/.test(t)) return "Głosowanie nie trwa - odśwież ekran.";
+  if (/Kandydat spoza/.test(t)) return "Ta osoba nie jest w Twojej drużynie.";
   // Kasyno
   const stawka = t.match(/Masz (-?\d+) pkt, a stawka to (\d+)/);
   if (stawka) return `Masz ${stawka[1]} pkt, a stawka to ${stawka[2]}.`;
