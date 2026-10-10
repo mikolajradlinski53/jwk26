@@ -34,6 +34,7 @@ export function komunikat(e: unknown): string {
   if (/MOTTO_DLUGOSC/.test(t)) return "Motto ma najwyżej 60 znaków.";
   if (/Glosowanie nie trwa/.test(t)) return "Głosowanie nie trwa - odśwież ekran.";
   if (/Kandydat spoza/.test(t)) return "Ta osoba nie jest w Twojej drużynie.";
+  if (/Nazwe nadaje kapitan/.test(t)) return "Nazwę nadaje kapitan drużyny - odśwież ekran.";
   // Kasyno
   const stawka = t.match(/Masz (-?\d+) pkt, a stawka to (\d+)/);
   if (stawka) return `Masz ${stawka[1]} pkt, a stawka to ${stawka[2]}.`;

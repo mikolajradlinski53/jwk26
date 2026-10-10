@@ -40,7 +40,16 @@ export default async function Home() {
     <Ekran tytul="Ranking Sekt" podtytul="Punkty ruszą razem z bingo">
       {/* Odczyt przy wejściu zostaje niezależnie od subskrypcji - przy słabym
           zasięgu websocket może nie dojść, a ranking musi się pokazać. */}
-      {stanGlosowania && <KartaDruzyny stan={stanGlosowania} sklad={sklad} mojeId={user.id} />}
+      {/* Key po etapie i głosie - gdy serwer zmieni stan (np. admin przełączy etap
+          albo zmieni kapitana), karta montuje się od nowa i nie trzyma starego `wybrany`. */}
+      {stanGlosowania && (
+        <KartaDruzyny
+          key={`${stanGlosowania.etap}-${stanGlosowania.moj_glos ?? "brak"}`}
+          stan={stanGlosowania}
+          sklad={sklad}
+          mojeId={user.id}
+        />
+      )}
       <RankingNaZywo
         poczatkowe={(data ?? []) as TeamScore[]}
         czlonkowiePoczatkowi={(czlonkowie ?? []) as Czlonek[]}

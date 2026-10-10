@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
@@ -32,6 +32,20 @@ export function KartaDruzyny({
   const [blad, setBlad] = useState<string | null>(null);
   const [czeka, setCzeka] = useState(false);
   const wToku = useRef(false);
+
+  // Bez realtime i bez pollingu (limit żądań CDN) - gdy ktoś wraca do karty
+  // (np. po przejściu do innej zakładki/apki), odświeżamy przy powrocie.
+  // Na iOS PWA zakładka nie przeładowuje się sama, więc inaczej stan
+  // (głos admina, zmiana kapitana) nigdy by się nie pokazał bez ręcznego
+  // odświeżenia. Listener tylko wywołuje router.refresh() - żadnego
+  // setState w ciele efektu.
+  useEffect(() => {
+    function naPowrocie() {
+      if (document.visibilityState === "visible") router.refresh();
+    }
+    document.addEventListener("visibilitychange", naPowrocie);
+    return () => document.removeEventListener("visibilitychange", naPowrocie);
+  }, [router]);
 
   if (stan.nazwa_nadana) return null;
 
@@ -166,7 +180,7 @@ export function KartaDruzyny({
             </Button>
             <Button
               onClick={() => void wywolaj("nadaj_nazwe_druzyny", { p_nazwa: nazwa, p_motto: motto })}
-              disabled={czeka}
+              disabled={czeka || bladFormularza !== null}
             >
               {czeka ? "Zapisuję..." : "Tak, nadaj"}
             </Button>

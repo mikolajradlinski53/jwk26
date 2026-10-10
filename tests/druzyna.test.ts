@@ -13,5 +13,6 @@ describe("walidacja nazwy drużyny (lustro bazy)", () => {
     expect(komunikat({ message: "NAZWA_ZAJETA" })).toMatch(/zajęta/);
     expect(komunikat({ message: "NAZWA_JUZ_NADANA" })).toMatch(/już ma nazwę/);
     expect(komunikat({ message: "Glosowanie nie trwa" })).toMatch(/nie trwa/);
+    expect(komunikat({ message: "Nazwe nadaje kapitan druzyny" })).toMatch(/kapitan drużyny/);
   });
 });
