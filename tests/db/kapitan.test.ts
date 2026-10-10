@@ -140,6 +140,14 @@ describe("głosowanie", () => {
     const { data } = await ludzie[1].client.rpc("stan_glosowania");
     expect(data).toMatchObject({ glosow: 1 });
   });
+
+  it("admin widzi postęp, uczestnik nie", async () => {
+    await szefClient.rpc("rozpocznij_glosowanie");
+    await glos(0, id(1));
+    const { data } = await szefClient.rpc("postep_glosowania");
+    expect((data as { team_id: string; glosow: number; czlonkow: number }[]).find((p) => p.team_id === druzyna)).toEqual({ team_id: druzyna, glosow: 1, czlonkow: 3 });
+    expect((await ludzie[0].client.rpc("postep_glosowania")).error).not.toBeNull();
+  });
 });
 
 describe("nazwa od kapitana", () => {
