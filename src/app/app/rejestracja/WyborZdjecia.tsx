@@ -21,8 +21,9 @@ export function WyborZdjecia({
           type="file"
           // Bez `capture`: wymuszał aparat i nie dało się wybrać zrzutu ekranu
           // z galerii ani pliku (zgłoszenie Mikołaja 2026-10-11). Bez niego
-          // telefon sam pyta: zdjęcia, aparat albo pliki.
-          accept="image/*"
+          // telefon sam pyta: zdjęcia, aparat albo pliki. PDF - bo tak
+          // potwierdzenie daje wiele banków.
+          accept="image/*,application/pdf"
           aria-invalid={blad ? true : undefined}
           disabled={disabled}
           onChange={(e) => onWybor(e.target.files?.[0] ?? null)}
@@ -42,8 +43,8 @@ export function WyborZdjecia({
         )}
       </label>
       <p className="text-xs leading-relaxed text-dym">
-        Najprościej: zrzut ekranu potwierdzenia z aplikacji banku. Możesz też
-        zrobić zdjęcie albo wybrać plik graficzny. Zdjęcie widzi wyłącznie organizator.
+        Zrzut ekranu z aplikacji banku, zdjęcie albo PDF z potwierdzeniem (do 5 MB).
+        Plik widzi wyłącznie organizator.
       </p>
     </div>
   );

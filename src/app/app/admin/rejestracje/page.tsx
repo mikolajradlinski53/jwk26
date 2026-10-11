@@ -210,6 +210,16 @@ export default async function KolejkaRejestracji() {
                 <p className="mt-3 text-sm text-dym">
                   Awansowano z rezerwy. Czeka na potwierdzenie przelewu.
                 </p>
+              ) : podglady.get(z.id) && z.proof_path.endsWith(".pdf") ? (
+                // PDF z banku - przeglądarka telefonu otworzy go w nowej karcie.
+                <a
+                  href={podglady.get(z.id)!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="szklo mt-3 flex min-h-11 items-center justify-center rounded-md px-4 text-sm font-bold text-kosc"
+                >
+                  Otwórz potwierdzenie (PDF)
+                </a>
               ) : podglady.get(z.id) ? (
                 // Zwykły <img>: podpisany URL wygasa po godzinie, więc
                 // optymalizator next/image nie miałby czego cache'ować.
@@ -226,7 +236,9 @@ export default async function KolejkaRejestracji() {
 
               {z.proof_path && (
                 <p className="mt-3 text-xs text-dym">
-                  {z.ocr_confidence === null
+                  {z.proof_path.endsWith(".pdf")
+                    ? "PDF - bez automatycznego odczytu, sprawdź plik."
+                    : z.ocr_confidence === null
                     ? "OCR się nie powiódł - oceniaj wyłącznie po zdjęciu."
                     : `OCR: ${z.ocr_keywords_hit} słów kluczowych, pewność ${Math.round(
                         z.ocr_confidence * 100,

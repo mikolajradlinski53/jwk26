@@ -174,7 +174,7 @@ export function Formularz({
 
     const doRezerwy = naRezerwe || wymusRezerwe;
     if (!doRezerwy && !plik && !wgrane.current) {
-      setBladPliku("Dołącz zdjęcie potwierdzenia przelewu");
+      setBladPliku("Dołącz potwierdzenie przelewu - zrzut ekranu, zdjęcie albo PDF");
       return;
     }
 

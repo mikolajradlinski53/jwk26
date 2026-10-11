@@ -15,6 +15,7 @@ export function komunikat(e: unknown): string {
   const t = tekstBledu(e);
 
   if (/PULA_PELNA/.test(t)) return "Ta pula właśnie się zapełniła.";
+  if (/PDF_ZA_DUZY/.test(t)) return "Ten PDF ma ponad 5 MB. Zrób zrzut ekranu potwierdzenia i wyślij go zamiast pliku.";
   if (/PULA_ZAMKNIETA/.test(t)) {
     return "Ta tura jest zamknięta. Wróć do pierwszego kroku i sprawdź, które są otwarte.";
   }

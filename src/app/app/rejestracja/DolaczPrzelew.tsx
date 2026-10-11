@@ -28,7 +28,7 @@ export function DolaczPrzelew({
   async function wyslij() {
     if (wToku.current) return;
     if (!plik && !wgrane.current) {
-      setBladPliku("Dołącz zdjęcie potwierdzenia przelewu");
+      setBladPliku("Dołącz potwierdzenie przelewu - zrzut ekranu, zdjęcie albo PDF");
       return;
     }
 

@@ -3,13 +3,24 @@ import { skompresuj } from "@/lib/obrazy";
 import { przeczytajDowod, type WynikOcr } from "@/lib/ocr/run";
 
 export type WgranyDowod = { sciezka: string; ocr: WynikOcr | null };
-/** Zdjęcie w buckecie, jeszcze bez OCR - formularz czyta je dopiero po zajęciu miejsca. */
-export type WgraneZdjecie = { sciezka: string; zmniejszone: File };
+/**
+ * Dowód w buckecie, jeszcze bez OCR - formularz czyta go dopiero po zajęciu
+ * miejsca. `zmniejszone` = null dla PDF: OCR czyta tylko obrazy.
+ */
+export type WgraneZdjecie = { sciezka: string; zmniejszone: File | null };
+
+/** Limit bucketu `proofs` (file_size_limit). */
+export const MAKS_PDF = 5 * 1024 * 1024;
+
+/** Potwierdzenie z banku w PDF - po typie albo, gdy telefon go nie poda, po nazwie. */
+export function toPdf(plik: File): boolean {
+  return plik.type === "application/pdf" || /\.pdf$/i.test(plik.name);
+}
 
 /**
- * Kompresja i upload do prywatnego `proofs`. Wspólne dla formularza
- * i dopłaty po awansie z rezerwy - dwie kopie rozjechałyby się przy
- * pierwszej poprawce.
+ * Upload do prywatnego `proofs`: obraz po kompresji, PDF bez zmian. Wspólne
+ * dla formularza i dopłaty po awansie z rezerwy - dwie kopie rozjechałyby
+ * się przy pierwszej poprawce.
  */
 export async function wgrajZdjecie(
   plik: File,
@@ -21,12 +32,25 @@ export async function wgrajZdjecie(
   } = await supabase.auth.getUser();
   if (!user) throw new Error("jwt expired");
 
+  // Losowa nazwa: dwa podejścia tej samej osoby nie nadpiszą się, a upload
+  // bez `upsert` i tak odmówiłby przy kolizji.
+  if (toPdf(plik)) {
+    // PDF-a nie zmniejszymy w przeglądarce - za duży odbijamy od razu,
+    // zanim poleci na serwer i wróci z niezrozumiałym błędem.
+    if (plik.size > MAKS_PDF) throw new Error("PDF_ZA_DUZY");
+    etap("Wysyłam dowód...");
+    const sciezka = `${user.id}/${crypto.randomUUID()}.pdf`;
+    const { error } = await supabase.storage
+      .from("proofs")
+      .upload(sciezka, plik, { contentType: "application/pdf" });
+    if (error) throw error;
+    return { sciezka, zmniejszone: null };
+  }
+
   etap("Przygotowuję zdjęcie...");
   const zmniejszone = await skompresuj(plik);
 
   etap("Wysyłam dowód...");
-  // Losowa nazwa: dwa podejścia tej samej osoby nie nadpiszą się, a upload
-  // bez `upsert` i tak odmówiłby przy kolizji.
   const sciezka = `${user.id}/${crypto.randomUUID()}.jpg`;
   const { error } = await supabase.storage
     .from("proofs")
@@ -57,6 +81,7 @@ export async function wgrajDowod(
   etap: (opis: string) => void,
 ): Promise<WgranyDowod> {
   const { sciezka, zmniejszone } = await wgrajZdjecie(plik, etap);
+  if (!zmniejszone) return { sciezka, ocr: null };
   etap("Odczytuję przelew...");
   return { sciezka, ocr: await ocrZLimitem(zmniejszone) };
 }
@@ -67,6 +92,7 @@ export async function wgrajDowod(
  * Błędy tylko do konsoli - zgłoszenie już jest, a admin i tak ogląda zdjęcie.
  */
 export async function dopiszOcr(zdjecie: WgraneZdjecie): Promise<void> {
+  if (!zdjecie.zmniejszone) return;
   try {
     const ocr = await ocrZLimitem(zdjecie.zmniejszone);
     if (!ocr) return;

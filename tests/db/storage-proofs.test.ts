@@ -153,14 +153,16 @@ describe("bucket z dowodami przelewu", () => {
   });
 
   it("odrzuca plik o niedozwolonym typie", async () => {
-    // allowed_mime_types na buckecie: jpeg, png, webp. PDF przechodziłby przez
-    // politykę RLS - zatrzymuje go dopiero konfiguracja bucketu.
+    // allowed_mime_types na buckecie: jpeg, png, webp i (od 2026-10-11) pdf.
+    // HTML przechodziłby przez politykę RLS - zatrzymuje go dopiero
+    // konfiguracja bucketu.
+    const sciezka = `${uczestnik.id}/dowod.html`;
     const { error } = await uczestnikClient.storage
       .from("proofs")
-      .upload(`${uczestnik.id}/dowod.pdf`, new Blob(["%PDF-1.4"], {
-        type: "application/pdf",
-      }), { contentType: "application/pdf" });
+      .upload(sciezka, new Blob(["<script>alert(1)</script>"], {
+        type: "text/html",
+      }), { contentType: "text/html" });
 
+    if (!error) await admin.storage.from("proofs").remove([sciezka]);
     expect(error).not.toBeNull();
-  });
-});
+  });});
