@@ -21,7 +21,7 @@ const OPIS: Record<Stan, string> = {
     "Na iPhonie powiadomienia działają tylko w apce dodanej do ekranu głównego: Udostępnij → „Do ekranu początkowego”.",
   zablokowane:
     "Powiadomienia są zablokowane w ustawieniach telefonu. Włącz je dla tej apki, a potem wróć tutaj.",
-  wylaczone: "Dostaniesz ogłoszenia organizatorów i informacje o swojej drużynie.",
+  wylaczone: "Dostaniesz ogłoszenia Organizatorów i informacje o swojej drużynie.",
   wlaczone: "Powiadomienia są włączone na tym urządzeniu.",
 };
 

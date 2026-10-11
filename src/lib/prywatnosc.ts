@@ -21,7 +21,7 @@ export const POLITYKA: SekcjaPolityki[] = [
     bloki: [
       "Uniwersytet Ekonomiczny we Wrocławiu, ul. Komandorska 118/120, 53-345 Wrocław.",
       `Inspektor Ochrony Danych: ${KONTAKT_IOD}.`,
-      `W sprawach Jesiennego Wyjazdu Komisji 2026 (JWK26) i tej aplikacji możesz kontaktować się z koordynatorem wyjazdu: ${KOORDYNATOR_MAIL}, tel. ${KOORDYNATOR_TELEFON}. Wyjazd organizuje Samorząd Studentów Uniwersytetu Ekonomicznego we Wrocławiu.`,
+      `W sprawach Jesiennego Wyjazdu Komisji 2026 (JWK26) i tej aplikacji możesz kontaktować się z Koordynatorem Wyjazdu: ${KOORDYNATOR_MAIL}, tel. ${KOORDYNATOR_TELEFON}. Wyjazd organizuje Samorząd Studentów Uniwersytetu Ekonomicznego we Wrocławiu.`,
     ],
   },
   {
@@ -41,12 +41,12 @@ export const POLITYKA: SekcjaPolityki[] = [
           "Kontakt alarmowy (ICE) - imię, telefon i relacja osoby, którą wskażesz. Cel: powiadomienie jej, gdyby coś Ci się stało. Podstawa: art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes: ochrona Twojego bezpieczeństwa).",
           "Udział w zabawach - nazwa w aplikacji, drużyna, punkty i ich historia, zdjęcia i podpisy z bingo, komentarze i polubienia, nominacje w JWK Awards (uzasadnienia i zdjęcia), przebieg gier w kasynie i w grze „Kruk”, zamówienia w sklepiku drużynowym. Cel: przeprowadzenie zabaw będących częścią programu wyjazdu. Podstawa: art. 6 ust. 1 lit. b RODO - udział w zabawach jest dobrowolny i następuje na Twoje żądanie.",
           "Wizerunek - zdjęcia, które Ty lub inni uczestnicy wgracie do aplikacji, widzą wyłącznie zalogowani uczestnicy i Kadra (regulamin, § 19). Rozpowszechnianie wizerunku poza aplikacją, np. w mediach społecznościowych Samorządu, odbywa się tylko na podstawie Twojej zgody (art. 6 ust. 1 lit. a RODO i art. 81 ustawy o prawie autorskim i prawach pokrewnych).",
-          "Powiadomienia push - adres subskrypcji Twojego urządzenia i klucze szyfrujące. Cel: wysyłanie ogłoszeń organizatorów i informacji z zabaw. Podstawa: art. 6 ust. 1 lit. b RODO - powiadomienia włączasz sam(a) i możesz je wyłączyć w ustawieniach urządzenia.",
+          "Powiadomienia push - adres subskrypcji Twojego urządzenia i klucze szyfrujące. Cel: wysyłanie ogłoszeń Organizatorów i informacji z zabaw. Podstawa: art. 6 ust. 1 lit. b RODO - powiadomienia włączasz sam(a) i możesz je wyłączyć w ustawieniach urządzenia.",
           "SMS-y - numer telefonu, wyłącznie jeśli wyrazisz zgodę. Cel: pilne komunikaty organizacyjne. Podstawa: zgoda, art. 6 ust. 1 lit. a RODO.",
-          "Korespondencja z organizatorem - treść i dane z wiadomości lub rozmowy. Cel: odpowiedź i obsługa sprawy. Podstawa: art. 6 ust. 1 lit. f RODO.",
+          "Korespondencja z Organizatorem - treść i dane z wiadomości lub rozmowy. Cel: odpowiedź i obsługa sprawy. Podstawa: art. 6 ust. 1 lit. f RODO.",
           "Dane techniczne - adres IP, typ urządzenia i przeglądarki, czas zapytań w dziennikach serwerów dostawców hostingu. Cel: bezpieczeństwo i usuwanie awarii. Podstawa: art. 6 ust. 1 lit. f RODO.",
           "Statystyki odwiedzin - odwiedzona podstrona (bez parametrów adresu), kraj, typ urządzenia, system i przeglądarka, źródło wejścia oraz anonimowe zdarzenia, np. kliknięcie „Zapisz się”, przejście do kolejnego kroku formularza (sama nazwa kroku i tura, bez wpisanych danych) otwarcie aplikacji z ekranu głównego, obejrzane sekcje strony, użycie funkcji aplikacji (np. wysłane zdjęcie do bingo, lajk, gra - bez treści) czy rodzaj błędu aplikacji. Zbiera je Vercel Web Analytics bez ciasteczek i bez identyfikatora, który pozwalałby rozpoznać Cię między wizytami; widzimy wyłącznie zbiorcze liczby. Cel: wiedza, ile osób odwiedza stronę i gdzie zapisy sprawiają kłopot. Podstawa: art. 6 ust. 1 lit. f RODO.",
-          "Aktywność w aplikacji - data ostatniego logowania, to, czy masz włączone powiadomienia, i liczba Twoich wpisów w zabawach (bingo, feed, gry, sklepik, zawody), zestawiane z danych, które aplikacja i tak przechowuje. Widzi je wyłącznie Kadra w panelu organizatora; autorzy nominacji w JWK Awards pozostają w tym zestawieniu anonimowi. Cel: organizacja wyjazdu, np. przypomnienie o włączeniu powiadomień. Podstawa: art. 6 ust. 1 lit. f RODO.",
+          "Aktywność w aplikacji - data ostatniego logowania, to, czy masz włączone powiadomienia, i liczba Twoich wpisów w zabawach (bingo, feed, gry, sklepik, zawody), zestawiane z danych, które aplikacja i tak przechowuje. Widzi je wyłącznie Kadra w panelu Organizatora; autorzy nominacji w JWK Awards pozostają w tym zestawieniu anonimowi. Cel: organizacja wyjazdu, np. przypomnienie o włączeniu powiadomień. Podstawa: art. 6 ust. 1 lit. f RODO.",
         ],
       },
     ],
@@ -59,7 +59,7 @@ export const POLITYKA: SekcjaPolityki[] = [
           "Inni uczestnicy - Twoją nazwę w aplikacji, drużynę, punkty w rankingu, zdjęcia i podpisy z bingo, komentarze i polubienia. Nominacje w JWK Awards są dla nich anonimowe; po ujawnieniu wyniku widać tylko uzasadnienia i zdjęcia dotyczące zwycięzcy.",
           "Organizatorzy (Kadra i administratorzy aplikacji) - dane potrzebne do organizacji wyjazdu i moderacji treści. Autora nominacji mogą ustalić wyłącznie w celu reakcji na treść naruszającą regulamin.",
           "Ośrodek - wyłącznie informacje o diecie i alergiach.",
-          "Podmioty przetwarzające dane na nasze zlecenie: Supabase Inc. (baza danych, logowanie, przechowywanie plików - serwery we Frankfurcie), Vercel Inc. (hosting aplikacji - funkcje uruchamiane we Frankfurcie - oraz anonimowe statystyki odwiedzin), Google LLC / Google Ireland Ltd. (logowanie kontem Google, arkusz zgłoszeń w Google Workspace dostępny wyłącznie imiennie wskazanym organizatorom), Resend Inc. (wysyłka e-maili z kodem logowania oraz powiadomień dla organizatorów o nowych zgłoszeniach - z imieniem, nazwiskiem i turą), a po uruchomieniu SMS-ów - LINK Mobility Poland sp. z o.o. (usługa SMSAPI).",
+          "Podmioty przetwarzające dane na nasze zlecenie: Supabase Inc. (baza danych, logowanie, przechowywanie plików - serwery we Frankfurcie), Vercel Inc. (hosting aplikacji - funkcje uruchamiane we Frankfurcie - oraz anonimowe statystyki odwiedzin), Google LLC / Google Ireland Ltd. (logowanie kontem Google, arkusz zgłoszeń w Google Workspace dostępny wyłącznie imiennie wskazanym Organizatorom), Resend Inc. (wysyłka e-maili z kodem logowania oraz powiadomień dla Organizatorów o nowych zgłoszeniach - z imieniem, nazwiskiem i turą), a po uruchomieniu SMS-ów - LINK Mobility Poland sp. z o.o. (usługa SMSAPI).",
           "Operatorzy usług push (Apple, Google, Mozilla - zależnie od Twojego urządzenia) przekazują powiadomienie na Twoje urządzenie; treść jest szyfrowana.",
         ],
       },
@@ -74,7 +74,7 @@ export const POLITYKA: SekcjaPolityki[] = [
           "Informacje o zdrowiu i kontakt alarmowy - usuwamy automatycznie 14 dni po zakończeniu wyjazdu.",
           "Pozostałe dane zgłoszenia, w tym potwierdzenie przelewu - do 31 grudnia 2027 r., żeby móc rozliczyć ewentualne szkody z ośrodkiem.",
           "Treści z zabaw (zdjęcia, komentarze, nominacje, historia gier, punkty i zamówienia) - do 31 stycznia 2027 r.",
-          "Konto w aplikacji (adres e-mail i nazwa) - do 31 grudnia 2027 r., razem z danymi zgłoszenia, chyba że wcześniej poprosisz o jego usunięcie. Konta organizatorów usuwamy po zakończeniu ich funkcji.",
+          "Konto w aplikacji (adres e-mail i nazwa) - do 31 grudnia 2027 r., razem z danymi zgłoszenia, chyba że wcześniej poprosisz o jego usunięcie. Konta Organizatorów usuwamy po zakończeniu ich funkcji.",
           "Subskrypcje powiadomień - do wyłączenia powiadomień, wylogowania albo wygaśnięcia subskrypcji po stronie urządzenia.",
           "Korespondencja - przez czas potrzebny do obsługi sprawy, a potem do upływu terminu przedawnienia ewentualnych roszczeń.",
         ],
@@ -84,15 +84,15 @@ export const POLITYKA: SekcjaPolityki[] = [
   {
     tytul: "Twoje prawa",
     bloki: [
-      "Masz prawo dostępu do danych, ich sprostowania, usunięcia, ograniczenia przetwarzania i przenoszenia, a wobec przetwarzania na podstawie prawnie uzasadnionego interesu - prawo sprzeciwu. Zgodę na przetwarzanie informacji o zdrowiu, na wizerunek i na SMS-y możesz wycofać w każdej chwili w aplikacji (Więcej → Zarządzaj zgodami) albo mailowo u koordynatora wyjazdu; wycofanie nie wpływa na zgodność z prawem przetwarzania sprzed wycofania.",
-      "Treść, którą ktoś zamieścił o Tobie w aplikacji, usuniemy na Twoje zgłoszenie do Kadry albo na adres koordynatora.",
+      "Masz prawo dostępu do danych, ich sprostowania, usunięcia, ograniczenia przetwarzania i przenoszenia, a wobec przetwarzania na podstawie prawnie uzasadnionego interesu - prawo sprzeciwu. Zgodę na przetwarzanie informacji o zdrowiu, na wizerunek i na SMS-y możesz wycofać w każdej chwili w aplikacji (Więcej → Zarządzaj zgodami) albo mailowo u Koordynatora Wyjazdu; wycofanie nie wpływa na zgodność z prawem przetwarzania sprzed wycofania.",
+      "Treść, którą ktoś zamieścił o Tobie w aplikacji, usuniemy na Twoje zgłoszenie do Kadry albo na adres Koordynatora.",
       "Przysługuje Ci skarga do Prezesa Urzędu Ochrony Danych Osobowych (ul. Stawki 2, 00-193 Warszawa).",
     ],
   },
   {
     tytul: "Jeśli ktoś wskazał Cię jako kontakt alarmowy",
     bloki: [
-      `Uczestnik JWK26 podał nam Twoje imię, numer telefonu i to, kim dla niego jesteś (art. 14 RODO). Administratorem tych danych jest Uniwersytet Ekonomiczny we Wrocławiu, kontakt z Inspektorem Ochrony Danych: ${KONTAKT_IOD}. Używamy ich wyłącznie po to, żeby powiadomić Cię, gdyby temu uczestnikowi coś się stało w czasie wyjazdu - na podstawie art. 6 ust. 1 lit. f RODO. Widzą je tylko organizatorzy (także w arkuszu Google dostępnym imiennie). Usuwamy je 14 dni po zakończeniu wyjazdu. Możesz zażądać dostępu do nich, ich sprostowania lub wcześniejszego usunięcia albo wnieść sprzeciw - pisząc do IOD - a także złożyć skargę do Prezesa UODO.`,
+      `Uczestnik JWK26 podał nam Twoje imię, numer telefonu i to, kim dla niego jesteś (art. 14 RODO). Administratorem tych danych jest Uniwersytet Ekonomiczny we Wrocławiu, kontakt z Inspektorem Ochrony Danych: ${KONTAKT_IOD}. Używamy ich wyłącznie po to, żeby powiadomić Cię, gdyby temu uczestnikowi coś się stało w czasie wyjazdu - na podstawie art. 6 ust. 1 lit. f RODO. Widzą je tylko Organizatorzy (także w arkuszu Google dostępnym imiennie). Usuwamy je 14 dni po zakończeniu wyjazdu. Możesz zażądać dostępu do nich, ich sprostowania lub wcześniejszego usunięcia albo wnieść sprzeciw - pisząc do IOD - a także złożyć skargę do Prezesa UODO.`,
     ],
   },
   {

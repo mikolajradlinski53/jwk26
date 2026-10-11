@@ -63,7 +63,7 @@ export default async function WiecejPage() {
             href="/app/admin"
             ikona="oko"
             nazwa="Sanktuarium"
-            opis="Panel organizatora"
+            opis="Panel Organizatora"
             licznik={<LicznikKolejki ktora="suma" />}
           />
         </>
@@ -72,7 +72,7 @@ export default async function WiecejPage() {
       <NaglowekSekcji>Zabawa</NaglowekSekcji>
       <nav className="grid gap-2.5">
         <PozycjaMenu href="/app/gra" ikona="oko" nazwa="Gra terenowa" opis="Zadania dla drużyn" />
-        <PozycjaMenu href="/app/zawody" ikona="kielich" nazwa="Zawody" opis="Topalki, siatkówka, poker, szachy" />
+        <PozycjaMenu href="/app/zawody" ikona="kielich" nazwa="Zawody" opis="Toplakyyy, siatkówka, poker, szachy" />
         <PozycjaMenu href="/app/arcade" ikona="karty" nazwa="Kasyno" opis="Sloty, blackjack i kruk" />
         <PozycjaMenu href="/app/gossip" ikona="gwiazda" nazwa="JWK Awards" opis="Anonimowe nominacje" />
       </nav>
@@ -88,7 +88,7 @@ export default async function WiecejPage() {
             Adres do skopiowania zamiast `mailto:` - na części telefonów link
             otwierał nieskonfigurowaną albo zupełnie przypadkową aplikację. */}
         <div className="szklo grid gap-1.5 rounded-md px-4 py-3.5">
-          <p className="text-sm font-bold text-kosc">Kontakt z organizatorem</p>
+          <p className="text-sm font-bold text-kosc">Kontakt z Organizatorem</p>
           <p className="text-xs text-dym">{KOORDYNATOR}, Koordynator Wyjazdu</p>
           <p className="flex items-center justify-between gap-3 text-sm text-kosc">
             <AdresEmail adres={KOORDYNATOR_MAIL} />

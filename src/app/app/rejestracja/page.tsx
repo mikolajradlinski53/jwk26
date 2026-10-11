@@ -104,8 +104,8 @@ export default async function RejestracjaPage() {
             <p className="mt-3 text-sm leading-relaxed text-dym">
               {ostatnie.proof_path
                 ? "Twoje potwierdzenie przelewu już mamy. Gdy zwolni się miejsce i " +
-                  "organizator przesunie Cię na listę, zgłoszenie od razu trafi do akceptacji."
-                : "Gdy zwolni się miejsce, organizator przesunie Cię na listę. Wtedy " +
+                  "Organizator przesunie Cię na listę, zgłoszenie od razu trafi do akceptacji."
+                : "Gdy zwolni się miejsce, Organizator przesunie Cię na listę. Wtedy " +
                   "zobaczysz tu prośbę o potwierdzenie przelewu."}
             </p>
           </div>
@@ -126,7 +126,7 @@ export default async function RejestracjaPage() {
       return (
         <Ekran tytul="Miejsce czeka" podtytul={nazwaPuli}>
           <p className="szklo mb-5 rounded-md px-4 py-4 text-sm leading-relaxed text-dym">
-            Zwolniło się miejsce i organizator przesunął Cię z rezerwy. Zrób przelew
+            Zwolniło się miejsce i Organizator przesunął Cię z rezerwy. Zrób przelew
             za wyjazd i wgraj jego potwierdzenie - dopiero wtedy zgłoszenie trafi
             do akceptacji.
           </p>
@@ -142,7 +142,7 @@ export default async function RejestracjaPage() {
     }
 
     return (
-      <Ekran tytul="Próba" podtytul="Czekaj na wyrok Kapłana">
+      <Ekran tytul="Próba" podtytul="Czekaj na wyrok Organizatora">
         <p className="szklo rounded-md px-4 py-6 text-center text-sm leading-relaxed text-dym">
           Twoja ofiara została złożona.
         </p>
@@ -188,7 +188,7 @@ export default async function RejestracjaPage() {
       ) : (
         <p className="szklo rounded-md px-4 py-6 text-center text-sm leading-relaxed text-dym">
           {samorzadowe
-            ? "Zapisy jeszcze się nie zaczęły albo wszystkie tury są zamknięte. Zajrzyj tu, gdy organizator ogłosi otwarcie."
+            ? "Zapisy jeszcze się nie zaczęły albo wszystkie tury są zamknięte. Zajrzyj tu, gdy Organizator ogłosi otwarcie."
             : "Z prywatnego maila zapiszesz się do tury Świeżaków - ruszy po przyjęciu Świeżaków. Jeśli jesteś Działaczem albo Alumnem, wyloguj się i zaloguj kontem @samorzad.ue.wroc.pl."}
         </p>
       )}

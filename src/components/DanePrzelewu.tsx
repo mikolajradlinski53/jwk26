@@ -56,7 +56,7 @@ export function DanePrzelewu({
       <div className={s.ramka}>
         <p className={s.etykieta}>Dane do przelewu</p>
         <p className={`mt-2 ${s.przypis}`}>
-          Numer konta i kod QR pojawią się tutaj, gdy tylko organizator je poda.
+          Numer konta i kod QR pojawią się tutaj, gdy tylko Organizator je poda.
         </p>
       </div>
     );

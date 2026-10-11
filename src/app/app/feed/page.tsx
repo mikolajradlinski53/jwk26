@@ -100,7 +100,7 @@ export default async function FeedPage() {
   if (wpisy.length === 0) {
     return (
       <Ekran tytul="Feed" naglowek={<NaglowekFeedu />}>
-        <Pusto ikona="oko">Tu wylądują zdjęcia z bingo, kiedy tylko ktoś zacznie je wrzucać.</Pusto>
+        <Pusto ikona="oko">Tutaj wpadać będą zdjęcia z bingo, kiedy tylko ktoś zacznie je wrzucać.</Pusto>
       </Ekran>
     );
   }

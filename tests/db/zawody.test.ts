@@ -10,7 +10,7 @@ import {
   type TestUser,
 } from "../helpers/supabase";
 
-// Zawody (paczka D2): składy na Topalki/siatkówkę, zapisy indywidualne,
+// Zawody (paczka D2): składy na Toplakyyy/siatkówkę, zapisy indywidualne,
 // terminarz każdy z każdym.
 type Gracz = { user: TestUser; klient: SupabaseClient };
 let gracze: Gracz[] = [];
@@ -36,7 +36,8 @@ afterEach(async () => {
   await admin.from("zawody_druzyny").delete().not("id", "is", null);
   await admin.from("zawody_zapisy").delete().not("user_id", "is", null);
   await admin.from("zawody").update({ zapisy_otwarte: false }).not("id", "is", null);
-  await admin.from("zawody").update({ limit_miejsc: 16 }).eq("druzynowe", false);
+  await admin.from("zawody").update({ limit_miejsc: 10 }).eq("nazwa", "Poker");
+  await admin.from("zawody").update({ limit_miejsc: 16 }).eq("nazwa", "Szachy");
   await admin.from("powiadomienia").delete().eq("ref_type", "zawody");
 });
 
@@ -47,7 +48,7 @@ afterAll(async () => {
 const otworz = (nazwa: string, otwarte = true) =>
   admin.from("zawody").update({ zapisy_otwarte: otwarte }).eq("id", id[nazwa]);
 
-function sklad(zalozyciel: Gracz, nazwa: string, czlonkowie: Gracz[], dziewczyna = true, zawody = "Topalki") {
+function sklad(zalozyciel: Gracz, nazwa: string, czlonkowie: Gracz[], dziewczyna = true, zawody = "Toplakyyy") {
   return zalozyciel.klient.rpc("zapisz_druzyne", {
     p_zawody: id[zawody],
     p_nazwa: nazwa,
@@ -62,12 +63,12 @@ describe("składy na zawody drużynowe", () => {
     expect(error!.message).toMatch(/ZAPISY_ZAMKNIETE/);
   });
 
-  it("Topalki: pięć osób, dziewczyna potwierdzona, wszyscy przyjęci", async () => {
-    await otworz("Topalki");
+  it("Toplakyyy: pięć osób, dziewczyna potwierdzona, wszyscy przyjęci", async () => {
+    await otworz("Toplakyyy");
     expect((await sklad(gracze[0], "Kozy", gracze.slice(1, 4))).error!.message).toMatch(/SKLAD_ROZMIAR/);
     expect((await sklad(gracze[0], "Kozy", gracze.slice(1, 5), false)).error!.message).toMatch(/SKLAD_BEZ_DZIEWCZYNY/);
     const zCzekajacym = await gracze[0].klient.rpc("zapisz_druzyne", {
-      p_zawody: id.Topalki,
+      p_zawody: id.Toplakyyy,
       p_nazwa: "Kozy",
       p_czlonkowie: [...gracze.slice(1, 4).map((g) => g.user.id), czekajacy.id],
       p_dziewczyna: true,
@@ -93,7 +94,7 @@ describe("składy na zawody drużynowe", () => {
   });
 
   it("ta sama osoba w drugim składzie jest odbita, z ksywkami zajętych", async () => {
-    await otworz("Topalki");
+    await otworz("Toplakyyy");
     expect((await sklad(gracze[0], "Kozy", gracze.slice(1, 5))).error).toBeNull();
     const zajety = await sklad(gracze[5], "Smoki", [gracze[4], gracze[6], gracze[7], gracze[1]]);
     expect(zajety.error!.message).toMatch(/SKLAD_ZAJETY: (Gracz 4, Gracz 1|Gracz 1, Gracz 4)/);
@@ -152,12 +153,12 @@ describe("składy na zawody drużynowe", () => {
   });
 
   it("uczestnik nie zmieni zawodów ani składów bezpośrednio", async () => {
-    await gracze[0].klient.from("zawody").update({ zapisy_otwarte: true }).eq("id", id.Topalki);
-    const { data } = await admin.from("zawody").select("zapisy_otwarte").eq("id", id.Topalki).single();
+    await gracze[0].klient.from("zawody").update({ zapisy_otwarte: true }).eq("id", id.Toplakyyy);
+    const { data } = await admin.from("zawody").select("zapisy_otwarte").eq("id", id.Toplakyyy).single();
     expect(data!.zapisy_otwarte).toBe(false);
     const { error } = await gracze[0].klient
       .from("zawody_druzyny")
-      .insert({ zawody_id: id.Topalki, nazwa: "Wjazd bokiem", zalozyciel_id: gracze[0].user.id });
+      .insert({ zawody_id: id.Toplakyyy, nazwa: "Wjazd bokiem", zalozyciel_id: gracze[0].user.id });
     expect(error).not.toBeNull();
   });
 });

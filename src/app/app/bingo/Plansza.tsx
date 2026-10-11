@@ -116,11 +116,14 @@ export function Plansza({
   zgloszenia,
   userId,
   teamId,
+  podglad = false,
 }: {
   zadania: BingoTask[];
   zgloszenia: BingoSubmission[];
   userId: string;
   teamId: string;
+  /** Organizator bez drużyny: pola do obejrzenia, bez wysyłania zdjęć. */
+  podglad?: boolean;
 }) {
   const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -392,7 +395,13 @@ export function Plansza({
               </div>
             )}
 
-            {(stanOtwartego === "puste" || stanOtwartego === "odrzucone") && (
+            {podglad && (
+              <p className="text-sm text-dym">
+                Podgląd Organizatora - zdjęcia wysyłają drużyny, a rozpatrujesz je w panelu (Bingo).
+              </p>
+            )}
+
+            {!podglad && (stanOtwartego === "puste" || stanOtwartego === "odrzucone") && (
               <div className="grid gap-3">
                 <label className="block">
                   <span className="mb-1.5 block pl-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-dym">

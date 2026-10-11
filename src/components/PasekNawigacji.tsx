@@ -131,7 +131,7 @@ export function PasekNawigacji() {
             {p.href === "/app/wiecej" && (
               <Znacznik
                 liczba={suma}
-                etykieta={`${suma} spraw czeka na organizatora`}
+                etykieta={`${suma} spraw czeka na Organizatora`}
                 className="absolute right-2 top-0"
               />
             )}

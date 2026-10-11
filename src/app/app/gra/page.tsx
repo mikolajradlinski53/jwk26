@@ -17,7 +17,8 @@ export default async function GraPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/wejscie");
 
-  const { data: profil } = await supabase.from("profiles").select("team_id").eq("id", user.id).maybeSingle();
+  const { data: profil } = await supabase.from("profiles").select("team_id, role").eq("id", user.id).maybeSingle();
+  const podglad = !profil?.team_id && profil?.role === "admin";
 
   // Tylko odkryte i aktywne - admin widzi tu to samo co uczestnicy;
   // nieodkryte ma w panelu.
@@ -50,9 +51,9 @@ export default async function GraPage() {
 
   return (
     <Ekran tytul="Gra terenowa" podtytul="Zadania dla drużyn">
-      {!profil?.team_id ? (
+      {!profil?.team_id && !podglad ? (
         <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">
-          Nie masz przypisanej drużyny. Zadania pojawią się, kiedy organizator Cię do niej przypisze.
+          Nie masz przypisanej drużyny. Zadania pojawią się, kiedy Organizator Cię do niej przypisze.
         </p>
       ) : zadania.length === 0 ? (
         <p className="szklo rounded-md px-4 py-6 text-center text-sm leading-relaxed text-dym">
@@ -64,7 +65,8 @@ export default async function GraPage() {
           zadania={zadania}
           zgloszenia={(zgloszeniaRaw ?? []) as BingoSubmission[]}
           userId={user.id}
-          teamId={profil.team_id}
+          teamId={profil?.team_id ?? ""}
+          podglad={podglad}
         />
       )}
       {/* Nowe zadania odkrywa organizator - po powrocie do apki lista ma być

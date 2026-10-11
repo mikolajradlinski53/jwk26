@@ -36,7 +36,7 @@ export default async function GossipPage() {
         </p>
       )}
       {!error && kategorie.length === 0 && (
-        <Pusto ikona="list">Jeszcze nic. Pierwsza kategoria pojawi się, gdy ogłosi ją organizator.</Pusto>
+        <Pusto ikona="list">Jeszcze nic. Pierwsza kategoria pojawi się, gdy ogłosi ją Organizator.</Pusto>
       )}
 
       <ul className="grid gap-4">
@@ -89,14 +89,14 @@ export default async function GossipPage() {
             {k.status === "otwarta" && k.moj_glos && (
               <p className="text-sm text-dym">
                 Nominujesz: <strong className="text-kosc">{k.moj_typ}</strong>. Wynik zobaczysz, gdy
-                organizator go ujawni.
+                Organizator go ujawni.
               </p>
             )}
             {k.status === "otwarta" && !k.moj_glos && (
               <Nominacja kategoria={k.id} kandydaci={kandydaci} minimum={minimum} />
             )}
             {k.status === "zamknieta" && (
-              <p className="text-sm text-dym">Wynik zobaczysz, gdy organizator go ujawni.</p>
+              <p className="text-sm text-dym">Wynik zobaczysz, gdy Organizator go ujawni.</p>
             )}
           </li>
         ))}

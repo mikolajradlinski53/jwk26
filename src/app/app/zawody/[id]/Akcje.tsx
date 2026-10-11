@@ -162,8 +162,8 @@ export function ZapisSkladu({
             className="mt-0.5 size-6 shrink-0 accent-[var(--color-krew)]"
           />
           <span>
-            Przysięgam na brodę Kapłana, że w składzie jest co najmniej jedna dziewczyna. Bez niej
-            Topalki się nie liczą, a Sekta wszystko widzi.
+            Przysięgam na brodę Organizatora, że w składzie jest co najmniej jedna dziewczyna. Bez niej
+            Toplakyyy się nie liczą, a Sekta wszystko widzi.
           </span>
         </label>
       )}
@@ -236,7 +236,7 @@ export function MojSklad({
           {jestemZalozycielem ? "Rozwiąż skład" : "Wypisz się ze składu"}
         </Button>
       ) : (
-        <p className="text-xs text-dym">Zapisy zamknięte - zmiany składu tylko przez organizatora.</p>
+        <p className="text-xs text-dym">Zapisy zamknięte - zmiany składu tylko przez Organizatora.</p>
       )}
     </section>
   );

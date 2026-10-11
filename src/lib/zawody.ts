@@ -94,7 +94,7 @@ export function komunikatZawodow(e: unknown): string {
   const rozmiar = t.match(/SKLAD_ROZMIAR: sklad liczy (\d+)/);
   if (rozmiar) return `Skład liczy dokładnie ${rozmiar[1]} osób razem z Tobą.`;
   if (/ZAPISY_ZAMKNIETE/.test(t)) return "Zapisy na te zawody są zamknięte.";
-  if (/SKLAD_BEZ_DZIEWCZYNY/.test(t)) return "W Topalkach skład musi mieć co najmniej jedną dziewczynę - potwierdź to.";
+  if (/SKLAD_BEZ_DZIEWCZYNY/.test(t)) return "W Toplakyyy skład musi mieć co najmniej jedną dziewczynę - potwierdź to.";
   if (/SKLAD_NIEPRZYJETY/.test(t)) return "W składzie może być tylko przyjęty uczestnik wyjazdu.";
   if (/NAZWA_DRUZYNY_ZAJETA/.test(t)) return "Ta nazwa składu jest już zajęta.";
   if (/NAZWA_DRUZYNY_DLUGOSC/.test(t)) return "Nazwa składu ma od 1 do 40 znaków.";

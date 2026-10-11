@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import type { Zawody } from "@/lib/zawody";
 
-/** Lista zawodów: Topalki, siatkówka, poker, szachy - i co z nich jest moje. */
+/** Lista zawodów: Toplakyyy, siatkówka, poker, szachy - i co z nich jest moje. */
 export default async function ZawodyPage() {
   const supabase = await createClient();
   const {
@@ -22,7 +22,7 @@ export default async function ZawodyPage() {
   if (error) {
     console.error("Nie udało się wczytać zawodów:", error);
     return (
-      <Ekran tytul="Zawody" podtytul="Topalki, siatkówka, poker, szachy">
+      <Ekran tytul="Zawody" podtytul="Toplakyyy, siatkówka, poker, szachy">
         <p className="szklo rounded-md px-4 py-6 text-center text-sm text-krew-jasna">
           Nie udało się wczytać zawodów. Odśwież za chwilę.
         </p>
@@ -42,7 +42,7 @@ export default async function ZawodyPage() {
   const zapisanyNa = new Set((zapisy ?? []).filter((z) => z.user_id === user.id).map((z) => z.zawody_id));
 
   return (
-    <Ekran tytul="Zawody" podtytul="Topalki, siatkówka, poker, szachy">
+    <Ekran tytul="Zawody" podtytul="Toplakyyy, siatkówka, poker, szachy">
       <ul className="grid gap-3">
         {zawody.map((z) => {
           const moje = z.druzynowe

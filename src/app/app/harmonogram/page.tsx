@@ -29,7 +29,7 @@ export default async function HarmonogramPage() {
         </p>
       )}
       {!error && dni.length === 0 && (
-        <Pusto ikona="zegar">Program pojawi się tu, gdy organizator go ogłosi.</Pusto>
+        <Pusto ikona="zegar">Program pojawi się tu, gdy Organizator go ogłosi.</Pusto>
       )}
 
       {dni.map((d) => (

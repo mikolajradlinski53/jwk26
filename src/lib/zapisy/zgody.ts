@@ -26,8 +26,10 @@
  * 2026-10-11.1 - nowy tekst regulaminu od Mikołaja (zastępstwo Koordynatora,
  *                obowiązkowe szkolenia, brak NNW/OC, szkody § 13 ust. 4-8)
  *                z dopiskami z aplikacji; § 19 nadal „Aplikacja JWK26”.
+ * 2026-10-12.1 - wielkie litery: Organizator, Kadra, Koordynator Wyjazdu
+ *                (bez zmian treści).
  */
-export const WERSJA_ZGOD = "2026-10-11.1";
+export const WERSJA_ZGOD = "2026-10-12.1";
 
 export const KONTAKT_IOD = "iod@ue.wroc.pl";
 
@@ -52,7 +54,7 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
     "Twój udział i rozliczyć wpłatę - na podstawie art. 6 ust. 1 lit. b RODO.",
   "Akceptację oświadczenia o odpowiedzialności za szkody i dane potrzebne do " +
     "dochodzenia roszczeń przetwarzamy na podstawie art. 6 ust. 1 lit. f RODO, " +
-    "czyli prawnie uzasadnionego interesu organizatora.",
+    "czyli prawnie uzasadnionego interesu Organizatora.",
   "Dane osoby do kontaktu w nagłym wypadku (ICE) przetwarzamy na podstawie " +
     "art. 6 ust. 1 lit. f RODO, wyłącznie po to, żeby móc ją powiadomić " +
     "w sytuacji wyjątkowej.",
@@ -64,15 +66,15 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
     "o prawie autorskim i prawach pokrewnych). Numer telefonu do SMS-ów " +
     "z komunikatami organizacyjnymi wykorzystujemy wyłącznie na podstawie " +
     "Twojej zgody (art. 6 ust. 1 lit. a RODO).",
-  "Dane widzą organizatorzy wyjazdu. Ośrodek otrzymuje wyłącznie informacje " +
+  "Dane widzą Organizatorzy wyjazdu. Ośrodek otrzymuje wyłącznie informacje " +
     "o diecie i alergiach. Dane są przechowywane u dostawców infrastruktury " +
     "(Supabase, Vercel), którzy przetwarzają je na nasze zlecenie; e-maile " +
-    "z kodem logowania i powiadomienia organizatorów o nowych zgłoszeniach " +
+    "z kodem logowania i powiadomienia Organizatorów o nowych zgłoszeniach " +
     "(imię, nazwisko, tura) wysyła Resend, a SMS-y - jeśli się na nie zgodzisz - " +
     "operator usługi SMSAPI (LINK Mobility Poland). Listę zgłoszeń " +
     "- łącznie z informacjami o diecie, alergiach, chorobach, lekach i kontakcie " +
     "ICE - prowadzimy też w arkuszu Google (Google Workspace), do którego dostęp " +
-    "mają wyłącznie imiennie wskazani organizatorzy; Google przetwarza te dane na " +
+    "mają wyłącznie imiennie wskazani Organizatorzy; Google przetwarza te dane na " +
     "nasze zlecenie, a arkusz odświeża się z aplikacji, więc usunięcie danych " +
     "w aplikacji usuwa je też z arkusza. Dostawcy ci " +
     "mogą przetwarzać dane także poza Europejskim Obszarem Gospodarczym - " +
@@ -86,7 +88,7 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
     "ograniczenia przetwarzania i wniesienia sprzeciwu, a także prawo " +
     "wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych. Każdą zgodę " +
     "możesz wycofać w dowolnym momencie w aplikacji (Więcej → Zarządzaj " +
-    "zgodami) albo mailowo u koordynatora wyjazdu; wycofanie nie wpływa na " +
+    "zgodami) albo mailowo u Koordynatora Wyjazdu; wycofanie nie wpływa na " +
     "zgodność z prawem przetwarzania sprzed wycofania.",
   "Podanie danych z kroków „Dane” i „O tobie” jest warunkiem udziału " +
     "w wyjeździe, z wyjątkiem zwolnienia rektorskiego i pytania o alkohol. " +
@@ -118,14 +120,14 @@ export const ZGODA_WIZERUNEK =
   "internetowych Samorządu Studentów UEW oraz w jego materiałach informacyjnych " +
   "i promocyjnych, także dotyczących współpracy z partnerami. Zgoda jest " +
   "dobrowolna, nie jest warunkiem udziału i mogę ją w każdej chwili wycofać " +
-  "w aplikacji (Więcej → Zarządzaj zgodami) albo mailowo u koordynatora " +
-  "wyjazdu; wycofanie nie wpływa na materiały " +
+  "w aplikacji (Więcej → Zarządzaj zgodami) albo mailowo u Koordynatora " +
+  "Wyjazdu; wycofanie nie wpływa na materiały " +
   "rozpowszechnione wcześniej.";
 
 export const KLAUZULA_ZDROWIE =
   "Te informacje są dobrowolne i nie są warunkiem udziału. Służą wyłącznie " +
   "przygotowaniu odpowiednich posiłków i udzieleniu Ci pomocy w nagłej " +
-  "sytuacji. Widzą je tylko organizatorzy, a ośrodek - wyłącznie dietę " +
+  "sytuacji. Widzą je tylko Organizatorzy, a ośrodek - wyłącznie dietę " +
   "i alergie. Usuwamy je automatycznie 14 dni po wyjeździe. Zgodę możesz " +
   "wycofać w aplikacji w każdej chwili - wtedy od razu je kasujemy.";
 
@@ -152,6 +154,6 @@ export const INFORMACJA_DLA_ICE =
   `Przekaż tej osobie: administrator danych (${ADMINISTRATOR}, kontakt z IOD: ` +
   `${KONTAKT_IOD}) ma jej imię, numer telefonu i informację, kim dla Ciebie ` +
   "jest, wyłącznie po to, żeby ją powiadomić, gdyby coś Ci się stało w czasie " +
-  "wyjazdu. Widzą je tylko organizatorzy; usuniemy je 14 dni po wyjeździe. " +
+  "wyjazdu. Widzą je tylko Organizatorzy; usuniemy je 14 dni po wyjeździe. " +
   "Może zażądać dostępu do nich, sprostowania, wcześniejszego usunięcia albo " +
   "wnieść sprzeciw - pisząc do IOD. Pełna informacja: www.jwk26.pl/prywatnosc.";

@@ -28,17 +28,47 @@ export default async function SklepPage() {
 
   const { data: profil } = await supabase
     .from("profiles")
-    .select("team_id")
+    .select("team_id, role")
     .eq("id", user.id)
     .maybeSingle();
 
   const mojaDruzyna = profil?.team_id as string | null;
 
+  // Organizator bez drużyny widzi półkę i kronikę jak uczestnicy, bez salda
+  // i bez kupowania (decyzja Mikołaja 2026-10-12).
+  if (!mojaDruzyna && profil?.role === "admin") {
+    const [{ data: druzyny }, { data: pozycje }, { data: kronika }, { data: ukrytych }] = await Promise.all([
+      supabase.from("teams").select("*").order("numer"),
+      supabase.from("shop_items").select("*").eq("active", true).eq("ukryta", false).order("position"),
+      supabase.from("kronika_sklepiku").select("*").order("created_at", { ascending: false }).limit(30),
+      supabase.rpc("liczba_ukrytych_nagrod"),
+    ]);
+    return (
+      <Ekran tytul="Sklepik" podtytul="Podgląd Organizatora">
+        <p className="szklo mb-4 rounded-md px-4 py-3 text-xs leading-relaxed text-dym">
+          Nie jesteś w żadnej drużynie, więc widzisz półkę tak jak uczestnicy, ale bez salda i kupowania.
+          Wydania zamówień są w panelu Organizatora.
+        </p>
+        <Polka
+          pozycje={(pozycje ?? []) as ShopItem[]}
+          saldo={0}
+          jestKapitanem={false}
+          nazwaKapitana={null}
+          podglad
+          obceDruzyny={(druzyny ?? []) as Team[]}
+          ukrytych={typeof ukrytych === "number" ? ukrytych : 0}
+        />
+        <NaglowekSekcji>Kronika</NaglowekSekcji>
+        <Kronika wpisy={(kronika ?? []) as WpisKroniki[]} />
+      </Ekran>
+    );
+  }
+
   if (!mojaDruzyna) {
     return (
       <Ekran tytul="Sklepik" podtytul="Zakupy z salda drużyny">
         <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">
-          Nie masz jeszcze drużyny. Kapłan przypisze ją przy zgłoszeniu.
+          Nie masz jeszcze drużyny. Organizator przypisze ją przy zgłoszeniu.
         </p>
       </Ekran>
     );

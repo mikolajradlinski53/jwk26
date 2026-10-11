@@ -27,7 +27,7 @@ const WEJSCIA: { href: string; nazwa: string; opis: string; ikona: NazwaIkony; k
  */
 export default function AdminPage() {
   return (
-    <Ekran tytul="Sanktuarium" podtytul="Widoczne wyłącznie dla Kapłana">
+    <Ekran tytul="Sanktuarium" podtytul="Widoczne wyłącznie dla Organizatorów">
       <nav className="grid gap-2.5">
         {WEJSCIA.map((w) => (
           <PozycjaMenu

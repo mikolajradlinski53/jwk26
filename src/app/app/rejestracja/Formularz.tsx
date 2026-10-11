@@ -303,7 +303,7 @@ export function Formularz({
       {krok === "oTobie" && naRezerwe && (
         <p className="szklo rounded-md px-4 py-3 text-sm leading-relaxed text-dym">
           Ta pula jest pełna, więc zapiszesz się na listę rezerwową - bez przelewu.
-          Gdy zwolni się miejsce, organizator przesunie Cię na listę, a wtedy
+          Gdy zwolni się miejsce, Organizator przesunie Cię na listę, a wtedy
           poprosimy o potwierdzenie wpłaty.
         </p>
       )}

@@ -40,7 +40,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: TYTUL,
     description: opis,
     openGraph: { title: TYTUL, description: opis, type: "website", locale: "pl_PL" },
-    appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Jesienny Wyjazd Komisji" },
+    // „JWK26” jak w apce - landing nadpisywał nazwę z layoutu (2026-10-12).
+    appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "JWK26" },
   };
 }
 

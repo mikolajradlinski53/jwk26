@@ -81,7 +81,7 @@ export function KartaDruzyny({
     return (
       <section className={ramka}>
         {naglowek}
-        <p className="text-sm text-kosc">Kapitana wybierzecie, gdy organizator otworzy głosowanie.</p>
+        <p className="text-sm text-kosc">Kapitana wybierzecie, gdy Organizator otworzy głosowanie.</p>
         <p className="text-xs text-dym">Skład: {sklad.map((o) => o.display_name ?? "Uczestnik").join(", ")}</p>
       </section>
     );
@@ -139,7 +139,7 @@ export function KartaDruzyny({
     return (
       <section className={ramka}>
         {naglowek}
-        <p className="text-sm text-kosc">Głosowanie zakończone. Kapitana wskaże organizator.</p>
+        <p className="text-sm text-kosc">Głosowanie zakończone. Kapitana wskaże Organizator.</p>
       </section>
     );
   }
@@ -175,7 +175,7 @@ export function KartaDruzyny({
       )}
       {potwierdzenie ? (
         <div className="grid gap-2">
-          <p className="text-sm text-kosc">Nazwę ustawiasz raz - potem zmieni ją tylko organizator. Na pewno?</p>
+          <p className="text-sm text-kosc">Nazwę ustawiasz raz - potem zmieni ją tylko Organizator. Na pewno?</p>
           <div className="grid grid-cols-2 gap-3">
             <Button variant="szklo" onClick={() => setPotwierdzenie(false)} disabled={czeka}>
               Jeszcze nie

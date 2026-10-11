@@ -135,7 +135,7 @@ export function TwojeZgody({ maDaneZdrowotne, zgodaWizerunek, zgodaSms }: StanZg
         )}
 
         <div className="grid gap-1 px-1 text-xs leading-relaxed text-dym">
-          <p>Zgodę możesz też wycofać mailowo - napisz do koordynatora wyjazdu:</p>
+          <p>Zgodę możesz też wycofać mailowo - napisz do Koordynatora Wyjazdu:</p>
           <p className="flex items-center gap-2 text-kosc">
             <AdresEmail adres={KOORDYNATOR_MAIL} />
             <KopiujMaly tekst={KOORDYNATOR_MAIL} co="adres e-mail" />

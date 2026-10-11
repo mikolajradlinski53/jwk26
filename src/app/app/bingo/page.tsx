@@ -30,7 +30,7 @@ export default async function BingoPage() {
 
   const { data: profil, error: bladProfilu } = await supabase
     .from("profiles")
-    .select("team_id")
+    .select("team_id, role")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -43,13 +43,23 @@ export default async function BingoPage() {
     return <Awaria co="Twojego profilu" />;
   }
 
+  // Organizator bez drużyny widzi samą planszę, bez zgłoszeń (2026-10-12).
+  if (!profil?.team_id && profil?.role === "admin") {
+    const { data: zadaniaRaw } = await supabase.from("bingo_tasks").select("*").eq("rodzaj", "bingo").order("position");
+    return (
+      <Ekran tytul="Bingo" podtytul="Podgląd Organizatora">
+        <Plansza zadania={(zadaniaRaw ?? []) as BingoTask[]} zgloszenia={[]} userId={user.id} teamId="" podglad />
+      </Ekran>
+    );
+  }
+
   // Akceptacja przypisuje drużynę, ale admin mógł ją później wyczyścić -
   // to realny, nie tylko teoretyczny stan, więc dostaje własny ekran.
   if (!profil?.team_id) {
     return (
       <Ekran tytul="Bingo" podtytul="Plansza drużyny">
         <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">
-          Nie masz przypisanej drużyny. Plansza pojawi się, kiedy organizator
+          Nie masz przypisanej drużyny. Plansza pojawi się, kiedy Organizator
           Cię do niej przypisze.
         </p>
       </Ekran>
@@ -85,7 +95,7 @@ export default async function BingoPage() {
       {zadania.length === 0 ? (
         <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">
           Plansza zapali się razem z pierwszym zadaniem. Do tego czasu punkty
-          przyznaje wyłącznie Kapłan.
+          przyznaje wyłącznie Organizator.
         </p>
       ) : (
         <Plansza zadania={zadania} zgloszenia={zgloszenia} userId={user.id} teamId={teamId} />

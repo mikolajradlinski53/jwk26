@@ -13,6 +13,7 @@ export function Polka({
   saldo,
   jestKapitanem,
   nazwaKapitana,
+  podglad = false,
   obceDruzyny,
   ukrytych = 0,
 }: {
@@ -22,6 +23,8 @@ export function Polka({
   saldo: number;
   jestKapitanem: boolean;
   nazwaKapitana: string | null;
+  /** Organizator bez drużyny - sam podgląd półki. */
+  podglad?: boolean;
   obceDruzyny: Team[];
 }) {
   const router = useRouter();
@@ -93,7 +96,7 @@ export function Polka({
           <div key={p.id} className="szklo rounded-md px-3.5 py-3.5">
             <div className="flex gap-3">
               {/* Ikona świeci na czerwono tylko przy pozycjach cyfrowych: one
-                  robią coś od razu, fizyczne trzeba odebrać od Kapłana. */}
+                  robią coś od razu, fizyczne trzeba odebrać od Organizatora. */}
               <IkonaPozycji
                 ikona={p.ikona}
                 className={
@@ -119,9 +122,11 @@ export function Polka({
 
             {!jestKapitanem && (
               <p className="mt-2.5 text-xs text-dym">
-                {nazwaKapitana
-                  ? `Kupuje ${nazwaKapitana}`
-                  : "Drużyna nie ma jeszcze kapitana"}
+                {podglad
+                  ? "Kupuje kapitan drużyny"
+                  : nazwaKapitana
+                    ? `Kupuje ${nazwaKapitana}`
+                    : "Drużyna nie ma jeszcze kapitana"}
               </p>
             )}
 

@@ -34,7 +34,7 @@ export function komunikat(e: unknown): string {
   if (/raz na minute/i.test(t)) return "Próbne powiadomienie możesz wysłać raz na minutę.";
   // Drużyny
   if (/NAZWA_ZAJETA/.test(t)) return "Ta nazwa jest już zajęta przez inną drużynę.";
-  if (/NAZWA_JUZ_NADANA/.test(t)) return "Drużyna już ma nazwę - zmienić ją może tylko organizator.";
+  if (/NAZWA_JUZ_NADANA/.test(t)) return "Drużyna już ma nazwę - zmienić ją może tylko Organizator.";
   if (/NAZWA_DLUGOSC/.test(t)) return "Nazwa ma od 1 do 30 znaków.";
   if (/MOTTO_DLUGOSC/.test(t)) return "Motto ma najwyżej 60 znaków.";
   if (/Glosowanie nie trwa/.test(t)) return "Głosowanie nie trwa - odśwież ekran.";

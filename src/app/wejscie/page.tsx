@@ -10,16 +10,21 @@ import { METADANE_APKI } from "@/lib/metadaneApki";
 // Tu odbywa się instalacja na ekranie głównym - nazwa i manifest apki.
 export const metadata = METADANE_APKI;
 
+/** „23-25.10.2026” - wyjazd trwa trzy dni od daty startu z ustawień. */
 function dataWyjazdu(iso: string | null): string | null {
   if (!iso) return null;
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString("pl-PL", {
-    day: "numeric",
-    month: "numeric",
-    year: "numeric",
-    timeZone: "Europe/Warsaw",
-  });
+  const start = new Date(iso);
+  if (Number.isNaN(start.getTime())) return null;
+  const koniec = new Date(start.getTime() + 2 * 24 * 3600 * 1000);
+  const czesci = (d: Date) =>
+    Object.fromEntries(
+      new Intl.DateTimeFormat("pl-PL", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Europe/Warsaw" })
+        .formatToParts(d)
+        .map((c) => [c.type, c.value]),
+    );
+  const a = czesci(start);
+  const b = czesci(koniec);
+  return a.month === b.month ? `${a.day}-${b.day}.${b.month}.${b.year}` : `${a.day}.${a.month}-${b.day}.${b.month}.${b.year}`;
 }
 
 /**

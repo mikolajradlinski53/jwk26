@@ -44,7 +44,7 @@ export function WyborZdjecia({
       </label>
       <p className="text-xs leading-relaxed text-dym">
         Zrzut ekranu z aplikacji banku, zdjęcie albo PDF z potwierdzeniem (do 5 MB).
-        Plik widzi wyłącznie organizator.
+        Plik widzi wyłącznie Organizator.
       </p>
     </div>
   );

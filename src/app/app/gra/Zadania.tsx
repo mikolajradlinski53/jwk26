@@ -43,14 +43,22 @@ export function Zadania({
   zgloszenia,
   userId,
   teamId,
+  podglad = false,
 }: {
   zadania: BingoTask[];
   zgloszenia: BingoSubmission[];
   userId: string;
   teamId: string;
+  /** Organizator bez drużyny: same zadania, bez wysyłania. */
+  podglad?: boolean;
 }) {
   return (
     <div className="grid gap-3">
+      {podglad && (
+        <p className="szklo rounded-md px-4 py-3 text-xs leading-relaxed text-dym">
+          Podgląd Organizatora - tak drużyny widzą odkryte zadania. Zgłoszenia rozpatrujesz w panelu (Bingo).
+        </p>
+      )}
       {zadania.map((z) => (
         <Karta
           key={z.id}
@@ -58,6 +66,7 @@ export function Zadania({
           {...stanZadania(zgloszenia.filter((s) => s.task_id === z.id))}
           userId={userId}
           teamId={teamId}
+          podglad={podglad}
         />
       ))}
     </div>
@@ -71,7 +80,9 @@ function Karta({
   odrzucone,
   userId,
   teamId,
+  podglad,
 }: {
+  podglad: boolean;
   zadanie: BingoTask;
   stan: Stan;
   zywe?: BingoSubmission;
@@ -140,7 +151,7 @@ function Karta({
         <p className="mt-1 text-sm text-dym">{odrzucone?.review_note?.trim() || "Bez podania powodu."}</p>
       )}
 
-      {(stan === "do-zrobienia" || stan === "odrzucone") && (
+      {!podglad && (stan === "do-zrobienia" || stan === "odrzucone") && (
         <div className="mt-3 grid gap-3">
           <label className="block">
             <span className="mb-1.5 block pl-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-dym">
