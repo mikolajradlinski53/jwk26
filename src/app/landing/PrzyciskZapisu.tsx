@@ -37,7 +37,7 @@ export function PrzyciskZapisu({ odslona, wariant }: { odslona: OdslonaWidok; wa
   const s = STYLE[wariant];
   if (odslona.odsloniete) {
     return (
-      <Link href="/wejscie" className={s.przycisk}>
+      <Link href="/wejscie" className={s.przycisk} data-zdarzenie="klik_zapisz" data-miejsce={wariant}>
         Zapisz się
       </Link>
     );

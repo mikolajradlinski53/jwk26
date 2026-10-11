@@ -77,6 +77,8 @@ export function Stopka({ zapisy, social, maPlan }: { zapisy: OdslonaWidok; socia
                     target="_blank"
                     rel="noreferrer"
                     aria-label="JWK26 na Instagramie"
+                    data-zdarzenie="social"
+                    data-miejsce="instagram"
                     className={KLASA_IKONY}
                   >
                     <span className="size-[17px]">
@@ -90,6 +92,8 @@ export function Stopka({ zapisy, social, maPlan }: { zapisy: OdslonaWidok; socia
                     target="_blank"
                     rel="noreferrer"
                     aria-label="JWK26 na Facebooku"
+                    data-zdarzenie="social"
+                    data-miejsce="facebook"
                     className={KLASA_IKONY}
                   >
                     <span className="size-[17px]">

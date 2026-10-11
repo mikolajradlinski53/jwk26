@@ -40,6 +40,8 @@ export function Naglowek({ zapisy }: { zapisy: OdslonaWidok }) {
       {zapisy.odsloniete ? (
         <Link
           href="/wejscie"
+          data-zdarzenie="klik_zapisz"
+          data-miejsce="naglowek"
           className={`${KLASA_PRZYCISKU} hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jesien-rdza`}
         >
           Wejdź

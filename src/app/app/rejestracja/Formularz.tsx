@@ -15,6 +15,7 @@ import {
 } from "@/lib/zapisy/formularz";
 import { komunikat, tekstBledu } from "@/lib/zapisy/bledy";
 import { wgrajZdjecie, dopiszOcr, type WgraneZdjecie } from "@/lib/zapisy/przelew";
+import { zdarzenie, kodBledu } from "@/lib/zdarzenia";
 import { KrokPula, KrokZasady, KrokDane, KrokIce, KrokZdrowie, KrokOTobie } from "./Kroki";
 import { WyborZdjecia } from "./WyborZdjecia";
 import { DanePrzelewu } from "@/components/DanePrzelewu";
@@ -141,6 +142,9 @@ export function Formularz({
       return;
     }
     setPropozycjaRezerwy(false);
+    // Lejek zapisów: który krok ktoś osiągnął (bez treści pól).
+    const nastepny = lista[pozycja + 1];
+    if (nastepny) zdarzenie("formularz_krok", { krok: nastepny, pula: dane.pula ?? "brak" });
     setIndeks((i) => i + 1);
     skupTytulKroku();
   }
@@ -199,6 +203,7 @@ export function Formularz({
       // Miejsce zajęte - dopiero teraz czytamy zdjęcie, w tle. Obietnica żyje
       // dalej, gdy serwer podmieni formularz na poczekalnię.
       if (wgrane.current) void dopiszOcr(wgrane.current);
+      zdarzenie("zgloszenie", { pula: dane.pula ?? "brak", rezerwa: doRezerwy ? "tak" : "nie" });
 
       // Rygiel zostaje zamknięty: strona serwerowa zaraz podmieni formularz
       // na poczekalnię.
@@ -209,6 +214,7 @@ export function Formularz({
       // cały wiersz łącznie z danymi zdrowotnymi (art. 9 RODO) - do konsoli
       // idzie wyłącznie kod i komunikat, nigdy cały obiekt błędu.
       const zapis = { code: (e as { code?: string } | null)?.code, message: tekst };
+      zdarzenie("zgloszenie_blad", { kod: kodBledu(tekst) });
 
       // PWA na iOS bez przeładowania: zawieszony `fetch` potrafi zgubić samą
       // odpowiedź, mimo że zapis po drugiej stronie przeszedł. Drugie

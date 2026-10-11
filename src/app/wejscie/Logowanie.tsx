@@ -7,6 +7,7 @@ import { bladLogowania } from "@/lib/auth/blad";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { Zaba } from "@/components/Zaba";
+import { zdarzenie } from "@/lib/zdarzenia";
 
 
 // Kod OTP zamiast magic linka: na telefonie przepisanie kilku cyfr jest
@@ -61,6 +62,7 @@ export function Logowanie() {
   }, []);
 
   async function zalogujGoogle() {
+    zdarzenie("logowanie", { metoda: "google" });
     setBlad(null);
     setCzekaGoogle(true);
     const { error } = await createClient().auth.signInWithOAuth({
@@ -96,6 +98,7 @@ export function Logowanie() {
 
     if (!error) {
       setWyslano(true);
+      zdarzenie("logowanie", { metoda: "kod" });
       setEtap("kod");
       return;
     }

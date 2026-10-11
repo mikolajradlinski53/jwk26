@@ -50,6 +50,8 @@ export function Infopack({ odslona }: { odslona: OdslonaWidok }) {
               href={INFOPACK}
               target="_blank"
               rel="noopener"
+              data-zdarzenie="dokument"
+              data-miejsce="infopack"
               className="flex min-h-12 items-center justify-center rounded-full bg-jesien-rdza px-6 text-sm font-bold
                          text-white transition hover:brightness-110 focus-visible:outline-2
                          focus-visible:outline-offset-2 focus-visible:outline-jesien-rdza"

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { POSTY, type Post } from "./aktualnosciDane";
+import { zdarzenie } from "@/lib/zdarzenia";
 
 /** Pierwsza niepusta linia opisu - zajawka pod kafelkiem. */
 function zajawka(tresc: string): string {
@@ -53,7 +54,10 @@ export function Posty() {
             ref={(el) => {
               kafelki.current[p.id] = el;
             }}
-            onClick={() => setOtwarty(p)}
+            onClick={() => {
+              setOtwarty(p);
+              zdarzenie("post", { post: p.id });
+            }}
             className="group grid content-start overflow-hidden rounded-lg border border-jesien-kora/15 bg-jesien-tlo/80 text-left
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jesien-rdza"
           >

@@ -38,6 +38,8 @@ export function Dokumenty() {
               href={d.href}
               target="_blank"
               rel="noopener"
+              data-zdarzenie="dokument"
+              data-miejsce={d.href.slice(1)}
               className="grid gap-1 rounded-lg border border-jesien-kora/15 bg-jesien-karta p-5 transition
                          hover:border-jesien-rdza/40 focus-visible:outline-2 focus-visible:outline-offset-2
                          focus-visible:outline-jesien-rdza"
