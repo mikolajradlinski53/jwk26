@@ -13,8 +13,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(dane.tytul || "JWK26", {
       body: dane.tresc || "",
-      icon: "/icon",
-      badge: "/icon",
+      icon: "/icon.png",
+      badge: "/icon.png",
       lang: "pl",
       // Własny znacznik na każde powiadomienie + `renotify`: każde nowe
       // ogłoszenie wibruje i wyskakuje osobno, zamiast cicho podmieniać

@@ -23,8 +23,11 @@
  *                Resend wysyła też powiadomienia organizatorom o zgłoszeniach.
  * 2026-10-07.1 - wycofanie zgód: „Więcej → Zarządzaj zgodami” albo mailowo
  *                u koordynatora (sekcja w apce zwinięta, decyzja Mikołaja).
+ * 2026-10-11.1 - nowy tekst regulaminu od Mikołaja (zastępstwo Koordynatora,
+ *                obowiązkowe szkolenia, brak NNW/OC, szkody § 13 ust. 4-8)
+ *                z dopiskami z aplikacji; § 19 nadal „Aplikacja JWK26”.
  */
-export const WERSJA_ZGOD = "2026-10-07.1";
+export const WERSJA_ZGOD = "2026-10-11.1";
 
 export const KONTAKT_IOD = "iod@ue.wroc.pl";
 

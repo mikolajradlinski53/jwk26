@@ -14,6 +14,8 @@ export const METADANE_APKI: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Sekta",
+    // Nazwa podpowiadana przy „Dodaj do ekranu początkowego” (decyzja
+    // Mikołaja 2026-10-11) - ta sama co short_name w manifeście.
+    title: "JWK26",
   },
 };

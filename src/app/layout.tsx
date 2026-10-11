@@ -28,7 +28,8 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Jesienny Wyjazd Komisji",
+    // Jak w apce: ktokolwiek doda stronę do ekranu głównego, dostaje „JWK26”.
+    title: "JWK26",
   },
 };
 

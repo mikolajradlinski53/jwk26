@@ -54,7 +54,7 @@ export function Dokumenty() {
           className="mt-3 grid scroll-mt-24 gap-1.5 rounded-lg border border-jesien-kora/15 bg-jesien-karta p-5"
         >
           <span className="font-tytul text-lg text-jesien-atrament">Kontakt</span>
-          <span className="text-sm text-jesien-kora">{KOORDYNATOR}, koordynator wyjazdu</span>
+          <span className="text-sm text-jesien-kora">{KOORDYNATOR}, Koordynator Wyjazdu</span>
           <p className="flex items-center justify-between gap-3 text-sm text-jesien-atrament">
             <AdresEmail adres={KOORDYNATOR_MAIL} />
             <span className="text-jesien-rdza">

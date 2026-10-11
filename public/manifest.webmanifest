@@ -1,12 +1,12 @@
 {
-  "name": "Sekta Wyjazdowa",
-  "short_name": "Sekta",
+  "name": "JWK26",
+  "short_name": "JWK26",
   "start_url": "/app",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0c0709",
   "theme_color": "#0c0709",
   "icons": [
-    { "src": "/icon", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }

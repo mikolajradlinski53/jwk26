@@ -14,10 +14,16 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
-      ...["/grafika/:path*", "/hero/:path*", "/logo/:path*"].map((source) => ({
+      ...["/grafika/:path*", "/hero/:path*", "/logo/:path*", "/aktualnosci/:path*"].map((source) => ({
         source,
         headers: [{ key: "Cache-Control", value: MIESIAC }],
       })),
+      {
+        // Ikony (favicon z Higgsfielda, 2026-10-11): przeglądarka pyta o nie
+        // przy każdym wejściu - dzień w cache, bo podmiana ikony to rzadkość.
+        source: "/:plik(favicon.ico|icon.png|apple-icon.png)",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400" }],
+      },
       {
         // Service worker bez cache: inaczej telefon trzymałby starą wersję
         // obsługi powiadomień nawet po wdrożeniu poprawki.

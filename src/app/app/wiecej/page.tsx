@@ -84,12 +84,12 @@ export default async function WiecejPage() {
       <nav className="grid gap-2.5">
         <PozycjaMenu href="/regulamin" ikona="zwoj" nazwa="Regulamin" opis="Zasady wyjazdu" />
         <PozycjaMenu href="/prywatnosc" ikona="tarcza" nazwa="Prywatność" opis="Jak przetwarzamy Twoje dane" />
-        {/* Koordynator - ten sam kontakt, który podaje regulamin (§ 17, § 19).
+        {/* Koordynator - ten sam kontakt, który podaje regulamin (§ 17, § 20).
             Adres do skopiowania zamiast `mailto:` - na części telefonów link
             otwierał nieskonfigurowaną albo zupełnie przypadkową aplikację. */}
         <div className="szklo grid gap-1.5 rounded-md px-4 py-3.5">
           <p className="text-sm font-bold text-kosc">Kontakt z organizatorem</p>
-          <p className="text-xs text-dym">{KOORDYNATOR}, koordynator wyjazdu</p>
+          <p className="text-xs text-dym">{KOORDYNATOR}, Koordynator Wyjazdu</p>
           <p className="flex items-center justify-between gap-3 text-sm text-kosc">
             <AdresEmail adres={KOORDYNATOR_MAIL} />
             <KopiujMaly tekst={KOORDYNATOR_MAIL} co="adres e-mail" />

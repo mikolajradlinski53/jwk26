@@ -54,14 +54,14 @@ export function Zapisy({ zapisy, dataSwiezakow }: { zapisy: OdslonaWidok; dataSw
           <div className="grid content-start gap-2 rounded-lg border border-jesien-kora/15 bg-jesien-tlo/80 p-5">
             <h3 className="font-tytul text-lg text-jesien-atrament">Działacze</h3>
             <p className="text-sm leading-relaxed text-jesien-kora">
-              Osoby działające w komisjach i jednostkach Samorządu. Ta tura rusza pierwsza.
+              Osoby działające w Komisjach Samorządu. Ta tura rusza pierwsza.
             </p>
           </div>
           <div className="grid content-start gap-3 rounded-lg border border-jesien-kora/15 bg-jesien-tlo/80 p-5">
             <h3 className="font-tytul text-lg text-jesien-atrament">Świeżaki</h3>
             <p className="text-sm leading-relaxed text-jesien-kora">
-              Nowi członkowie komisji Samorządu przyjęci w tegorocznej rekrutacji. Tura rusza po przyjęciu
-              Świeżaków.
+              Nowi członkowie Komisji Samorządu przyjęci w tegorocznej Rekrutacji Jesiennej. Tura rusza po
+              przyjęciu Świeżaków.
             </p>
             <Licznik
               docelowa={dataSwiezakow}
@@ -73,7 +73,7 @@ export function Zapisy({ zapisy, dataSwiezakow }: { zapisy: OdslonaWidok; dataSw
           <div className="grid content-start gap-2 rounded-lg border border-jesien-kora/15 bg-jesien-tlo/80 p-5">
             <h3 className="font-tytul text-lg text-jesien-atrament">Alumni</h3>
             <p className="text-sm leading-relaxed text-jesien-kora">
-              Byli członkowie komisji Samorządu. Tura rusza jako ostatnia, jeśli pozostaną wolne miejsca
+              Byli członkowie Komisji Samorządu. Tura rusza jako ostatnia, jeśli pozostaną wolne miejsca
               i nie zostaną one zapełnione z listy rezerwowej.
             </p>
           </div>
