@@ -47,7 +47,12 @@ export type UserScore = {
 
 export type BingoTask = {
   id: string;
-  position: number;
+  /** Pole planszy 0-24; NULL dla zadania gry terenowej. */
+  position: number | null;
+  /** 'quest' = zadanie gry terenowej (bez pola na planszy). */
+  rodzaj: "bingo" | "quest";
+  /** Quest widoczny dla uczestników dopiero po odkryciu przez admina. */
+  odkryte: boolean;
   title: string;
   description: string;
   points: number;

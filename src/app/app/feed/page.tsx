@@ -10,7 +10,7 @@ type WpisSurowy = {
   photo_path: string;
   caption: string | null;
   created_at: string;
-  bingo_tasks: { title: string; points: number } | null;
+  bingo_tasks: { title: string; points: number; rodzaj: "bingo" | "quest" } | null;
   teams: { name: string; color: string } | null;
   profiles: { display_name: string | null } | null;
 };
@@ -82,7 +82,7 @@ export default async function FeedPage() {
     .from("bingo_submissions")
     .select(
       "id, photo_path, caption, created_at, " +
-        "bingo_tasks(title, points), teams(name, color), " +
+        "bingo_tasks(title, points, rodzaj), teams(name, color), " +
         "profiles!bingo_submissions_user_id_fkey(display_name)",
     )
     .eq("status", "approved")
@@ -182,6 +182,7 @@ export default async function FeedPage() {
               utworzonoTekst={GODZINA_WPISU.format(new Date(w.created_at))}
               zadanieTytul={w.bingo_tasks?.title ?? "Zadanie"}
               punkty={w.bingo_tasks?.points ?? 0}
+              graTerenowa={w.bingo_tasks?.rodzaj === "quest"}
               druzynaNazwa={w.teams?.name ?? "Bez drużyny"}
               druzynaKolor={w.teams?.color ?? "#9c8b8e"}
               autor={w.profiles?.display_name ?? "Uczestnik"}

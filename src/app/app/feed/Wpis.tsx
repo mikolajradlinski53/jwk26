@@ -100,6 +100,7 @@ export function Wpis({
   utworzonoTekst,
   zadanieTytul,
   punkty,
+  graTerenowa = false,
   druzynaNazwa,
   druzynaKolor,
   autor,
@@ -117,6 +118,8 @@ export function Wpis({
   utworzonoTekst: string;
   zadanieTytul: string;
   punkty: number;
+  /** Zadanie gry terenowej zamiast pola bingo - inna etykieta pod tytułem. */
+  graTerenowa?: boolean;
   druzynaNazwa: string;
   druzynaKolor: string;
   autor: string;
@@ -322,7 +325,9 @@ export function Wpis({
         </div>
 
         <p className="mt-3 font-tytul text-base text-kosc">{zadanieTytul}</p>
-        <p className="text-xs uppercase tracking-widest text-dym">{punkty} pkt</p>
+        <p className="text-xs uppercase tracking-widest text-dym">
+          {graTerenowa ? `Gra terenowa · ${punkty} pkt` : `${punkty} pkt`}
+        </p>
 
         {podpis && <p className="mt-2 text-sm leading-relaxed text-kosc">{podpis}</p>}
 

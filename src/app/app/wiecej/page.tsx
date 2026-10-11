@@ -71,6 +71,7 @@ export default async function WiecejPage() {
 
       <NaglowekSekcji>Zabawa</NaglowekSekcji>
       <nav className="grid gap-2.5">
+        <PozycjaMenu href="/app/gra" ikona="oko" nazwa="Gra terenowa" opis="Zadania dla drużyn" />
         <PozycjaMenu href="/app/arcade" ikona="karty" nazwa="Kasyno" opis="Sloty, blackjack i kruk" />
         <PozycjaMenu href="/app/gossip" ikona="gwiazda" nazwa="JWK Awards" opis="Anonimowe nominacje" />
       </nav>

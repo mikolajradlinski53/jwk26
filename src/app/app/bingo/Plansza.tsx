@@ -3,37 +3,15 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { podglad, skompresuj } from "@/lib/obrazy";
+import { komunikatZdjecia, wyslijZdjecieZadania } from "@/lib/zgloszenieZdjecia";
 import { Button } from "@/components/ui/Button";
 import type { BingoSubmission, BingoTask } from "@/types/db";
 import { klasaTytuluPola } from "@/lib/bingo";
 
 type Stan = "puste" | "oczekujace" | "zapalone" | "odrzucone";
 
-/**
- * Tłumaczy błąd techniczny na zdanie, z którym uczestnik ma co zrobić.
- * Ten sam pomysł co w formularzu rejestracyjnym - surowy komunikat Postgresa
- * na telefonie, po ciemku, nikomu nie pomaga.
- */
 function komunikat(e: unknown): string {
-  const tekst = e instanceof Error ? e.message : String(e);
-
-  if (/bingo_jedno_na_pole|duplicate key/i.test(tekst)) {
-    return "To pole właśnie zajął ktoś z drużyny. Odśwież planszę.";
-  }
-  if (/row-level security|jwt|expired|401/i.test(tekst)) {
-    return "Sesja wygasła. Zaloguj się ponownie.";
-  }
-  if (/mime type|not supported/i.test(tekst)) {
-    return "Ten format zdjęcia nie przechodzi. Spróbuj innego pliku.";
-  }
-  if (/failed to fetch|networkerror|network/i.test(tekst)) {
-    return "Zerwało połączenie. Sprawdź zasięg i spróbuj jeszcze raz.";
-  }
-  if (/image|decode|canvas|load/i.test(tekst)) {
-    return "Nie udało się odczytać tego pliku jako zdjęcia. Spróbuj innego.";
-  }
-  return "Coś poszło nie tak. Spróbuj jeszcze raz.";
+  return komunikatZdjecia(e, "To pole właśnie zajął ktoś z drużyny. Odśwież planszę.");
 }
 
 /**
@@ -239,40 +217,9 @@ export function Plansza({
     }
 
     wToku.current = true;
-    setEtap("Przygotowuję zdjęcie...");
 
     try {
-      const supabase = createClient();
-      const zmniejszone = await skompresuj(plik);
-
-      setEtap("Wysyłam zdjęcie...");
-      const sciezka = `${userId}/${crypto.randomUUID()}.jpg`;
-      const { error: bladUploadu } = await supabase.storage
-        .from("bingo")
-        .upload(sciezka, zmniejszone, { contentType: "image/jpeg" });
-      if (bladUploadu) throw bladUploadu;
-
-      // Podgląd do feedu obok pełnego pliku. Porażka nie psuje zgłoszenia -
-      // trasa zdjęć odda wtedy pełne (spec porządku, D6).
-      try {
-        const maly = await podglad(plik);
-        const { error: bladPodgladu } = await supabase.storage
-          .from("bingo")
-          .upload(sciezka.replace(/\.jpg$/, ".podglad.jpg"), maly, { contentType: "image/jpeg" });
-        if (bladPodgladu) throw bladPodgladu;
-      } catch (e) {
-        console.error("Podgląd zdjęcia bingo się nie wysłał:", e);
-      }
-
-      setEtap("Zapisuję zgłoszenie...");
-      const { error: bladZgloszenia } = await supabase.from("bingo_submissions").insert({
-        team_id: teamId,
-        user_id: userId,
-        task_id: task.id,
-        photo_path: sciezka,
-        caption: podpis.trim() || null,
-      });
-      if (bladZgloszenia) throw bladZgloszenia;
+      await wyslijZdjecieZadania({ userId, teamId, taskId: task.id, plik, podpis, etap: setEtap });
 
       router.refresh();
       zamknij();
@@ -323,8 +270,8 @@ export function Plansza({
               type="button"
               onClick={() => setOtwarteId(task.id)}
               style={{
-                gridColumn: (task.position % 5) + 1,
-                gridRow: Math.floor(task.position / 5) + 1,
+                gridColumn: ((task.position ?? 0) % 5) + 1,
+                gridRow: Math.floor((task.position ?? 0) / 5) + 1,
               }}
               aria-label={`${task.title} - ${opisStanu(stan, wlasne)}`}
               data-pole={task.id}

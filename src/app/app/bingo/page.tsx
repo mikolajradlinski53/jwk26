@@ -60,7 +60,8 @@ export default async function BingoPage() {
 
   const [{ data: zadaniaRaw, error: bladZadan }, { data: zgloszeniaRaw, error: bladZgloszen }] =
     await Promise.all([
-      supabase.from("bingo_tasks").select("*").order("position"),
+      // Same pola planszy - zadania gry terenowej mają osobny ekran.
+      supabase.from("bingo_tasks").select("*").eq("rodzaj", "bingo").order("position"),
       supabase.from("bingo_submissions").select("*").eq("team_id", teamId),
     ]);
 

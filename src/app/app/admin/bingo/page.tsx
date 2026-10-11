@@ -9,7 +9,7 @@ type ZgloszenieSurowe = {
   photo_path: string;
   caption: string | null;
   created_at: string;
-  bingo_tasks: { title: string; description: string; points: number } | null;
+  bingo_tasks: { title: string; description: string; points: number; rodzaj: "bingo" | "quest" } | null;
   teams: { name: string; color: string } | null;
   profiles: { display_name: string | null } | null;
 };
@@ -39,7 +39,7 @@ export default async function KolejkaBingo() {
     .from("bingo_submissions")
     .select(
       "id, user_id, photo_path, caption, created_at, " +
-        "bingo_tasks(title, description, points), teams(name, color), " +
+        "bingo_tasks(title, description, points, rodzaj), teams(name, color), " +
         "profiles!bingo_submissions_user_id_fkey(display_name)",
     )
     .eq("status", "pending")
@@ -85,7 +85,7 @@ export default async function KolejkaBingo() {
   );
 
   return (
-    <Ekran tytul="Bingo" podtytul="Zdjęcia do rozpatrzenia">
+    <Ekran tytul="Bingo" podtytul="Zdjęcia z bingo i gry terenowej">
       {zgloszenia.length === 0 && (
         <p className="text-center text-dym">Kolejka pusta.</p>
       )}
@@ -101,6 +101,12 @@ export default async function KolejkaBingo() {
 
           return (
             <li key={z.id} className="szklo rounded-lg overflow-hidden p-4">
+              {/* Ta sama kolejka przyjmuje zgłoszenia z gry terenowej. */}
+              {z.bingo_tasks?.rodzaj === "quest" && (
+                <p className="mb-1 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-krew-jasna">
+                  Gra terenowa
+                </p>
+              )}
               <p className="font-tytul tracking-wider text-kosc">{tytulZadania}</p>
               {z.bingo_tasks?.description && (
                 <p className="mt-1 text-sm text-dym">{z.bingo_tasks.description}</p>
