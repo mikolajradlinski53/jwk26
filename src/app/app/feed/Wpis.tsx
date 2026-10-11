@@ -2,6 +2,7 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { zdarzenie } from "@/lib/zdarzenia";
 import { ZdjecieFeedu } from "./ZdjecieFeedu";
 
 export type KomentarzWpis = {
@@ -192,6 +193,7 @@ export function Wpis({
               .delete()
               .eq("submission_id", id)
               .eq("user_id", userId);
+        if (!error && cel) zdarzenie("feed", { akcja: "lajk" });
 
         const kod = (error as { code?: string } | null)?.code;
 
@@ -260,6 +262,7 @@ export function Wpis({
       .single();
 
     setWysylanie(false);
+    if (!error) zdarzenie("feed", { akcja: "komentarz" });
 
     if (error) {
       console.error("Komentarz nie przeszedł:", error);

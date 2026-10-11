@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { komunikat } from "@/lib/zapisy/bledy";
 import { KROK_S, SWIAT, krok, nowyStan, type Stan } from "@/lib/kruk/fizyka";
 import { rysuj, wczytajObrazy, type ObrazyGry, type Paleta } from "./rysuj";
+import { zdarzenie } from "@/lib/zdarzenia";
 
 type Faza = "czeka" | "leci" | "pauza" | "koniec";
 
@@ -129,6 +130,7 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
           if (zyje) setUwaga(`${komunikat(error)} Ten lot się nie zapisze.`);
           return null;
         }
+        zdarzenie("gra", { gra: "kruk" });
         return data as string;
       });
     }

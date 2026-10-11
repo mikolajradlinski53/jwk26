@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { zdarzenie } from "@/lib/zdarzenia";
 import { skompresuj } from "@/lib/obrazy";
 import { Button } from "@/components/ui/Button";
 import { komunikat } from "@/lib/zapisy/bledy";
@@ -93,6 +94,7 @@ export function Nominacja({
         p_zdjecie: sciezka,
       });
       if (error) throw error;
+      zdarzenie("nominacja");
       router.refresh();
     } catch (e) {
       console.error("Nominacja nie przeszła:", e);

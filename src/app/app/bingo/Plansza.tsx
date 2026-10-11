@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { komunikatZdjecia, wyslijZdjecieZadania } from "@/lib/zgloszenieZdjecia";
+import { zdarzenie } from "@/lib/zdarzenia";
 import { Button } from "@/components/ui/Button";
 import type { BingoSubmission, BingoTask } from "@/types/db";
 import { klasaTytuluPola } from "@/lib/bingo";
@@ -220,6 +221,7 @@ export function Plansza({
 
     try {
       await wyslijZdjecieZadania({ userId, teamId, taskId: task.id, plik, podpis, etap: setEtap });
+      zdarzenie("zdjecie_zadania", { rodzaj: "bingo" });
 
       router.refresh();
       zamknij();

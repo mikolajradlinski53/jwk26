@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { zdarzenie } from "@/lib/zdarzenia";
 import { Button } from "@/components/ui/Button";
 import { komunikat } from "@/lib/zapisy/bledy";
 
@@ -132,6 +133,7 @@ export function Powiadomienia() {
           applicationServerKey: kluczDoBajtow(KLUCZ),
         });
         await zapiszNaSerwerze(sub);
+        zdarzenie("powiadomienia", { akcja: "wlaczone" });
         setStan("wlaczone");
       } else {
         const sub = await rejestracja.pushManager.getSubscription();

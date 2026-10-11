@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { komunikatZawodow } from "@/lib/zawody";
+import { zdarzenie } from "@/lib/zdarzenia";
 
 type Osoba = { id: string; nazwa: string };
 
@@ -141,7 +142,7 @@ export function ZapisSkladu({
         p_czlonkowie: wybrani,
         p_dziewczyna: dziewczyna,
       }),
-    );
+    ).then((ok) => ok && zdarzenie("zawody", { akcja: "sklad" }));
   }
 
   return (
@@ -267,7 +268,11 @@ export function ZapisIndywidualny({
       <Blad tresc={blad} />
       {zapisyOtwarte && !zapisany && (
         <Button
-          onClick={() => wykonaj(() => createClient().rpc("zapisz_sie_na_zawody", { p_zawody: zawodyId }))}
+          onClick={() =>
+            wykonaj(() => createClient().rpc("zapisz_sie_na_zawody", { p_zawody: zawodyId })).then(
+              (ok) => ok && zdarzenie("zawody", { akcja: "indywidualnie" }),
+            )
+          }
           disabled={czeka || pelne}
         >
           {pelne ? "Brak miejsc" : czeka ? "Zapisuję..." : "Zapisz się"}

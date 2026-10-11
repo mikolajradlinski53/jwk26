@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { zdarzenie } from "@/lib/zdarzenia";
 import { Button } from "@/components/ui/Button";
 import { IkonaPozycji } from "@/components/IkonaPozycji";
 import type { ShopItem, Team } from "@/types/db";
@@ -51,6 +52,7 @@ export function Polka({
       p_item_id: pozycja.id,
       p_target_team: pozycja.requires_target ? cel : null,
     });
+    if (!error) zdarzenie("sklep", { pozycja: pozycja.name });
 
     // Odblokowanie idzie przed sprawdzeniem błędu, nie po. Wyjście z funkcji
     // przy zostawionym `wToku` zablokowałoby półkę do przeładowania strony -

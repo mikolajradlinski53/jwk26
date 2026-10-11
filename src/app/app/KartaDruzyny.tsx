@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { zdarzenie } from "@/lib/zdarzenia";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { komunikat } from "@/lib/zapisy/bledy";
@@ -58,6 +59,7 @@ export function KartaDruzyny({
     setCzeka(true);
     setBlad(null);
     const { error } = await createClient().rpc(rpc, args);
+    if (!error) zdarzenie("druzyna", { akcja: rpc });
     setCzeka(false);
     wToku.current = false;
     if (error) {

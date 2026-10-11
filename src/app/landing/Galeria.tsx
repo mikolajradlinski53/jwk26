@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { zdarzenie } from "@/lib/zdarzenia";
 
 type ZdjecieDane = {
   plik: string;
@@ -114,6 +115,8 @@ export function Galeria() {
   const kafelkiRefy = useRef<(HTMLButtonElement | null)[]>([]);
   const zamknijRef = useRef<HTMLButtonElement | null>(null);
   const ostatniFokusRef = useRef<HTMLButtonElement | null>(null);
+  // Indeksy zdjęć obejrzanych w lightboksie od otwarcia - do statystyk.
+  const obejrzaneRef = useRef<Set<number>>(new Set());
   const dotykRef = useRef<{ x: number; y: number; poziomo: boolean | null } | null>(null);
 
   const widoczne = rozwinieta ? ZDJECIA : ZDJECIA.slice(0, WIDOCZNE_NA_START);
@@ -147,8 +150,24 @@ export function Galeria() {
     };
   }, [otwarteIndeks, ile]);
 
+  // Statystyki: każde pokazane zdjęcie i zamknięcie lightboksa, niezależnie od
+  // tego, czy przez palec, przyciski czy klawiaturę (Escape i strzałki
+  // zmieniają stan bez `zamknij`/`przesun`).
+  const bylOtwartyRef = useRef(false);
+  useEffect(() => {
+    if (otwarteIndeks !== null) {
+      obejrzaneRef.current.add(otwarteIndeks);
+    } else if (bylOtwartyRef.current) {
+      const n = obejrzaneRef.current.size;
+      zdarzenie("galeria", { akcja: "zamkniecie", zdjec: n <= 1 ? "1" : n <= 4 ? "2-4" : n <= 9 ? "5-9" : "10+" });
+    }
+    bylOtwartyRef.current = otwarteIndeks !== null;
+  }, [otwarteIndeks]);
+
   function otworz(i: number) {
     ostatniFokusRef.current = kafelkiRefy.current[i];
+    obejrzaneRef.current = new Set([i]);
+    zdarzenie("galeria", { akcja: "otwarcie" });
     setOtwarteIndeks(i);
   }
 

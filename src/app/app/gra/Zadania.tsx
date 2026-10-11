@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { komunikatZdjecia, wyslijZdjecieZadania } from "@/lib/zgloszenieZdjecia";
+import { zdarzenie } from "@/lib/zdarzenia";
 import type { BingoSubmission, BingoTask } from "@/types/db";
 
 type Stan = "do-zrobienia" | "czeka" | "zaliczone" | "odrzucone";
@@ -95,6 +96,7 @@ function Karta({
     wToku.current = true;
     try {
       await wyslijZdjecieZadania({ userId, teamId, taskId: zadanie.id, plik, podpis, etap: setEtap });
+      zdarzenie("zdjecie_zadania", { rodzaj: "gra_terenowa" });
       setPlik(null);
       setPodpis("");
       router.refresh();

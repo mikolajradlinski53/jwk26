@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { zdarzenie } from "@/lib/zdarzenia";
 import { Button } from "@/components/ui/Button";
 import { komunikat } from "@/lib/zapisy/bledy";
 
@@ -132,6 +133,7 @@ export function Stol({ poczatkowa, saldo }: { poczatkowa: RekaBj | null; saldo: 
     setCzeka(true);
     setBlad(null);
     const { data, error } = await createClient().rpc(rpc, parametry);
+    if (!error && rpc === "blackjack_rozdaj") zdarzenie("gra", { gra: "blackjack" });
     // Odblokowanie przed sprawdzeniem błędu - w apce na iOS nie ma
     // przeładowania, które by zdjęło zablokowany stół.
     setCzeka(false);

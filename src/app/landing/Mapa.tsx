@@ -20,6 +20,7 @@ export function Mapa({ nazwa, adres }: { nazwa: string | null; adres: string }) 
       <div className="flex flex-wrap gap-2">
         <a
           href={`https://www.google.com/maps/search/?api=1&query=${kodowany}`}
+          data-zdarzenie="mapa"
           target="_blank"
           rel="noreferrer"
           className="flex min-h-11 items-center rounded-full border border-jesien-rdza/40 bg-jesien-tlo px-4 text-sm

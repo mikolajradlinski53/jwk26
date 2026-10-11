@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { zdarzenie } from "@/lib/zdarzenia";
 import { Button } from "@/components/ui/Button";
 import { SymbolBebna, NAZWY_SYMBOLI } from "./Symbole";
 import type { WynikSpinu } from "@/types/db";
@@ -35,6 +36,7 @@ export function Bebny({
     setBlad(null);
 
     const { data, error } = await createClient().rpc("zakrec_slotami");
+    if (!error) zdarzenie("gra", { gra: "sloty" });
 
     // Odblokowanie przed sprawdzeniem błędu, nie po. Wyjście z funkcji przy
     // zostawionym `wToku` zablokowałoby automat do przeładowania strony - a

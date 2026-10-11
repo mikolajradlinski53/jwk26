@@ -128,6 +128,8 @@ export function Posty() {
                 preload="metadata"
                 poster={otwarty.wideo.plakat}
                 src={otwarty.wideo.src}
+                onPlay={() => zdarzenie("film", { post: otwarty.id, stan: "start" })}
+                onEnded={() => zdarzenie("film", { post: otwarty.id, stan: "koniec" })}
                 className="mx-auto block max-h-[70dvh] w-auto max-w-full bg-jesien-atrament"
               />
             ) : otwarty.grafika ? (

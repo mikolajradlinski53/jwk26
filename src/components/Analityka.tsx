@@ -27,6 +27,53 @@ export function Analityka() {
     return () => document.removeEventListener("click", naKlik, { capture: true });
   }, []);
 
+  // Landing: które sekcje ktoś faktycznie zobaczył - sekcja dojechała do
+  // połowy ekranu (próg powierzchni nie działa: zapisy na telefonie są wyższe
+  // niż 2,5 ekranu). Każda raz na wizytę - lejek „doczytał do zapisów?”.
+  useEffect(() => {
+    if (sciezka !== "/") return;
+    const widziane = new Set<string>();
+    const naWpisy = (wpisy: IntersectionObserverEntry[]) => {
+      for (const w of wpisy) {
+        const id = (w.target as HTMLElement).id;
+        if (w.isIntersecting && id && !widziane.has(id)) {
+          widziane.add(id);
+          zdarzenie("sekcja", { sekcja: id });
+        }
+      }
+    };
+    // Długie sekcje: górą do połowy ekranu. Krótkie na dole strony (kontakt)
+    // tam nie dojadą - dla nich 60% sekcji widoczne naraz.
+    const obserwatory = [
+      new IntersectionObserver(naWpisy, { rootMargin: "0px 0px -50% 0px", threshold: 0 }),
+      new IntersectionObserver(naWpisy, { threshold: 0.6 }),
+    ];
+    document.querySelectorAll("section[id], #kontakt").forEach((el) => obserwatory.forEach((o) => o.observe(el)));
+    return () => obserwatory.forEach((o) => o.disconnect());
+  }, [sciezka]);
+
+  // Błędy JavaScriptu: typ i ekran (identyfikatory w adresie zamienione na
+  // „:id”), bez treści komunikatu. Każdy rodzaj raz na sesję.
+  useEffect(() => {
+    const zgloszone = new Set<string>();
+    function zglos(typ: string) {
+      const ekran = window.location.pathname.replace(/[0-9a-f]{8}-[0-9a-f-]{27,}/gi, ":id");
+      const klucz = `${typ}|${ekran}`;
+      if (zgloszone.has(klucz)) return;
+      zgloszone.add(klucz);
+      zdarzenie("blad_js", { typ, ekran });
+    }
+    const naBlad = (e: ErrorEvent) => zglos((e.error as Error | undefined)?.name ?? "Error");
+    const naOdrzucenie = (e: PromiseRejectionEvent) =>
+      zglos(`odrzucenie:${(e.reason as Error | undefined)?.name ?? "inne"}`);
+    window.addEventListener("error", naBlad);
+    window.addEventListener("unhandledrejection", naOdrzucenie);
+    return () => {
+      window.removeEventListener("error", naBlad);
+      window.removeEventListener("unhandledrejection", naOdrzucenie);
+    };
+  }, []);
+
   // Raz na sesję w apce: zainstalowana na ekranie głównym czy w przeglądarce.
   useEffect(() => {
     if (!sciezka.startsWith("/app")) return;
