@@ -56,29 +56,10 @@ export async function updateSession(request: NextRequest) {
     return przekieruj(request, POCZEKALNIA, response);
   }
 
-  // Admin dostał dostęp ręcznie, z pominięciem formularza, a też jedzie - jego
-  // dieta, ICE i zgody muszą trafić na listę jak u wszystkich. Kierujemy go na
-  // formularz, dopóki nie złoży zgłoszenia, ale tylko przy otwartej puli: przy
-  // zamkniętych formularz i tak nie przyjmie zgłoszenia, a blokada odcięłaby
-  // wszystkich adminów od panelu. Dwa zapytania wyłącznie dla adminów.
-  let wymagaFormularza = false;
-  if (profile?.role === "admin") {
-    const [{ count: zgloszen }, { count: otwartych }] = await Promise.all([
-      supabase
-        .from("registrations")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .in("status", ["pending", "approved"]),
-      supabase.from("pule").select("klucz", { count: "exact", head: true }).eq("otwarta", true),
-    ]);
-    wymagaFormularza = (zgloszen ?? 0) === 0 && (otwartych ?? 0) > 0;
-  }
-
-  if (wymagaFormularza) {
-    if (sciezka === POCZEKALNIA) return response;
-    return przekieruj(request, POCZEKALNIA, response);
-  }
-
+  // Admini (Kadra) nie przechodzą formularza - decyzja Mikołaja 2026-10-11:
+  // mają konta od razu i wchodzą prosto do apki. Wcześniej bramka kierowała
+  // admina bez zgłoszenia na formularz przy otwartej turze; ich miejsca nie
+  // liczą się do puli Działaczy (30 + organizatorzy).
   // Zaakceptowany na /app/rejestracja - formularz ma już za sobą.
   if (sciezka === POCZEKALNIA) return przekieruj(request, DOM, response);
 

@@ -10,10 +10,15 @@ import type { Team } from "@/types/db";
 export function PrzyciskiDecyzji({
   zgloszenieId,
   druzyny,
+  obsadzenie,
+  limitDruzyny,
   mozePrzyjac,
 }: {
   zgloszenieId: string;
   druzyny: Team[];
+  /** Przyjęci uczestnicy (bez Kadry) w każdej drużynie. */
+  obsadzenie: Record<string, number>;
+  limitDruzyny: number;
   /**
    * Fałsz, gdy zgłoszenie po awansie z rezerwy czeka jeszcze na przelew.
    * Funkcja i tak by odmówiła; tu chodzi o to, żeby przycisk nie kusił.
@@ -21,7 +26,13 @@ export function PrzyciskiDecyzji({
   mozePrzyjac: boolean;
 }) {
   const router = useRouter();
-  const [teamId, setTeamId] = useState(druzyny[0]?.id ?? "");
+  // Domyślnie najmniej liczna drużyna z wolnym miejscem - liczona przy
+  // każdym renderze, więc po przyjęciu kogoś (odświeżenie) przesuwa się
+  // sama, dopóki admin nie wybierze ręcznie.
+  const [wybrana, setTeamId] = useState<string | null>(null);
+  const wolne = druzyny.filter((d) => (obsadzenie[d.id] ?? 0) < limitDruzyny);
+  const najmniejsza = [...wolne].sort((a, b) => (obsadzenie[a.id] ?? 0) - (obsadzenie[b.id] ?? 0))[0];
+  const teamId = wybrana ?? najmniejsza?.id ?? "";
   const [notatka, setNotatka] = useState("");
   const [czeka, setCzeka] = useState(false);
   const [blad, setBlad] = useState<string | null>(null);
@@ -49,10 +60,11 @@ export function PrzyciskiDecyzji({
       // komunikaty bazy (rezerwa, brak przelewu) zostają dosłowne: adminowi
       // mówią więcej niż ogólne „coś poszło nie tak”.
       const rozpatrzone = /zostalo juz rozpatrzone/i.test(error.message);
-      setBlad(rozpatrzone ? komunikat(error) : error.message);
+      const pelna = /DRUZYNA_PELNA/.test(error.message);
+      setBlad(rozpatrzone || pelna ? komunikat(error) : error.message);
       setCzeka(false);
       wToku.current = false;
-      if (rozpatrzone) router.refresh();
+      if (rozpatrzone || pelna) router.refresh();
       return;
     }
     router.refresh();
@@ -71,8 +83,8 @@ export function PrzyciskiDecyzji({
                      text-kosc outline-none focus-visible:border-krew"
         >
           {druzyny.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
+            <option key={d.id} value={d.id} disabled={(obsadzenie[d.id] ?? 0) >= limitDruzyny}>
+              {d.name} ({obsadzenie[d.id] ?? 0}/{limitDruzyny})
             </option>
           ))}
         </select>

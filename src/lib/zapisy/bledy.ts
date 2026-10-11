@@ -66,6 +66,7 @@ export function komunikat(e: unknown): string {
     return "Masz już zgłoszenie, które czeka na rozpatrzenie.";
   }
   if (/juz zaakceptowane/i.test(t)) return "Twoje zgłoszenie jest już przyjęte.";
+  if (/DRUZYNA_PELNA/.test(t)) return "Ta drużyna ma już komplet - wybierz inną.";
   // Dwóch adminów nad jednym zgłoszeniem - drugi przegrywa blokadę wiersza.
   if (/zostalo juz rozpatrzone/i.test(t)) return "To zgłoszenie ktoś właśnie rozpatrzył - lista jest odświeżona.";
   if (/wolnego miejsca/i.test(t)) {

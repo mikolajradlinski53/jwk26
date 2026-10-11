@@ -6,7 +6,7 @@ export default function Ladowanie() {
     <SzkieletEkranu tytul="Sklepik" podtytul>
       <Saldo />
       <div className="grid gap-2.5">
-        {[0, 1, 2, 3].map((i) => (
+        {[0, 1, 2, 3, 4, 5].map((i) => (
           <div key={i} className="szklo flex animate-pulse gap-3 rounded-md px-4 py-4">
             <Kolko className="size-7" />
             <div className="grid flex-1 gap-2">

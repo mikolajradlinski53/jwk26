@@ -12,18 +12,30 @@ export default async function KolejkaRejestracji() {
   const supabase = await createClient();
 
   // Rezerwa ma własną kolejkę w /app/admin/zapisy - tu tylko osoby na miejscu.
-  const [{ data: zgloszeniaRaw, error: zgloszeniaError }, { data: druzynyRaw }] = await Promise.all([
+  const [
+    { data: zgloszeniaRaw, error: zgloszeniaError },
+    { data: druzynyRaw },
+    { data: skladyRaw },
+    { data: limitRaw },
+  ] = await Promise.all([
     supabase
       .from("registrations")
       .select("*")
       .eq("status", "pending")
       .eq("rezerwa", false)
       .order("created_at", { ascending: true }),
-    supabase.from("teams").select("*").order("name"),
+    supabase.from("teams").select("*").order("numer"),
+    // Obsadzenie drużyn: przyjęci uczestnicy bez Kadry - tak liczy limit
+    // w review_registration.
+    supabase.from("profiles").select("team_id").eq("status", "approved").neq("role", "admin").not("team_id", "is", null),
+    supabase.from("app_settings").select("value").eq("key", "druzyna_limit").maybeSingle(),
   ]);
 
   const zgloszenia = (zgloszeniaRaw ?? []) as Registration[];
   const druzyny = (druzynyRaw ?? []) as Team[];
+  const obsadzenie: Record<string, number> = {};
+  for (const p of (skladyRaw ?? []) as { team_id: string }[]) obsadzenie[p.team_id] = (obsadzenie[p.team_id] ?? 0) + 1;
+  const limitDruzyny = Number(limitRaw?.value) || 9;
 
   // Podpisane URL-e żyją godzinę; równolegle, bo przy kilkudziesięciu
   // zgłoszeniach sekwencyjne podpisywanie widać gołym okiem.
@@ -257,6 +269,8 @@ export default async function KolejkaRejestracji() {
               <PrzyciskiDecyzji
                 zgloszenieId={z.id}
                 druzyny={druzyny}
+                obsadzenie={obsadzenie}
+                limitDruzyny={limitDruzyny}
                 mozePrzyjac={z.proof_path !== null}
               />
             </li>
