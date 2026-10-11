@@ -10,6 +10,7 @@ import {
   idDruzyn,
   idZadania,
   ustawJakoZaakceptowany,
+  ustawUstawienie,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -272,6 +273,37 @@ describe("automaty", () => {
       .single();
     nowePowiadomienia.push(w!.id as number);
     expect(w).toMatchObject({ kanal: "push", adresat: "user", adresat_id: czekajacy.id, link: "/app" });
+  });
+
+  it("przed otwarciem platformy powiadomienie mówi o poczekalni, po - o drużynie", async () => {
+    const tresc = async (otwarcie: string) => {
+      await ustawUstawienie("otwarcie_platformy", otwarcie);
+      const { data: z, error } = await admin
+        .from("registrations")
+        .insert({ user_id: czekajacy.id, full_name: "C", proof_path: `${czekajacy.id}/d.jpg` })
+        .select("id")
+        .single();
+      if (error) throw error;
+      await admin.from("registrations").update({ status: "approved" }).eq("id", z!.id);
+      const { data: w } = await admin
+        .from("powiadomienia")
+        .select("id, body")
+        .eq("ref_type", "registration")
+        .eq("ref_id", z!.id)
+        .single();
+      nowePowiadomienia.push(w!.id as number);
+      await admin.from("registrations").delete().eq("id", z!.id);
+      return w!.body as string;
+    };
+    try {
+      expect(await tresc("2099-10-23T12:00:00+02:00")).toBe(
+        "Masz miejsce na JWK26! Apka otworzy się dla wszystkich 23.10 o 12:00.",
+      );
+      expect(await tresc("")).toBe("Witaj na JWK26! Sprawdź w apce swoją drużynę.");
+      expect(await tresc("jutro")).toBe("Witaj na JWK26! Sprawdź w apce swoją drużynę.");
+    } finally {
+      await ustawUstawienie("otwarcie_platformy", "");
+    }
   });
 
   it("zaliczone pole bingo powiadamia drużynę", async () => {
