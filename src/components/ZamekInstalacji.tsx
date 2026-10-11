@@ -1,7 +1,6 @@
 import { headers } from "next/headers";
 import { Ekran } from "@/components/Ekran";
 import { PrzyciskKopiuj } from "@/components/PrzyciskKopiuj";
-import { Zaba } from "@/components/Zaba";
 import { ZamekKlient } from "@/components/ZamekKlient";
 import { system, wbudowanaPrzegladarka, type System } from "@/lib/urzadzenie";
 
@@ -22,11 +21,28 @@ const KROKI: Record<System, string[]> = {
   ],
 };
 
+/**
+ * Żaba z landingu (koszulka JWK) wstawiająca ikonę apki na ekran główny -
+ * Higgsfield, zatwierdzona przez Mikołaja 2026-10-11, tło wycięte lokalnie.
+ */
+function ZabaZTelefonem() {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- statyczny plik z public, bez optymalizacji
+    <img
+      src="/grafika/zaba-telefon.webp"
+      alt="Żaba pokazuje, jak przypiąć aplikację do ekranu głównego"
+      width={301}
+      height={440}
+      className="mx-auto h-44 w-auto"
+    />
+  );
+}
+
 function Tutorial({ sys, wAplikacji, adres }: { sys: System; wAplikacji: boolean; adres: string }) {
   if (wAplikacji) {
     return (
       <div className="szklo grid gap-4 rounded-lg p-5">
-        <Zaba stan="tutorial" className="mx-auto size-16 text-kosc" />
+        <ZabaZTelefonem />
         <p className="text-sm text-kosc">
           Otworzyłeś to w przeglądarce wbudowanej w aplikację (np. Instagrama),
           a ona nie obsługuje logowania kontem Google ani dodawania aplikacji
@@ -39,7 +55,7 @@ function Tutorial({ sys, wAplikacji, adres }: { sys: System; wAplikacji: boolean
 
   return (
     <div className="szklo grid gap-4 rounded-lg p-5">
-      <Zaba stan="tutorial" className="mx-auto size-16 text-kosc" />
+      <ZabaZTelefonem />
       <p className="text-sm text-kosc">
         Sekta mieszka na ekranie głównym, nie w przeglądarce. Przypnij ją,
         a potem otwórz stąd - inaczej nie dostaniesz powiadomień.
