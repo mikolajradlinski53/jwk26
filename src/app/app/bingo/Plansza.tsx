@@ -451,8 +451,8 @@ export function Plansza({
                   </span>
                   <input
                     type="file"
+                    // Bez `capture` - ten wymuszał aparat i blokował galerię.
                     accept="image/*"
-                    capture="environment"
                     onChange={(e) => {
                       setPlik(e.target.files?.[0] ?? null);
                       setBlad(null);

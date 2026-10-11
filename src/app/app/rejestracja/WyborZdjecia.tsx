@@ -19,10 +19,10 @@ export function WyborZdjecia({
         </span>
         <input
           type="file"
+          // Bez `capture`: wymuszał aparat i nie dało się wybrać zrzutu ekranu
+          // z galerii ani pliku (zgłoszenie Mikołaja 2026-10-11). Bez niego
+          // telefon sam pyta: zdjęcia, aparat albo pliki.
           accept="image/*"
-          // `capture` podpowiada aparat zamiast galerii - większość osób i tak
-          // robi zdjęcie ekranu bankowości w momencie wypełniania.
-          capture="environment"
           aria-invalid={blad ? true : undefined}
           disabled={disabled}
           onChange={(e) => onWybor(e.target.files?.[0] ?? null)}
@@ -42,8 +42,8 @@ export function WyborZdjecia({
         )}
       </label>
       <p className="text-xs leading-relaxed text-dym">
-        Odczyt przelewu dzieje się na twoim telefonie i może chwilę potrwać.
-        Zdjęcie widzi wyłącznie organizator.
+        Najprościej: zrzut ekranu potwierdzenia z aplikacji banku. Możesz też
+        zrobić zdjęcie albo wybrać plik graficzny. Zdjęcie widzi wyłącznie organizator.
       </p>
     </div>
   );
