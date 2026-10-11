@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Bodoni_Moda, Manrope } from "next/font/google";
 import { preload } from "react-dom";
 import "./globals.css";
+import { Analityka } from "@/components/Analityka";
 
 // Oś `opsz` celowo pominięta: poprawia rysunek w dużych rozmiarach, ale dokłada
 // wariantów do pobrania. Jeśli tytuły będą wyglądać ciężko, dopisz axes: ["opsz"].
@@ -70,6 +71,7 @@ export default function RootLayout({
           style={{ backgroundImage: "url(/grafika/tlo-apki.webp)" }}
         />
         {children}
+        <Analityka />
       </body>
     </html>
   );

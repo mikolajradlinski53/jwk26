@@ -9,7 +9,7 @@
 import { KOORDYNATOR_MAIL, KOORDYNATOR_TELEFON } from "@/lib/regulamin";
 import { KONTAKT_IOD } from "@/lib/zapisy/zgody";
 
-export const AKTUALIZACJA_POLITYKI = "7 października 2026 r.";
+export const AKTUALIZACJA_POLITYKI = "11 października 2026 r.";
 
 /** Akapit albo lista punktów - tyle potrzebuje ten tekst, bez własnego języka znaczników. */
 export type Blok = string | { punkty: string[] };
@@ -45,6 +45,7 @@ export const POLITYKA: SekcjaPolityki[] = [
           "SMS-y - numer telefonu, wyłącznie jeśli wyrazisz zgodę. Cel: pilne komunikaty organizacyjne. Podstawa: zgoda, art. 6 ust. 1 lit. a RODO.",
           "Korespondencja z organizatorem - treść i dane z wiadomości lub rozmowy. Cel: odpowiedź i obsługa sprawy. Podstawa: art. 6 ust. 1 lit. f RODO.",
           "Dane techniczne - adres IP, typ urządzenia i przeglądarki, czas zapytań w dziennikach serwerów dostawców hostingu. Cel: bezpieczeństwo i usuwanie awarii. Podstawa: art. 6 ust. 1 lit. f RODO.",
+          "Statystyki odwiedzin - odwiedzona podstrona (bez parametrów adresu), kraj, typ urządzenia, system i przeglądarka, źródło wejścia. Zbiera je Vercel Web Analytics bez ciasteczek i bez identyfikatora, który pozwalałby rozpoznać Cię między wizytami; widzimy wyłącznie zbiorcze liczby. Cel: wiedza, ile osób odwiedza stronę i które sekcje działają. Podstawa: art. 6 ust. 1 lit. f RODO.",
         ],
       },
     ],
@@ -57,7 +58,7 @@ export const POLITYKA: SekcjaPolityki[] = [
           "Inni uczestnicy - Twoją nazwę w aplikacji, drużynę, punkty w rankingu, zdjęcia i podpisy z bingo, komentarze i polubienia. Nominacje w JWK Awards są dla nich anonimowe; po ujawnieniu wyniku widać tylko uzasadnienia i zdjęcia dotyczące zwycięzcy.",
           "Organizatorzy (Kadra i administratorzy aplikacji) - dane potrzebne do organizacji wyjazdu i moderacji treści. Autora nominacji mogą ustalić wyłącznie w celu reakcji na treść naruszającą regulamin.",
           "Ośrodek - wyłącznie informacje o diecie i alergiach.",
-          "Podmioty przetwarzające dane na nasze zlecenie: Supabase Inc. (baza danych, logowanie, przechowywanie plików - serwery we Frankfurcie), Vercel Inc. (hosting aplikacji - funkcje uruchamiane we Frankfurcie), Google LLC / Google Ireland Ltd. (logowanie kontem Google, arkusz zgłoszeń w Google Workspace dostępny wyłącznie imiennie wskazanym organizatorom), Resend Inc. (wysyłka e-maili z kodem logowania oraz powiadomień dla organizatorów o nowych zgłoszeniach - z imieniem, nazwiskiem i turą), a po uruchomieniu SMS-ów - LINK Mobility Poland sp. z o.o. (usługa SMSAPI).",
+          "Podmioty przetwarzające dane na nasze zlecenie: Supabase Inc. (baza danych, logowanie, przechowywanie plików - serwery we Frankfurcie), Vercel Inc. (hosting aplikacji - funkcje uruchamiane we Frankfurcie - oraz anonimowe statystyki odwiedzin), Google LLC / Google Ireland Ltd. (logowanie kontem Google, arkusz zgłoszeń w Google Workspace dostępny wyłącznie imiennie wskazanym organizatorom), Resend Inc. (wysyłka e-maili z kodem logowania oraz powiadomień dla organizatorów o nowych zgłoszeniach - z imieniem, nazwiskiem i turą), a po uruchomieniu SMS-ów - LINK Mobility Poland sp. z o.o. (usługa SMSAPI).",
           "Operatorzy usług push (Apple, Google, Mozilla - zależnie od Twojego urządzenia) przekazują powiadomienie na Twoje urządzenie; treść jest szyfrowana.",
         ],
       },
@@ -102,7 +103,7 @@ export const POLITYKA: SekcjaPolityki[] = [
   {
     tytul: "Ciasteczka i pamięć urządzenia",
     bloki: [
-      "Aplikacja nie używa ciasteczek reklamowych ani narzędzi analitycznych. Używa wyłącznie ciasteczek sesji, bez których nie da się pozostać zalogowanym, oraz pamięci przeglądarki na Twoim urządzeniu - np. do zapamiętania, które pola bingo już widziałeś(-aś), żeby nie odtwarzać animacji ponownie. Te informacje nie są do nas przesyłane.",
+      "Aplikacja nie używa ciasteczek reklamowych ani analitycznych. Statystyki odwiedzin (Vercel Web Analytics) liczone są bez ciasteczek i bez zapisywania czegokolwiek na Twoim urządzeniu. Używamy wyłącznie ciasteczek sesji, bez których nie da się pozostać zalogowanym, oraz pamięci przeglądarki na Twoim urządzeniu - np. do zapamiętania, które pola bingo już widziałeś(-aś), żeby nie odtwarzać animacji ponownie. Te informacje nie są do nas przesyłane.",
     ],
   },
   {
