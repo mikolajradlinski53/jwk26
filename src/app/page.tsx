@@ -8,6 +8,7 @@ import type { PunktHarmonogramu } from "@/lib/harmonogram";
 import { Naglowek } from "./landing/Naglowek";
 import { Wejscie } from "./landing/Wejscie";
 import { Opis } from "./landing/Opis";
+import { Partner } from "./landing/Partner";
 import { Plan } from "./landing/Plan";
 import { KiedyGdzie } from "./landing/KiedyGdzie";
 import { Zapisy } from "./landing/Zapisy";
@@ -117,6 +118,7 @@ export default async function Landing({
         <Wejscie dataJwk={dataJwk} zapisy={odslony.zapisy} miasto={miasto} />
         {/* Fala wypływa z ciemnego dołu zdjęcia hero w jasną sekcję. */}
         <DzielnikFala kolorKlasa="text-jesien-tlo" tloKlasa="bg-noc" />
+        <Partner />
 
         <Opis kwota={cenaJawna ? (przelew?.kwota ?? null) : null} miasto={miasto} />
         <DzielnikSzewron />
