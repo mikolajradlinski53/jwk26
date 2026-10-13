@@ -26,13 +26,9 @@ export function PrzyciskiDecyzji({
   mozePrzyjac: boolean;
 }) {
   const router = useRouter();
-  // Domyślnie najmniej liczna drużyna z wolnym miejscem - liczona przy
-  // każdym renderze, więc po przyjęciu kogoś (odświeżenie) przesuwa się
-  // sama, dopóki admin nie wybierze ręcznie.
-  const [wybrana, setTeamId] = useState<string | null>(null);
-  const wolne = druzyny.filter((d) => (obsadzenie[d.id] ?? 0) < limitDruzyny);
-  const najmniejsza = [...wolne].sort((a, b) => (obsadzenie[a.id] ?? 0) - (obsadzenie[b.id] ?? 0))[0];
-  const teamId = wybrana ?? najmniejsza?.id ?? "";
+  // Domyślnie bez drużyny (2026-10-13): drużyny rozdziela się po turze
+  // Świeżaków w panelu Drużyny. Pusty łańcuch = „przydzielę później”.
+  const [teamId, setTeamId] = useState("");
   const [notatka, setNotatka] = useState("");
   const [czeka, setCzeka] = useState(false);
   const [blad, setBlad] = useState<string | null>(null);
@@ -50,7 +46,7 @@ export function PrzyciskiDecyzji({
     const { error } = await createClient().rpc("review_registration", {
       p_registration_id: zgloszenieId,
       p_approve: akceptuj,
-      p_team_id: akceptuj ? teamId : null,
+      p_team_id: akceptuj && teamId ? teamId : null,
       p_note: notatka.trim() || null,
     });
 
@@ -82,6 +78,7 @@ export function PrzyciskiDecyzji({
           className="szklo min-h-11 w-full rounded-sm px-3
                      text-kosc outline-none focus-visible:border-krew"
         >
+          <option value="">Bez drużyny - przydzielę później</option>
           {druzyny.map((d) => (
             <option key={d.id} value={d.id} disabled={(obsadzenie[d.id] ?? 0) >= limitDruzyny}>
               {d.name} ({obsadzenie[d.id] ?? 0}/{limitDruzyny})
@@ -102,7 +99,7 @@ export function PrzyciskiDecyzji({
       {blad && <p className="text-sm text-krew-jasna">{blad}</p>}
 
       <div className="grid grid-cols-2 gap-3">
-        <Button onClick={() => rozpatrz(true)} disabled={czeka || !teamId || !mozePrzyjac}>
+        <Button onClick={() => rozpatrz(true)} disabled={czeka || !mozePrzyjac}>
           Przyjmij
         </Button>
         <Button variant="szklo" onClick={() => rozpatrz(false)} disabled={czeka}>

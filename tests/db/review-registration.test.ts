@@ -144,7 +144,7 @@ describe("rozpatrywanie zgłoszeń", () => {
     expect(zgl!.reviewed_at).not.toBeNull();
   });
 
-  it("odmawia akceptacji bez wskazania drużyny", async () => {
+  it("przyjmuje bez drużyny - drużynę przydziela się później (2026-10-13)", async () => {
     const petent = await nowyUzytkownik("bezdruzyny");
     const zgloszenieId = await zlozZgloszenie(petent);
 
@@ -153,14 +153,14 @@ describe("rozpatrywanie zgłoszeń", () => {
       p_approve: true,
     });
 
-    expect(error).not.toBeNull();
+    expect(error).toBeNull();
 
     const { data } = await admin
       .from("profiles")
-      .select("status")
+      .select("status, team_id")
       .eq("id", petent.id)
       .single();
-    expect(data!.status).toBe("pending");
+    expect(data).toEqual({ status: "approved", team_id: null });
   });
 
   it("odmawia rozpatrzenia bez decyzji", async () => {

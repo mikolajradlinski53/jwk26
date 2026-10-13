@@ -30,6 +30,10 @@ beforeAll(async () => {
   szef = { user: szefKonto, klient: await signIn(szefKonto) };
   const { data } = await admin.from("zawody").select("id, nazwa");
   for (const z of data ?? []) id[z.nazwa as string] = z.id as string;
+  // Testy liczą na składy 5 (Toplakyyy) i 4 (siatkówka) - na produkcji jest
+  // 4 i 6 (2026-10-13); przywracane w afterAll.
+  await admin.from("zawody").update({ rozmiar_skladu: 5 }).eq("nazwa", "Toplakyyy");
+  await admin.from("zawody").update({ rozmiar_skladu: 4 }).eq("nazwa", "Siatkówka");
 }, 120_000);
 
 afterEach(async () => {
@@ -42,6 +46,8 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
+  await admin.from("zawody").update({ rozmiar_skladu: 4 }).eq("nazwa", "Toplakyyy");
+  await admin.from("zawody").update({ rozmiar_skladu: 6 }).eq("nazwa", "Siatkówka");
   await Promise.all([...gracze.map((g) => g.user), czekajacy, szef.user].map(deleteUser));
 });
 

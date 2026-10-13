@@ -70,4 +70,37 @@ describe("limit drużyny", () => {
     const { data } = await admin.from("profiles").select("status, team_id").eq("id", b.id).single();
     expect(data).toEqual({ status: "pending", team_id: null });
   });
+
+  it("przyjęcie bez drużyny, potem przydział z limitem i przeniesienie", async () => {
+    const bez = await szefClient.rpc("review_registration", {
+      p_registration_id: (await admin.from("registrations").select("id").eq("user_id", b.id).single()).data!.id,
+      p_approve: true,
+      p_team_id: null,
+    });
+    expect(bez.error).toBeNull();
+    let { data } = await admin.from("profiles").select("status, team_id").eq("id", b.id).single();
+    expect(data).toEqual({ status: "approved", team_id: null });
+
+    // Drużyna z limitem 1 ma już osobę a - b tam nie wejdzie.
+    expect((await szefClient.rpc("przydziel_druzyne", { p_user: b.id, p_team: druzyna })).error!.message).toMatch(/DRUZYNA_PELNA/);
+    const inna = (await idDruzyn()).find((d) => d !== druzyna)!;
+    expect((await szefClient.rpc("przydziel_druzyne", { p_user: b.id, p_team: inna })).error).toBeNull();
+    ({ data } = await admin.from("profiles").select("status, team_id").eq("id", b.id).single());
+    expect(data!.team_id).toBe(inna);
+
+    // Zdjęcie z drużyny i rozdzielenie automatyczne do wolnej.
+    expect((await szefClient.rpc("przydziel_druzyne", { p_user: b.id, p_team: null })).error).toBeNull();
+    const { data: wynik, error } = await szefClient.rpc("rozdziel_bez_druzyny");
+    expect(error).toBeNull();
+    expect((wynik as { przydzielono: number }).przydzielono).toBeGreaterThanOrEqual(1);
+    ({ data } = await admin.from("profiles").select("team_id").eq("id", b.id).single());
+    expect(data!.team_id).not.toBeNull();
+    expect(data!.team_id).not.toBe(druzyna);
+  });
+
+  it("uczestnik nie przydziela drużyn", async () => {
+    const k = await signIn(a);
+    expect((await k.rpc("rozdziel_bez_druzyny")).error).not.toBeNull();
+    expect((await k.rpc("przydziel_druzyne", { p_user: a.id, p_team: null })).error).not.toBeNull();
+  });
 });
