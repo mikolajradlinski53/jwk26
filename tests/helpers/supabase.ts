@@ -59,6 +59,7 @@ export async function firstTeamId(): Promise<string> {
   const { data, error } = await admin
     .from("teams")
     .select("id")
+    .eq("ukryta", false)
     .order("name")
     .limit(1)
     .single();
@@ -198,11 +199,51 @@ export function sprzatanieUzytkownikow() {
   return { nowyUzytkownik, nowyAdmin, posprzataj };
 }
 
-/** Identyfikatory zasianych drużyn, w kolejności po nazwie. */
+/** Identyfikatory zasianych drużyn, w kolejności po nazwie. Bez Kadry (drużyny-widma adminów). */
 export async function idDruzyn(): Promise<string[]> {
-  const { data, error } = await admin.from("teams").select("id").order("name");
+  const { data, error } = await admin.from("teams").select("id").eq("ukryta", false).order("name");
   if (error) throw error;
   return (data ?? []).map((d) => d.id as string);
+}
+
+/** Kadra - ukryta drużyna adminów. */
+export async function idKadry(): Promise<string> {
+  const { data, error } = await admin.from("teams").select("id").eq("ukryta", true).single();
+  if (error) throw error;
+  return data.id as string;
+}
+
+/**
+ * Ustawia pulę kasyna członków drużyny na dokładnie `pula` pkt w bieżącym
+ * oknie 12 h: dopisuje drużynie wpis sprzed początku okna tak, żeby 25%
+ * punktów z otwarcia okna podzielone przez liczbę członków dało `pula`.
+ * Wpis ma kategorię `zasiew_testowy`, więc sprząta go zwykłe sprzątanie.
+ */
+export async function ustawPuleKasyna(teamId: string, pula: number): Promise<void> {
+  const { data: start, error: e1 } = await admin.rpc("poczatek_okna_kasyna");
+  if (e1) throw e1;
+  const przed = new Date(new Date(start as string).getTime() - 3_600_000).toISOString();
+  const [{ data: wpisy, error: e2 }, { count, error: e3 }] = await Promise.all([
+    admin.from("points_ledger").select("delta").eq("team_id", teamId).lt("created_at", start as string),
+    admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("team_id", teamId)
+      .eq("status", "approved"),
+  ]);
+  if (e2) throw e2;
+  if (e3) throw e3;
+  const jest = (wpisy ?? []).reduce((s, w) => s + (w.delta as number), 0);
+  const cel = pula * 4 * Math.max(count ?? 0, 1);
+  if (cel === jest) return;
+  const { error } = await admin.from("points_ledger").insert({
+    team_id: teamId,
+    user_id: null,
+    delta: cel - jest,
+    category: "zasiew_testowy",
+    created_at: przed,
+  });
+  if (error) throw error;
 }
 
 /** Ustawia kapitana drużyny kluczem serwisowym, omijając panel admina. */
@@ -232,9 +273,9 @@ export async function dosypPunkty(teamId: string, delta: number): Promise<void> 
 }
 
 /**
- * Dosypuje punkty konkretnej osobie. Różnica wobec `dosypPunkty` jest istotna:
- * tam `user_id` jest NULL (wydatek drużynowy), a kasyno liczy saldo po
- * `user_id`, więc wpis drużynowy nie daje graczowi na co grać.
+ * Dosypuje punkty konkretnej osobie (wynik indywidualny w `user_scores`).
+ * Na grę w kasynie nie wpływa - tam liczy się pula z punktów drużyny
+ * (`ustawPuleKasyna`).
  */
 export async function dosypPunktyOsobie(
   userId: string,

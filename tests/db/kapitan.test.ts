@@ -19,7 +19,7 @@ async function przyjmij(u: TestUser, team: string, imie: string) {
 async function resetuj() {
   await admin.from("glosy_kapitan").delete().not("voter_id", "is", null);
   await admin.from("powiadomienia").delete().in("ref_type", ["kapitan", "druzyna"]);
-  await admin.from("teams").update({ glosowanie: "nie_rozpoczete", captain_id: null }).not("id", "is", null);
+  await admin.from("teams").update({ glosowanie: "nie_rozpoczete", captain_id: null }).eq("ukryta", false);
 }
 
 beforeAll(async () => {

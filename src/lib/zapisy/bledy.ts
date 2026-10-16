@@ -44,7 +44,12 @@ export function komunikat(e: unknown): string {
   const stawka = t.match(/Masz (-?\d+) pkt, a stawka to (\d+)/);
   if (stawka) return `Masz ${stawka[1]} pkt, a stawka to ${stawka[2]}.`;
   const limit = t.match(/Limit obrotu wyczerpany: (\d+) z (\d+)/);
-  if (limit) return `Dzienny limit kasyna wyczerpany: ${limit[1]} z ${limit[2]} pkt w ostatnich 24 h.`;
+  if (limit)
+    return limit[2] === "0"
+      ? "Twoja drużyna nie miała jeszcze punktów na początku tego okna, więc pula kasyna jest pusta. Nowa pula o 12:00 i o północy."
+      : `Pula kasyna na te 12 h wyczerpana: postawiono ${limit[1]} z ${limit[2]} pkt. Nowa pula o 12:00 i o północy.`;
+  if (/Kadra nie bierze udzialu w klatwach/i.test(t)) return "Kadra nie rzuca klątw - te zostają między drużynami uczestników.";
+  if (/Do Kadry trafiaja tylko admini/i.test(t)) return "Do Kadry trafiają tylko Organizatorzy.";
   if (/reke w toku/i.test(t)) return "Masz rękę w toku - dokończ ją.";
   if (/Brak reki w toku/i.test(t)) return "Ta ręka jest już rozstrzygnięta.";
   if (/Podwoic mozna/i.test(t)) return "Podwoić można tylko przy 9, 10 albo 11 na dwóch pierwszych kartach.";
@@ -56,7 +61,7 @@ export function komunikat(e: unknown): string {
   if (/niemozliwy w tym czasie/i.test(t)) return "Serwer nie uznał tego wyniku.";
   // Gossipy
   if (/nominowac siebie/i.test(t)) return "Nie możesz nominować siebie.";
-  if (/juz oddana/i.test(t)) return "Twoja nominacja w tej kategorii jest już oddana.";
+  if (/juz oddana/i.test(t)) return "Dzisiejsza nominacja w tej kategorii jest już oddana - kolejną oddasz jutro.";
   if (/nie jest otwarta/i.test(t)) return "Nominacje w tej kategorii są już zamknięte.";
   if (/przyjetego uczestnika/i.test(t)) return "Tej osoby nie ma wśród przyjętych uczestników.";
   if (/Nieprawidlowe zdjecie/i.test(t)) return "Zdjęcie nie dotarło. Wybierz je jeszcze raz.";

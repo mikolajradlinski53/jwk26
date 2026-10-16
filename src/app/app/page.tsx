@@ -18,7 +18,7 @@ export default async function Home() {
   if (!user) redirect("/wejscie");
 
   const [{ data }, { data: czlonkowie }, { data: stan }, { data: druzyny }] = await Promise.all([
-    supabase.from("team_scores").select("*").order("score", { ascending: false }),
+    supabase.from("team_scores").select("*").eq("ukryta", false).order("score", { ascending: false }),
     // Skład drużyn do rozwinięcia wiersza - widok liczy punkty każdej osoby.
     supabase
       .from("user_scores")

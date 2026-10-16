@@ -38,7 +38,7 @@ export default async function SklepPage() {
   // i bez kupowania (decyzja Mikołaja 2026-10-12).
   if (!mojaDruzyna && profil?.role === "admin") {
     const [{ data: druzyny }, { data: pozycje }, { data: kronika }, { data: ukrytych }] = await Promise.all([
-      supabase.from("teams").select("*").order("numer"),
+      supabase.from("teams").select("*").eq("ukryta", false).order("numer"),
       supabase.from("shop_items").select("*").eq("active", true).eq("ukryta", false).order("position"),
       supabase.from("kronika_sklepiku").select("*").order("created_at", { ascending: false }).limit(30),
       supabase.rpc("liczba_ukrytych_nagrod"),
@@ -103,7 +103,9 @@ export default async function SklepPage() {
   const wszystkie = (druzyny ?? []) as Team[];
   const moja = wszystkie.find((d) => d.id === mojaDruzyna);
   const saldo = (wynik as TeamScore | null)?.score ?? 0;
-  const jestKapitanem = moja?.captain_id === user.id;
+  // W Kadrze (drużynie Organizatorów) kapitanem jest każdy admin.
+  const wKadrze = moja?.ukryta === true;
+  const jestKapitanem = moja?.captain_id === user.id || (wKadrze && profil?.role === "admin");
 
   // Nazwę kapitana bierzemy z już pobranej listy członków drużyny, zamiast
   // dopytywać o nią osobnym zapytaniem po `captain_id`. Jedna podróż mniej,
@@ -120,6 +122,13 @@ export default async function SklepPage() {
         <span className="text-xs uppercase tracking-[0.14em] text-dym">Saldo drużyny</span>
         <strong className="font-tytul text-2xl leading-none tabular-nums">{saldo}</strong>
       </div>
+
+      {wKadrze && (
+        <p className="szklo mb-4 rounded-md px-4 py-3 text-xs leading-relaxed text-dym">
+          Kadra to drużyna Organizatorów - nie ma jej w rankingu ani w kronice. Kupujesz jak kapitan, ale
+          klątwy zostają między drużynami uczestników. Punkty dla Kadry daje się w panelu, w „Punktach”.
+        </p>
+      )}
 
       {czynne.length > 0 && (
         <ul className="mb-4 grid gap-1.5">
@@ -139,7 +148,7 @@ export default async function SklepPage() {
         saldo={saldo}
         jestKapitanem={jestKapitanem}
         nazwaKapitana={nazwaKapitana}
-        obceDruzyny={wszystkie.filter((d) => d.id !== mojaDruzyna)}
+        obceDruzyny={wszystkie.filter((d) => d.id !== mojaDruzyna && !d.ukryta)}
         ukrytych={typeof ukrytych === "number" ? ukrytych : 0}
       />
 

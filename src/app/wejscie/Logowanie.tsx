@@ -47,6 +47,13 @@ export function Logowanie() {
    * Przy udanym logowaniu ten efekt nie ma znaczenia - strona i tak odjeżdża
    * na /auth/callback, zanim ktokolwiek zobaczy odblokowany przycisk.
    */
+  // Statystyka błędów logowania (sam rodzaj, bez treści) - żeby było widać,
+  // czy problem „wywala z Google” faktycznie występuje i jaki.
+  useEffect(() => {
+    const kod = parametry.get("kod");
+    if (bladZPowrotu) zdarzenie("logowanie_blad", { kod: kod ?? "inny" });
+  }, [bladZPowrotu, parametry]);
+
   useEffect(() => {
     function odblokuj() {
       if (document.visibilityState === "visible") setCzekaGoogle(false);

@@ -39,17 +39,23 @@ export default async function KrukPage() {
       .select("*")
       .order("miejsce")
       .order("display_name")
-      .limit(10),
+      .limit(50),
     supabase.from("kruk_ranking").select("*").eq("user_id", user.id).maybeSingle(),
   ]);
 
-  const top = (topRaw ?? []) as KrukMiejsce[];
+  // 50 do paska „do pobicia” w trakcie lotu, 10 na liście pod planszą.
+  const rywale = (topRaw ?? []) as KrukMiejsce[];
+  const top = rywale.slice(0, 10);
   const moj = mojRaw as KrukMiejsce | null;
   const mojPozaTop = moj !== null && !top.some((m) => m.user_id === user.id);
 
   return (
     <Ekran tytul="Kruk" podtytul="Przeleć między kolumnami - bez punktów, o sławę">
-      <Lot rekordPoczatkowy={moj?.rekord ?? null} />
+      <Lot
+        rekordPoczatkowy={moj?.rekord ?? null}
+        userId={user.id}
+        rywale={rywale.map((m) => ({ userId: m.user_id, nazwa: m.display_name, rekord: m.rekord }))}
+      />
 
       <div className="szklo mt-4 flex items-baseline justify-between rounded-md px-4 py-4">
         <span className="text-xs uppercase tracking-[0.14em] text-dym">Twój rekord</span>

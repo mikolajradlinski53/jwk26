@@ -24,7 +24,7 @@ export default async function KolejkaRejestracji() {
       .eq("status", "pending")
       .eq("rezerwa", false)
       .order("created_at", { ascending: true }),
-    supabase.from("teams").select("*").order("numer"),
+    supabase.from("teams").select("*").eq("ukryta", false).order("numer"),
     // Obsadzenie drużyn: przyjęci uczestnicy bez Kadry - tak liczy limit
     // w review_registration.
     supabase.from("profiles").select("team_id").eq("status", "approved").neq("role", "admin").not("team_id", "is", null),

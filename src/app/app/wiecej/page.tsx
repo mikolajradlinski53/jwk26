@@ -5,12 +5,7 @@ import { PozycjaMenu } from "@/components/PozycjaMenu";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Button } from "@/components/ui/Button";
-import { TwojeZgody } from "@/components/TwojeZgody";
 import { Powiadomienia } from "@/components/Powiadomienia";
-import { stanZgod } from "@/lib/zapisy/stanZgod";
-import { KopiujMaly } from "@/components/KopiujMaly";
-import { AdresEmail } from "@/components/AdresEmail";
-import { KOORDYNATOR, KOORDYNATOR_MAIL, KOORDYNATOR_TELEFON } from "@/lib/regulamin";
 import type { UserScore } from "@/types/db";
 
 export default async function WiecejPage() {
@@ -21,23 +16,10 @@ export default async function WiecejPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/wejscie");
 
-  const [{ data: profil }, { data: wynik }, { data: zgloszenie }] = await Promise.all([
+  const [{ data: profil }, { data: wynik }] = await Promise.all([
     supabase.from("profiles").select("display_name, role").eq("id", user.id).maybeSingle(),
     supabase.from("user_scores").select("*").eq("user_id", user.id).maybeSingle(),
-    // Przyjęte zgłoszenie, nie ostatnie: tylko jego zgody obowiązują.
-    supabase
-      .from("registrations")
-      .select("zgoda_wizerunek, sms_consent")
-      .eq("user_id", user.id)
-      .eq("status", "approved")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
   ]);
-
-  // Dane zdrowotne stanZgod sprawdza we wszystkich zgłoszeniach osoby
-  // (także starych, odrzuconych); zgody na wizerunek i SMS - w przyjętym.
-  const zgody = await stanZgod(supabase, user.id, zgloszenie);
 
   const mojWynik = wynik as UserScore | null;
   const jestAdminem = profil?.role === "admin";
@@ -54,8 +36,7 @@ export default async function WiecejPage() {
       </div>
 
       {/* Sekcje zamiast worka na wszystko (spec porządku, „Więcej”). Nagłówki
-          „Powiadomienia” i „Zarządzaj zgodami” mają same komponenty - nie dublujemy
-          ich nagłówkiem „Ustawienia”. */}
+          „Powiadomienia” ma własny nagłówek - nie dublujemy go „Ustawieniami”. */}
       {jestAdminem && (
         <>
           <NaglowekSekcji>Organizator</NaglowekSekcji>
@@ -71,37 +52,18 @@ export default async function WiecejPage() {
 
       <NaglowekSekcji>Zabawa</NaglowekSekcji>
       <nav className="grid gap-2.5">
-        <PozycjaMenu href="/app/gra" ikona="oko" nazwa="Gra terenowa" opis="Zadania dla drużyn" />
+        <PozycjaMenu href="/app/bingo?widok=gra" ikona="oko" nazwa="Gra terenowa" opis="Mapa zadań dla drużyn" />
         <PozycjaMenu href="/app/zawody" ikona="kielich" nazwa="Zawody" opis="Toplakyyy, siatkówka, poker, szachy" />
         <PozycjaMenu href="/app/arcade" ikona="karty" nazwa="Kasyno" opis="Sloty, blackjack i kruk" />
         <PozycjaMenu href="/app/gossip" ikona="gwiazda" nazwa="JWK Awards" opis="Anonimowe nominacje" />
       </nav>
 
       <Powiadomienia />
-      <TwojeZgody {...zgody} />
 
       <NaglowekSekcji>Informacje</NaglowekSekcji>
       <nav className="grid gap-2.5">
         <PozycjaMenu href="/regulamin" ikona="zwoj" nazwa="Regulamin" opis="Zasady wyjazdu" />
         <PozycjaMenu href="/prywatnosc" ikona="tarcza" nazwa="Prywatność" opis="Jak przetwarzamy Twoje dane" />
-        {/* Koordynator - ten sam kontakt, który podaje regulamin (§ 17, § 20).
-            Adres do skopiowania zamiast `mailto:` - na części telefonów link
-            otwierał nieskonfigurowaną albo zupełnie przypadkową aplikację. */}
-        <div className="szklo grid gap-1.5 rounded-md px-4 py-3.5">
-          <p className="text-sm font-bold text-kosc">Kontakt z Organizatorem</p>
-          <p className="text-xs text-dym">{KOORDYNATOR}, Koordynator Wyjazdu</p>
-          <p className="flex items-center justify-between gap-3 text-sm text-kosc">
-            <AdresEmail adres={KOORDYNATOR_MAIL} />
-            <KopiujMaly tekst={KOORDYNATOR_MAIL} co="adres e-mail" />
-          </p>
-        </div>
-        <PozycjaMenu
-          href={`tel:${KOORDYNATOR_TELEFON.replace(/\s/g, "")}`}
-          ikona="telefon"
-          nazwa="Zadzwoń"
-          opis={`${KOORDYNATOR} · ${KOORDYNATOR_TELEFON}`}
-          zewnetrzny
-        />
         <PozycjaMenu href="/app/harmonogram" ikona="zegar" nazwa="Harmonogram" opis="Co, kiedy i gdzie" />
       </nav>
 

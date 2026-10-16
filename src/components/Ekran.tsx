@@ -30,7 +30,9 @@ export function Ekran({
 }) {
   return (
     <ViewTransition enter={RUCH} exit={RUCH} default={RUCH}>
-      <section className="mx-auto w-full max-w-md px-4 pb-10" aria-label={naglowek ? tytul : undefined}>
+      {/* Kolumna flex: „Wróć” (Wroc) ustawia się `order-first` nad nagłówkiem,
+          choć w kodzie ekranów stoi na końcu (UX, decyzja Mikołaja 2026-10-15). */}
+      <section className="mx-auto flex w-full max-w-md flex-col px-4 pb-10" aria-label={naglowek ? tytul : undefined}>
         {/* Odstęp na wcięcie ekranu daje `body` przez env(safe-area-inset-top),
             więc tutaj zostaje tylko oddech typograficzny. Wcześniejsze `pt-7`
             było dobrane pod widok z paskiem adresu i w trybie aplikacji

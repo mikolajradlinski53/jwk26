@@ -5,19 +5,21 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { zdarzenie } from "@/lib/zdarzenia";
 import { Button } from "@/components/ui/Button";
+import { komunikat } from "@/lib/zapisy/bledy";
 import { SymbolBebna, NAZWY_SYMBOLI } from "./Symbole";
 import type { WynikSpinu } from "@/types/db";
 
 export function Bebny({
-  saldo,
   stawka,
   obrotPoczatkowy,
   limit,
+  koniec,
 }: {
-  saldo: number;
   stawka: number;
   obrotPoczatkowy: number;
   limit: number;
+  /** „o 12:00” / „o północy” - kiedy rusza nowa pula. */
+  koniec: string;
 }) {
   const router = useRouter();
   const [wynik, setWynik] = useState<WynikSpinu | null>(null);
@@ -27,7 +29,6 @@ export function Bebny({
   const wToku = useRef(false);
 
   const zostalo = Math.max(0, Math.floor((limit - obrot) / stawka));
-  const nieStac = saldo < stawka;
 
   async function zakrec() {
     if (wToku.current) return;
@@ -46,7 +47,8 @@ export function Bebny({
 
     if (error) {
       console.error("Spin nie przeszedł:", error);
-      setBlad(error.message);
+      setBlad(komunikat(error));
+      router.refresh();
       return;
     }
 
@@ -99,19 +101,15 @@ export function Bebny({
 
       {blad && <p className="text-center text-sm text-krew-jasna">{blad}</p>}
 
-      <Button onClick={() => void zakrec()} disabled={czeka || nieStac || zostalo === 0}>
-        {czeka
-          ? "Kręcę..."
-          : nieStac
-            ? "Za mało punktów"
-            : zostalo === 0
-              ? "Limit wyczerpany"
-              : `Zakręć - ${stawka} pkt`}
+      <Button onClick={() => void zakrec()} disabled={czeka || zostalo === 0}>
+        {czeka ? "Kręcę..." : zostalo === 0 ? "Pula wyczerpana" : `Zakręć - ${stawka} pkt`}
       </Button>
 
       <p className="text-center text-xs leading-relaxed text-dym">
-        Zostało {zostalo} {zostalo === 1 ? "spin" : "spinów"} w ciągu doby. Stawka
-        i wypłaty idą na twoje saldo, a ono sumuje się do drużyny.
+        {zostalo === 0
+          ? `Nowa pula ${koniec}.`
+          : `Zostało ${zostalo} ${zostalo === 1 ? "spin" : "spinów"} do nowej puli (${koniec}).`}{" "}
+        Wygrane i przegrane liczą się do wyniku drużyny.
       </p>
     </div>
   );

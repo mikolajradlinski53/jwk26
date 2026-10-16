@@ -33,7 +33,7 @@ export function RankingNaZywo({
   const odswiez = useCallback(async () => {
     const supabase = createClient();
     const [{ data }, { data: osoby }] = await Promise.all([
-      supabase.from("team_scores").select("*").order("score", { ascending: false }),
+      supabase.from("team_scores").select("*").eq("ukryta", false).order("score", { ascending: false }),
       supabase
         .from("user_scores")
         .select("user_id, display_name, team_id, score")

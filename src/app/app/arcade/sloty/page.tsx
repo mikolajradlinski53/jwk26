@@ -7,6 +7,7 @@ import { Wroc } from "@/components/Wroc";
 import { Bebny } from "../Bebny";
 import { NAZWY_SYMBOLI } from "../Symbole";
 import type { Spin, UserScore } from "@/types/db";
+import { KartaPuli, koniecOkna, wczytajPule } from "../Pula";
 
 export default async function SlotyPage() {
   const supabase = await createClient();
@@ -16,45 +17,31 @@ export default async function SlotyPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/wejscie");
 
-  const [{ data: wynik }, { data: ustawienia }, { data: spiny }, { data: obrot }] =
+  const [{ data: wynik }, { data: ustawienia }, { data: spiny }, pula] =
     await Promise.all([
       supabase.from("user_scores").select("*").eq("user_id", user.id).maybeSingle(),
-      supabase
-        .from("app_settings")
-        .select("key, value")
-        .in("key", ["slots_stawka", "casino_daily_stake_cap"]),
+      supabase.from("app_settings").select("key, value").in("key", ["slots_stawka"]),
       supabase
         .from("moje_spiny")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(15),
-      // Obrót liczy baza tą samą funkcją, którą wymusza spin. Liczenie go tutaj
-      // z `Date.now()` byłoby dwiema prawdami o jednym limicie, a przy okazji
-      // reguła react-hooks/purity w tej wersji Nexta odrzuca `Date.now()`
-      // w renderze - także w komponencie serwerowym, i to jako błąd.
-      supabase.rpc("obrot_w_oknie"),
+      // Pulę i obrót liczy baza tą samą funkcją, którą wymusza spin. Liczenie
+      // ich tutaj z `Date.now()` byłoby dwiema prawdami o jednym limicie.
+      wczytajPule(supabase),
     ]);
 
   const wg = new Map((ustawienia ?? []).map((r) => [r.key as string, r.value]));
   const stawka = Number(wg.get("slots_stawka") ?? 10);
-  const limit = Number(wg.get("casino_daily_stake_cap") ?? 300);
 
   const saldo = (wynik as UserScore | null)?.score ?? 0;
   const historia = (spiny ?? []) as Spin[];
 
   return (
-    <Ekran tytul="Sloty" podtytul="Gra przeciwko twojemu saldu">
-      <div className="szklo mb-4 flex items-baseline justify-between rounded-md px-4 py-4">
-        <span className="text-xs uppercase tracking-[0.14em] text-dym">Twoje saldo</span>
-        <strong className="font-tytul text-2xl leading-none tabular-nums">{saldo}</strong>
-      </div>
+    <Ekran tytul="Sloty" podtytul="Gra z puli drużyny">
+      <KartaPuli pula={pula} saldo={saldo} />
 
-      <Bebny
-        saldo={saldo}
-        stawka={stawka}
-        obrotPoczatkowy={Number(obrot ?? 0)}
-        limit={limit}
-      />
+      <Bebny stawka={stawka} obrotPoczatkowy={pula.obrot} limit={pula.limit} koniec={koniecOkna(pula)} />
 
       <NaglowekSekcji>Ostatnie spiny</NaglowekSekcji>
       {historia.length === 0 ? (

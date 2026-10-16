@@ -23,7 +23,7 @@ export default async function UczestnicyPage({
   const supabase = await createClient();
 
   const [{ data: druzynyRaw }, wynik] = await Promise.all([
-    supabase.from("teams").select("id, name").order("name"),
+    supabase.from("teams").select("id, name").eq("ukryta", false).order("name"),
     wczytajUczestnikow(supabase, filtry).then(
       (lista) => ({ lista, blad: false }),
       (e: { code?: string; message?: string }) => {

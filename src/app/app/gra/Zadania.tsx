@@ -1,11 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { komunikatZdjecia, wyslijZdjecieZadania } from "@/lib/zgloszenieZdjecia";
 import { zdarzenie } from "@/lib/zdarzenia";
+import { linkNawigacji } from "@/lib/mapy";
+import { MapaQuestow, type Pinezka } from "./MapaQuestow";
 import type { BingoSubmission, BingoTask } from "@/types/db";
 
 type Stan = "do-zrobienia" | "czeka" | "zaliczone" | "odrzucone";
@@ -52,8 +54,40 @@ export function Zadania({
   /** Organizator bez drużyny: same zadania, bez wysyłania. */
   podglad?: boolean;
 }) {
+  const [wybrane, setWybrane] = useState<string | null>(null);
+
+  // Pinezki tylko dla zadań z miejscem. useMemo - mapa buduje się od nowa
+  // wyłącznie przy nowych danych z serwera, nie przy każdym wyborze pinezki.
+  const pinezki = useMemo<Pinezka[]>(
+    () =>
+      zadania
+        .filter((z) => z.lat !== null && z.lng !== null)
+        .map((z) => ({
+          id: z.id,
+          tytul: z.title,
+          punkty: z.points,
+          lat: z.lat as number,
+          lng: z.lng as number,
+          zaliczone: stanZadania(zgloszenia.filter((s) => s.task_id === z.id)).stan === "zaliczone",
+        })),
+    [zadania, zgloszenia],
+  );
+
+  const wybierz = useCallback((id: string) => {
+    setWybrane(id);
+    document.getElementById(`quest-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, []);
+
   return (
     <div className="grid gap-3">
+      {pinezki.length > 0 && (
+        <div className="grid gap-1.5">
+          <MapaQuestow pinezki={pinezki} onWybierz={wybierz} />
+          <p className="px-1 text-xs text-dym">
+            Dotknij pinezki, żeby zobaczyć zadanie. Szare - już zaliczone przez Twoją drużynę.
+          </p>
+        </div>
+      )}
       {podglad && (
         <p className="szklo rounded-md px-4 py-3 text-xs leading-relaxed text-dym">
           Podgląd Organizatora - tak drużyny widzą odkryte zadania. Zgłoszenia rozpatrujesz w panelu (Bingo).
@@ -67,6 +101,7 @@ export function Zadania({
           userId={userId}
           teamId={teamId}
           podglad={podglad}
+          wyrozniona={wybrane === z.id}
         />
       ))}
     </div>
@@ -81,8 +116,10 @@ function Karta({
   userId,
   teamId,
   podglad,
+  wyrozniona,
 }: {
   podglad: boolean;
+  wyrozniona: boolean;
   zadanie: BingoTask;
   stan: Stan;
   zywe?: BingoSubmission;
@@ -137,12 +174,34 @@ function Karta({
   }
 
   return (
-    <article className="szklo rounded-md px-4 py-4">
+    <article
+      id={`quest-${zadanie.id}`}
+      className={
+        "szklo scroll-mt-24 rounded-md px-4 py-4 transition-shadow " +
+        (wyrozniona ? "border-krew/70 shadow-[0_0_0_2px_rgb(200_16_46/0.55)]" : "")
+      }
+    >
       <div className="flex items-start justify-between gap-3">
         <h2 className="font-tytul text-lg leading-tight text-kosc">{zadanie.title}</h2>
         <span className="shrink-0 text-xs font-bold tabular-nums text-krew-jasna">{zadanie.points} pkt</span>
       </div>
       <p className="mt-1.5 text-sm leading-relaxed text-kosc/85">{zadanie.description}</p>
+      {zadanie.lat !== null && zadanie.lng !== null && (
+        <a
+          href={linkNawigacji({ lat: zadanie.lat, lng: zadanie.lng })}
+          target="_blank"
+          rel="noopener"
+          data-zdarzenie="nawigacja"
+          data-miejsce="gra_terenowa"
+          className="szklo mt-3 inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-xs font-bold text-kosc"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="size-4">
+            <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" />
+            <circle cx="12" cy="9.5" r="2.5" />
+          </svg>
+          Nawiguj w Google Maps
+        </a>
+      )}
       <p className={`mt-3 text-[0.62rem] font-bold uppercase tracking-[0.14em] ${KLASA[stan]}`}>
         {ETYKIETA[stan]}
       </p>

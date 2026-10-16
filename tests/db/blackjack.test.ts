@@ -8,6 +8,7 @@ import {
   idDruzyn,
   ustawJakoZaakceptowany,
   dosypPunktyOsobie,
+  ustawPuleKasyna,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -39,6 +40,8 @@ beforeAll(async () => {
   [druzyna] = await idDruzyn();
   [gracz, czekajacy] = await Promise.all([createUser("gracz-bj"), createUser("czekajacy-bj")]);
   await ustawJakoZaakceptowany(gracz, druzyna);
+  // Pula kasyna (25% punktów drużyny z otwarcia okna / członków) z zapasem.
+  await ustawPuleKasyna(druzyna, 1000);
   graczClient = await signIn(gracz);
   czekajacyClient = await signIn(czekajacy);
 });
@@ -49,6 +52,7 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
+  await admin.from("points_ledger").delete().eq("team_id", druzyna).eq("category", "zasiew_testowy");
   await Promise.all([gracz, czekajacy].map(deleteUser));
 });
 
@@ -198,10 +202,11 @@ describe("zasady i uprawnienia", () => {
     expect(error!.message).toMatch(/stawk/i);
   });
 
-  it("za małe saldo, druga ręka w toku i nieprzyjęty gracz są odbijani", async () => {
-    await dosypPunktyOsobie(gracz.id, druzyna, 5);
-    const bezSalda = await graczClient.rpc("blackjack_rozdaj", { p_stawka: 10 });
-    expect(bezSalda.error!.message).toMatch(/pkt/);
+  it("za mała pula, druga ręka w toku i nieprzyjęty gracz są odbijani", async () => {
+    await ustawPuleKasyna(druzyna, 5);
+    const bezPuli = await graczClient.rpc("blackjack_rozdaj", { p_stawka: 10 });
+    expect(bezPuli.error!.message).toMatch(/limit/i);
+    await ustawPuleKasyna(druzyna, 1000);
 
     await dosypPunktyOsobie(gracz.id, druzyna, 100);
     await start(["10s", "10h", "9s", "7h"]);
@@ -212,9 +217,9 @@ describe("zasady i uprawnienia", () => {
     expect(czekajacyRozdaje.error).not.toBeNull();
   });
 
-  it("wspólny limit obrotu ze slotami zatrzymuje rozdanie", async () => {
-    await dosypPunktyOsobie(gracz.id, druzyna, 5000);
-    // 29 spinów po 10 = 290; limit 300, więc stawka 20 już się nie mieści.
+  it("wspólna pula ze slotami zatrzymuje rozdanie", async () => {
+    await ustawPuleKasyna(druzyna, 300);
+    // 29 spinów po 10 = 290; pula 300, więc stawka 20 już się nie mieści.
     const spiny = Array.from({ length: 29 }, () => ({
       user_id: gracz.id,
       game: "sloty",
@@ -225,6 +230,7 @@ describe("zasady i uprawnienia", () => {
     await admin.from("game_sessions").insert(spiny);
     const { error } = await graczClient.rpc("blackjack_rozdaj", { p_stawka: 20 });
     expect(error!.message).toMatch(/limit/i);
+    await ustawPuleKasyna(druzyna, 1000);
   });
 
   it("ręka porzucona na 10 minut rozstrzyga się jak stanie", async () => {

@@ -28,8 +28,10 @@
  *                z dopiskami z aplikacji; § 19 nadal „Aplikacja JWK26”.
  * 2026-10-12.1 - wielkie litery: Organizator, Kadra, Koordynator Wyjazdu
  *                (bez zmian treści).
+ * 2026-10-15.1 - bez sekcji „Zarządzaj zgodami” w apce (decyzja Mikołaja):
+ *                wycofanie zgód mailowo u Koordynatora Wyjazdu.
  */
-export const WERSJA_ZGOD = "2026-10-12.1";
+export const WERSJA_ZGOD = "2026-10-15.1";
 
 export const KONTAKT_IOD = "iod@ue.wroc.pl";
 
@@ -87,8 +89,8 @@ export const KLAUZULA_INFORMACYJNA: string[] = [
   "Masz prawo dostępu do swoich danych, ich sprostowania, usunięcia, " +
     "ograniczenia przetwarzania i wniesienia sprzeciwu, a także prawo " +
     "wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych. Każdą zgodę " +
-    "możesz wycofać w dowolnym momencie w aplikacji (Więcej → Zarządzaj " +
-    "zgodami) albo mailowo u Koordynatora Wyjazdu; wycofanie nie wpływa na " +
+    "możesz wycofać w dowolnym momencie, pisząc do Koordynatora Wyjazdu " +
+    "(adres w regulaminie i polityce prywatności); wycofanie nie wpływa na " +
     "zgodność z prawem przetwarzania sprzed wycofania.",
   "Podanie danych z kroków „Dane” i „O tobie” jest warunkiem udziału " +
     "w wyjeździe, z wyjątkiem zwolnienia rektorskiego i pytania o alkohol. " +
@@ -119,9 +121,9 @@ export const ZGODA_WIZERUNEK =
   "i nagraniach z JWK26 - w mediach społecznościowych i na stronach " +
   "internetowych Samorządu Studentów UEW oraz w jego materiałach informacyjnych " +
   "i promocyjnych, także dotyczących współpracy z partnerami. Zgoda jest " +
-  "dobrowolna, nie jest warunkiem udziału i mogę ją w każdej chwili wycofać " +
-  "w aplikacji (Więcej → Zarządzaj zgodami) albo mailowo u Koordynatora " +
-  "Wyjazdu; wycofanie nie wpływa na materiały " +
+  "dobrowolna, nie jest warunkiem udziału i mogę ją w każdej chwili wycofać, " +
+  "pisząc do Koordynatora Wyjazdu (adres w regulaminie i polityce " +
+  "prywatności); wycofanie nie wpływa na materiały " +
   "rozpowszechnione wcześniej.";
 
 export const KLAUZULA_ZDROWIE =
@@ -129,7 +131,7 @@ export const KLAUZULA_ZDROWIE =
   "przygotowaniu odpowiednich posiłków i udzieleniu Ci pomocy w nagłej " +
   "sytuacji. Widzą je tylko Organizatorzy, a ośrodek - wyłącznie dietę " +
   "i alergie. Usuwamy je automatycznie 14 dni po wyjeździe. Zgodę możesz " +
-  "wycofać w aplikacji w każdej chwili - wtedy od razu je kasujemy.";
+  "wycofać w każdej chwili, pisząc do Koordynatora Wyjazdu - wtedy od razu je kasujemy.";
 
 export const ZGODA_ART9 =
   "Wyrażam wyraźną zgodę na przetwarzanie przez Uniwersytet Ekonomiczny " +
@@ -140,7 +142,7 @@ export const ZGODA_ART9 =
 
 export const ZGODA_SMS =
   "Zgadzam się na otrzymywanie na podany numer SMS-ów z pilnymi komunikatami " +
-  "organizacyjnymi JWK26 (dobrowolnie, mogę wycofać w aplikacji).";
+  "organizacyjnymi JWK26 (dobrowolnie, mogę wycofać, pisząc do Koordynatora Wyjazdu).";
 
 export const POTWIERDZENIE_ICE =
   "Ta osoba wie, że podaję jej numer, i zgadza się na kontakt w nagłym wypadku.";

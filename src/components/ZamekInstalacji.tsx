@@ -9,6 +9,7 @@ const KROKI: Record<System, string[]> = {
     "Naciśnij przycisk Udostępnij na dolnym pasku Safari.",
     "Przewiń listę i wybierz „Do ekranu początkowego”.",
     "Naciśnij Dodaj w prawym górnym rogu.",
+    "Otwórz apkę z ekranu i zaloguj się jeszcze raz - iPhone trzyma ją osobno od Safari. To jednorazowe.",
   ],
   android: [
     "Naciśnij menu trzech kropek w prawym górnym rogu.",

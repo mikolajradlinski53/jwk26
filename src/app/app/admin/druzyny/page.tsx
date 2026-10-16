@@ -34,9 +34,10 @@ export default async function AdminDruzynyPage() {
       (z) => [z.user_id, z],
     ),
   );
+  // Admini siedzą w Kadrze (ukrytej drużynie Organizatorów) - przydział ich nie dotyczy.
   const doPrzydzialu: OsobaDoPrzydzialu[] = (
     (przyjeci ?? []) as { id: string; display_name: string | null; email: string; role: string; team_id: string | null }[]
-  ).map((p) => {
+  ).filter((p) => p.role !== "admin").map((p) => {
     const z = zgl.get(p.id);
     const imie = [z?.imie, z?.nazwisko].filter(Boolean).join(" ");
     return {
@@ -57,7 +58,9 @@ export default async function AdminDruzynyPage() {
       (p) => [p.team_id, { glosow: p.glosow, czlonkow: p.czlonkow }],
     ),
   );
-  const zespoly = (druzyny ?? []) as Team[];
+  const wszystkie = (druzyny ?? []) as Team[];
+  const zespoly = wszystkie.filter((d) => !d.ukryta);
+  const kadra = wszystkie.find((d) => d.ukryta);
 
   return (
     <Ekran tytul="Drużyny" podtytul="Kapitan kupuje z salda drużyny">
@@ -88,6 +91,19 @@ export default async function AdminDruzynyPage() {
           </li>
         ))}
       </ul>
+
+      {kadra && (
+        <div className="szklo mt-2.5 rounded-md px-3.5 py-3.5">
+          <div className="flex items-baseline justify-between gap-3">
+            <span className="text-sm font-bold text-dym">Kadra · {czlonkowie.filter((c) => c.team_id === kadra.id).length} os.</span>
+            <span className="flex-none font-tytul text-lg leading-none tabular-nums">{salda.get(kadra.id) ?? 0}</span>
+          </div>
+          <p className="mt-1.5 text-xs leading-relaxed text-dym">
+            Drużyna Organizatorów: niewidoczna w rankingu, kronice i głosowaniu. Każdy z Was kupuje w niej
+            jak kapitan, wrzuca zdjęcia i gra w kasynie. Punkty dla Kadry dajesz w „Punktach”.
+          </p>
+        </div>
+      )}
 
       <p className="mt-5 px-1 text-xs leading-relaxed text-dym">
         Bez kapitana drużyna nic nie kupi. Zmiana działa od razu - poprzedni traci

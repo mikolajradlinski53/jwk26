@@ -8,7 +8,9 @@ import {
   deleteUser,
   idDruzyn,
   ustawJakoZaakceptowany,
+  dosypPunkty,
   dosypPunktyOsobie,
+  ustawPuleKasyna,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -224,7 +226,7 @@ describe("spin", () => {
   }
 
   it("zaakceptowany gracz kręci: sesja, symbole, netto w księdze", async () => {
-    await dosypPunktyOsobie(gracz.id, druzyna, 200);
+    await ustawPuleKasyna(druzyna, 300);
 
     const { data, error } = await graczClient.rpc("zakrec_slotami");
     expect(error).toBeNull();
@@ -305,19 +307,41 @@ describe("spin", () => {
     }
   });
 
-  it("saldo niższe od stawki odbija spin", async () => {
-    await dosypPunktyOsobie(gracz.id, druzyna, 5);
+  it("pula mniejsza od stawki odbija spin, nawet przy własnym saldzie", async () => {
+    await ustawPuleKasyna(druzyna, 5);
+    await dosypPunktyOsobie(gracz.id, druzyna, 500);
 
     const { error } = await graczClient.rpc("zakrec_slotami");
     expect(error).not.toBeNull();
-    expect(error!.message).toMatch(/stawka/i);
+    expect(error!.message).toMatch(/limit/i);
 
     const { data } = await admin.from("game_sessions").select("id");
     expect(data ?? []).toEqual([]);
   });
 
-  it("wyczerpany limit obrotu odbija spin", async () => {
-    await dosypPunktyOsobie(gracz.id, druzyna, 5000);
+  it("gracz bez własnych punktów gra z puli drużyny", async () => {
+    await ustawPuleKasyna(druzyna, 300);
+
+    const { data, error } = await graczClient.rpc("zakrec_slotami");
+    expect(error).toBeNull();
+    expect((data as { limit: number }).limit).toBe(300);
+  });
+
+  it("pula to 25% punktów drużyny z otwarcia okna podzielone przez członków", async () => {
+    // Pomocnik dopisuje drużynie 250 × 4 × liczba członków pkt sprzed okna -
+    // baza ma z tego wyliczyć dokładnie 250.
+    await ustawPuleKasyna(druzyna, 250);
+    const { data } = await graczClient.rpc("pula_kasyna");
+    expect(data).toMatchObject({ limit: 250, obrot: 0 });
+
+    // Punkty zdobyte w trakcie okna nie podnoszą puli do jego końca.
+    await dosypPunkty(druzyna, 10_000);
+    const { data: poDosypaniu } = await graczClient.rpc("pula_kasyna");
+    expect(poDosypaniu).toMatchObject({ limit: 250 });
+  });
+
+  it("wyczerpana pula odbija spin", async () => {
+    await ustawPuleKasyna(druzyna, 300);
     // Trzydzieści spinów po dziesięć to dokładnie trzysta punktów obrotu.
     await zapelnijObrot(gracz.id, 30);
 
@@ -326,19 +350,18 @@ describe("spin", () => {
     expect(error!.message).toMatch(/limit/i);
   });
 
-  it("obrót starszy niż dobę nie liczy się do limitu", async () => {
-    await dosypPunktyOsobie(gracz.id, druzyna, 5000);
-    // Okno jest ruchome i liczy czas absolutny - świadomie, bo czas letni
-    // kończy się 25 października 2026, w ostatnią noc wyjazdu (D1).
-    const wczoraj = new Date(Date.now() - 25 * 3_600_000);
-    await zapelnijObrot(gracz.id, 30, wczoraj);
+  it("obrót sprzed początku okna nie liczy się do puli", async () => {
+    await ustawPuleKasyna(druzyna, 300);
+    const { data: start } = await admin.rpc("poczatek_okna_kasyna");
+    const przed = new Date(new Date(start as string).getTime() - 60_000);
+    await zapelnijObrot(gracz.id, 30, przed);
 
     const { error } = await graczClient.rpc("zakrec_slotami");
     expect(error).toBeNull();
   });
 
   it("księga dostaje wpis na każdy spin niezerowy i żadnego na zerowy", async () => {
-    await dosypPunktyOsobie(gracz.id, druzyna, 5000);
+    await ustawPuleKasyna(druzyna, 300);
 
     // Dwanaście spinów to 120 punktów obrotu, dobrze poniżej limitu 300.
     //
@@ -376,10 +399,9 @@ describe("spin", () => {
     }
   });
 
-  it("dwa równoległe spiny przy saldzie na jeden: jeden przechodzi", async () => {
-    // Stawka to 10, saldo dokładnie 10. Bez blokady wiersza profiles oba
-    // wywołania przeczytają to samo saldo i oba przejdą, a gracz zjedzie pod
-    // zero - księga jest tylko do dopisywania, więc nie ma jak tego cofnąć.
+  it("dwa równoległe spiny przy puli na jeden: jeden przechodzi", async () => {
+    // Stawka to 10, pula dokładnie 10. Bez blokady wiersza profiles oba
+    // wywołania przeczytają ten sam obrót i oba przejdą ponad pulę.
     //
     // Wypłaty zerujemy na czas testu. Bez tego wynik zależał od losu: para
     // (42% spinów) zwraca stawkę, saldo zostaje 10 i drugi spin słusznie
@@ -395,7 +417,7 @@ describe("spin", () => {
       .eq("key", "slots_wyplaty");
 
     try {
-      await dosypPunktyOsobie(gracz.id, druzyna, 10);
+      await ustawPuleKasyna(druzyna, 10);
 
       const [a, b] = await Promise.all([
         graczClient.rpc("zakrec_slotami"),
@@ -408,13 +430,8 @@ describe("spin", () => {
       const { data: sesje } = await admin.from("game_sessions").select("id");
       expect(sesje).toHaveLength(1);
 
-      // Saldo gracza nie może być ujemne.
-      const { data: wynik } = await admin
-        .from("user_scores")
-        .select("score")
-        .eq("user_id", gracz.id)
-        .single();
-      expect(wynik!.score).toBeGreaterThanOrEqual(0);
+      const { data: pula } = await graczClient.rpc("pula_kasyna");
+      expect(pula).toMatchObject({ limit: 10, obrot: 10 });
     } finally {
       await admin
         .from("app_settings")

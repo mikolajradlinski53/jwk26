@@ -43,6 +43,8 @@ export async function updateSession(request: NextRequest) {
 
   if (!user) return przekieruj(request, "/wejscie", response);
 
+  utrwalSesje(request, response);
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("status, role")
@@ -68,6 +70,29 @@ export async function updateSession(request: NextRequest) {
   }
 
   return response;
+}
+
+/**
+ * Przedłuża ciasteczka sesji z serwera (2026-10-15, zgłoszenia „wywala
+ * z logowania”). Safari skraca do 7 dni ciasteczka zapisane przez JavaScript
+ * - a klient Supabase w przeglądarce zapisuje je właśnie tak. Między zapisami
+ * (12.10) a wyjazdem (23.10) mija 11 dni bez otwierania apki, więc iPhone
+ * zgubiłby sesję. Ten sam plik ustawiony nagłówkiem `Set-Cookie` z serwera
+ * takiego limitu nie ma. Pomijamy ciasteczka, które Supabase właśnie
+ * odświeżył w tej odpowiedzi - te są nowsze.
+ */
+const ROK_I_KWARTAL = 400 * 24 * 3600;
+function utrwalSesje(request: NextRequest, response: NextResponse) {
+  for (const c of request.cookies.getAll()) {
+    if (!/^sb-.+-auth-token(\.\d+)?$/.test(c.name)) continue;
+    if (response.cookies.get(c.name)) continue;
+    response.cookies.set(c.name, c.value, {
+      path: "/",
+      sameSite: "lax",
+      secure: request.nextUrl.protocol === "https:",
+      maxAge: ROK_I_KWARTAL,
+    });
+  }
 }
 
 /**

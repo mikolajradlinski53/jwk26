@@ -2,10 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Button } from "@/components/ui/Button";
-import { TwojeZgody } from "@/components/TwojeZgody";
 import { Powiadomienia } from "@/components/Powiadomienia";
 import { OdswiezPrzyPowrocie } from "@/components/OdswiezPrzyPowrocie";
-import { stanZgod, type StanZgod } from "@/lib/zapisy/stanZgod";
 import { kontoSamorzadowe, TURA_DLA_PRYWATNYCH } from "@/lib/konto";
 import { Formularz } from "./Formularz";
 import { DolaczPrzelew } from "./DolaczPrzelew";
@@ -90,12 +88,7 @@ export default async function RejestracjaPage() {
     const nazwaPuli = stan.find((p) => p.klucz === ostatnie.pula)?.nazwa;
 
     if (ostatnie.rezerwa) {
-      // Dwa niezależne zapytania dla tego samego ekranu - równolegle, żeby
-      // czekać na wolniejsze z nich, a nie na sumę obu.
-      const [zgody, { data: pozycja }] = await Promise.all([
-        stanZgod(supabase, user.id, ostatnie),
-        supabase.rpc("pozycja_w_rezerwie"),
-      ]);
+      const { data: pozycja } = await supabase.rpc("pozycja_w_rezerwie");
       return (
         <Ekran tytul="Rezerwa" podtytul={nazwaPuli}>
           <div className="szklo rounded-md px-4 py-6 text-center">
@@ -110,7 +103,6 @@ export default async function RejestracjaPage() {
             </p>
           </div>
           <Powiadomienia />
-          <TwojeZgody {...zgody} />
           {/* Awans z rezerwy jest ruchem admina, nie czymś, co ta osoba wywoła
               sama - bez odświeżania po powrocie zostałaby tu, nieświadoma,
               że kolejka już ruszyła dalej. */}
@@ -119,8 +111,6 @@ export default async function RejestracjaPage() {
         </Ekran>
       );
     }
-
-    const zgody = await stanZgod(supabase, user.id, ostatnie);
 
     if (!ostatnie.proof_path) {
       return (
@@ -135,7 +125,6 @@ export default async function RejestracjaPage() {
             tytul={tytulPrzelewu(ostatnie.imie ?? "", ostatnie.nazwisko ?? "")}
           />
           <Powiadomienia />
-          <TwojeZgody {...zgody} />
           <Wyloguj />
         </Ekran>
       );
@@ -147,7 +136,6 @@ export default async function RejestracjaPage() {
           Twoja ofiara została złożona.
         </p>
         <Powiadomienia />
-        <TwojeZgody {...zgody} />
         {/* Akceptację albo odrzucenie ustawia admin - bez odświeżania po
             powrocie ta osoba czekałaby na wyrok, który już zapadł. */}
         <OdswiezPrzyPowrocie />
@@ -160,13 +148,6 @@ export default async function RejestracjaPage() {
   // osoby „zapisy otwarte” znaczy „otwarta tura Świeżaków”.
   const samorzadowe = kontoSamorzadowe(user.email);
   const otwarte = stan.some((p) => p.otwarta && (samorzadowe || p.klucz === TURA_DLA_PRYWATNYCH));
-  // Odrzucone zgłoszenie mogło zostawić dane zdrowotne albo aktywne zgody -
-  // brama wpuszcza taką osobę wyłącznie tu, więc to jedyne miejsce, gdzie
-  // może je wycofać.
-  const zgodyOstatnie: StanZgod | null = ostatnie
-    ? await stanZgod(supabase, user.id, ostatnie)
-    : null;
-
   return (
     <Ekran tytul={ostatnie ? "Ponowna próba" : "Próba"}>
       {ostatnie?.status === "rejected" && (
@@ -192,7 +173,6 @@ export default async function RejestracjaPage() {
             : "Z prywatnego maila zapiszesz się do tury Świeżaków - ruszy po przyjęciu Świeżaków. Jeśli jesteś Działaczem albo Alumnem, wyloguj się i zaloguj kontem @samorzad.ue.wroc.pl."}
         </p>
       )}
-      {zgodyOstatnie && <TwojeZgody {...zgodyOstatnie} />}
       <Wyloguj />
     </Ekran>
   );

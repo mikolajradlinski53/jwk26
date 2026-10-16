@@ -2,12 +2,15 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { Plansza } from "./Plansza";
+import { Przelacznik } from "./Przelacznik";
+import { WidokGry } from "../gra/WidokGry";
 import type { BingoSubmission, BingoTask } from "@/types/db";
 
 /** Ekran awarii odczytu - celowo mówi, że to usterka, a nie stan gry. */
 function Awaria({ co }: { co: string }) {
   return (
     <Ekran tytul="Bingo" podtytul="Plansza drużyny">
+      <Przelacznik aktywny="bingo" />
       <p className="szklo rounded-md px-4 py-6 text-center text-sm text-krew-jasna">
         Nie udało się wczytać {co}. To usterka po naszej stronie, nie Twoja -
         spróbuj odświeżyć za chwilę.
@@ -18,8 +21,8 @@ function Awaria({ co }: { co: string }) {
 
 // Bez `export const dynamic`: klient serwerowy czyta cookies, co samo z siebie
 // czyni trasę dynamiczną. W Next 16 ta opcja i tak znika przy Cache Components.
-export default async function BingoPage() {
-  const supabase = await createClient();
+export default async function BingoPage({ searchParams }: { searchParams: Promise<{ widok?: string }> }) {
+  const [supabase, { widok }] = await Promise.all([createClient(), searchParams]);
 
   const {
     data: { user },
@@ -43,11 +46,16 @@ export default async function BingoPage() {
     return <Awaria co="Twojego profilu" />;
   }
 
+  if (widok === "gra") {
+    return <WidokGry supabase={supabase} userId={user.id} teamId={profil?.team_id ?? null} rola={profil?.role ?? null} />;
+  }
+
   // Organizator bez drużyny widzi samą planszę, bez zgłoszeń (2026-10-12).
   if (!profil?.team_id && profil?.role === "admin") {
     const { data: zadaniaRaw } = await supabase.from("bingo_tasks").select("*").eq("rodzaj", "bingo").order("position");
     return (
       <Ekran tytul="Bingo" podtytul="Podgląd Organizatora">
+        <Przelacznik aktywny="bingo" />
         <Plansza zadania={(zadaniaRaw ?? []) as BingoTask[]} zgloszenia={[]} userId={user.id} teamId="" podglad />
       </Ekran>
     );
@@ -58,6 +66,7 @@ export default async function BingoPage() {
   if (!profil?.team_id) {
     return (
       <Ekran tytul="Bingo" podtytul="Plansza drużyny">
+        <Przelacznik aktywny="bingo" />
         <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">
           Nie masz przypisanej drużyny. Plansza pojawi się, kiedy Organizator
           Cię do niej przypisze.
@@ -92,6 +101,7 @@ export default async function BingoPage() {
 
   return (
     <Ekran tytul="Bingo" podtytul="Plansza drużyny">
+      <Przelacznik aktywny="bingo" />
       {zadania.length === 0 ? (
         <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">
           Plansza zapali się razem z pierwszym zadaniem. Do tego czasu punkty

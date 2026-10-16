@@ -47,12 +47,75 @@ function Napis({ children }: { children: React.ReactNode }) {
  * (faza, wynik, rekord, komunikat). „Jeszcze raz" podbija `runda`, co stawia
  * efekt od nowa z czystym stanem.
  */
-export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
+/** Rywale z rankingu - do paska „do pobicia” nad planszą. */
+export type Rywal = { userId: string; nazwa: string; rekord: number };
+
+/**
+ * Pasek rywalizacji nad planszą (2026-10-15, „żeby ranking był widoczny
+ * podczas grania”): lider, a w locie najbliższy wynik do pobicia, który
+ * przeskakuje na kolejną osobę, gdy ją przegonisz.
+ */
+function PasekRywalizacji({
+  rywale,
+  userId,
+  biezacy,
+  wLocie,
+  rekord,
+}: {
+  rywale: Rywal[];
+  userId: string;
+  biezacy: number;
+  wLocie: boolean;
+  rekord: number | null;
+}) {
+  const inni = rywale.filter((r) => r.userId !== userId);
+  const lider = rywale[0];
+  const doPobicia = inni.filter((r) => r.rekord > biezacy).sort((a, b) => a.rekord - b.rekord)[0];
+  let prawa: string;
+  if (wLocie) {
+    if (doPobicia) prawa = `Do pobicia: ${doPobicia.nazwa} · ${doPobicia.rekord}`;
+    else prawa = inni.length > 0 ? "Prowadzisz w rankingu!" : "Lecisz po pierwszy rekord";
+  } else {
+    prawa = rekord !== null ? `Twój rekord: ${rekord}` : "Jeszcze bez rekordu";
+  }
+  return (
+    <div className="szklo flex items-center justify-between gap-3 rounded-md px-3.5 py-2 text-xs">
+      <span className="min-w-0 truncate text-dym">
+        {lider ? (
+          <>
+            Lider: <strong className="text-kosc">{lider.userId === userId ? "Ty" : lider.nazwa}</strong> · {lider.rekord}
+          </>
+        ) : (
+          "Ranking pusty - bądź pierwszy"
+        )}
+      </span>
+      <span
+        aria-live="polite"
+        className={`shrink-0 font-bold tabular-nums ${wLocie && !doPobicia && inni.length > 0 ? "text-krew-jasna" : "text-kosc"}`}
+      >
+        {prawa}
+      </span>
+    </div>
+  );
+}
+
+export function Lot({
+  rekordPoczatkowy,
+  rywale = [],
+  userId = "",
+}: {
+  rekordPoczatkowy: number | null;
+  rywale?: Rywal[];
+  userId?: string;
+}) {
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [runda, setRunda] = useState(0);
   const [faza, setFaza] = useState<Faza>("czeka");
   const [wynik, setWynik] = useState(0);
+  // Wynik na żywo dla paska rywalizacji - zmienia się tylko przy przelocie
+  // kolumny, więc nie przerysowuje Reacta co klatkę.
+  const [naZywo, setNaZywo] = useState(0);
   const [rekord, setRekord] = useState<number | null>(rekordPoczatkowy);
   const [uwaga, setUwaga] = useState<string | null>(null);
   const obrazyRef = useRef<ObrazyGry | null>(null);
@@ -105,6 +168,7 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
     let poprzedni = performance.now();
     let ramka = 0;
     let zyje = true;
+    let ostatniWynik = 0;
 
     function ustaw(f: Faza) {
       aktualna = f;
@@ -194,6 +258,10 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
         while (zapas >= KROK_S) {
           stan = krok(stan, KROK_S, machniecie);
           machniecie = false;
+          if (stan.wynik !== ostatniWynik) {
+            ostatniWynik = stan.wynik;
+            setNaZywo(stan.wynik);
+          }
           zapas -= KROK_S;
           if (stan.rozbity) {
             zapas = 0;
@@ -230,12 +298,20 @@ export function Lot({ rekordPoczatkowy }: { rekordPoczatkowy: number | null }) {
   function jeszczeRaz() {
     setFaza("czeka");
     setWynik(0);
+    setNaZywo(0);
     setUwaga(null);
     setRunda((r) => r + 1);
   }
 
   return (
     <div className="grid gap-3">
+      <PasekRywalizacji
+        rywale={rywale}
+        userId={userId}
+        biezacy={faza === "czeka" ? 0 : naZywo}
+        wLocie={faza === "leci" || faza === "pauza"}
+        rekord={rekord}
+      />
       {uwaga && (
         <p role="alert" className="text-center text-sm text-krew-jasna">
           {uwaga}

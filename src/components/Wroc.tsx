@@ -10,11 +10,13 @@ import Link from "next/link";
  */
 export function Wroc({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <div className="mt-7 flex justify-center">
+    // `order-first` w kolumnie Ekranu: przycisk zawsze na górze, nad tytułem,
+    // gdziekolwiek stoi w kodzie strony (2026-10-15).
+    <div className="order-first flex pt-3">
       <Link
         href={href}
         transitionTypes={["nav-back"]}
-        className="szklo-plynne inline-flex min-h-11 items-center gap-2 rounded-full pl-4 pr-5 text-sm font-bold
+        className="szklo-plynne inline-flex min-h-10 items-center gap-1.5 rounded-full pl-3 pr-4 text-xs font-bold
                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
       >
         <svg

@@ -13,7 +13,7 @@ export default async function GraAdminPage() {
   const [{ data: zadania, error }, { data: zgloszenia }] = await Promise.all([
     supabase
       .from("bingo_tasks")
-      .select("id, title, description, points, odkryte, active, created_at")
+      .select("id, title, description, points, odkryte, active, created_at, lat, lng")
       .eq("rodzaj", "quest")
       .order("created_at", { ascending: true }),
     supabase.from("bingo_submissions").select("task_id, status"),

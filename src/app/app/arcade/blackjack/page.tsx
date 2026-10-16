@@ -6,6 +6,7 @@ import type { UserScore } from "@/types/db";
 import { Wroc } from "@/components/Wroc";
 import { NaglowekSekcji } from "@/components/NaglowekSekcji";
 import { Pusto } from "@/components/Pusto";
+import { KartaPuli, wczytajPule, zostaloZPuli } from "../Pula";
 
 type Rozdanie = { id: string; stake: number; payout: number; wynik: string | null; created_at: string };
 
@@ -16,7 +17,7 @@ export default async function BlackjackPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/wejscie");
 
-  const [{ data: wynik }, { data: reka }, { data: historiaRaw }, { data: obrot }, { data: limitRaw }] =
+  const [{ data: wynik }, { data: reka }, { data: historiaRaw }, pula] =
     await Promise.all([
       supabase.from("user_scores").select("*").eq("user_id", user.id).maybeSingle(),
       supabase.rpc("blackjack_stan"),
@@ -25,26 +26,18 @@ export default async function BlackjackPage() {
         .select("id, stake, payout, wynik, created_at")
         .order("created_at", { ascending: false })
         .limit(10),
-      // Ten sam limit co w slotach - obie gry liczą się razem.
-      supabase.rpc("obrot_w_oknie"),
-      supabase.from("app_settings").select("value").eq("key", "casino_daily_stake_cap").maybeSingle(),
+      // Ta sama pula co w slotach - obie gry liczą się razem.
+      wczytajPule(supabase),
     ]);
 
   const saldo = (wynik as UserScore | null)?.score ?? 0;
   const historia = (historiaRaw ?? []) as Rozdanie[];
-  const limit = Number(limitRaw?.value ?? 300);
 
   return (
-    <Ekran tytul="Blackjack" podtytul="Gra przeciwko twojemu saldu">
-      <div className="szklo mb-4 flex items-baseline justify-between rounded-md px-4 py-4">
-        <span className="text-xs uppercase tracking-[0.14em] text-dym">Twoje saldo</span>
-        <strong className="font-tytul text-2xl leading-none tabular-nums">{saldo}</strong>
-      </div>
-      <p className="mb-4 px-1 text-xs text-dym">
-        Obrót w ostatnich 24 h: {Number(obrot ?? 0)} z {limit} pkt (razem ze slotami).
-      </p>
+    <Ekran tytul="Blackjack" podtytul="Gra z puli drużyny">
+      <KartaPuli pula={pula} saldo={saldo} />
 
-      <Stol poczatkowa={(reka as RekaBj | null) ?? null} saldo={saldo} />
+      <Stol poczatkowa={(reka as RekaBj | null) ?? null} pozostalo={zostaloZPuli(pula)} />
 
       <NaglowekSekcji>Ostatnie rozdania</NaglowekSekcji>
       {historia.length === 0 ? (

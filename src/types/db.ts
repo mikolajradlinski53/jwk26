@@ -13,6 +13,8 @@ export type Team = {
   /** Kapitan nadał nazwę - zablokowana. */
   nazwa_nadana: boolean;
   glosowanie: "nie_rozpoczete" | "trwa" | "zakonczone";
+  /** Kadra - drużyna-widmo adminów, poza rankingiem i głosowaniem. */
+  ukryta: boolean;
 };
 
 export type Profile = {
@@ -34,6 +36,7 @@ export type TeamScore = {
   color: string;
   score: number;
   motto: string | null;
+  ukryta: boolean;
 };
 
 export type UserScore = {
@@ -57,6 +60,10 @@ export type BingoTask = {
   description: string;
   points: number;
   active: boolean;
+  /** Miejsce zadania gry terenowej (pinezka na mapie); NULL - bez miejsca. */
+  lat: number | null;
+  lng: number | null;
+  link_mapy: string | null;
 };
 
 export type BingoSubmission = {

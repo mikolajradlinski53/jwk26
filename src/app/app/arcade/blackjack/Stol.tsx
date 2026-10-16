@@ -118,7 +118,7 @@ function Reka({
  * Stół blackjacka. Całą grę liczy baza - przeglądarka tylko rysuje widok,
  * który dostaje z funkcji, i wysyła jeden z trzech ruchów.
  */
-export function Stol({ poczatkowa, saldo }: { poczatkowa: RekaBj | null; saldo: number }) {
+export function Stol({ poczatkowa, pozostalo }: { poczatkowa: RekaBj | null; pozostalo: number }) {
   const router = useRouter();
   const [reka, setReka] = useState<RekaBj | null>(poczatkowa);
   const [blad, setBlad] = useState<string | null>(null);
@@ -197,14 +197,14 @@ export function Stol({ poczatkowa, saldo }: { poczatkowa: RekaBj | null; saldo: 
       ) : (
         <div className="grid gap-2">
           <p className="px-1 text-xs uppercase tracking-[0.14em] text-dym">
-            {reka ? "Kolejne rozdanie" : "Rozdaj"} · saldo {saldo}
+            {reka ? "Kolejne rozdanie" : "Rozdaj"} · w puli {pozostalo}
           </p>
           <div className="grid grid-cols-3 gap-2">
             {STAWKI.map((s) => (
               <Button
                 key={s}
                 onClick={() => void wywolaj("blackjack_rozdaj", { p_stawka: s })}
-                disabled={czeka || saldo < s}
+                disabled={czeka || pozostalo < s}
               >
                 {s} pkt
               </Button>

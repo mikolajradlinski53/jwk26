@@ -5,9 +5,10 @@ import { type NazwaIkony } from "@/components/Ikona";
 import { PozycjaMenu } from "@/components/PozycjaMenu";
 import { Wroc } from "@/components/Wroc";
 import type { UserScore } from "@/types/db";
+import { KartaPuli, wczytajPule } from "./Pula";
 
 const GRY: { href: string; nazwa: string; opis: string; ikona: NazwaIkony }[] = [
-  { href: "/app/arcade/sloty", nazwa: "Sloty", opis: "stawka 10 · limit dzienny", ikona: "swieca" },
+  { href: "/app/arcade/sloty", nazwa: "Sloty", opis: "stawka 10 · z puli na 12 h", ikona: "swieca" },
   { href: "/app/arcade/blackjack", nazwa: "Blackjack", opis: "stawka 10 · 20 · 50", ikona: "karty" },
   { href: "/app/arcade/kruk", nazwa: "Kruk", opis: "ranking, bez punktów", ikona: "pioro" },
 ];
@@ -24,19 +25,15 @@ export default async function ArcadePage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/wejscie");
 
-  const { data: wynik } = await supabase
-    .from("user_scores")
-    .select("*")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const [{ data: wynik }, pula] = await Promise.all([
+    supabase.from("user_scores").select("*").eq("user_id", user.id).maybeSingle(),
+    wczytajPule(supabase),
+  ]);
   const saldo = (wynik as UserScore | null)?.score ?? 0;
 
   return (
-    <Ekran tytul="Kasyno" podtytul="Gra przeciwko twojemu saldu">
-      <div className="szklo mb-4 flex items-baseline justify-between rounded-md px-4 py-4">
-        <span className="text-xs uppercase tracking-[0.14em] text-dym">Twoje saldo</span>
-        <strong className="font-tytul text-2xl leading-none tabular-nums">{saldo}</strong>
-      </div>
+    <Ekran tytul="Kasyno" podtytul="Gra z puli drużyny">
+      <KartaPuli pula={pula} saldo={saldo} />
 
       <nav className="grid gap-2.5">
         {GRY.map((g) => (

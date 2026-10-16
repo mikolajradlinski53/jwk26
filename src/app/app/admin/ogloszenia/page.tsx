@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
 import { NAZWY_PUL } from "@/lib/zapisy/formularz";
 import { Ogloszenie } from "./Ogloszenie";
+import { AnulujPlan } from "./AnulujPlan";
 import type { KluczPuli } from "@/types/db";
 import { Wroc } from "@/components/Wroc";
 import { NaglowekSekcji } from "@/components/NaglowekSekcji";
@@ -21,6 +22,17 @@ type Wpis = {
   proby: number;
 };
 
+type Plan = {
+  id: number;
+  tytul: string;
+  tresc: string;
+  adresat: string;
+  druzyna: string | null;
+  pula: KluczPuli | null;
+  sms: boolean;
+  kiedy: string;
+};
+
 const CZAS = new Intl.DateTimeFormat("pl-PL", {
   timeZone: "Europe/Warsaw",
   day: "numeric",
@@ -31,8 +43,8 @@ const CZAS = new Intl.DateTimeFormat("pl-PL", {
 
 export default async function OgloszeniaPage() {
   const supabase = await createClient();
-  const [{ data: druzynyRaw }, { data: historiaRaw, error }, { count: zgodSms }] = await Promise.all([
-    supabase.from("teams").select("id, name").order("name"),
+  const [{ data: druzynyRaw }, { data: historiaRaw, error }, { count: zgodSms }, { data: planyRaw }] = await Promise.all([
+    supabase.from("teams").select("id, name").eq("ukryta", false).order("name"),
     supabase
       .from("powiadomienia")
       .select("id, kanal, tytul, body, adresat, adresat_id, pula, created_at, wyslane_at, wyslane_do, proby")
@@ -45,7 +57,14 @@ export default async function OgloszeniaPage() {
       .eq("status", "approved")
       .eq("sms_consent", true)
       .not("phone", "is", null),
+    supabase
+      .from("ogloszenia_planowane")
+      .select("id, tytul, tresc, adresat, druzyna, pula, sms, kiedy")
+      .is("wyslane_at", null)
+      .is("anulowane_at", null)
+      .order("kiedy"),
   ]);
+  const plany = (planyRaw ?? []) as Plan[];
 
   const druzyny = (druzynyRaw ?? []) as { id: string; name: string }[];
   const historia = (historiaRaw ?? []) as Wpis[];
@@ -53,8 +72,8 @@ export default async function OgloszeniaPage() {
   // Strona dynamiczna, liczona per żądanie - chwila renderu to chwila odczytu.
   const teraz = new Date().getTime();
 
-  function komu(w: Wpis) {
-    if (w.adresat === "team") return nazwaDruzyny.get(w.adresat_id ?? "") ?? "drużyna";
+  function komu(w: { adresat: string; adresat_id?: string | null; druzyna?: string | null; pula: KluczPuli | null }) {
+    if (w.adresat === "team") return nazwaDruzyny.get(w.adresat_id ?? w.druzyna ?? "") ?? "drużyna";
     if (w.adresat === "pula") return w.pula ? NAZWY_PUL[w.pula] : "pula";
     return "wszyscy";
   }
@@ -77,6 +96,27 @@ export default async function OgloszeniaPage() {
   return (
     <Ekran tytul="Ogłoszenia" podtytul="Powiadomienia push">
       <Ogloszenie druzyny={druzyny} zgodSms={zgodSms ?? 0} />
+
+      {plany.length > 0 && (
+        <>
+          <NaglowekSekcji>Zaplanowane</NaglowekSekcji>
+          <ol className="grid gap-1.5">
+            {plany.map((p) => (
+              <li key={p.id} className="szklo flex items-start gap-3 rounded-md px-3.5 py-2.5">
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-bold text-kosc">{p.tytul}</span>
+                  <span className="block text-sm text-dym">{p.tresc}</span>
+                  <span className="mt-1 block text-xs text-dym">
+                    {CZAS.format(new Date(p.kiedy))} · {komu(p)}
+                    {p.sms ? " · też SMS" : ""}
+                  </span>
+                </span>
+                <AnulujPlan id={p.id} tytul={p.tytul} />
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
 
       <NaglowekSekcji>Wysłane</NaglowekSekcji>
       {error && (

@@ -88,8 +88,8 @@ export default async function GossipPage() {
 
             {k.status === "otwarta" && k.moj_glos && (
               <p className="text-sm text-dym">
-                Nominujesz: <strong className="text-kosc">{k.moj_typ}</strong>. Wynik zobaczysz, gdy
-                Organizator go ujawni.
+                Dziś nominujesz: <strong className="text-kosc">{k.moj_typ}</strong>. Kolejną nominację w tej
+                kategorii oddasz jutro. Wynik zobaczysz, gdy Organizator go ujawni.
               </p>
             )}
             {k.status === "otwarta" && !k.moj_glos && (

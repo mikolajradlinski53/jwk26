@@ -42,6 +42,7 @@ export default async function ZawodyDetal({ params }: { params: Promise<{ id: st
 
   return (
     <Ekran tytul={z.nazwa} podtytul={z.druzynowe ? `Składy po ${z.rozmiar_skladu} osób` : "Zapisy indywidualne"}>
+      <Wroc href="/app/zawody">Wszystkie zawody</Wroc>
       <div className="grid grid-cols-[minmax(0,1fr)] gap-6">
         {z.opis && <p className="text-sm leading-relaxed text-kosc/85">{z.opis}</p>}
         <p className={`text-[0.62rem] font-bold uppercase tracking-[0.14em] ${z.zapisy_otwarte ? "text-krew-jasna" : "text-dym"}`}>
@@ -175,7 +176,6 @@ export default async function ZawodyDetal({ params }: { params: Promise<{ id: st
         )}
 
         <OdswiezPrzyPowrocie />
-        <Wroc href="/app/zawody">Wszystkie zawody</Wroc>
       </div>
     </Ekran>
   );

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { bladLogowania } from "@/lib/auth/blad";
+import { bladLogowania, kodBleduLogowania } from "@/lib/auth/blad";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
@@ -8,6 +8,10 @@ export async function GET(request: NextRequest) {
   function zBledem(surowy: string) {
     const url = new URL("/wejscie", origin);
     url.searchParams.set("blad", bladLogowania(surowy));
+    const kod = kodBleduLogowania(surowy);
+    url.searchParams.set("kod", kod);
+    // Kod z maila nie przechodzi przez przekierowanie - działa w każdym oknie.
+    if (kod === "inne_okno") url.searchParams.set("awaria", "1");
     return NextResponse.redirect(url);
   }
 

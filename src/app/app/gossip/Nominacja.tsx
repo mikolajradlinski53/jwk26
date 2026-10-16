@@ -201,7 +201,9 @@ export function Nominacja({
         {etap ?? "Nominuj"}
       </Button>
       <p className="text-xs leading-relaxed text-dym">
-        Nominujesz raz i nie da się tego zmienić. Nikt poza Organizatorami nie zobaczy, kto co
+        Jedna nominacja dziennie w każdej kategorii (piątek, sobota, niedziela) - oddanej nie da się
+        zmienić. Uzasadnienie musi mieć co najmniej {minimum} znaków, a pod uwagę bierzemy tylko
+        rozsądne uzasadnienia. Nikt poza Organizatorami nie zobaczy, kto co
         napisał - po ujawnieniu pokażemy tylko uzasadnienia i zdjęcia o zwycięzcy. Zdjęcie nie może
         nikogo ośmieszać ani pokazywać osób, które nie chcą być fotografowane (regulamin, § 19).
       </p>

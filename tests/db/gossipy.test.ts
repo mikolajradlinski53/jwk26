@@ -160,6 +160,19 @@ describe("nominacja", () => {
     expect(w.moj_typ).toBe("Ola");
   });
 
+  it("następnego dnia można nominować w tej samej kategorii jeszcze raz", async () => {
+    const k = await nowaKategoria();
+    expect((await glos(alaClient, k, ola.id)).error).toBeNull();
+    // Wczorajsza nominacja: dzień cofnięty kluczem serwisowym.
+    await admin.from("gossip_votes").update({ dzien: "2000-01-01" }).eq("category_id", k).eq("voter_id", ala.id);
+    expect((await widok(alaClient, k)).moj_glos).toBeNull();
+    expect((await glos(alaClient, k, ela.id)).error).toBeNull();
+    const w = await widok(alaClient, k);
+    expect(w.moj_glos).toBe(ela.id);
+    const { count } = await admin.from("gossip_votes").select("id", { count: "exact", head: true }).eq("category_id", k);
+    expect(count).toBe(2);
+  });
+
   it("nie da się nominować nieprzyjętego", async () => {
     const k = await nowaKategoria();
     const { error } = await glos(alaClient, k, czekajacy.id);
