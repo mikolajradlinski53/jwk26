@@ -36,7 +36,7 @@ export async function WidokGry({
         .eq("active", true)
         .order("created_at", { ascending: true }),
       teamId
-        ? supabase.from("bingo_submissions").select("*").eq("team_id", teamId)
+        ? supabase.from("bingo_submissions").select("*").eq("team_id", teamId).not("task_id", "is", null)
         : Promise.resolve({ data: [], error: null }),
     ]);
 

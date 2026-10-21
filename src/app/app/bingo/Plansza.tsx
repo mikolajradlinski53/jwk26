@@ -123,7 +123,7 @@ function opisStanu(stan: Stan, wlasne: boolean): string {
 
 export function Plansza({
   zadania,
-  zgloszenia,
+  zgloszenia: wszystkieZgloszenia,
   userId,
   teamId,
   podglad = false,
@@ -148,6 +148,12 @@ export function Plansza({
   // bo `etap` odczytane w domknięciu bywa nieaktualne w oknie krótszym niż
   // jeden render (dokładnie ten błąd kosztował nas czas przy rejestracji).
   const wToku = useRef(false);
+
+  // Posty z feedu (bez zadania) nie leżą na planszy.
+  const zgloszenia = useMemo(
+    () => wszystkieZgloszenia.filter((z): z is BingoSubmission & { task_id: string } => z.task_id !== null),
+    [wszystkieZgloszenia],
+  );
 
   // Najwyżej jedno nieodrzucone zgłoszenie na zadanie i drużynę pilnuje tego
   // unikalny indeks w bazie - odrzucone świadomie pomijamy, bo zwalniają pole.

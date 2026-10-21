@@ -3,6 +3,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { zdarzenie } from "@/lib/zdarzenia";
+import { sciezkaPodgladu } from "@/lib/zgloszenieZdjecia";
 import { ZdjecieFeedu } from "./ZdjecieFeedu";
 
 export type KomentarzWpis = {
@@ -102,6 +103,7 @@ export function Wpis({
   zadanieTytul,
   punkty,
   graTerenowa = false,
+  post = null,
   druzynaNazwa,
   druzynaKolor,
   autor,
@@ -119,6 +121,8 @@ export function Wpis({
   utworzonoTekst: string;
   zadanieTytul: string;
   punkty: number;
+  /** Swobodny post (bez zadania): autor i ścieżka pliku - do usuwania. */
+  post?: { autorId: string; sciezka: string } | null;
   /** Zadanie gry terenowej zamiast pola bingo - inna etykieta pod tytułem. */
   graTerenowa?: boolean;
   druzynaNazwa: string;
@@ -140,6 +144,30 @@ export function Wpis({
   const [wysylanie, setWysylanie] = useState(false);
   const [bladKomentarza, setBladKomentarza] = useState<string | null>(null);
   const [kasowanyId, setKasowanyId] = useState<string | null>(null);
+  const [usuniety, setUsuniety] = useState(false);
+  const [usuwanie, setUsuwanie] = useState(false);
+  const [bladUsuwania, setBladUsuwania] = useState<string | null>(null);
+  const mozeUsunac = post !== null && (post.autorId === userId || isAdmin);
+
+  /** Post znika od razu u usuwającego; pliki sprzątamy po wierszu, bez blokowania. */
+  async function usunPost() {
+    if (!post || usuwanie) return;
+    if (!window.confirm(post.autorId === userId ? "Usunąć Twój post?" : `Usunąć post ${autor}?`)) return;
+    setUsuwanie(true);
+    setBladUsuwania(null);
+    const supabase = createClient();
+    const { error } = await supabase.from("bingo_submissions").delete().eq("id", id);
+    if (error) {
+      console.error("Usunięcie posta nie przeszło:", error);
+      setBladUsuwania("Nie udało się usunąć posta. Odśwież i spróbuj jeszcze raz.");
+      setUsuwanie(false);
+      return;
+    }
+    const { error: bladPlikow } = await supabase.storage.from("bingo").remove([post.sciezka, sciezkaPodgladu(post.sciezka)]);
+    if (bladPlikow) console.error("Pliki usuniętego posta zostały w storage:", bladPlikow);
+    zdarzenie("feed", { akcja: "usuniecie_posta" });
+    setUsuniety(true);
+  }
 
   const polubione = lajki.includes(userId);
   const liczbaLubien = lajki.length;
@@ -296,10 +324,15 @@ export function Wpis({
     setKomentarze((poprzednie) => poprzednie.filter((k) => k.id !== komentarzId));
   }
 
+  if (usuniety) return null;
+
   return (
     <article className="szklo overflow-hidden rounded-lg">
       {zdjecieUrl ? (
-        <ZdjecieFeedu url={zdjecieUrl} opis={`Zdjęcie do zadania „${zadanieTytul}", wrzucone przez ${autor}`} />
+        <ZdjecieFeedu
+          url={zdjecieUrl}
+          opis={post ? `Zdjęcie wrzucone przez ${autor}` : `Zdjęcie do zadania „${zadanieTytul}", wrzucone przez ${autor}`}
+        />
       ) : (
         <p className="flex aspect-square w-full items-center justify-center bg-noc-glab text-center text-sm text-krew-jasna">
           Nie udało się wczytać zdjęcia.
@@ -319,20 +352,40 @@ export function Wpis({
               {druzynaNazwa}
             </p>
           </div>
-          <time
-            dateTime={utworzonoIso}
-            className="flex-none text-[0.62rem] tabular-nums text-dym"
-          >
-            {utworzonoTekst}
-          </time>
+          <div className="flex flex-none items-start gap-1">
+            <time
+              dateTime={utworzonoIso}
+              className="pt-0.5 text-[0.62rem] tabular-nums text-dym"
+            >
+              {utworzonoTekst}
+            </time>
+            {mozeUsunac && (
+              <button
+                type="button"
+                onClick={() => void usunPost()}
+                disabled={usuwanie}
+                aria-label="Usuń post"
+                className="-mr-2 -mt-2.5 grid size-11 shrink-0 place-items-center rounded-full text-dym
+                           hover:text-krew-jasna focus-visible:outline-2 focus-visible:outline-offset-2
+                           focus-visible:outline-krew disabled:opacity-40"
+              >
+                <Kosz />
+              </button>
+            )}
+          </div>
         </div>
+        {bladUsuwania && <p className="mt-1 text-xs text-krew-jasna">{bladUsuwania}</p>}
 
-        <p className="mt-3 font-tytul text-base text-kosc">{zadanieTytul}</p>
-        <p className="text-xs uppercase tracking-widest text-dym">
-          {graTerenowa ? `Gra terenowa · ${punkty} pkt` : `${punkty} pkt`}
-        </p>
+        {!post && (
+          <>
+            <p className="mt-3 font-tytul text-base text-kosc">{zadanieTytul}</p>
+            <p className="text-xs uppercase tracking-widest text-dym">
+              {graTerenowa ? `Gra terenowa · ${punkty} pkt` : `${punkty} pkt`}
+            </p>
+          </>
+        )}
 
-        {podpis && <p className="mt-2 text-sm leading-relaxed text-kosc">{podpis}</p>}
+        {podpis && <p className={`${post ? "mt-3" : "mt-2"} text-sm leading-relaxed text-kosc`}>{podpis}</p>}
 
         <div className="mt-3.5 flex items-center gap-2 border-t border-white/10 pt-3.5">
           <button

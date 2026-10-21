@@ -70,7 +70,8 @@ export type BingoSubmission = {
   id: string;
   team_id: string;
   user_id: string;
-  task_id: string;
+  /** NULL = swobodny post w feedzie (2026-10-21), bez punktów i bez akceptacji. */
+  task_id: string | null;
   photo_path: string;
   caption: string | null;
   status: UserStatus;

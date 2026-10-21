@@ -4,9 +4,12 @@ import { Ekran } from "@/components/Ekran";
 import { Wpis, type KomentarzWpis } from "./Wpis";
 import { Pusto } from "@/components/Pusto";
 import { NaglowekFeedu } from "./NaglowekFeedu";
+import { NowyPost } from "./NowyPost";
 
 type WpisSurowy = {
   id: string;
+  user_id: string;
+  task_id: string | null;
   photo_path: string;
   caption: string | null;
   created_at: string;
@@ -60,7 +63,7 @@ export default async function FeedPage() {
 
   const { data: profil, error: bladProfilu } = await supabase
     .from("profiles")
-    .select("display_name, role")
+    .select("display_name, role, team_id, status")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -74,6 +77,12 @@ export default async function FeedPage() {
   }
   const jestAdminem = profil?.role === "admin";
   const mojeImie = profil?.display_name ?? "Uczestnik";
+  // Posty wrzuca przyjęty uczestnik z drużyną (polityka posty_insert_own) -
+  // bez drużyny przycisk tylko by odbijał.
+  const dodawanie =
+    profil?.team_id && profil.status === "approved" ? (
+      <NowyPost userId={user.id} teamId={profil.team_id as string} />
+    ) : null;
 
   // Uwaga: `bingo_submissions` ma dwa klucze obce do `profiles` (`user_id`
   // i `reviewed_by`) - samo `profiles(display_name)` kończy się PGRST201.
@@ -81,7 +90,7 @@ export default async function FeedPage() {
   const { data: wpisyRaw, error: bladWpisow } = await supabase
     .from("bingo_submissions")
     .select(
-      "id, photo_path, caption, created_at, " +
+      "id, user_id, task_id, photo_path, caption, created_at, " +
         "bingo_tasks(title, points, rodzaj), teams(name, color), " +
         "profiles!bingo_submissions_user_id_fkey(display_name)",
     )
@@ -100,7 +109,8 @@ export default async function FeedPage() {
   if (wpisy.length === 0) {
     return (
       <Ekran tytul="Feed" naglowek={<NaglowekFeedu />}>
-        <Pusto ikona="oko">Tutaj wpadać będą zdjęcia z bingo, kiedy tylko ktoś zacznie je wrzucać.</Pusto>
+        {dodawanie}
+        <Pusto ikona="oko">Tutaj wpadać będą zdjęcia z wyjazdu i z bingo - wrzuć pierwsze.</Pusto>
       </Ekran>
     );
   }
@@ -171,6 +181,7 @@ export default async function FeedPage() {
 
   return (
     <Ekran tytul="Feed" naglowek={<NaglowekFeedu />}>
+      {dodawanie}
       <ul className="grid gap-6">
         {wpisy.map((w) => (
           <li key={w.id}>
@@ -183,6 +194,7 @@ export default async function FeedPage() {
               zadanieTytul={w.bingo_tasks?.title ?? "Zadanie"}
               punkty={w.bingo_tasks?.points ?? 0}
               graTerenowa={w.bingo_tasks?.rodzaj === "quest"}
+              post={w.task_id === null ? { autorId: w.user_id, sciezka: w.photo_path } : null}
               druzynaNazwa={w.teams?.name ?? "Bez drużyny"}
               druzynaKolor={w.teams?.color ?? "#9c8b8e"}
               autor={w.profiles?.display_name ?? "Uczestnik"}

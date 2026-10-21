@@ -1,15 +1,20 @@
 import { createClient } from "@/lib/supabase/client";
 import { podglad, skompresuj } from "@/lib/obrazy";
 
+/** Ścieżka podglądu (720 px) obok pełnego pliku. */
+export function sciezkaPodgladu(sciezka: string): string {
+  return sciezka.replace(/\.jpg$/, ".podglad.jpg");
+}
+
 /**
- * Zdjęcie do zadania drużyny - pole bingo albo zadanie gry terenowej (oba
- * siedzą w bingo_tasks/bingo_submissions). Kompresja, upload, podgląd do
- * feedu i wiersz zgłoszenia. Wspólne dla planszy i gry terenowej.
+ * Zdjęcie do feedu: kompresja, upload pełnego pliku i podglądu, potem wiersz
+ * w bingo_submissions. `taskId` = pole bingo albo zadanie gry terenowej;
+ * `null` = swobodny post (od razu w feedzie, bez punktów, 2026-10-21).
  */
 export async function wyslijZdjecieZadania(o: {
   userId: string;
   teamId: string;
-  taskId: string;
+  taskId: string | null;
   plik: File;
   podpis: string;
   etap: (opis: string) => void;
@@ -31,19 +36,21 @@ export async function wyslijZdjecieZadania(o: {
     const maly = await podglad(o.plik);
     const { error: bladPodgladu } = await supabase.storage
       .from("bingo")
-      .upload(sciezka.replace(/\.jpg$/, ".podglad.jpg"), maly, { contentType: "image/jpeg" });
+      .upload(sciezkaPodgladu(sciezka), maly, { contentType: "image/jpeg" });
     if (bladPodgladu) throw bladPodgladu;
   } catch (e) {
     console.error("Podgląd zdjęcia się nie wysłał:", e);
   }
 
-  o.etap("Zapisuję zgłoszenie...");
+  o.etap(o.taskId ? "Zapisuję zgłoszenie..." : "Publikuję...");
   const { error } = await supabase.from("bingo_submissions").insert({
     team_id: o.teamId,
     user_id: o.userId,
     task_id: o.taskId,
     photo_path: sciezka,
     caption: o.podpis.trim() || null,
+    // Post nie czeka w kolejce - polityka posty_insert_own wymaga `approved`.
+    ...(o.taskId ? {} : { status: "approved" }),
   });
   if (error) throw error;
 }
@@ -56,6 +63,7 @@ export function komunikatZdjecia(e: unknown, zajete: string): string {
   const tekst = e instanceof Error ? e.message : String((e as { message?: unknown })?.message ?? e);
 
   if (/bingo_jedno_na_pole|duplicate key/i.test(tekst)) return zajete;
+  if (/POSTY_LIMIT/.test(tekst)) return "Za dużo zdjęć w ostatniej godzinie. Odpocznij chwilę i wrzuć później.";
   if (/row-level security|jwt|expired|401/i.test(tekst)) {
     return "Sesja wygasła albo zadanie jest już zamknięte. Odśwież i spróbuj jeszcze raz.";
   }

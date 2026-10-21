@@ -119,7 +119,7 @@ export default async function BingoPage({ searchParams }: { searchParams: Promis
   ] = await Promise.all([
     // Same pola planszy - zadania gry terenowej mają osobny ekran.
     supabase.from("bingo_tasks").select("*").eq("rodzaj", "bingo").order("position"),
-    supabase.from("bingo_submissions").select("*").eq("team_id", teamId),
+    supabase.from("bingo_submissions").select("*").eq("team_id", teamId).not("task_id", "is", null),
     supabase.from("app_settings").select("key, value").in("key", ["bingo_bonus_wygrana", "bingo_bonus_plansza"]),
     // Wygraną bierze tylko pierwsza drużyna - zasady mówią, czy jeszcze jest do wzięcia.
     supabase.from("points_ledger").select("teams(name)").eq("ref_type", "bingo_wygrana").limit(1),
