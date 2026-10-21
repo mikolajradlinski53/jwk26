@@ -184,101 +184,83 @@ describe("akceptacja zgłoszeń bingo i bonusy", () => {
     expect(wpisy).toEqual([]);
   });
 
-  it("zapalenie linii daje bonus raz", async () => {
+  /** Akceptuje kluczem admina zgłoszenie na wskazane pole i zwraca błąd RPC. */
+  async function zaakceptujPole(autor: TestUser, teamId: string, pozycja: number) {
+    const zgloszenieId = await wstawZgloszenie(autor, teamId, await idZadania(pozycja));
+    const { error } = await adminClient.rpc("review_bingo", { p_submission_id: zgloszenieId, p_approve: true });
+    return error;
+  }
+
+  async function wygrane() {
+    const { data } = await admin.from("points_ledger").select("team_id, user_id, delta").eq("ref_type", "bingo_wygrana");
+    return data ?? [];
+  }
+
+  async function druzyny(): Promise<{ jawna: string[]; ukryta: string | null }> {
+    const { data } = await admin.from("teams").select("id, ukryta").order("name");
+    return {
+      jawna: (data ?? []).filter((t) => !t.ukryta).map((t) => t.id as string),
+      ukryta: ((data ?? []).find((t) => t.ukryta)?.id as string | undefined) ?? null,
+    };
+  }
+
+  it("dwie linie to jeszcze nie wygrana", async () => {
     const teamId = await firstTeamId();
-    const autor = await nowyUzytkownik("linia-bingo");
+    const autor = await nowyUzytkownik("dwie-linie-bingo");
+    await zapal(teamId, autor.id, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
 
-    // Cztery pierwsze pola wiersza 0 zapalone z pominięciem funkcji.
-    await zapal(teamId, autor.id, [0, 1, 2, 3]);
-
-    const taskId = await idZadania(4);
-    const zgloszenieId = await wstawZgloszenie(autor, teamId, taskId);
-
-    const { error } = await adminClient.rpc("review_bingo", {
-      p_submission_id: zgloszenieId,
-      p_approve: true,
-    });
-    expect(error).toBeNull();
-
-    const { data: bonus } = await admin
-      .from("points_ledger")
-      .select("user_id, ref_type, ref_id")
-      .eq("team_id", teamId)
-      .eq("ref_type", "bingo_linia")
-      .eq("ref_id", "wiersz-0");
-    expect(bonus).toHaveLength(1);
-    expect(bonus![0].user_id).toBeNull();
+    expect(await zaakceptujPole(autor, teamId, 9)).toBeNull();
+    expect(await wygrane()).toEqual([]);
   });
 
-  it("bonus nie przychodzi drugi raz", async () => {
-    const teamId = await firstTeamId();
-    const autor = await nowyUzytkownik("powtorka-linii-bingo");
+  it("trzy linie (z polem darmowym) dają wygraną pierwszej drużynie, raz", async () => {
+    const { jawna } = await druzyny();
+    const [pierwsza, druga] = jawna;
+    const autor = await nowyUzytkownik("trzy-linie-bingo");
+    // Wiersze 0 i 1 pełne, wiersz 2 bez pola 14 - środek (12) jest darmowy.
+    await zapal(pierwsza, autor.id, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13]);
+    expect(await zaakceptujPole(autor, pierwsza, 14)).toBeNull();
 
-    // Cała linia zapalona z pominięciem funkcji - bonus jeszcze nie istnieje,
-    // bo nigdy nie przeszedł przez review_bingo.
-    await zapal(teamId, autor.id, [0, 1, 2, 3, 4]);
+    const poPierwszej = await wygrane();
+    expect(poPierwszej).toHaveLength(1);
+    expect(poPierwszej[0].team_id).toBe(pierwsza);
+    expect(poPierwszej[0].user_id).toBeNull();
+    const { data: ustawienie } = await admin.from("app_settings").select("value").eq("key", "bingo_bonus_wygrana").single();
+    expect(poPierwszej[0].delta).toBe(Number(ustawienie!.value));
 
-    // Pierwsza akceptacja gdzie indziej (wiersz 1) wykrywa już kompletny
-    // wiersz 0 i dopisuje bonus po raz pierwszy.
-    const taskA = await idZadania(5);
-    const zgloszenieA = await wstawZgloszenie(autor, teamId, taskA);
-    const pierwsze = await adminClient.rpc("review_bingo", {
-      p_submission_id: zgloszenieA,
-      p_approve: true,
-    });
-    expect(pierwsze.error).toBeNull();
-
-    const { data: poPierwszym } = await admin
-      .from("points_ledger")
-      .select("id")
-      .eq("team_id", teamId)
-      .eq("ref_type", "bingo_linia")
-      .eq("ref_id", "wiersz-0");
-    expect(poPierwszym).toHaveLength(1);
-
-    // Druga akceptacja, znów w innym polu tej samej linii - wiersz 0 jest
-    // wciąż kompletny, więc pętla bonusów go znowu wykryje. Licznik ma
-    // zostać na jedynce, bo wpis już istnieje.
-    const taskB = await idZadania(6);
-    const zgloszenieB = await wstawZgloszenie(autor, teamId, taskB);
-    const drugie = await adminClient.rpc("review_bingo", {
-      p_submission_id: zgloszenieB,
-      p_approve: true,
-    });
-    expect(drugie.error).toBeNull();
-
-    const { data: poDrugim } = await admin
-      .from("points_ledger")
-      .select("id")
-      .eq("team_id", teamId)
-      .eq("ref_type", "bingo_linia")
-      .eq("ref_id", "wiersz-0");
-    expect(poDrugim).toHaveLength(1);
+    // Druga drużyna z trzema liniami już nic nie dostaje.
+    await zapal(druga, autor.id, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13]);
+    expect(await zaakceptujPole(autor, druga, 14)).toBeNull();
+    expect(await wygrane()).toHaveLength(1);
   });
 
-  it("przekątna też liczy się jako linia", async () => {
+  it("przekątna nie liczy się do wygranej", async () => {
     const teamId = await firstTeamId();
     const autor = await nowyUzytkownik("przekatna-bingo");
+    // Dwa wiersze + przekątna 0-6-12-18-24: według starych zasad trzy linie.
+    await zapal(teamId, autor.id, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 18]);
 
-    await zapal(teamId, autor.id, [0, 6, 12, 18]);
+    expect(await zaakceptujPole(autor, teamId, 24)).toBeNull();
+    expect(await wygrane()).toEqual([]);
+  });
 
-    const taskId = await idZadania(24);
-    const zgloszenieId = await wstawZgloszenie(autor, teamId, taskId);
+  it("Kadra (drużyna ukryta) nie zgarnia wygranej", async () => {
+    const { ukryta } = await druzyny();
+    if (!ukryta) return;
+    const autor = await nowyUzytkownik("kadra-bingo");
+    await zapal(ukryta, autor.id, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13]);
 
-    const { error } = await adminClient.rpc("review_bingo", {
-      p_submission_id: zgloszenieId,
-      p_approve: true,
-    });
-    expect(error).toBeNull();
+    expect(await zaakceptujPole(autor, ukryta, 14)).toBeNull();
+    expect(await wygrane()).toEqual([]);
+  });
 
-    const { data: bonus } = await admin
-      .from("points_ledger")
-      .select("user_id")
-      .eq("team_id", teamId)
-      .eq("ref_type", "bingo_linia")
-      .eq("ref_id", "przekatna-a");
-    expect(bonus).toHaveLength(1);
-    expect(bonus![0].user_id).toBeNull();
+  it("na pole darmowe nie da się wysłać zgłoszenia", async () => {
+    const teamId = await firstTeamId();
+    const autor = await nowyUzytkownik("darmowe-bingo");
+    const { error } = await admin
+      .from("bingo_submissions")
+      .insert(zgloszenieBingoDla(autor, teamId, await idZadania(12)));
+    expect(error?.message).toMatch(/POLE_DARMOWE/);
   });
 
   it("pełna plansza daje bonus planszy", async () => {
@@ -304,6 +286,8 @@ describe("akceptacja zgłoszeń bingo i bonusy", () => {
       .eq("ref_type", "bingo_plansza");
     expect(bonus).toHaveLength(1);
     expect(bonus![0].user_id).toBeNull();
+    const { data: ustawienie } = await admin.from("app_settings").select("value").eq("key", "bingo_bonus_plansza").single();
+    expect(Number(ustawienie!.value)).toBe(500);
   });
 
   it("rozpatrzone zgłoszenie nie da się rozpatrzyć drugi raz", async () => {

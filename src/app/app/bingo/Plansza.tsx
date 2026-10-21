@@ -7,9 +7,9 @@ import { komunikatZdjecia, wyslijZdjecieZadania } from "@/lib/zgloszenieZdjecia"
 import { zdarzenie } from "@/lib/zdarzenia";
 import { Button } from "@/components/ui/Button";
 import type { BingoSubmission, BingoTask } from "@/types/db";
-import { klasaTytuluPola } from "@/lib/bingo";
+import { POLE_DARMOWE, klasaTytuluPola } from "@/lib/bingo";
 
-type Stan = "puste" | "oczekujace" | "zapalone" | "odrzucone";
+type Stan = "puste" | "oczekujace" | "zapalone" | "odrzucone" | "darmowe";
 
 function komunikat(e: unknown): string {
   return komunikatZdjecia(e, "To pole właśnie zajął ktoś z drużyny. Odśwież planszę.");
@@ -21,7 +21,8 @@ function komunikat(e: unknown): string {
  * to być widać: wcześniej odrzucenie po prostu znikało i nikt nie wiedział
  * ani że, ani dlaczego.
  */
-function stanPola(zgloszenie: BingoSubmission | undefined, odrzucone?: BingoSubmission): Stan {
+function stanPola(task: BingoTask, zgloszenie: BingoSubmission | undefined, odrzucone?: BingoSubmission): Stan {
+  if (task.position === POLE_DARMOWE) return "darmowe";
   if (!zgloszenie) return odrzucone ? "odrzucone" : "puste";
   return zgloszenie.status === "approved" ? "zapalone" : "oczekujace";
 }
@@ -30,6 +31,13 @@ function stanPola(zgloszenie: BingoSubmission | undefined, odrzucone?: BingoSubm
 // bywa nieodróżnialne od wypełnienia dla daltonisty) - stąd różne kształty
 // ikon obok różnych klas tła/obramowania.
 function Ikona({ stan }: { stan: Stan }) {
+  if (stan === "darmowe") {
+    return (
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="size-3.5 shrink-0">
+        <path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z" />
+      </svg>
+    );
+  }
   if (stan === "odrzucone") {
     return (
       <svg
@@ -100,9 +108,11 @@ const KLASY_STANU: Record<Stan, string> = {
   zapalone:
     "border border-white/20 bg-gradient-to-b from-krew/90 to-krew-glab/90 text-white " +
     "shadow-[inset_0_1px_0_rgb(255_255_255/0.3)]",
+  darmowe: "border border-dashed border-white/40 bg-krew/35 text-white",
 };
 
 function opisStanu(stan: Stan, wlasne: boolean): string {
+  if (stan === "darmowe") return "pole darmowe, zaliczone od startu";
   if (stan === "zapalone") return "zaliczone";
   if (stan === "odrzucone") return "odrzucone, dotknij, by zobaczyć powód i wrzucić nowe zdjęcie";
   if (stan === "oczekujace") {
@@ -194,7 +204,7 @@ export function Plansza({
   const otwarty = zadania.find((z) => z.id === otwarteId) ?? null;
   const zgloszenieOtwartego = otwarty ? zgloszeniaByTask.get(otwarty.id) : undefined;
   const odrzuconeOtwartego = otwarty ? odrzuconeByTask.get(otwarty.id) : undefined;
-  const stanOtwartego = stanPola(zgloszenieOtwartego, odrzuconeOtwartego);
+  const stanOtwartego = otwarty ? stanPola(otwarty, zgloszenieOtwartego, odrzuconeOtwartego) : "puste";
   const wlasneOtwarte = zgloszenieOtwartego?.user_id === userId;
 
   useEffect(() => {
@@ -261,12 +271,12 @@ export function Plansza({
     <>
       {/* Umieszczenie po `position`, nie po kolejności w tablicy: admin może
           strojenie zrobić dziurawym (zadanie nieaktywne, brakujący wiersz),
-          a linie bonusowe (wiersze/kolumny/przekątne) zależą od tego, gdzie
+          a linie (wiersze i kolumny) i pole darmowe zależą od tego, gdzie
           pole naprawdę stoi, nie od tego, które z kolei przyszło z bazy. */}
       <div className="grid grid-cols-5 gap-1.5" role="group" aria-label="Plansza bingo">
         {zadania.map((task) => {
           const zgloszenie = zgloszeniaByTask.get(task.id);
-          const stan = stanPola(zgloszenie, odrzuconeByTask.get(task.id));
+          const stan = stanPola(task, zgloszenie, odrzuconeByTask.get(task.id));
           const wlasne = zgloszenie?.user_id === userId;
 
           return (
@@ -355,9 +365,11 @@ export function Plansza({
                 <h2 id="bingo-arkusz-tytul" className="font-tytul text-xl text-kosc">
                   {otwarty.title}
                 </h2>
-                <p className="mt-1 text-xs uppercase tracking-widest text-dym">
-                  {otwarty.points} pkt
-                </p>
+                {stanOtwartego !== "darmowe" && (
+                  <p className="mt-1 text-xs uppercase tracking-widest text-dym">
+                    {otwarty.points} pkt
+                  </p>
+                )}
               </div>
               <button
                 type="button"
@@ -395,7 +407,13 @@ export function Plansza({
               </div>
             )}
 
-            {podglad && (
+            {stanOtwartego === "darmowe" && (
+              <p className="text-sm text-dym">
+                Każda drużyna ma je od startu. Nie daje punktów samo w sobie, ale liczy się do linii i kumulacji.
+              </p>
+            )}
+
+            {podglad && stanOtwartego !== "darmowe" && (
               <p className="text-sm text-dym">
                 Podgląd Organizatora - zdjęcia wysyłają drużyny, a rozpatrujesz je w panelu (Bingo).
               </p>

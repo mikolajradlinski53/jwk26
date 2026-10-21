@@ -130,6 +130,9 @@ export function zgloszenieBingoDla(user: TestUser, teamId: string, taskId: strin
  * `status`, nigdy na pola recenzenta. Dzięki temu test bonusu za linię nie musi
  * przepuszczać czterech zgłoszeń przez funkcję, żeby dojść do tego piątego,
  * które faktycznie bada.
+ *
+ * Pole darmowe (12) jest pomijane - jest zapalone dla każdej drużyny, a baza
+ * odrzuca zgłoszenia na nie (2026-10-21).
  */
 export async function zapal(
   teamId: string,
@@ -139,7 +142,7 @@ export async function zapal(
   const { data: zadania, error: bladZadan } = await admin
     .from("bingo_tasks")
     .select("id")
-    .in("position", pozycje);
+    .in("position", pozycje.filter((p) => p !== 12));
   if (bladZadan) throw bladZadan;
 
   for (const z of zadania ?? []) {

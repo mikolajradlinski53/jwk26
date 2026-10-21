@@ -186,12 +186,13 @@ describe("błogosławieństwo", () => {
     expect(efekt!.consumed_at).toBeNull();
   });
 
-  it("nie podwaja bonusu za linię", async () => {
+  it("nie podwaja bonusu za wygraną", async () => {
     const autor = await nowyUzytkownik("blogo-linia");
     await dajBlogoslawienstwo(druzyna);
-    await zapal(druzyna, autor.id, [0, 1, 2, 3]);
+    // Wiersze 0 i 1 pełne, wiersz 2 bez pola 14 (środek jest darmowy).
+    await zapal(druzyna, autor.id, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13]);
 
-    const taskId = await idZadania(4);
+    const taskId = await idZadania(14);
     const zgloszenieId = await wstawZgloszenie(autor, druzyna, taskId);
     await adminClient.rpc("review_bingo", {
       p_submission_id: zgloszenieId,
@@ -201,22 +202,21 @@ describe("błogosławieństwo", () => {
     const { data: ustawienie } = await admin
       .from("app_settings")
       .select("value")
-      .eq("key", "bingo_bonus_linia")
+      .eq("key", "bingo_bonus_wygrana")
       .single();
     const bonus = Number(ustawienie!.value);
 
-    // Bonus jest zasługą zbiorową przyznawaną raz na linię. Podwojenie go
-    // zależałoby od tego, kogo admin kliknął pierwszego.
+    // Bonus jest zasługą zbiorową. Podwojenie go zależałoby od tego, kogo
+    // admin kliknął pierwszego.
     const { data: wpis } = await admin
       .from("points_ledger")
       .select("delta")
-      .eq("ref_type", "bingo_linia")
-      .eq("ref_id", "wiersz-0")
+      .eq("ref_type", "bingo_wygrana")
       .single();
     expect(wpis!.delta).toBe(bonus);
   });
 
-  it("bonusy za linię i planszę działają po podmianie funkcji", async () => {
+  it("wygrana i kumulacja działają po podmianie funkcji", async () => {
     const autor = await nowyUzytkownik("blogo-regresja");
 
     // Bez błogosławieństwa - to test regresji, nie efektu. Sprawdza, że
@@ -239,8 +239,8 @@ describe("błogosławieństwo", () => {
     const { data: linie } = await admin
       .from("points_ledger")
       .select("ref_id")
-      .eq("ref_type", "bingo_linia");
-    expect(linie).toHaveLength(12);
+      .in("ref_type", ["bingo_linia", "bingo_wygrana"]);
+    expect(linie).toEqual([{ ref_id: "wygrana" }]);
 
     const { data: plansza } = await admin
       .from("points_ledger")
