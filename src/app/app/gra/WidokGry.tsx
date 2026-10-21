@@ -24,7 +24,8 @@ export async function WidokGry({
   const podglad = !teamId && rola === "admin";
 
   // Tylko odkryte i aktywne - admin widzi tu to samo co uczestnicy;
-  // nieodkryte ma w panelu.
+  // nieodkryte ma w panelu. Kolejność dodania = kolejność na trasie
+  // (numery pinezek i kart), jak w panelu admina.
   const [{ data: zadaniaRaw, error: bladZadan }, { data: zgloszeniaRaw, error: bladZgloszen }] =
     await Promise.all([
       supabase
@@ -33,7 +34,7 @@ export async function WidokGry({
         .eq("rodzaj", "quest")
         .eq("odkryte", true)
         .eq("active", true)
-        .order("created_at", { ascending: false }),
+        .order("created_at", { ascending: true }),
       teamId
         ? supabase.from("bingo_submissions").select("*").eq("team_id", teamId)
         : Promise.resolve({ data: [], error: null }),
@@ -66,13 +67,16 @@ export async function WidokGry({
           dostaniesz powiadomienie.
         </p>
       ) : (
-        <Zadania
-          zadania={zadania}
-          zgloszenia={(zgloszeniaRaw ?? []) as BingoSubmission[]}
-          userId={userId}
-          teamId={teamId ?? ""}
-          podglad={podglad}
-        />
+        <>
+          <Zasady zadania={zadania} />
+          <Zadania
+            zadania={zadania}
+            zgloszenia={(zgloszeniaRaw ?? []) as BingoSubmission[]}
+            userId={userId}
+            teamId={teamId ?? ""}
+            podglad={podglad}
+          />
+        </>
       )}
       {/* Nowe zadania odkrywa organizator - po powrocie do apki lista ma być
           świeża; przycisk na dole, żeby nie zasłaniał zadań. */}
@@ -80,5 +84,24 @@ export async function WidokGry({
         <OdswiezPrzyPowrocie />
       </div>
     </Ekran>
+  );
+}
+
+/** Zasady nad mapą: liczby z odkrytych zadań, żeby nie rozjechały się z planszą. */
+function Zasady({ zadania }: { zadania: BingoTask[] }) {
+  const razem = zadania.reduce((s, z) => s + z.points, 0);
+  return (
+    <section aria-label="Zasady gry terenowej" className="szklo mb-3 rounded-md px-4 py-4">
+      <h2 className="font-tytul text-lg leading-tight text-kosc">Trasa po Karpaczu</h2>
+      <ul className="mt-2 grid gap-1.5 text-sm leading-relaxed text-kosc/85">
+        <li>
+          {zadania.length} {zadania.length === 1 ? "punkt" : zadania.length < 5 ? "punkty" : "punktów"} na mapie,
+          start i meta przy ośrodku. Numery to proponowana kolejność - możecie iść, jak chcecie.
+        </li>
+        <li>Przy każdym punkcie zróbcie zdjęcie całą drużyną tak, żeby było widać miejsce.</li>
+        <li>Zdjęcie wysyła jedna osoba w karcie punktu. Punkty wpadają drużynie po akceptacji Organizatora.</li>
+      </ul>
+      <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-krew-jasna">Do zdobycia: {razem} pkt</p>
+    </section>
   );
 }

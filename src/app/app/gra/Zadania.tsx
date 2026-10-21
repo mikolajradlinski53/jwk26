@@ -56,16 +56,19 @@ export function Zadania({
 }) {
   const [wybrane, setWybrane] = useState<string | null>(null);
 
-  // Pinezki tylko dla zadań z miejscem. useMemo - mapa buduje się od nowa
-  // wyłącznie przy nowych danych z serwera, nie przy każdym wyborze pinezki.
+  // Pinezki tylko dla zadań z miejscem. Numer to miejsce na trasie (zadania
+  // przychodzą w kolejności dodania), wspólny dla pinezki i karty. useMemo -
+  // mapa buduje się od nowa wyłącznie przy nowych danych z serwera, nie przy
+  // każdym wyborze pinezki.
   const pinezki = useMemo<Pinezka[]>(
     () =>
       zadania
-        .filter((z) => z.lat !== null && z.lng !== null)
-        .map((z) => ({
+        .map((z, i) => ({ z, numer: i + 1 }))
+        .filter(({ z }) => z.lat !== null && z.lng !== null)
+        .map(({ z, numer }) => ({
           id: z.id,
+          numer,
           tytul: z.title,
-          punkty: z.points,
           lat: z.lat as number,
           lng: z.lng as number,
           zaliczone: stanZadania(zgloszenia.filter((s) => s.task_id === z.id)).stan === "zaliczone",
@@ -84,7 +87,8 @@ export function Zadania({
         <div className="grid gap-1.5">
           <MapaQuestow pinezki={pinezki} onWybierz={wybierz} />
           <p className="px-1 text-xs text-dym">
-            Dotknij pinezki, żeby zobaczyć zadanie. Szare - już zaliczone przez Twoją drużynę.
+            Dotknij pinezki, żeby zobaczyć zadanie. Szare - już zaliczone przez Twoją drużynę. Domek to
+            start i meta przy ośrodku.
           </p>
         </div>
       )}
@@ -93,9 +97,10 @@ export function Zadania({
           Podgląd Organizatora - tak drużyny widzą odkryte zadania. Zgłoszenia rozpatrujesz w panelu (Bingo).
         </p>
       )}
-      {zadania.map((z) => (
+      {zadania.map((z, i) => (
         <Karta
           key={z.id}
+          numer={i + 1}
           zadanie={z}
           {...stanZadania(zgloszenia.filter((s) => s.task_id === z.id))}
           userId={userId}
@@ -109,6 +114,7 @@ export function Zadania({
 }
 
 function Karta({
+  numer,
   zadanie,
   stan,
   zywe,
@@ -118,6 +124,7 @@ function Karta({
   podglad,
   wyrozniona,
 }: {
+  numer: number;
   podglad: boolean;
   wyrozniona: boolean;
   zadanie: BingoTask;
@@ -182,7 +189,9 @@ function Karta({
       }
     >
       <div className="flex items-start justify-between gap-3">
-        <h2 className="font-tytul text-lg leading-tight text-kosc">{zadanie.title}</h2>
+        <h2 className="font-tytul text-lg leading-tight text-kosc">
+          <span className="text-krew-jasna">{numer}.</span> {zadanie.title}
+        </h2>
         <span className="shrink-0 text-xs font-bold tabular-nums text-krew-jasna">{zadanie.points} pkt</span>
       </div>
       <p className="mt-1.5 text-sm leading-relaxed text-kosc/85">{zadanie.description}</p>
