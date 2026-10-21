@@ -160,9 +160,9 @@ describe("posty w feedzie", () => {
     }
   });
 
-  it("limit 30 postów na godzinę", async () => {
-    const trzydziesci = Array.from({ length: 30 }, () => post(autor, druzynaAutora));
-    expect((await admin.from("bingo_submissions").insert(trzydziesci)).error).toBeNull();
+  it("limit 10 postów na godzinę", async () => {
+    const dziesiec = Array.from({ length: 10 }, () => post(autor, druzynaAutora));
+    expect((await admin.from("bingo_submissions").insert(dziesiec)).error).toBeNull();
     const { error } = await autorClient.from("bingo_submissions").insert(post(autor, druzynaAutora));
     expect(error?.message).toMatch(/POSTY_LIMIT/);
   });
