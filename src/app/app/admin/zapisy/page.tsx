@@ -84,6 +84,17 @@ export default async function ZapisyPage() {
         <Pusto>Pusto.</Pusto>
       )}
 
+      {/* Zwinięta (Mikołaj 2026-10-23: rezerwa myliła adminów). Rozwija się
+          tylko na żądanie - tu jest awans i odrzucenie z rezerwy. */}
+      {kolejka.length > 0 && (
+      <details className="group">
+        <summary className="szklo mb-3 flex min-h-11 cursor-pointer list-none items-center justify-between rounded-md px-4 text-sm text-dym">
+          <span>
+            Na rezerwie: {kolejka.length} {kolejka.length === 1 ? "osoba" : kolejka.length < 5 ? "osoby" : "osób"}
+          </span>
+          <span className="font-bold text-kosc group-open:hidden">Pokaż</span>
+          <span className="hidden font-bold text-kosc group-open:inline">Ukryj</span>
+        </summary>
       {stan.map((p) => {
         const wpisy = kolejka.filter((k) => k.pula === p.klucz);
         if (wpisy.length === 0) return null;
@@ -123,6 +134,8 @@ export default async function ZapisyPage() {
           </section>
         );
       })}
+      </details>
+      )}
 
       {wroc}
     </Ekran>

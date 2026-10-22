@@ -80,7 +80,34 @@ describe("admin_kolejki", () => {
     const k = await kolejki(szefClient);
     expect(k.sklepik).toBe(await licz("shop_orders", "pending"));
     expect(k.bingo).toBe(await licz("bingo_submissions", "pending"));
-    expect(k.zgloszenia).toBe(await licz("registrations", "pending"));
+    const { count: zgloszenia } = await admin
+      .from("registrations")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending")
+      .eq("rezerwa", false);
+    expect(k.zgloszenia).toBe(zgloszenia ?? 0);
+  });
+
+  it("zgłoszenia z rezerwy nie zapalają kolejki (2026-10-23)", async () => {
+    const przed = (await kolejki(szefClient)).zgloszenia;
+    const rezerwowy = await createUser("rezerwa-kolejka");
+    const { error } = await admin.from("registrations").insert({
+      user_id: rezerwowy.id,
+      full_name: "Rez Erwowy",
+      imie: "Rez",
+      nazwisko: "Erwowy",
+      phone: "500600700",
+      pula: "swiezaki",
+      status: "pending",
+      rezerwa: true,
+      kolejnosc_rezerwy: 9999,
+    });
+    try {
+      expect(error).toBeNull();
+      expect((await kolejki(szefClient)).zgloszenia).toBe(przed);
+    } finally {
+      await deleteUser(rezerwowy);
+    }
   });
 
   it("uczestnik dostaje odmowę", async () => {
