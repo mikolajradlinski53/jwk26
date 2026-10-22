@@ -121,6 +121,45 @@ describe("przyznawanie punktów", () => {
     expect(data!.user_id).toBeNull();
   });
 
+  it("punkty dla osoby: powiadomienie do całej jej drużyny", async () => {
+    const teamId = await firstTeamId();
+    const gracz = await nowyUzytkownik("powiadomiony");
+    await ustawJakoZaakceptowany(gracz, teamId);
+    await admin.from("profiles").update({ display_name: "Ala Testowa" }).eq("id", gracz.id);
+
+    const { data: id } = await adminClient.rpc("award_points", {
+      p_delta: 30,
+      p_reason: "Pomoc Kadrze",
+      p_user_id: gracz.id,
+    });
+
+    const { data } = await admin
+      .from("powiadomienia")
+      .select("kanal, adresat, adresat_id, tytul, body, link")
+      .eq("ref_type", "punkty")
+      .eq("ref_id", String(id));
+    await admin.from("powiadomienia").delete().eq("ref_type", "punkty");
+    expect(data).toEqual([
+      { kanal: "push", adresat: "team", adresat_id: teamId, tytul: "+30 pkt: Ala Testowa", body: "Pomoc Kadrze", link: "/app" },
+    ]);
+  });
+
+  it("odjęte punkty drużyny: powiadomienie z minusem", async () => {
+    const teamId = await firstTeamId();
+    const { data: id } = await adminClient.rpc("award_points", {
+      p_delta: -20,
+      p_reason: "Spóźnienie się",
+      p_team_id: teamId,
+    });
+    const { data } = await admin
+      .from("powiadomienia")
+      .select("adresat, adresat_id, tytul, body")
+      .eq("ref_type", "punkty")
+      .eq("ref_id", String(id));
+    await admin.from("powiadomienia").delete().eq("ref_type", "punkty");
+    expect(data).toEqual([{ adresat: "team", adresat_id: teamId, tytul: "−20 pkt dla drużyny", body: "Spóźnienie się" }]);
+  });
+
   it("odmawia przyznania bez uzasadnienia", async () => {
     const teamId = await firstTeamId();
 
