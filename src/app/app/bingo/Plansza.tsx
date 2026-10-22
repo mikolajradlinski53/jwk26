@@ -8,6 +8,7 @@ import { zdarzenie } from "@/lib/zdarzenia";
 import { Button } from "@/components/ui/Button";
 import type { BingoSubmission, BingoTask } from "@/types/db";
 import { POLE_DARMOWE, klasaTytuluPola } from "@/lib/bingo";
+import { Pekniecie } from "./Pekniecie";
 
 type Stan = "puste" | "oczekujace" | "zapalone" | "odrzucone" | "darmowe";
 
@@ -311,56 +312,7 @@ export function Plansza({
               <span className={`line-clamp-3 w-full font-bold leading-[1.15] ${klasaTytuluPola(task.title)}`}>
                 {task.title}
               </span>
-              {stan === "zapalone" && (
-                <svg
-                  viewBox="0 0 100 100"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                  className="skreslenie pointer-events-none absolute inset-1 text-kosc"
-                >
-                  {/* Pęknięcie (2026-10-22): postrzępiona linia przez całe pole
-                      z dwoma odgałęzieniami - kafel „łamie się” przy zaliczeniu.
-                      pathLength=100 - stała długość do animacji niezależnie od
-                      rozmiaru pola. Odłamki widać tylko w trakcie animacji. */}
-                  <path
-                    className="pekniecie"
-                    d="M4 90 L20 74 L16 64 L33 52 L28 43 L47 34 L43 25 L61 19 L70 23 L96 6"
-                    pathLength={100}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.6"
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    vectorEffect="non-scaling-stroke"
-                  />
-                  <path
-                    className="pekniecie odgalezienie"
-                    d="M33 52 L44 60 L49 72"
-                    pathLength={100}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    vectorEffect="non-scaling-stroke"
-                  />
-                  <path
-                    className="pekniecie odgalezienie"
-                    d="M61 19 L63 33 L74 40"
-                    pathLength={100}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    vectorEffect="non-scaling-stroke"
-                  />
-                  <polygon className="odlamek" points="27,44 38,38 33,52" fill="currentColor" style={{ ["--dx" as string]: "-14px", ["--dy" as string]: "-10px" }} />
-                  <polygon className="odlamek" points="43,29 54,25 49,38" fill="currentColor" style={{ ["--dx" as string]: "12px", ["--dy" as string]: "-14px" }} />
-                  <polygon className="odlamek" points="15,67 25,64 20,77" fill="currentColor" style={{ ["--dx" as string]: "-12px", ["--dy" as string]: "12px" }} />
-                  <polygon className="odlamek" points="64,21 76,18 70,31" fill="currentColor" style={{ ["--dx" as string]: "14px", ["--dy" as string]: "10px" }} />
-                </svg>
-              )}
+              {stan === "zapalone" && <Pekniecie />}
             </button>
           );
         })}
