@@ -6,14 +6,14 @@ const poz = (nazwa: string) => gra.pozycje.find((p) => p.nazwa === nazwa)!;
 
 describe("punktacja gry terenowej (Mikołaj 2026-10-22)", () => {
   it("zwykła stacja i trasa liczą się same", () => {
-    expect(poz("Jedna stacja")).toMatchObject({ punkty: 5, automat: true });
-    expect(poz("Pełna trasa")).toMatchObject({ punkty: 100, automat: true });
+    expect(poz("Jedna stacja")).toMatchObject({ punkty: 15, automat: true });
+    expect(poz("Pełna trasa")).toMatchObject({ punkty: 300, automat: true });
   });
 
   it("wersja „cała drużyna” jest ręczna, a panel wpisuje tylko różnicę", () => {
     expect(poz("Jedna stacja - cała drużyna").automat).toBeUndefined();
-    expect(punktyDoWpisania(poz("Jedna stacja - cała drużyna"))).toBe(5);
-    expect(punktyDoWpisania(poz("Pełna trasa - cała drużyna"))).toBe(50);
+    expect(punktyDoWpisania(poz("Jedna stacja - cała drużyna"))).toBe(15);
+    expect(punktyDoWpisania(poz("Pełna trasa - cała drużyna"))).toBe(150);
     expect(powodPunktacji("Gra terenowa", poz("Pełna trasa - cała drużyna"))).toBe(
       "Gra terenowa: Pełna trasa - cała drużyna (dopłata)",
     );

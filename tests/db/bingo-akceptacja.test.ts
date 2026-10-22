@@ -287,7 +287,7 @@ describe("akceptacja zgłoszeń bingo i bonusy", () => {
     expect(bonus).toHaveLength(1);
     expect(bonus![0].user_id).toBeNull();
     const { data: ustawienie } = await admin.from("app_settings").select("value").eq("key", "bingo_bonus_plansza").single();
-    expect(Number(ustawienie!.value)).toBe(200);
+    expect(Number(ustawienie!.value)).toBe(600);
   });
 
   it("rozpatrzone zgłoszenie nie da się rozpatrzyć drugi raz", async () => {

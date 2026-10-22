@@ -102,7 +102,7 @@ function Zasady({ zadania, bonusTrasy }: { zadania: BingoTask[]; bonusTrasy: num
         <li>Przy każdym punkcie zróbcie zdjęcie tak, żeby było widać miejsce.</li>
         <li>Zdjęcie wysyła jedna osoba w karcie punktu. Punkty wpadają drużynie po akceptacji Organizatora.</li>
         <li>
-          Cała trasa to bonus. Gdy idzie cała drużyna, Kadra podnosi punkty: 10 za stację i 150 za trasę.
+          Cała trasa to bonus. Gdy idzie cała drużyna, Kadra podnosi punkty: 30 za stację i 450 za trasę.
         </li>
       </ul>
       <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-krew-jasna">

@@ -4,11 +4,11 @@
  *
  * Bingo i gra terenowa liczą się w apce same (review_bingo) - tu są dla
  * jasności zasad. Gra terenowa (Mikołaj 2026-10-22): stacja i pełna trasa
- * automatycznie (5 / 100), wersja „cała drużyna” (10 / 150) ręcznie -
+ * automatycznie (15 / 300), wersja „cała drużyna” (30 / 450) ręcznie -
  * gdy każdy z drużyny brał udział; Kadra dopisuje wtedy różnicę.
  * Korekty względem tabeli, uzgodnione z Mikołajem: pole bingo 20 pkt,
  * zrzyganie karane dopiero, gdy ktoś po sobie nie posprząta, a pomoc dla
- * zgonka +20.
+ * zgonka +20. Bingo i gra terenowa razy 3 (2026-10-22).
  */
 /**
  * `doplata` - pozycja ręczna, która zastępuje automatyczną (np. stacja gry
@@ -22,9 +22,9 @@ export const PUNKTACJA: SekcjaPunktacji[] = [
   {
     sekcja: "Bingo",
     pozycje: [
-      { nazwa: "Wypełnione jedno pole", punkty: 20, automat: true },
-      { nazwa: "Wygrana - 3 linie", punkty: 100, automat: true },
-      { nazwa: "Kumulacja - wszystkie pola", punkty: 200, automat: true },
+      { nazwa: "Wypełnione jedno pole", punkty: 60, automat: true },
+      { nazwa: "Wygrana - 3 linie", punkty: 300, automat: true },
+      { nazwa: "Kumulacja - wszystkie pola", punkty: 600, automat: true },
     ],
   },
   {
@@ -53,10 +53,10 @@ export const PUNKTACJA: SekcjaPunktacji[] = [
   {
     sekcja: "Gra terenowa",
     pozycje: [
-      { nazwa: "Jedna stacja", punkty: 5, automat: true },
-      { nazwa: "Jedna stacja - cała drużyna", punkty: 10, doplata: 5 },
-      { nazwa: "Pełna trasa", punkty: 100, automat: true },
-      { nazwa: "Pełna trasa - cała drużyna", punkty: 150, doplata: 50 },
+      { nazwa: "Jedna stacja", punkty: 15, automat: true },
+      { nazwa: "Jedna stacja - cała drużyna", punkty: 30, doplata: 15 },
+      { nazwa: "Pełna trasa", punkty: 300, automat: true },
+      { nazwa: "Pełna trasa - cała drużyna", punkty: 450, doplata: 150 },
     ],
   },
   {
