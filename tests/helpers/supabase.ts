@@ -346,6 +346,8 @@ export async function nowaPozycja(p: NowaPozycja): Promise<string> {
  * dopóki istnieje zamówienie, które ją wskazuje.
  */
 export async function sprzatnijSklepik(): Promise<void> {
+  // Licytacje wskazują na pozycje i zamówienia - idą pierwsze (oferty kaskadą).
+  await admin.from("licytacje").delete().not("id", "is", null);
   await admin.from("powiadomienia").delete().not("id", "is", null);
   await admin.from("active_effects").delete().not("id", "is", null);
   await admin.from("shop_orders").delete().not("id", "is", null);
@@ -353,7 +355,34 @@ export async function sprzatnijSklepik(): Promise<void> {
   await admin
     .from("points_ledger")
     .delete()
-    .in("category", ["zasiew_testowy", "sklepik", "sklepik_zwrot", "klatwa"]);
+    .in("category", ["zasiew_testowy", "sklepik", "sklepik_zwrot", "klatwa", "licytacja"]);
+}
+
+/**
+ * Wystawia licytację kluczem serwisowym. `startZa`/`koniecZa` w minutach od
+ * teraz (domyślnie: trwa od zaraz, kończy się za godzinę).
+ */
+export async function nowaLicytacja(o: {
+  itemId: string;
+  cena?: number;
+  startZa?: number;
+  koniecZa?: number;
+  wCiemno?: boolean;
+}): Promise<string> {
+  const teraz = Date.now();
+  const { data, error } = await admin
+    .from("licytacje")
+    .insert({
+      item_id: o.itemId,
+      cena_wywolawcza: o.cena ?? 100,
+      start: new Date(teraz + (o.startZa ?? -1) * 60_000).toISOString(),
+      koniec: new Date(teraz + (o.koniecZa ?? 60) * 60_000).toISOString(),
+      w_ciemno: o.wCiemno ?? false,
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return data.id as string;
 }
 
 /**
