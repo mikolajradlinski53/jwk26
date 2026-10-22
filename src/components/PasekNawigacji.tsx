@@ -37,7 +37,7 @@ const POZYCJE: Pozycja[] = [
   },
   {
     href: "/app/sklep",
-    nazwa: "Sklep",
+    nazwa: "Licytacje",
     ikona: (
       <>
         <path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8Z" />

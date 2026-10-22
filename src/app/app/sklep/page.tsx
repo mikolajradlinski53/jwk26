@@ -1,24 +1,29 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
-import { Polka } from "./Polka";
-import { Kronika } from "./Kronika";
 import { NaglowekSekcji } from "@/components/NaglowekSekcji";
-import type {
-  ActiveEffect,
-  ShopItem,
-  Team,
-  TeamScore,
-  UserScore,
-  WpisKroniki,
-} from "@/types/db";
+import { OdswiezPrzyPowrocie } from "@/components/OdswiezPrzyPowrocie";
+import type { LicytacjaWidok } from "@/lib/licytacje";
+import type { Team, TeamScore, UserScore } from "@/types/db";
+import { KartaLicytacji } from "./KartaLicytacji";
+import { LicytacjeNaZywo } from "./LicytacjeNaZywo";
 
-const NAZWA_EFEKTU: Record<string, string> = {
-  blogoslawienstwo: "Błogosławieństwo",
-  tarcza: "Tarcza",
-};
+/** Sekcje ekranu w chwili żądania (strona renderuje się na serwerze przy każdym wejściu). */
+function podziel(lista: LicytacjaWidok[]) {
+  const teraz = Date.now();
+  return {
+    trwaja: lista.filter((l) => l.status === "trwa" && Date.parse(l.start) <= teraz),
+    wkrotce: lista.filter((l) => l.status === "trwa" && Date.parse(l.start) > teraz),
+    zakonczone: lista.filter((l) => l.status === "zamknieta").reverse(),
+  };
+}
 
-export default async function SklepPage() {
+/**
+ * Licytacje (2026-10-22) - zastępują sklepik. Admin wystawia przedmiot,
+ * kapitanowie drużyn przebijają się punktami drużyny, licytacja zamyka się
+ * sama o godzinie admina (cron co minutę). Reguły pilnuje baza.
+ */
+export default async function LicytacjePage() {
   const supabase = await createClient();
 
   const {
@@ -26,134 +31,117 @@ export default async function SklepPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/wejscie");
 
-  const { data: profil } = await supabase
-    .from("profiles")
-    .select("team_id, role")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: profil } = await supabase.from("profiles").select("team_id, role").eq("id", user.id).maybeSingle();
+  const mojaDruzyna = (profil?.team_id as string | null) ?? null;
 
-  const mojaDruzyna = profil?.team_id as string | null;
-
-  // Organizator bez drużyny widzi półkę i kronikę jak uczestnicy, bez salda
-  // i bez kupowania (decyzja Mikołaja 2026-10-12).
-  if (!mojaDruzyna && profil?.role === "admin") {
-    const [{ data: druzyny }, { data: pozycje }, { data: kronika }, { data: ukrytych }] = await Promise.all([
-      supabase.from("teams").select("*").eq("ukryta", false).order("numer"),
-      supabase.from("shop_items").select("*").eq("active", true).eq("ukryta", false).order("position"),
-      supabase.from("kronika_sklepiku").select("*").order("created_at", { ascending: false }).limit(30),
-      supabase.rpc("liczba_ukrytych_nagrod"),
-    ]);
-    return (
-      <Ekran tytul="Sklepik" podtytul="Podgląd Organizatora">
-        <p className="szklo mb-4 rounded-md px-4 py-3 text-xs leading-relaxed text-dym">
-          Nie jesteś w żadnej drużynie, więc widzisz półkę tak jak uczestnicy, ale bez salda i kupowania.
-          Wydania zamówień są w panelu Organizatora.
-        </p>
-        <Polka
-          pozycje={(pozycje ?? []) as ShopItem[]}
-          saldo={0}
-          jestKapitanem={false}
-          nazwaKapitana={null}
-          podglad
-          obceDruzyny={(druzyny ?? []) as Team[]}
-          ukrytych={typeof ukrytych === "number" ? ukrytych : 0}
-        />
-        <NaglowekSekcji>Kronika</NaglowekSekcji>
-        <Kronika wpisy={(kronika ?? []) as WpisKroniki[]} />
-      </Ekran>
-    );
-  }
-
-  if (!mojaDruzyna) {
-    return (
-      <Ekran tytul="Sklepik" podtytul="Zakupy z salda drużyny">
-        <p className="szklo rounded-md px-4 py-6 text-center text-sm text-dym">
-          Nie masz jeszcze drużyny. Organizator przypisze ją przy zgłoszeniu.
-        </p>
-      </Ekran>
-    );
-  }
-
-  const [
-    { data: druzyny },
-    { data: wynik },
-    { data: moiLudzie },
-    { data: pozycje },
-    { data: efekty },
-    { data: kronika },
-    { data: ukrytych },
-  ] = await Promise.all([
+  const [{ data: listaRaw, error: bladListy }, { data: druzynyRaw }, { data: krokRaw }] = await Promise.all([
+    supabase.rpc("licytacje_lista"),
     supabase.from("teams").select("*").order("name"),
-    supabase.from("team_scores").select("*").eq("team_id", mojaDruzyna).maybeSingle(),
-    supabase.from("user_scores").select("*").eq("team_id", mojaDruzyna),
-    // `ukryta = false` jawnie: admin czyta całą tabelę (RLS), a na półce ma
-    // widzieć to samo co uczestnicy.
-    supabase.from("shop_items").select("*").eq("active", true).eq("ukryta", false).order("position"),
-    // Widok `czynne_efekty` odsiewa zużyte i przedawnione po stronie bazy -
-    // patrz komentarz w migracji 20260925120400.
-    supabase.from("czynne_efekty").select("*").eq("subject_id", mojaDruzyna),
-    supabase
-      .from("kronika_sklepiku")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(30),
-    supabase.rpc("liczba_ukrytych_nagrod"),
+    supabase.from("app_settings").select("value").eq("key", "licytacja_krok").maybeSingle(),
   ]);
 
-  const wszystkie = (druzyny ?? []) as Team[];
-  const moja = wszystkie.find((d) => d.id === mojaDruzyna);
+  const lista = (listaRaw ?? []) as LicytacjaWidok[];
+  const druzyny = (druzynyRaw ?? []) as Team[];
+  const krok = Number(krokRaw?.value) || 10;
+  const moja = druzyny.find((d) => d.id === mojaDruzyna) ?? null;
+  // Kadra (drużyna ukryta) nie licytuje - widzi licytacje jak podgląd.
+  const licytujaca = moja && !moja.ukryta ? moja : null;
+  const jestKapitanem = licytujaca?.captain_id === user.id;
+
+  const [{ data: wynik }, { data: wolne }, { data: ludzie }, { data: klatwyRaw }] = licytujaca
+    ? await Promise.all([
+        supabase.from("team_scores").select("*").eq("team_id", licytujaca.id).maybeSingle(),
+        supabase.rpc("dostepne_saldo", { p_team: licytujaca.id }),
+        supabase.from("user_scores").select("user_id, display_name").eq("team_id", licytujaca.id),
+        // Wygrane Klątwy czekające na ofiarę - przycisk „Rzuć klątwę” na karcie.
+        supabase
+          .from("shop_orders")
+          .select("id")
+          .eq("team_id", licytujaca.id)
+          .eq("status", "pending")
+          .is("target_team_id", null),
+      ])
+    : [{ data: null }, { data: null }, { data: null }, { data: null }];
+
   const saldo = (wynik as TeamScore | null)?.score ?? 0;
-  // W Kadrze (drużynie Organizatorów) kapitanem jest każdy admin.
-  const wKadrze = moja?.ukryta === true;
-  const jestKapitanem = moja?.captain_id === user.id || (wKadrze && profil?.role === "admin");
-
-  // Nazwę kapitana bierzemy z już pobranej listy członków drużyny, zamiast
-  // dopytywać o nią osobnym zapytaniem po `captain_id`. Jedna podróż mniej,
-  // a lista i tak musi być pobrana.
   const nazwaKapitana =
-    ((moiLudzie ?? []) as UserScore[]).find((o) => o.user_id === moja?.captain_id)
+    ((ludzie ?? []) as Pick<UserScore, "user_id" | "display_name">[]).find((o) => o.user_id === licytujaca?.captain_id)
       ?.display_name ?? null;
+  const klatwyDoRzucenia = new Set(((klatwyRaw ?? []) as { id: string }[]).map((k) => k.id));
+  const { trwaja, wkrotce, zakonczone } = podziel(lista);
+  const naKlatwe = druzyny.filter((d) => !d.ukryta && d.id !== licytujaca?.id);
 
-  const czynne = (efekty ?? []) as ActiveEffect[];
+  const karta = (l: LicytacjaWidok) => (
+    <KartaLicytacji
+      key={l.id}
+      licytacja={l}
+      krok={krok}
+      mojaDruzyna={licytujaca?.id ?? null}
+      jestKapitanem={jestKapitanem}
+      klatwaDoRzucenia={l.order_id !== null && klatwyDoRzucenia.has(l.order_id)}
+      druzynyNaKlatwe={naKlatwe}
+    />
+  );
 
   return (
-    <Ekran tytul="Sklepik" podtytul={moja?.name}>
-      <div className="szklo mb-4 flex items-baseline justify-between rounded-md px-4 py-4">
-        <span className="text-xs uppercase tracking-[0.14em] text-dym">Saldo drużyny</span>
-        <strong className="font-tytul text-2xl leading-none tabular-nums">{saldo}</strong>
-      </div>
-
-      {wKadrze && (
+    <Ekran tytul="Licytacje" podtytul={licytujaca?.name ?? (profil?.role === "admin" ? "Podgląd Organizatora" : undefined)}>
+      <LicytacjeNaZywo />
+      {licytujaca ? (
+        <div className="szklo mb-4 grid grid-cols-2 gap-3 rounded-md px-4 py-4">
+          <div>
+            <p className="text-[0.6rem] uppercase tracking-[0.14em] text-dym">Saldo drużyny</p>
+            <strong className="font-tytul text-2xl leading-none tabular-nums">{saldo}</strong>
+          </div>
+          <div className="text-right">
+            <p className="text-[0.6rem] uppercase tracking-[0.14em] text-dym">Wolne do licytowania</p>
+            <strong className="font-tytul text-2xl leading-none tabular-nums text-krew-jasna">
+              {typeof wolne === "number" ? wolne : saldo}
+            </strong>
+          </div>
+          <p className="col-span-2 text-xs leading-relaxed text-dym">
+            {jestKapitanem
+              ? "Licytujesz w imieniu drużyny. Prowadząca oferta trzyma punkty, aż ktoś Was przebije."
+              : `Licytuje kapitan${nazwaKapitana ? `: ${nazwaKapitana}` : ""}. Punkty schodzą dopiero po wygranej.`}
+          </p>
+        </div>
+      ) : (
         <p className="szklo mb-4 rounded-md px-4 py-3 text-xs leading-relaxed text-dym">
-          Kadra to drużyna Organizatorów - nie ma jej w rankingu ani w kronice. Kupujesz jak kapitan, ale
-          klątwy zostają między drużynami uczestników. Punkty dla Kadry daje się w panelu, w „Punktach”.
+          {profil?.role === "admin"
+            ? "Podgląd Organizatora - licytacje wystawiasz w panelu (Licytacje)."
+            : "Nie masz jeszcze drużyny. Licytuje kapitan drużyny."}
         </p>
       )}
 
-      {czynne.length > 0 && (
-        <ul className="mb-4 grid gap-1.5">
-          {czynne.map((e) => (
-            <li
-              key={e.id}
-              className="szklo rounded-md px-3.5 py-2.5 text-xs text-krew-jasna"
-            >
-              {NAZWA_EFEKTU[e.effect_key] ?? e.effect_key} - czynne
-            </li>
-          ))}
-        </ul>
+      {bladListy && (
+        <p className="szklo mb-4 rounded-md px-4 py-3.5 text-sm text-krew-jasna">
+          Nie udało się wczytać licytacji. Odśwież za chwilę.
+        </p>
       )}
 
-      <Polka
-        pozycje={(pozycje ?? []) as ShopItem[]}
-        saldo={saldo}
-        jestKapitanem={jestKapitanem}
-        nazwaKapitana={nazwaKapitana}
-        obceDruzyny={wszystkie.filter((d) => d.id !== mojaDruzyna && !d.ukryta)}
-        ukrytych={typeof ukrytych === "number" ? ukrytych : 0}
-      />
+      <NaglowekSekcji>Trwają</NaglowekSekcji>
+      {trwaja.length === 0 ? (
+        <p className="szklo rounded-md px-4 py-5 text-center text-sm text-dym">Teraz nic nie jest licytowane.</p>
+      ) : (
+        <div className="grid gap-4">{trwaja.map(karta)}</div>
+      )}
 
-      <NaglowekSekcji>Kronika</NaglowekSekcji>
-      <Kronika wpisy={(kronika ?? []) as WpisKroniki[]} />
+      {wkrotce.length > 0 && (
+        <>
+          <NaglowekSekcji>Wkrótce</NaglowekSekcji>
+          <div className="grid gap-4">{wkrotce.map(karta)}</div>
+        </>
+      )}
+
+      {zakonczone.length > 0 && (
+        <>
+          <NaglowekSekcji>Zakończone</NaglowekSekcji>
+          <div className="grid gap-4">{zakonczone.map(karta)}</div>
+        </>
+      )}
+
+      <div className="mt-5">
+        <OdswiezPrzyPowrocie />
+      </div>
     </Ekran>
   );
 }

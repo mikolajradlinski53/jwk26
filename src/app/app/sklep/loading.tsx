@@ -1,9 +1,9 @@
 import { Kolko, Pasek, Saldo, SzkieletEkranu } from "@/components/Szkielet";
 
-/** Sklepik: saldo drużyny i pozycje na półce. Podtytuł to nazwa drużyny - z danych. */
+/** Licytacje: saldo drużyny i karty licytacji. Podtytuł to nazwa drużyny - z danych. */
 export default function Ladowanie() {
   return (
-    <SzkieletEkranu tytul="Sklepik" podtytul>
+    <SzkieletEkranu tytul="Licytacje" podtytul>
       <Saldo />
       <div className="grid gap-2.5">
         {[0, 1, 2, 3, 4, 5].map((i) => (
