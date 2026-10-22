@@ -14,7 +14,7 @@ const WEJSCIA: { href: string; nazwa: string; opis: string; ikona: NazwaIkony; k
   { href: "/app/admin/bingo", nazwa: "Bingo", opis: "Kolejka zdjęć z planszy i gry terenowej", ikona: "plansza", kolejka: "bingo" },
   { href: "/app/admin/gra", nazwa: "Gra terenowa", opis: "Zadania: dodaj, odkryj, ukryj", ikona: "oko" },
   { href: "/app/admin/zawody", nazwa: "Zawody", opis: "Zapisy, składy, terminarz, wyniki", ikona: "kielich" },
-  { href: "/app/admin/sklepik", nazwa: "Sklepik", opis: "Kolejka wydań i stan półki", ikona: "torba", kolejka: "sklepik" },
+  { href: "/app/admin/sklepik", nazwa: "Licytacje", opis: "Wystawianie, przebieg i wydania nagród", ikona: "torba", kolejka: "sklepik" },
   { href: "/app/admin/punkty", nazwa: "Punkty", opis: "Przyznaj lub odbierz", ikona: "plus" },
   { href: "/app/admin/druzyny", nazwa: "Drużyny", opis: "Kapitani i salda", ikona: "tarcza" },
   { href: "/app/admin/historia", nazwa: "Historia", opis: "Ostatnie wpisy w księdze", ikona: "zegar" },
