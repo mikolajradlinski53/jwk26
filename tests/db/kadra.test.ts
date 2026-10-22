@@ -11,6 +11,7 @@ import {
   ustawJakoZaakceptowany,
   dosypPunkty,
   nowaPozycja,
+  ustawUstawienie,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -55,7 +56,11 @@ describe("Kadra", () => {
     const id = await nowaPozycja({ name: "Test Kadry", kind: "physical", price: 1 });
     pozycje.push(id);
     await dosypPunkty(kadra, 10);
+    // Zakup z półki stoi za bramką od 2026-10-22 (licytacje) - tu sprawdzamy
+    // tylko, że kronika nie pokazuje Kadry, więc bramkę otwieramy na chwilę.
+    await ustawUstawienie("sklepik_otwarty", true);
     const { error } = await szefClient.rpc("kup_z_polki", { p_item_id: id });
+    await ustawUstawienie("sklepik_otwarty", false);
     expect(error).toBeNull();
 
     const { data: kronika } = await uczestnikClient.from("kronika_sklepiku").select("item_name").eq("item_name", "Test Kadry");

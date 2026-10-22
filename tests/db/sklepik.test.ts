@@ -14,6 +14,7 @@ import {
   saldoDruzyny,
   nowaPozycja,
   sprzatnijSklepik,
+  ustawUstawienie,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -34,6 +35,9 @@ let mojaDruzyna: string;
 let obcaDruzyna: string;
 
 beforeAll(async () => {
+  // Od 2026-10-22 sklepik zastąpiły licytacje, a zakup z półki stoi za bramką
+  // `sklepik_otwarty`. Ten plik sprawdza logikę zakupu i efektów, więc ją otwiera.
+  await ustawUstawienie("sklepik_otwarty", true);
   const druzyny = await idDruzyn();
   mojaDruzyna = druzyny[0];
   obcaDruzyna = druzyny[1];
@@ -58,6 +62,7 @@ afterAll(async () => {
   // użytkownika zdejmie go dopiero po tym, jak inny plik zdąży już zobaczyć
   // drużynę z kapitanem, którego nie zna.
   await ustawKapitana(mojaDruzyna, null);
+  await ustawUstawienie("sklepik_otwarty", false);
   await deleteUser(szef);
   await deleteUser(kapitan);
   await deleteUser(szeregowy);

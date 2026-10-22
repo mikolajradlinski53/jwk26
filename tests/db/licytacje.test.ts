@@ -172,6 +172,12 @@ describe("licytacje: oferty", () => {
     expect((a as Record<string, unknown>[]).find((r) => r.id === id)!.nazwa).toBe("Licytowany przedmiot");
   });
 
+  it("zakup z półki jest wyłączony", async () => {
+    await ustawSaldo(A, 500);
+    const { error } = await kapAClient.rpc("kup_z_polki", { p_item_id: await przedmiot() });
+    expect(error?.message).toMatch(/SKLEPIK_ZAMKNIETY/);
+  });
+
   it("uczestnik nie wstawi oferty ani licytacji z pominięciem funkcji", async () => {
     const item = await przedmiot();
     const id = await nowaLicytacja({ itemId: item, cena: 100 });
@@ -183,5 +189,152 @@ describe("licytacje: oferty", () => {
       .from("licytacje")
       .insert({ item_id: item, cena_wywolawcza: 1, koniec: new Date(Date.now() + 60_000).toISOString() });
     expect(licytacja.error).not.toBeNull();
+  });
+});
+
+/** Przesuwa koniec licytacji w przeszłość i odpala tick kluczem serwisowym. */
+async function zamknij(id: string) {
+  const teraz = Date.now();
+  await admin
+    .from("licytacje")
+    .update({ start: new Date(teraz - 120_000).toISOString(), koniec: new Date(teraz - 1_000).toISOString() })
+    .eq("id", id);
+  const { error } = await admin.rpc("licytacje_tick");
+  if (error) throw error;
+}
+
+async function stan(id: string) {
+  const { data } = await admin.from("licytacje").select("status, zwyciezca_team, cena_koncowa, order_id").eq("id", id).single();
+  return data!;
+}
+
+async function wpisyLicytacji(team: string) {
+  const { data } = await admin.from("points_ledger").select("delta").eq("team_id", team).eq("category", "licytacja");
+  return data ?? [];
+}
+
+describe("licytacje: zamknięcie i wygrana", () => {
+  it("najwyższa oferta wygrywa, jeden wpis w księdze nawet przy drugim ticku", async () => {
+    await Promise.all([ustawSaldo(A, 500), ustawSaldo(B, 500)]);
+    const id = await nowaLicytacja({ itemId: await przedmiot(), cena: 100 });
+    await licytuj(kapAClient, id, 100);
+    await licytuj(kapBClient, id, 120);
+    await zamknij(id);
+    await admin.rpc("licytacje_tick");
+    expect(await stan(id)).toMatchObject({ status: "zamknieta", zwyciezca_team: B, cena_koncowa: 120 });
+    expect(await wpisyLicytacji(B)).toEqual([{ delta: -120 }]);
+    expect(await wpisyLicytacji(A)).toEqual([]);
+  });
+
+  it("lider bez pokrycia oddaje przedmiot kolejnej ofercie", async () => {
+    await Promise.all([ustawSaldo(A, 500), ustawSaldo(B, 500)]);
+    const id = await nowaLicytacja({ itemId: await przedmiot(), cena: 100 });
+    await licytuj(kapAClient, id, 100);
+    await licytuj(kapBClient, id, 120);
+    await ustawSaldo(B, 50);
+    await zamknij(id);
+    expect(await stan(id)).toMatchObject({ zwyciezca_team: A, cena_koncowa: 100 });
+    expect(await wpisyLicytacji(B)).toEqual([]);
+  });
+
+  it("nikt nie może zapłacić - bez zwycięzcy", async () => {
+    await ustawSaldo(A, 500);
+    const id = await nowaLicytacja({ itemId: await przedmiot(), cena: 100 });
+    await licytuj(kapAClient, id, 100);
+    await ustawSaldo(A, 10);
+    await zamknij(id);
+    expect(await stan(id)).toMatchObject({ status: "zamknieta", zwyciezca_team: null, order_id: null });
+    expect(await wpisyLicytacji(A)).toEqual([]);
+  });
+
+  it("bez ofert - bez zwycięzcy, z ogłoszeniem", async () => {
+    const id = await nowaLicytacja({ itemId: await przedmiot(), cena: 100 });
+    await zamknij(id);
+    expect(await stan(id)).toMatchObject({ status: "zamknieta", zwyciezca_team: null });
+    const { data } = await admin.from("powiadomienia").select("tytul, body").eq("ref_id", id).eq("adresat", "all");
+    expect(data!.some((p) => /bez zwyci/i.test(p.body ?? ""))).toBe(true);
+  });
+
+  it("Błogosławieństwo włącza się zwycięzcy", async () => {
+    await ustawSaldo(A, 500);
+    const item = await przedmiot({ kind: "digital", effect_key: "blogoslawienstwo", effect_value: 2 });
+    const id = await nowaLicytacja({ itemId: item, cena: 100 });
+    await licytuj(kapAClient, id, 100);
+    await zamknij(id);
+    const { order_id } = await stan(id);
+    const { data: z } = await admin.from("shop_orders").select("status, team_id, price_paid").eq("id", order_id).single();
+    expect(z).toEqual({ status: "fulfilled", team_id: A, price_paid: 100 });
+    const { data: e } = await admin.from("active_effects").select("subject_id, effect_key").eq("order_id", order_id);
+    expect(e).toEqual([{ subject_id: A, effect_key: "blogoslawienstwo" }]);
+  });
+
+  it("nagroda fizyczna trafia do kolejki wydań", async () => {
+    await ustawSaldo(A, 500);
+    const id = await nowaLicytacja({ itemId: await przedmiot(), cena: 100 });
+    await licytuj(kapAClient, id, 100);
+    await zamknij(id);
+    const { data: z } = await admin.from("shop_orders").select("status").eq("id", (await stan(id)).order_id).single();
+    expect(z!.status).toBe("pending");
+  });
+
+  async function wygranaKlatwa(): Promise<string> {
+    await ustawSaldo(A, 500);
+    const item = await przedmiot({ kind: "digital", effect_key: "klatwa", effect_value: 30, requires_target: true });
+    const id = await nowaLicytacja({ itemId: item, cena: 100 });
+    await licytuj(kapAClient, id, 100);
+    await zamknij(id);
+    return (await stan(id)).order_id as string;
+  }
+
+  it("Klątwa: kapitan zwycięzcy wybiera ofiarę po wygranej", async () => {
+    const order = await wygranaKlatwa();
+    const { data: przed } = await admin.from("shop_orders").select("status, target_team_id").eq("id", order).single();
+    expect(przed).toEqual({ status: "pending", target_team_id: null });
+    await ustawSaldo(C, 200);
+    expect((await kapAClient.rpc("rzuc_klatwe", { p_order: order, p_target: A })).error?.message).toMatch(/ZLY_CEL/);
+    expect((await kapAClient.rpc("rzuc_klatwe", { p_order: order, p_target: C })).error).toBeNull();
+    expect(await saldoDruzyny(C)).toBe(170);
+    const { data: po } = await admin.from("shop_orders").select("status, target_team_id").eq("id", order).single();
+    expect(po).toEqual({ status: "fulfilled", target_team_id: C });
+    expect((await kapAClient.rpc("rzuc_klatwe", { p_order: order, p_target: C })).error?.message).toMatch(/ZAMOWIENIE_NIEAKTYWNE/);
+  });
+
+  it("Klątwa: obcy kapitan nie rzuci, admin rzuci za zwycięzcę", async () => {
+    const order = await wygranaKlatwa();
+    expect((await kapBClient.rpc("rzuc_klatwe", { p_order: order, p_target: C })).error?.message).toMatch(/BRAK_UPRAWNIEN/);
+    expect((await szefClient.rpc("rzuc_klatwe", { p_order: order, p_target: C })).error).toBeNull();
+  });
+
+  it("Klątwa: Tarcza ofiary pochłania rzut", async () => {
+    const order = await wygranaKlatwa();
+    await ustawSaldo(C, 200);
+    const { data: tarcza } = await admin
+      .from("active_effects")
+      .insert({ scope: "team", subject_id: C, effect_key: "tarcza" })
+      .select("id")
+      .single();
+    expect((await kapAClient.rpc("rzuc_klatwe", { p_order: order, p_target: C })).error).toBeNull();
+    expect(await saldoDruzyny(C)).toBe(200);
+    const { data: t } = await admin.from("active_effects").select("consumed_at").eq("id", tarcza!.id).single();
+    expect(t!.consumed_at).not.toBeNull();
+  });
+
+  it("otwarcie ogłoszone raz; w ciemno bez nazwy przedmiotu", async () => {
+    const id = await nowaLicytacja({ itemId: await przedmiot(), cena: 100, wCiemno: true });
+    await admin.rpc("licytacje_tick");
+    await admin.rpc("licytacje_tick");
+    const { data } = await admin.from("powiadomienia").select("tytul, body").eq("ref_id", id).eq("adresat", "all");
+    expect(data).toHaveLength(1);
+    expect(data![0].tytul).toBe("Licytacja otwarta");
+    expect(data![0].body).not.toMatch(/Licytowany przedmiot/);
+  });
+
+  it("po zamknięciu licytacji w ciemno nazwa jest jawna", async () => {
+    await ustawSaldo(A, 500);
+    const id = await nowaLicytacja({ itemId: await przedmiot(), cena: 100, wCiemno: true });
+    await licytuj(kapAClient, id, 100);
+    await zamknij(id);
+    const { data } = await czlonekClient.rpc("licytacje_lista");
+    expect((data as Record<string, unknown>[]).find((r) => r.id === id)!.nazwa).toBe("Licytowany przedmiot");
   });
 });
