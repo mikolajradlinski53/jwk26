@@ -1,14 +1,17 @@
 /**
  * Partnerzy wyjazdu, pasek tuż pod hero - widoczny bez przewijania, nie
  * konkuruje z „Zapisz się” w hero. Logotypy z plików od Mikołaja, czarne na
- * przezroczystym tle. Eveline Cosmetics (2026-10-13) na górze i z linkiem do
- * polskiej strony marki; Rent4 Events i Wędlinka (2026-10-22) pod nim, na
- * razie bez linków - adresów nie dostaliśmy. `sponsored` - link partnerski,
- * nie rekomendacja redakcyjna.
+ * przezroczystym tle (Kolejkowo i Pizza Genuina w swoich kolorach - znak
+ * pizzerii wycięty z grafiki reklamowej). Eveline Cosmetics (2026-10-13) na
+ * górze i z linkiem do polskiej strony marki; pozostali (2026-10-22) pod nim
+ * w siatce 2×2, na razie bez linków - adresów nie dostaliśmy. `sponsored` -
+ * link partnerski, nie rekomendacja redakcyjna.
  */
 const POZOSTALI = [
   { nazwa: "Rent4 Events", plik: "/logo/rent4events.webp", szer: 560, wys: 284 },
   { nazwa: "Wędlinka", plik: "/logo/wedlinka.webp", szer: 560, wys: 305 },
+  { nazwa: "Kolejkowo", plik: "/logo/kolejkowo.webp", szer: 560, wys: 186 },
+  { nazwa: "Pizza Genuina", plik: "/logo/pizza-genuina.webp", szer: 560, wys: 366 },
 ];
 
 export function Partner() {
@@ -28,11 +31,13 @@ export function Partner() {
           {/* eslint-disable-next-line @next/next/no-img-element -- statyczny plik z public, bez optymalizacji */}
           <img src="/logo/eveline.webp" alt="Eveline Cosmetics" width={560} height={145} className="h-auto w-[min(72vw,280px)]" />
         </a>
-        <ul className="flex items-center justify-center gap-8">
+        {/* Równe pola, logo wpasowane w środek: proporcje znaków są bardzo
+            różne (Kolejkowo 3:1, Pizza Genuina 3:2), więc wspólna wysokość. */}
+        <ul className="grid w-full grid-cols-2 items-center gap-x-6 gap-y-5">
           {POZOSTALI.map((p) => (
-            <li key={p.nazwa}>
+            <li key={p.nazwa} className="flex h-16 items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element -- statyczny plik z public, bez optymalizacji */}
-              <img src={p.plik} alt={p.nazwa} width={p.szer} height={p.wys} className="h-auto w-[min(32vw,130px)]" />
+              <img src={p.plik} alt={p.nazwa} width={p.szer} height={p.wys} className="max-h-full w-auto max-w-[min(38vw,150px)] object-contain" />
             </li>
           ))}
         </ul>
