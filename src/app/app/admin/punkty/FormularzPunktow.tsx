@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import type { Team, UserScore } from "@/types/db";
+import { PUNKTACJA, powodPunktacji } from "@/lib/punktacja";
 
 export function FormularzPunktow({
   druzyny,
@@ -106,6 +107,40 @@ export function FormularzPunktow({
               </option>
             ))}
           </optgroup>
+        </select>
+      </label>
+
+      {/* Szybki wybór z tabeli punktacji - wypełnia liczbę i powód, oba da się
+          jeszcze poprawić. Wartość opcji to „sekcja|pozycja” (indeksy). */}
+      <label className="block">
+        <span className="mb-1.5 block pl-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-dym">
+          Z punktacji (opcjonalnie)
+        </span>
+        <select
+          value=""
+          onChange={(e) => {
+            const [s, p] = e.target.value.split("|").map(Number);
+            const sekcja = PUNKTACJA[s];
+            const pozycja = sekcja?.pozycje[p];
+            if (!pozycja) return;
+            setDelta(String(pozycja.punkty));
+            setPowod(powodPunktacji(sekcja.sekcja, pozycja));
+            setBlad(null);
+            setUdane(null);
+          }}
+          className="szklo min-h-11 w-full rounded-sm px-3.5 text-sm text-kosc outline-none
+                     focus-visible:border-krew"
+        >
+          <option value="">Wybierz pozycję…</option>
+          {PUNKTACJA.map((s, si) => (
+            <optgroup key={s.sekcja} label={s.sekcja}>
+              {s.pozycje.map((p, pi) => (
+                <option key={p.nazwa} value={`${si}|${pi}`}>
+                  {p.nazwa} ({p.punkty > 0 ? `+${p.punkty}` : p.punkty})
+                </option>
+              ))}
+            </optgroup>
+          ))}
         </select>
       </label>
 

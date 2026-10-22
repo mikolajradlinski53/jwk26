@@ -62,6 +62,28 @@ function zglos(client: SupabaseClient, user: TestUser, taskId: string) {
 }
 
 describe("gra terenowa", () => {
+  it("pełna trasa daje drużynie bonus raz - dopiero po ostatniej stacji", async () => {
+    const pierwsza = await nowyQuest(true);
+    const druga = await nowyQuest(true);
+    const trasa = async () =>
+      (await admin.from("points_ledger").select("team_id, delta, user_id").eq("ref_type", "gra_trasa")).data ?? [];
+
+    const { data: z1 } = await zglos(graczClient, gracz, pierwsza);
+    expect((await szefClient.rpc("review_bingo", { p_submission_id: z1!.id, p_approve: true })).error).toBeNull();
+    expect(await trasa()).toEqual([]);
+
+    const { data: z2 } = await zglos(graczClient, gracz, druga);
+    expect((await szefClient.rpc("review_bingo", { p_submission_id: z2!.id, p_approve: true })).error).toBeNull();
+    const { data: ustawienie } = await admin.from("app_settings").select("value").eq("key", "gra_bonus_trasa").single();
+    expect(await trasa()).toEqual([{ team_id: teamId, delta: Number(ustawienie!.value), user_id: null }]);
+
+    // Nowa stacja odkryta później i zaliczona - bonus się nie powtarza.
+    const trzecia = await nowyQuest(true);
+    const { data: z3 } = await zglos(graczClient, gracz, trzecia);
+    expect((await szefClient.rpc("review_bingo", { p_submission_id: z3!.id, p_approve: true })).error).toBeNull();
+    expect(await trasa()).toHaveLength(1);
+  });
+
   it("nieodkryty quest widzi tylko admin i nie da się do niego nic wysłać", async () => {
     const id = await nowyQuest(false);
     const { data: widzi } = await graczClient.from("bingo_tasks").select("id").eq("id", id);

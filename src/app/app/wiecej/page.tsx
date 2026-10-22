@@ -65,6 +65,7 @@ export default async function WiecejPage() {
         <PozycjaMenu href="/regulamin" ikona="zwoj" nazwa="Regulamin" opis="Zasady wyjazdu" />
         <PozycjaMenu href="/prywatnosc" ikona="tarcza" nazwa="Prywatność" opis="Jak przetwarzamy Twoje dane" />
         <PozycjaMenu href="/app/harmonogram" ikona="zegar" nazwa="Harmonogram" opis="Co, kiedy i gdzie" />
+        <PozycjaMenu href="/app/punktacja" ikona="plansza" nazwa="Punktacja" opis="Za co zyskujecie i tracicie punkty" />
       </nav>
 
       <form action="/auth/signout" method="post" className="mt-8">
