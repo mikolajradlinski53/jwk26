@@ -29,7 +29,10 @@ export function KartaLicytacji({
   jestKapitanem,
   klatwaDoRzucenia,
   druzynyNaKlatwe,
+  wkrotce = false,
 }: {
+  /** Z sekcji „Wkrótce” serwera - do pierwszego tyknięcia zegara w przeglądarce. */
+  wkrotce?: boolean;
   licytacja: LicytacjaWidok;
   krok: number;
   mojaDruzyna: string | null;
@@ -39,7 +42,9 @@ export function KartaLicytacji({
   druzynyNaKlatwe: Team[];
 }) {
   const router = useRouter();
-  const [teraz, setTeraz] = useState(() => Date.now());
+  // Czas liczony dopiero w przeglądarce: licznik z serwera różniłby się
+  // o sekundę od pierwszego renderu klienta (błąd hydratacji).
+  const [teraz, setTeraz] = useState<number | null>(null);
   const minimum = minimalnaOferta(l, krok);
   const [kwota, setKwota] = useState(String(minimum));
   const [cel, setCel] = useState("");
@@ -48,8 +53,13 @@ export function KartaLicytacji({
   const wToku = useRef(false);
 
   useEffect(() => {
-    const t = window.setInterval(() => setTeraz(Date.now()), 1000);
-    return () => window.clearInterval(t);
+    const tik = () => setTeraz(Date.now());
+    const pierwszy = window.setTimeout(tik, 0);
+    const t = window.setInterval(tik, 1000);
+    return () => {
+      window.clearTimeout(pierwszy);
+      window.clearInterval(t);
+    };
   }, []);
 
   // Po cudzym przebiciu (odświeżenie z realtime) podpowiedź idzie za nowym
@@ -61,9 +71,9 @@ export function KartaLicytacji({
   }
 
   const zamknieta = l.status === "zamknieta";
-  const przedStartem = !zamknieta && Date.parse(l.start) > teraz;
-  const doKonca = ileZostalo(Date.parse(l.koniec), teraz);
-  const doStartu = ileZostalo(Date.parse(l.start), teraz);
+  const przedStartem = !zamknieta && (teraz === null ? wkrotce : Date.parse(l.start) > teraz);
+  const doKonca = teraz === null ? null : ileZostalo(Date.parse(l.koniec), teraz);
+  const doStartu = teraz === null ? null : ileZostalo(Date.parse(l.start), teraz);
   const tajemnicza = l.nazwa === null;
   const prowadzimy = l.prowadzi_team !== null && l.prowadzi_team === mojaDruzyna;
   const moznaLicytowac = jestKapitanem && !zamknieta && !przedStartem && doKonca !== null && !prowadzimy;
@@ -152,7 +162,9 @@ export function KartaLicytacji({
               )}
             </div>
             <p className="flex-none text-right text-xs tabular-nums text-dym">
-              {przedStartem ? (
+              {teraz === null ? (
+                przedStartem ? "start" : "koniec"
+              ) : przedStartem ? (
                 <>
                   start za
                   <br />
@@ -174,7 +186,7 @@ export function KartaLicytacji({
         )}
 
         {moznaLicytowac && (
-          <div className="mt-3 flex gap-2">
+          <div className="mt-3 grid grid-cols-2 gap-2">
             <label className="sr-only" htmlFor={`kwota-${l.id}`}>
               Twoja oferta
             </label>
@@ -186,9 +198,9 @@ export function KartaLicytacji({
                 if (/^\d*$/.test(e.target.value)) setKwota(e.target.value);
                 setBlad(null);
               }}
-              className="szklo min-h-11 w-full flex-1 rounded-full px-4 text-sm tabular-nums text-kosc outline-none focus-visible:border-krew"
+              className="szklo min-h-11 w-full min-w-0 rounded-full px-4 text-center text-base tabular-nums text-kosc outline-none focus-visible:border-krew"
             />
-            <Button onClick={licytuj} disabled={czeka} className="flex-none px-5">
+            <Button onClick={licytuj} disabled={czeka}>
               {czeka ? "…" : "Licytuj"}
             </Button>
           </div>

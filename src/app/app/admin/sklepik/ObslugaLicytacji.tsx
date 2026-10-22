@@ -34,11 +34,10 @@ export function ObslugaLicytacji({ id, nazwa }: { id: string; nazwa: string }) {
 
   return (
     <div className="mt-3 grid gap-2">
-      <div className="flex gap-2">
-        <input type="datetime-local" value={koniec} onChange={(e) => setKoniec(e.target.value)} className={POLE} aria-label="Nowe zamknięcie" />
+      <div className="grid grid-cols-[3fr_2fr] gap-2">
+        <input type="datetime-local" value={koniec} onChange={(e) => setKoniec(e.target.value)} className={`${POLE} min-w-0`} aria-label="Nowe zamknięcie" />
         <Button
           variant="szklo"
-          className="flex-none px-4"
           disabled={czeka || !koniec}
           onClick={() => {
             const d = new Date(koniec);

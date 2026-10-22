@@ -71,9 +71,10 @@ export default async function LicytacjePage() {
   const { trwaja, wkrotce, zakonczone } = podziel(lista);
   const naKlatwe = druzyny.filter((d) => !d.ukryta && d.id !== licytujaca?.id);
 
-  const karta = (l: LicytacjaWidok) => (
+  const karta = (l: LicytacjaWidok, wkrotce = false) => (
     <KartaLicytacji
       key={l.id}
+      wkrotce={wkrotce}
       licytacja={l}
       krok={krok}
       mojaDruzyna={licytujaca?.id ?? null}
@@ -122,20 +123,20 @@ export default async function LicytacjePage() {
       {trwaja.length === 0 ? (
         <p className="szklo rounded-md px-4 py-5 text-center text-sm text-dym">Teraz nic nie jest licytowane.</p>
       ) : (
-        <div className="grid gap-4">{trwaja.map(karta)}</div>
+        <div className="grid gap-4">{trwaja.map((l) => karta(l))}</div>
       )}
 
       {wkrotce.length > 0 && (
         <>
           <NaglowekSekcji>Wkrótce</NaglowekSekcji>
-          <div className="grid gap-4">{wkrotce.map(karta)}</div>
+          <div className="grid gap-4">{wkrotce.map((l) => karta(l, true))}</div>
         </>
       )}
 
       {zakonczone.length > 0 && (
         <>
           <NaglowekSekcji>Zakończone</NaglowekSekcji>
-          <div className="grid gap-4">{zakonczone.map(karta)}</div>
+          <div className="grid gap-4">{zakonczone.map((l) => karta(l))}</div>
         </>
       )}
 
