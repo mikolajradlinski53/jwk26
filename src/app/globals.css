@@ -264,12 +264,28 @@ html:has(.jesien) .tlo-apki {
     stroke-dasharray: 100;
     stroke-dashoffset: 0;
   }
-  .skreslenie-rysuj path {
-    animation: rysuj-kreske 700ms cubic-bezier(0.6, 0, 0.3, 1) var(--opoznienie, 0ms) both;
+  /*
+   * Pękanie kafla (2026-10-22): najpierw uderzenie i drżenie pola, w połowie
+   * pęknięcie przebiega przez kafel (szybko, jak trzask), odgałęzienia chwilę
+   * później, a odłamki odpryskują na boki i gasną. Pęknięcie zostaje na stałe.
+   */
+  .skreslenie-rysuj .pekniecie {
+    animation: rysuj-kreske 260ms cubic-bezier(0.2, 0.9, 0.3, 1) calc(var(--opoznienie, 0ms) + 180ms) both;
   }
-  /* Pole, które właśnie skreślono, krótko „oddycha” - widać, gdzie coś się stało. */
+  .skreslenie-rysuj .odgalezienie {
+    animation-delay: calc(var(--opoznienie, 0ms) + 360ms);
+    animation-duration: 200ms;
+  }
+  .odlamek {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .skreslenie-rysuj .odlamek {
+    animation: odprysk 650ms cubic-bezier(0.15, 0.7, 0.3, 1) calc(var(--opoznienie, 0ms) + 220ms) both;
+  }
   [data-pole]:has(> .skreslenie-rysuj) {
-    animation: puls-pola 700ms ease-out var(--opoznienie, 0ms) both;
+    animation: pekniecie-pola 750ms ease-out var(--opoznienie, 0ms) both;
   }
 
   /* Karta blackjacka w szkle (spec wyglądu, D6). */
@@ -642,16 +658,42 @@ html:has(.jesien) .tlo-apki {
 }
 
 /* Keyframes nie należą do warstw - trzymamy je poza. */
-@keyframes puls-pola {
+/* Uderzenie: pole się kurczy, drży jak trafione, błyska i wraca. */
+@keyframes pekniecie-pola {
   0% {
     transform: scale(1);
   }
-  35% {
-    transform: scale(1.08);
-    box-shadow: 0 0 0 3px rgb(244 238 235 / 0.35), 0 0 22px rgb(200 16 46 / 0.6);
+  14% {
+    transform: scale(0.9);
+  }
+  24% {
+    transform: scale(0.94) translate(-3px, 1px) rotate(-2.5deg);
+  }
+  34% {
+    transform: scale(0.97) translate(3px, -1px) rotate(2deg);
+    box-shadow: 0 0 0 3px rgb(244 238 235 / 0.45), 0 0 26px rgb(200 16 46 / 0.75);
+  }
+  44% {
+    transform: translate(-2px, 0) rotate(-1deg);
+  }
+  56% {
+    transform: scale(1.05);
   }
   100% {
     transform: scale(1);
+  }
+}
+@keyframes odprysk {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0);
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx, 10px), var(--dy, 10px)) rotate(70deg) scale(0.6);
   }
 }
 @keyframes rysuj-kreske {

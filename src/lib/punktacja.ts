@@ -3,12 +3,19 @@
  * ekranu „Punktacja” uczestników i szybkiego wyboru w panelu punktów Kadry.
  *
  * Bingo i gra terenowa liczą się w apce same (review_bingo) - tu są dla
- * jasności zasad i na przypadki ręczne (np. stacja bez całej drużyny).
+ * jasności zasad. Gra terenowa (Mikołaj 2026-10-22): stacja i pełna trasa
+ * automatycznie (5 / 100), wersja „cała drużyna” (10 / 150) ręcznie -
+ * gdy każdy z drużyny brał udział; Kadra dopisuje wtedy różnicę.
  * Korekty względem tabeli, uzgodnione z Mikołajem: pole bingo 20 pkt,
  * zrzyganie karane dopiero, gdy ktoś po sobie nie posprząta, a pomoc dla
  * zgonka +20.
  */
-export type PozycjaPunktacji = { nazwa: string; punkty: number; automat?: boolean };
+/**
+ * `doplata` - pozycja ręczna, która zastępuje automatyczną (np. stacja gry
+ * terenowej całą drużyną: 10 zamiast 5). Apka przyznała już część
+ * automatycznie, więc panel Kadry wpisuje tylko różnicę.
+ */
+export type PozycjaPunktacji = { nazwa: string; punkty: number; automat?: boolean; doplata?: number };
 export type SekcjaPunktacji = { sekcja: string; pozycje: PozycjaPunktacji[] };
 
 export const PUNKTACJA: SekcjaPunktacji[] = [
@@ -46,10 +53,10 @@ export const PUNKTACJA: SekcjaPunktacji[] = [
   {
     sekcja: "Gra terenowa",
     pozycje: [
-      { nazwa: "Jedna stacja", punkty: 5 },
-      { nazwa: "Jedna stacja - cała drużyna", punkty: 10, automat: true },
-      { nazwa: "Pełna trasa", punkty: 100 },
-      { nazwa: "Pełna trasa - cała drużyna", punkty: 150, automat: true },
+      { nazwa: "Jedna stacja", punkty: 5, automat: true },
+      { nazwa: "Jedna stacja - cała drużyna", punkty: 10, doplata: 5 },
+      { nazwa: "Pełna trasa", punkty: 100, automat: true },
+      { nazwa: "Pełna trasa - cała drużyna", punkty: 150, doplata: 50 },
     ],
   },
   {
@@ -127,7 +134,12 @@ export const PUNKTACJA: SekcjaPunktacji[] = [
   },
 ];
 
-/** Powód do księgi: „Sekcja: pozycja”. */
+/** Powód do księgi: „Sekcja: pozycja” (z dopiskiem przy dopłacie). */
 export function powodPunktacji(sekcja: string, pozycja: PozycjaPunktacji): string {
-  return `${sekcja}: ${pozycja.nazwa}`;
+  return `${sekcja}: ${pozycja.nazwa}${pozycja.doplata !== undefined ? " (dopłata)" : ""}`;
+}
+
+/** Ile punktów wpisuje Kadra z panelu - przy dopłacie tylko różnica. */
+export function punktyDoWpisania(pozycja: PozycjaPunktacji): number {
+  return pozycja.doplata ?? pozycja.punkty;
 }

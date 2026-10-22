@@ -8,8 +8,8 @@ export default function PunktacjaPage() {
   return (
     <Ekran tytul="Punktacja" podtytul="Za co zyskujecie i tracicie">
       <p className="szklo mb-2 rounded-md px-4 py-3.5 text-sm leading-relaxed text-kosc/85">
-        Punkty idą do drużyny. Bingo i gra terenowa liczą się same po akceptacji zdjęcia
-        (oznaczone „auto”), resztę wpisuje Kadra.
+        Punkty idą do drużyny. Pozycje „auto” liczą się same po akceptacji zdjęcia, resztę wpisuje
+        Kadra. W grze terenowej wersja „cała drużyna” zastępuje zwykłą, gdy brał udział każdy z drużyny.
       </p>
       {PUNKTACJA.map((s) => (
         <section key={s.sekcja}>
@@ -24,6 +24,9 @@ export default function PunktacjaPage() {
                   {p.nazwa}
                   {p.automat && (
                     <span className="ml-2 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-dym">auto</span>
+                  )}
+                  {p.doplata !== undefined && (
+                    <span className="ml-2 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-dym">daje Kadra</span>
                   )}
                 </span>
                 <span

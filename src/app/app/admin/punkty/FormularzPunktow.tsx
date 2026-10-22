@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import type { Team, UserScore } from "@/types/db";
-import { PUNKTACJA, powodPunktacji } from "@/lib/punktacja";
+import { PUNKTACJA, powodPunktacji, punktyDoWpisania } from "@/lib/punktacja";
 
 export function FormularzPunktow({
   druzyny,
@@ -123,7 +123,7 @@ export function FormularzPunktow({
             const sekcja = PUNKTACJA[s];
             const pozycja = sekcja?.pozycje[p];
             if (!pozycja) return;
-            setDelta(String(pozycja.punkty));
+            setDelta(String(punktyDoWpisania(pozycja)));
             setPowod(powodPunktacji(sekcja.sekcja, pozycja));
             setBlad(null);
             setUdane(null);
@@ -136,7 +136,13 @@ export function FormularzPunktow({
             <optgroup key={s.sekcja} label={s.sekcja}>
               {s.pozycje.map((p, pi) => (
                 <option key={p.nazwa} value={`${si}|${pi}`}>
-                  {p.nazwa} ({p.punkty > 0 ? `+${p.punkty}` : p.punkty})
+                  {p.nazwa} (
+                  {p.doplata !== undefined
+                    ? `dopłata +${p.doplata} do ${p.punkty}`
+                    : p.punkty > 0
+                      ? `+${p.punkty}`
+                      : p.punkty}
+                  {p.automat ? ", zwykle liczy apka" : ""})
                 </option>
               ))}
             </optgroup>

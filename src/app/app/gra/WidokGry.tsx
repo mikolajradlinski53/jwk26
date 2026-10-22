@@ -26,7 +26,7 @@ export async function WidokGry({
   // Tylko odkryte i aktywne - admin widzi tu to samo co uczestnicy;
   // nieodkryte ma w panelu. Kolejność dodania = kolejność na trasie
   // (numery pinezek i kart), jak w panelu admina.
-  const [{ data: zadaniaRaw, error: bladZadan }, { data: zgloszeniaRaw, error: bladZgloszen }] =
+  const [{ data: zadaniaRaw, error: bladZadan }, { data: zgloszeniaRaw, error: bladZgloszen }, { data: bonusRaw }] =
     await Promise.all([
       supabase
         .from("bingo_tasks")
@@ -38,6 +38,7 @@ export async function WidokGry({
       teamId
         ? supabase.from("bingo_submissions").select("*").eq("team_id", teamId).not("task_id", "is", null)
         : Promise.resolve({ data: [], error: null }),
+      supabase.from("app_settings").select("value").eq("key", "gra_bonus_trasa").maybeSingle(),
     ]);
 
   if (bladZadan || bladZgloszen) {
@@ -68,7 +69,7 @@ export async function WidokGry({
         </p>
       ) : (
         <>
-          <Zasady zadania={zadania} />
+          <Zasady zadania={zadania} bonusTrasy={Number(bonusRaw?.value) || 0} />
           <Zadania
             zadania={zadania}
             zgloszenia={(zgloszeniaRaw ?? []) as BingoSubmission[]}
@@ -88,7 +89,7 @@ export async function WidokGry({
 }
 
 /** Zasady nad mapą: liczby z odkrytych zadań, żeby nie rozjechały się z planszą. */
-function Zasady({ zadania }: { zadania: BingoTask[] }) {
+function Zasady({ zadania, bonusTrasy }: { zadania: BingoTask[]; bonusTrasy: number }) {
   const razem = zadania.reduce((s, z) => s + z.points, 0);
   return (
     <section aria-label="Zasady gry terenowej" className="szklo mb-3 rounded-md px-4 py-4">
@@ -98,10 +99,15 @@ function Zasady({ zadania }: { zadania: BingoTask[] }) {
           {zadania.length} {zadania.length === 1 ? "punkt" : zadania.length < 5 ? "punkty" : "punktów"} na mapie,
           start i meta przy ośrodku. Numery to proponowana kolejność - możecie iść, jak chcecie.
         </li>
-        <li>Przy każdym punkcie zróbcie zdjęcie całą drużyną tak, żeby było widać miejsce.</li>
+        <li>Przy każdym punkcie zróbcie zdjęcie tak, żeby było widać miejsce.</li>
         <li>Zdjęcie wysyła jedna osoba w karcie punktu. Punkty wpadają drużynie po akceptacji Organizatora.</li>
+        <li>
+          Cała trasa to bonus. Gdy idzie cała drużyna, Kadra podnosi punkty: 10 za stację i 150 za trasę.
+        </li>
       </ul>
-      <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-krew-jasna">Do zdobycia: {razem} pkt</p>
+      <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-krew-jasna">
+        Do zdobycia: {razem} pkt + {bonusTrasy} za całą trasę
+      </p>
     </section>
   );
 }
