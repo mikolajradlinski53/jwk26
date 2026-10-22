@@ -24,16 +24,19 @@ function ZasadyBingo({
     <section aria-label="Zasady bingo" className="szklo mb-3 rounded-md px-4 py-3.5">
       <ul className="grid gap-1 text-sm leading-relaxed text-kosc/85">
         <li>
-          <b className="text-kosc">Punkty za każde pole</b>
-          {pkt(zaPole)}. Środek jest darmowy.
-        </li>
-        <li>
           <b className="text-kosc">Wygrana: 3 linie</b> (pion lub poziom){pkt(wygrana)} dla pierwszej drużyny.
           {zwyciezca && <span className="text-krew-jasna"> Zdobyta: {zwyciezca}.</span>}
         </li>
         <li>
           <b className="text-kosc">Kumulacja: wszystkie pola</b>
           {pkt(kumulacja)}.
+        </li>
+        <li>
+          <b className="text-kosc">Punkty za każde pole</b>
+          {pkt(zaPole)}. Środek jest darmowy.
+        </li>
+        <li>
+          <b className="text-kosc">Każde pole musi zostać udokumentowane</b> - zdjęciem w polu planszy.
         </li>
       </ul>
     </section>
