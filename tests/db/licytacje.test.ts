@@ -172,6 +172,13 @@ describe("licytacje: oferty", () => {
     expect((a as Record<string, unknown>[]).find((r) => r.id === id)!.nazwa).toBe("Licytowany przedmiot");
   });
 
+  it("w ciemno: uczestnik nie odczyta przedmiotu prosto z tabel", async () => {
+    await ustawSaldo(A, 500);
+    const id = await nowaLicytacja({ itemId: await przedmiot(), cena: 100, wCiemno: true });
+    const { data } = await czlonekClient.from("licytacje").select("item_id").eq("id", id);
+    expect(data ?? []).toEqual([]);
+  });
+
   it("zakup z półki jest wyłączony", async () => {
     await ustawSaldo(A, 500);
     const { error } = await kapAClient.rpc("kup_z_polki", { p_item_id: await przedmiot() });
@@ -327,6 +334,26 @@ describe("licytacje: zamknięcie i wygrana", () => {
     expect(data).toHaveLength(1);
     expect(data![0].tytul).toBe("Licytacja otwarta");
     expect(data![0].body).not.toMatch(/Licytowany przedmiot/);
+  });
+
+  it("jedna licytacja z błędem nie blokuje zamknięcia pozostałych", async () => {
+    // Saldo A ponad zakres integer - liczenie salda przy zamknięciu rzuci
+    // wyjątkiem (zamiennik dowolnej awarii jednej licytacji z produkcji).
+    await ustawSaldo(A, 0);
+    await dosypPunkty(A, 1_500_000_000);
+    await dosypPunkty(A, 1_500_000_000);
+    const zepsuta = await nowaLicytacja({ itemId: await przedmiot(), cena: 100 });
+    const dobra = await nowaLicytacja({ itemId: await przedmiot(), cena: 100 });
+    await admin.from("licytacje_oferty").insert({ licytacja_id: zepsuta, team_id: A, user_id: kapA.id, kwota: 100 });
+    const teraz = Date.now();
+    await admin
+      .from("licytacje")
+      .update({ start: new Date(teraz - 120_000).toISOString(), koniec: new Date(teraz - 1_000).toISOString() })
+      .in("id", [zepsuta, dobra]);
+    expect((await admin.rpc("licytacje_tick")).error).toBeNull();
+    expect((await stan(dobra)).status).toBe("zamknieta");
+    expect((await stan(zepsuta)).status).toBe("trwa");
+    expect(await wpisyLicytacji(A)).toEqual([]);
   });
 
   it("po zamknięciu licytacji w ciemno nazwa jest jawna", async () => {

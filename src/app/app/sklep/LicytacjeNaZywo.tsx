@@ -16,6 +16,8 @@ const ODSWIEZANIE_AWARYJNE_MS = 15_000;
  * i RLS (is_approved) odcina mu wszystkie zdarzenia - sprawdzone w e2e
  * 2026-10-22. `wait: true` jak w RankingNaZywo. Do tego odświeżanie co 15 s,
  * bo na wyjeździe zasięg bywa słaby, a licytacja ma minuty, nie sekundy.
+ * Tabela `licytacje` jest czytelna tylko dla admina (licytacje w ciemno), więc
+ * uczestnik dostaje zdarzenia tylko z ofert - zamknięcie łapie odświeżanie.
  */
 export function LicytacjeNaZywo() {
   const router = useRouter();

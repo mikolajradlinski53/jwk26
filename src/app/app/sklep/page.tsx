@@ -54,12 +54,14 @@ export default async function LicytacjePage() {
         supabase.rpc("dostepne_saldo", { p_team: licytujaca.id }),
         supabase.from("user_scores").select("user_id, display_name").eq("team_id", licytujaca.id),
         // Wygrane Klątwy czekające na ofiarę - przycisk „Rzuć klątwę” na karcie.
+        // Tylko Klątwy - wygrana nagroda fizyczna też czeka jako `pending` bez celu.
         supabase
           .from("shop_orders")
-          .select("id")
+          .select("id, shop_items!inner(effect_key)")
           .eq("team_id", licytujaca.id)
           .eq("status", "pending")
-          .is("target_team_id", null),
+          .is("target_team_id", null)
+          .eq("shop_items.effect_key", "klatwa"),
       ])
     : [{ data: null }, { data: null }, { data: null }, { data: null }];
 

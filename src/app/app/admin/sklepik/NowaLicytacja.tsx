@@ -71,7 +71,9 @@ export function NowaLicytacja({ katalog }: { katalog: ShopItem[] }) {
       if (nowy) {
         const { data, error } = await supabase
           .from("shop_items")
-          .insert({ name: nazwa.trim(), description: opis.trim(), kind: "physical", price: c, grafika, active: true })
+          // W ciemno: nowy przedmiot ukryty w katalogu, żeby nie dało się go
+          // podejrzeć z listy pozycji (licytacje_lista i tak go maskuje).
+          .insert({ name: nazwa.trim(), description: opis.trim(), kind: "physical", price: c, grafika, active: true, ukryta: wCiemno })
           .select("id")
           .single();
         if (error) throw error;
