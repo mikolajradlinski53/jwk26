@@ -74,21 +74,37 @@ export function RankingNaZywo({
     // na ranking) w tym oknie ginie bez żadnego błędu po stronie klienta.
     // Zweryfikowane skryptem: bez `wait: true` zdarzenie nie przychodziło
     // nigdy w ciągu 15 s, z `wait: true` przychodziło w ok. 0,7 s.
-    const kanal = supabase
-      .channel("ranking-druzyn", {
-        config: { postgres_changes_options: { wait: true } },
-      })
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "points_ledger" },
-        () => {
-          void odswiez();
-        },
-      )
-      .subscribe();
+    //
+    // Token sesji idzie do realtime PRZED subskrypcją (2026-10-23): klient
+    // w przeglądarce wczytuje sesję asynchronicznie, a kanał otwarty wcześniej
+    // działa jako anon i RLS księgi odcina mu wszystkie zdarzenia - ten sam
+    // błąd wyszedł w e2e licytacji.
+    let porzucone = false;
+    let kanal: ReturnType<typeof supabase.channel> | null = null;
+    void (async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (porzucone) return;
+      if (session) await supabase.realtime.setAuth(session.access_token);
+      if (porzucone) return;
+      kanal = supabase
+        .channel("ranking-druzyn", {
+          config: { postgres_changes_options: { wait: true } },
+        })
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "points_ledger" },
+          () => {
+            void odswiez();
+          },
+        )
+        .subscribe();
+    })();
 
     return () => {
-      void supabase.removeChannel(kanal);
+      porzucone = true;
+      if (kanal) void supabase.removeChannel(kanal);
     };
   }, [odswiez]);
 

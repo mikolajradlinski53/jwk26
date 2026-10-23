@@ -34,12 +34,7 @@ export function KartaDruzyny({
   const [czeka, setCzeka] = useState(false);
   const wToku = useRef(false);
 
-  // Bez realtime i bez pollingu (limit żądań CDN) - gdy ktoś wraca do karty
-  // (np. po przejściu do innej zakładki/apki), odświeżamy przy powrocie.
-  // Na iOS PWA zakładka nie przeładowuje się sama, więc inaczej stan
-  // (głos admina, zmiana kapitana) nigdy by się nie pokazał bez ręcznego
-  // odświeżenia. Listener tylko wywołuje router.refresh() - żadnego
-  // setState w ciele efektu.
+  // Odświeżenie przy powrocie do apki (iOS PWA nie przeładowuje strony sama).
   useEffect(() => {
     function naPowrocie() {
       if (document.visibilityState === "visible") router.refresh();
@@ -47,6 +42,43 @@ export function KartaDruzyny({
     document.addEventListener("visibilitychange", naPowrocie);
     return () => document.removeEventListener("visibilitychange", naPowrocie);
   }, [router]);
+
+  // Na żywo (2026-10-23, Vercel Pro - limit żądań już nie gryzie): start
+  // głosowania, wybór kapitana i nazwa to zmiany wiersza `teams`, więc karta
+  // słucha swojej drużyny przez realtime (token przed subskrypcją - inaczej
+  // kanał jest anonimowy). Głosy są tajne (tabela niedostępna), więc licznik
+  // „X/9” odświeżamy co 20 s, tylko w trakcie głosowania i przy widocznej karcie.
+  const druzyna = stan.team_id;
+  const trwa = stan.etap === "trwa";
+  useEffect(() => {
+    const supabase = createClient();
+    let porzucone = false;
+    let kanal: ReturnType<typeof supabase.channel> | null = null;
+    void (async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (porzucone) return;
+      if (session) await supabase.realtime.setAuth(session.access_token);
+      if (porzucone) return;
+      kanal = supabase
+        .channel(`druzyna-${druzyna}`, { config: { postgres_changes_options: { wait: true } } })
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "teams", filter: `id=eq.${druzyna}` }, () =>
+          router.refresh(),
+        )
+        .subscribe();
+    })();
+    const licznik = trwa
+      ? window.setInterval(() => {
+          if (document.visibilityState === "visible") router.refresh();
+        }, 20_000)
+      : null;
+    return () => {
+      porzucone = true;
+      if (licznik !== null) window.clearInterval(licznik);
+      if (kanal) void supabase.removeChannel(kanal);
+    };
+  }, [druzyna, trwa, router]);
 
   if (stan.nazwa_nadana) return null;
 
