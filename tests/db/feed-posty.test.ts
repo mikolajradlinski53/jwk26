@@ -70,6 +70,34 @@ describe("posty w feedzie", () => {
     expect(widziany).toEqual({ id: data!.id, status: "approved" });
   });
 
+  it("nowy post wysyła push do wszystkich (2026-10-23)", async () => {
+    await admin.from("profiles").update({ display_name: "Autor Posta" }).eq("id", autor.id);
+    const { data } = await autorClient
+      .from("bingo_submissions")
+      .insert(post(autor, druzynaAutora, { caption: "Widok z Karpacza" }))
+      .select("id")
+      .single();
+    const { data: push } = await admin
+      .from("powiadomienia")
+      .select("kanal, adresat, tytul, body, link")
+      .eq("ref_type", "post")
+      .eq("ref_id", data!.id);
+    await admin.from("powiadomienia").delete().eq("ref_type", "post");
+    expect(push).toEqual([
+      { kanal: "push", adresat: "all", tytul: "Nowy post: Autor Posta", body: "Widok z Karpacza", link: "/app/feed" },
+    ]);
+  });
+
+  it("zgłoszenie do bingo nie wysyła pushu o poście", async () => {
+    const { data } = await admin
+      .from("bingo_submissions")
+      .insert({ ...zgloszenieBingoDla(autor, druzynaAutora, await idZadania(0)) })
+      .select("id")
+      .single();
+    const { data: push } = await admin.from("powiadomienia").select("id").eq("ref_type", "post").eq("ref_id", data!.id);
+    expect(push).toEqual([]);
+  });
+
   it("post nie może czekać w kolejce (pending)", async () => {
     const { error } = await autorClient.from("bingo_submissions").insert(post(autor, druzynaAutora, { status: "pending" }));
     expect(error).not.toBeNull();
