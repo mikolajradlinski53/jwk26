@@ -47,7 +47,7 @@ export function NowyPost({ userId, teamId }: { userId: string; teamId: string })
   if (!otwarty) {
     return (
       <Button onClick={() => setOtwarty(true)} className="mb-5 w-full">
-        + Dodaj zdjęcie
+        + Dodaj zdjęcie lub film
       </Button>
     );
   }
@@ -56,11 +56,11 @@ export function NowyPost({ userId, teamId }: { userId: string; teamId: string })
     <section aria-label="Nowy post" className="szklo mb-5 grid gap-3 rounded-lg p-4">
       <label className="block">
         <span className="mb-1.5 block pl-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-dym">
-          Zdjęcie
+          Zdjęcie lub film (do 30 s)
         </span>
         <input
           type="file"
-          accept="image/*"
+          accept="image/*,video/*"
           onChange={(e) => {
             setPlik(e.target.files?.[0] ?? null);
             setBlad(null);

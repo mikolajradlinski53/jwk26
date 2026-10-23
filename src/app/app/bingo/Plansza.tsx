@@ -410,12 +410,12 @@ export function Plansza({
               <div className="grid gap-3">
                 <label className="block">
                   <span className="mb-1.5 block pl-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-dym">
-                    Zdjęcie
+                    Zdjęcie lub film (do 30 s)
                   </span>
                   <input
                     type="file"
                     // Bez `capture` - ten wymuszał aparat i blokował galerię.
-                    accept="image/*"
+                    accept="image/*,video/*"
                     onChange={(e) => {
                       setPlik(e.target.files?.[0] ?? null);
                       setBlad(null);

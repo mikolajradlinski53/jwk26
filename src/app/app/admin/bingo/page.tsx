@@ -1,3 +1,4 @@
+import { jestFilm } from "@/lib/media";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Ekran } from "@/components/Ekran";
@@ -138,7 +139,18 @@ export default async function KolejkaBingo() {
               {/* Zwykły <img>, nie next/image: podpisany URL wygasa po
                   godzinie, więc optymalizator i tak nie miałby czego
                   cache'ować. */}
-              {zdjecieUrl ? (
+              {zdjecieUrl && jestFilm(z.photo_path) ? (
+                // Film (2026-10-23): odtwarzacz od razu w kolejce. `metadata`
+                // - pierwsza klatka i długość bez ściągania całego pliku.
+                <video
+                  src={zdjecieUrl}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  aria-label={`Film zgłoszenia do zadania „${tytulZadania}", od ${autor}`}
+                  className="mt-3 w-full rounded-sm"
+                />
+              ) : zdjecieUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={zdjecieUrl}

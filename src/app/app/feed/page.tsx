@@ -5,6 +5,7 @@ import { Wpis, type KomentarzWpis } from "./Wpis";
 import { Pusto } from "@/components/Pusto";
 import { NaglowekFeedu } from "./NaglowekFeedu";
 import { NowyPost } from "./NowyPost";
+import { jestFilm } from "@/lib/media";
 
 type WpisSurowy = {
   id: string;
@@ -195,6 +196,7 @@ export default async function FeedPage() {
               punkty={w.bingo_tasks?.points ?? 0}
               graTerenowa={w.bingo_tasks?.rodzaj === "quest"}
               post={w.task_id === null ? { autorId: w.user_id, sciezka: w.photo_path } : null}
+              film={jestFilm(w.photo_path)}
               druzynaNazwa={w.teams?.name ?? "Bez drużyny"}
               druzynaKolor={w.teams?.color ?? "#9c8b8e"}
               autor={w.profiles?.display_name ?? "Uczestnik"}

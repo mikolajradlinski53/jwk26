@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { jestFilm, sciezkaPodgladu } from "@/lib/media";
 
 /**
  * Zdjęcie z feedu pod stałym adresem (spec porządku, D5).
@@ -23,9 +24,25 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   if (!wpis) return new Response("Nie ma takiego zdjęcia", { status: 404 });
 
   const pelne = wpis.photo_path as string;
-  const sciezki = new URL(request.url).searchParams.has("podglad")
-    ? [pelne.replace(/\.jpg$/, ".podglad.jpg"), pelne]
-    : [pelne];
+  const podglad = new URL(request.url).searchParams.has("podglad");
+
+  // Film (2026-10-23): podgląd to okładka (.podglad.jpg), a pełny plik idzie
+  // przekierowaniem na podpisany adres storage - odtwarzacz potrzebuje
+  // zapytań o fragmenty (Range), których ta trasa nie obsługuje.
+  if (jestFilm(pelne)) {
+    if (podglad) {
+      const { data } = await supabase.storage.from("bingo").download(sciezkaPodgladu(pelne));
+      if (!data) return new Response("Brak okładki", { status: 404 });
+      return new Response(data, {
+        headers: { "Content-Type": "image/jpeg", "Cache-Control": "private, max-age=604800, immutable" },
+      });
+    }
+    const { data } = await supabase.storage.from("bingo").createSignedUrl(pelne, 3600);
+    if (!data) return new Response("Nie ma takiego filmu", { status: 404 });
+    return Response.redirect(data.signedUrl, 302);
+  }
+
+  const sciezki = podglad ? [sciezkaPodgladu(pelne), pelne] : [pelne];
 
   for (const sciezka of sciezki) {
     const { data } = await supabase.storage.from("bingo").download(sciezka);

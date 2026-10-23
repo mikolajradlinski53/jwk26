@@ -3,7 +3,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { zdarzenie } from "@/lib/zdarzenia";
-import { sciezkaPodgladu } from "@/lib/zgloszenieZdjecia";
+import { sciezkaPodgladu } from "@/lib/media";
 import { ZdjecieFeedu } from "./ZdjecieFeedu";
 
 export type KomentarzWpis = {
@@ -104,6 +104,7 @@ export function Wpis({
   punkty,
   graTerenowa = false,
   post = null,
+  film = false,
   druzynaNazwa,
   druzynaKolor,
   autor,
@@ -121,6 +122,8 @@ export function Wpis({
   utworzonoTekst: string;
   zadanieTytul: string;
   punkty: number;
+  /** Film zamiast zdjęcia (2026-10-23) - okładka w feedzie, odtwarzanie po dotknięciu. */
+  film?: boolean;
   /** Swobodny post (bez zadania): autor i ścieżka pliku - do usuwania. */
   post?: { autorId: string; sciezka: string } | null;
   /** Zadanie gry terenowej zamiast pola bingo - inna etykieta pod tytułem. */
@@ -332,6 +335,7 @@ export function Wpis({
         <ZdjecieFeedu
           url={zdjecieUrl}
           opis={post ? `Zdjęcie wrzucone przez ${autor}` : `Zdjęcie do zadania „${zadanieTytul}", wrzucone przez ${autor}`}
+          film={film}
         />
       ) : (
         <p className="flex aspect-square w-full items-center justify-center bg-noc-glab text-center text-sm text-krew-jasna">

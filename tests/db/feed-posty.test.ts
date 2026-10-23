@@ -160,6 +160,20 @@ describe("posty w feedzie", () => {
     }
   });
 
+  it("bucket przyjmuje krótkie filmy, ale nie dowolne pliki (2026-10-23)", async () => {
+    const film = `${autor.id}/${crypto.randomUUID()}.mp4`;
+    const pdf = `${autor.id}/${crypto.randomUUID()}.pdf`;
+    const bajty = new Uint8Array([0, 0, 0, 24, 102, 116, 121, 112]);
+    try {
+      const ok = await autorClient.storage.from("bingo").upload(film, new Blob([bajty], { type: "video/mp4" }), { contentType: "video/mp4" });
+      expect(ok.error).toBeNull();
+      const zle = await autorClient.storage.from("bingo").upload(pdf, new Blob([bajty], { type: "application/pdf" }), { contentType: "application/pdf" });
+      expect(zle.error).not.toBeNull();
+    } finally {
+      await admin.storage.from("bingo").remove([film, pdf]);
+    }
+  });
+
   it("limit 10 postów na godzinę", async () => {
     const dziesiec = Array.from({ length: 10 }, () => post(autor, druzynaAutora));
     expect((await admin.from("bingo_submissions").insert(dziesiec)).error).toBeNull();
