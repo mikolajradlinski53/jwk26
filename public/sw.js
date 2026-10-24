@@ -2,6 +2,12 @@
 // offline: apka działa na żywych danych, a przestarzała kopia z cache
 // pokazywałaby nieaktualny ranking jako aktualny.
 
+// Nowa wersja przejmuje od razu (2026-10-24): bez tego czekała, aż zamkną się
+// wszystkie okna apki - a zainstalowana apka wisi w tle, więc kliknięcia
+// w push obsługiwał stary worker. Nie ma tu cache, więc podmiana jest bezpieczna.
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
+
 self.addEventListener("push", (event) => {
   let dane = {};
   try {
