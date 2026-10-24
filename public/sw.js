@@ -27,20 +27,20 @@ self.addEventListener("push", (event) => {
       vibrate: [200, 100, 200, 100, 200],
       silent: false,
       timestamp: Date.now(),
-      data: { link: dane.link || "/app" },
+      data: { link: dane.link || "/app", id: dane.id || null },
     }),
   );
 });
 
-// Kliknięcie otwiera wskazaną ścieżkę apki. Jeśli apka jest już otwarta,
-// przełączamy istniejące okno zamiast otwierać drugie — na iPhonie drugie
-// okno zainstalowanej apki wygląda jak zawieszenie.
+// Kliknięcie otwiera ekran powiadomienia w apce (2026-10-24: pełna treść
+// i przycisk do miejsca, którego dotyczy), a stare powiadomienia bez id -
+// wskazaną ścieżkę. Jeśli apka jest już otwarta, przełączamy istniejące okno
+// zamiast otwierać drugie — na iPhonie drugie okno zainstalowanej apki
+// wygląda jak zawieszenie.
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const link = new URL(
-    (event.notification.data && event.notification.data.link) || "/app",
-    self.location.origin,
-  ).href;
+  const dane = event.notification.data || {};
+  const link = new URL(dane.id ? "/app/powiadomienie/" + dane.id : dane.link || "/app", self.location.origin).href;
 
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((okna) => {
