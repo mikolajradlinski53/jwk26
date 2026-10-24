@@ -9,6 +9,7 @@ import {
   ustawJakoZaakceptowany,
   dosypPunktyOsobie,
   ustawPuleKasyna,
+  ustawMinimumKasyna,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -42,6 +43,7 @@ beforeAll(async () => {
   await ustawJakoZaakceptowany(gracz, druzyna);
   // Pula kasyna (25% punktów drużyny z otwarcia okna / członków) z zapasem.
   await ustawPuleKasyna(druzyna, 1000);
+  await ustawMinimumKasyna(0);
   graczClient = await signIn(gracz);
   czekajacyClient = await signIn(czekajacy);
 });
@@ -52,6 +54,7 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
+  await ustawMinimumKasyna(100);
   await admin.from("points_ledger").delete().eq("team_id", druzyna).eq("category", "zasiew_testowy");
   await Promise.all([gracz, czekajacy].map(deleteUser));
 });

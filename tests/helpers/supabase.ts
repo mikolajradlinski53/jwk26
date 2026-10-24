@@ -268,6 +268,17 @@ export async function ustawKapitana(
  * dzięki temu sprzątanie po tym pliku nie dotknie wpisów, które zostawił inny.
  * Drużyny są zasiane na stałe i współdzielone między plikami testowymi.
  */
+/**
+ * Minimum puli kasyna na osobę (`kasyno_minimum`, prod = 100). Testy puli
+ * z 25% ustawiają 0, inaczej minimum podnosi małą pulę i spin przechodzi.
+ */
+export async function ustawMinimumKasyna(wartosc: number): Promise<void> {
+  const { error } = await admin
+    .from("app_settings")
+    .upsert({ key: "kasyno_minimum", value: wartosc });
+  if (error) throw error;
+}
+
 export async function dosypPunkty(teamId: string, delta: number): Promise<void> {
   const { error } = await admin
     .from("points_ledger")

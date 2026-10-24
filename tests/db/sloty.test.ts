@@ -11,6 +11,8 @@ import {
   dosypPunkty,
   dosypPunktyOsobie,
   ustawPuleKasyna,
+  saldoDruzyny,
+  ustawMinimumKasyna,
   type TestUser,
 } from "../helpers/supabase";
 
@@ -30,9 +32,11 @@ beforeAll(async () => {
   await ustawJakoZaakceptowany(obcy, druzyna);
   graczClient = await signIn(gracz);
   obcyClient = await signIn(obcy);
+  await ustawMinimumKasyna(0);
 });
 
 afterAll(async () => {
+  await ustawMinimumKasyna(100);
   await deleteUser(gracz);
   await deleteUser(obcy);
 });
@@ -396,6 +400,30 @@ describe("spin", () => {
     );
     for (const w of wpisy ?? []) {
       expect(netto.get(w.ref_id as string)).toBe(w.delta);
+    }
+  });
+
+  it("minimum podnosi małą pulę, ale nie ponad saldo drużyny na głowę", async () => {
+    try {
+      await ustawMinimumKasyna(100);
+      // Z 25% wyszłoby 5 - minimum daje 100, bo saldo na głowę jest wyższe.
+      await ustawPuleKasyna(druzyna, 5);
+      await dosypPunkty(druzyna, 100_000);
+      const { data } = await graczClient.rpc("pula_kasyna");
+      expect(data).toMatchObject({ limit: 100 });
+
+      // Saldo na głowę niższe od minimum: pula = saldo / liczba członków.
+      await dosypPunkty(druzyna, -100_000);
+      const { count } = await admin
+        .from("profiles")
+        .select("id", { count: "exact", head: true })
+        .eq("team_id", druzyna)
+        .eq("status", "approved");
+      const naGlowe = Math.floor(Math.max(await saldoDruzyny(druzyna), 0) / Math.max(count ?? 0, 1));
+      const { data: niskie } = await graczClient.rpc("pula_kasyna");
+      expect((niskie as { limit: number }).limit).toBe(Math.max(Math.min(100, naGlowe), 5));
+    } finally {
+      await ustawMinimumKasyna(0);
     }
   });
 
