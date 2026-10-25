@@ -38,10 +38,16 @@ export default async function SlotyPage() {
   const historia = (spiny ?? []) as Spin[];
 
   return (
-    <Ekran tytul="Sloty" podtytul="Gra z puli drużyny">
+    <Ekran tytul="Sloty" podtytul={pula.zetony ? "Gra na żetonach" : "Gra z puli drużyny"}>
       <KartaPuli pula={pula} saldo={saldo} />
 
-      <Bebny stawka={stawka} obrotPoczatkowy={pula.obrot} limit={pula.limit} koniec={koniecOkna(pula)} />
+      <Bebny
+        stawka={stawka}
+        obrotPoczatkowy={pula.obrot}
+        limit={pula.limit}
+        koniec={koniecOkna(pula)}
+        zetony={pula.zetony !== null}
+      />
 
       <NaglowekSekcji>Ostatnie spiny</NaglowekSekcji>
       {historia.length === 0 ? (

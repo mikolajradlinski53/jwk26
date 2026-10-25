@@ -31,12 +31,22 @@ export default async function ArcadePage() {
   ]);
   const saldo = (wynik as UserScore | null)?.score ?? 0;
 
+  const gry = pula.zetony
+    ? [
+        { href: "/app/arcade/sloty", nazwa: "Sloty", opis: `stawka 10 · jackpot ${pula.zetony.jackpot}`, ikona: "swieca" as const },
+        { href: "/app/arcade/blackjack", nazwa: "Blackjack", opis: "stawka 10 · 20 · 50", ikona: "karty" as const },
+        { href: "/app/arcade/wyzwania", nazwa: "Wyzwania 1 na 1", opis: "pojedynek kart o żetony", ikona: "osoby" as const },
+        { href: "/app/arcade/krol", nazwa: "Król Kasyna", opis: "ranking żetonów na żywo", ikona: "kielich" as const },
+        GRY[2],
+      ]
+    : GRY;
+
   return (
-    <Ekran tytul="Kasyno" podtytul="Gra z puli drużyny">
+    <Ekran tytul="Kasyno" podtytul={pula.zetony ? "Gra na żetonach" : "Gra z puli drużyny"}>
       <KartaPuli pula={pula} saldo={saldo} />
 
       <nav className="grid gap-2.5">
-        {GRY.map((g) => (
+        {gry.map((g) => (
           <PozycjaMenu key={g.href} href={g.href} ikona={g.ikona} nazwa={g.nazwa} opis={g.opis} />
         ))}
       </nav>

@@ -34,10 +34,14 @@ export default async function BlackjackPage() {
   const historia = (historiaRaw ?? []) as Rozdanie[];
 
   return (
-    <Ekran tytul="Blackjack" podtytul="Gra z puli drużyny">
+    <Ekran tytul="Blackjack" podtytul={pula.zetony ? "Gra na żetonach" : "Gra z puli drużyny"}>
       <KartaPuli pula={pula} saldo={saldo} />
 
-      <Stol poczatkowa={(reka as RekaBj | null) ?? null} pozostalo={zostaloZPuli(pula)} />
+      <Stol
+        poczatkowa={(reka as RekaBj | null) ?? null}
+        pozostalo={zostaloZPuli(pula)}
+        jednostka={pula.zetony ? "żet." : "pkt"}
+      />
 
       <NaglowekSekcji>Ostatnie rozdania</NaglowekSekcji>
       {historia.length === 0 ? (

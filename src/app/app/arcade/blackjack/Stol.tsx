@@ -38,7 +38,7 @@ const KOLOR: Record<string, string> = { s: "♠", h: "♥", d: "♦", c: "♣" }
  * szarym tle - ok. 3:1, trzeba się było przyglądać. Ranga w rogu i duży kolor
  * pośrodku: rozpoznaje się ją z odległości wyciągniętej ręki.
  */
-function Karta({ karta }: { karta: string | null }) {
+export function Karta({ karta }: { karta: string | null }) {
   if (!karta) {
     // Zakryta karta krupiera: ciemny rewers z czerwonym wzorem - od razu widać,
     // że karta jest, i że to nie jest odkryta karta.
@@ -86,12 +86,14 @@ function Reka({
   punkty,
   zakryta,
   stawka,
+  jednostka = "pkt",
 }: {
   tytul: string;
   karty: string[];
   punkty: number | null;
   zakryta: boolean;
   stawka?: number;
+  jednostka?: string;
 }) {
   return (
     <div className="grid gap-2">
@@ -102,7 +104,7 @@ function Reka({
             suma <span className="font-tytul text-base text-kosc tabular-nums">{punkty}</span>
           </span>
         )}
-        {stawka !== undefined && <span className="normal-case tracking-normal">· stawka {stawka} pkt</span>}
+        {stawka !== undefined && <span className="normal-case tracking-normal">· stawka {stawka} {jednostka}</span>}
       </p>
       <div className="flex flex-wrap gap-2">
         {karty.map((k, i) => (
@@ -118,7 +120,16 @@ function Reka({
  * Stół blackjacka. Całą grę liczy baza - przeglądarka tylko rysuje widok,
  * który dostaje z funkcji, i wysyła jeden z trzech ruchów.
  */
-export function Stol({ poczatkowa, pozostalo }: { poczatkowa: RekaBj | null; pozostalo: number }) {
+export function Stol({
+  poczatkowa,
+  pozostalo,
+  jednostka = "pkt",
+}: {
+  poczatkowa: RekaBj | null;
+  pozostalo: number;
+  /** „pkt” albo „żet.” - kasyno po gali gra na żetonach. */
+  jednostka?: string;
+}) {
   const router = useRouter();
   const [reka, setReka] = useState<RekaBj | null>(poczatkowa);
   const [blad, setBlad] = useState<string | null>(null);
@@ -160,7 +171,7 @@ export function Stol({ poczatkowa, pozostalo }: { poczatkowa: RekaBj | null; poz
             punkty={reka.punkty_krupiera}
             zakryta={trwa}
           />
-          <Reka tytul="Ty" karty={reka.gracz} punkty={reka.punkty_gracza} zakryta={false} stawka={reka.stawka} />
+          <Reka tytul="Ty" karty={reka.gracz} punkty={reka.punkty_gracza} zakryta={false} stawka={reka.stawka} jednostka={jednostka} />
 
           {reka.status === "settled" && reka.wynik && (
             <p
@@ -171,7 +182,7 @@ export function Stol({ poczatkowa, pozostalo }: { poczatkowa: RekaBj | null; poz
             >
               {WYNIK[reka.wynik]}
               {reka.wyplata !== null && reka.wyplata > 0 && (
-                <span className="block text-sm text-dym">wypłata {reka.wyplata} pkt</span>
+                <span className="block text-sm text-dym">wypłata {reka.wyplata} {jednostka}</span>
               )}
             </p>
           )}
@@ -197,7 +208,7 @@ export function Stol({ poczatkowa, pozostalo }: { poczatkowa: RekaBj | null; poz
       ) : (
         <div className="grid gap-2">
           <p className="px-1 text-xs uppercase tracking-[0.14em] text-dym">
-            {reka ? "Kolejne rozdanie" : "Rozdaj"} · w puli {pozostalo}
+            {reka ? "Kolejne rozdanie" : "Rozdaj"} · {jednostka === "pkt" ? "w puli" : "masz"} {pozostalo}
           </p>
           <div className="grid grid-cols-3 gap-2">
             {STAWKI.map((s) => (
@@ -206,7 +217,7 @@ export function Stol({ poczatkowa, pozostalo }: { poczatkowa: RekaBj | null; poz
                 onClick={() => void wywolaj("blackjack_rozdaj", { p_stawka: s })}
                 disabled={czeka || pozostalo < s}
               >
-                {s} pkt
+                {s} {jednostka}
               </Button>
             ))}
           </div>

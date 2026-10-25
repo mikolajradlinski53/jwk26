@@ -14,12 +14,15 @@ export function Bebny({
   obrotPoczatkowy,
   limit,
   koniec,
+  zetony = false,
 }: {
   stawka: number;
   obrotPoczatkowy: number;
   limit: number;
   /** „o 12:00” / „o północy” - kiedy rusza nowa pula. */
   koniec: string;
+  /** Kasyno po gali: gra na żetonach, bez okien puli. */
+  zetony?: boolean;
 }) {
   const router = useRouter();
   const [wynik, setWynik] = useState<WynikSpinu | null>(null);
@@ -102,15 +105,30 @@ export function Bebny({
       {blad && <p className="text-center text-sm text-krew-jasna">{blad}</p>}
 
       <Button onClick={() => void zakrec()} disabled={czeka || zostalo === 0}>
-        {czeka ? "Kręcę..." : zostalo === 0 ? "Pula wyczerpana" : `Zakręć - ${stawka} pkt`}
+        {czeka
+          ? "Kręcę..."
+          : zostalo === 0
+            ? zetony
+              ? "Brak żetonów"
+              : "Pula wyczerpana"
+            : `Zakręć - ${stawka} ${zetony ? "żetonów" : "pkt"}`}
       </Button>
 
-      <p className="text-center text-xs leading-relaxed text-dym">
-        {zostalo === 0
-          ? `Nowa pula ${koniec}.`
-          : `Zostało ${zostalo} ${zostalo === 1 ? "spin" : "spinów"} do nowej puli (${koniec}).`}{" "}
-        Wygrane i przegrane liczą się do wyniku drużyny.
-      </p>
+      {zetony ? (
+        <p className="text-center text-xs leading-relaxed text-dym">
+          {zostalo === 0
+            ? "Weź dokładkę na górze ekranu."
+            : `Starczy na ${zostalo} ${zostalo === 1 ? "spin" : "spinów"}.`}{" "}
+          Każdy spin dosypuje do jackpotu.
+        </p>
+      ) : (
+        <p className="text-center text-xs leading-relaxed text-dym">
+          {zostalo === 0
+            ? `Nowa pula ${koniec}.`
+            : `Zostało ${zostalo} ${zostalo === 1 ? "spin" : "spinów"} do nowej puli (${koniec}).`}{" "}
+          Wygrane i przegrane liczą się do wyniku drużyny.
+        </p>
+      )}
     </div>
   );
 }

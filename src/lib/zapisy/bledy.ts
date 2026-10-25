@@ -55,6 +55,15 @@ export function komunikat(e: unknown): string {
   if (/Podwoic mozna/i.test(t)) return "Podwoić można tylko przy 9, 10 albo 11 na dwóch pierwszych kartach.";
   if (/Stawka to 10, 20 albo 50/i.test(t)) return "Stawka to 10, 20 albo 50 pkt.";
   if (/zaakceptowani uczestnicy/i.test(t)) return "Grać mogą tylko przyjęci uczestnicy.";
+  // Kasyno na żetonach (po gali)
+  if (/Za malo zetonow na to wyzwanie/i.test(t)) return "Masz za mało żetonów, żeby przyjąć to wyzwanie.";
+  if (/Za malo zetonow/i.test(t)) return "Masz za mało żetonów.";
+  if (/Masz jeszcze zetony/i.test(t)) return "Masz jeszcze żetony na grę - dokładka jest dopiero, gdy nie starcza na stawkę 10.";
+  if (/Stawka od 10 do 500/i.test(t)) return "Stawka wyzwania to od 10 do 500 żetonów.";
+  if (/3 wyzwania bez odpowiedzi/i.test(t)) return "Masz już 3 wyzwania bez odpowiedzi - poczekaj albo anuluj któreś.";
+  if (/samego siebie/i.test(t)) return "Nie możesz wyzwać samego siebie.";
+  if (/nie czeka na Ciebie|juz nieaktualne|Nie mozna zamknac/i.test(t)) return "To wyzwanie jest już nieaktualne - lista jest odświeżona.";
+  if (/Wyzwania niedostepne|Dokladka niedostepna/i.test(t)) return "Kasyno nie gra teraz na żetonach.";
   // Kruk
   if (/Nie ma takiej gry/i.test(t)) return "Ta gra już nie istnieje - zacznij nowy lot.";
   if (/juz zapisany/i.test(t)) return "Wynik tego lotu jest już zapisany.";

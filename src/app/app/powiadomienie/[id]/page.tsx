@@ -19,6 +19,8 @@ function nazwaCelu(link: string): string {
   if (link.startsWith("/app/sklep")) return "Przejdź do licytacji";
   if (link.startsWith("/app/gra")) return "Przejdź do gry terenowej";
   if (link.startsWith("/app/harmonogram")) return "Zobacz harmonogram";
+  if (link.startsWith("/app/arcade/wyzwania")) return "Przejdź do wyzwań";
+  if (link.startsWith("/app/arcade")) return "Przejdź do kasyna";
   return "Przejdź do apki";
 }
 
