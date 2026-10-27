@@ -4,11 +4,21 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { zdarzenie } from "@/lib/zdarzenia";
 
-type ZdjecieDane = {
+export type ZdjecieDane = {
   plik: string;
   szerokosc: number;
   wysokosc: number;
+  /** Własny adres zamiast `/hero/<plik>.jpg` - np. zdjęcie z bucketu przez trasę z sesją. */
+  src?: string;
 };
+
+/**
+ * Zdjęcia spod `/app` idą trasą z sesją użytkownika - optymalizator Next
+ * pobiera obrazy bez ciasteczek, więc dla nich go wyłączamy.
+ */
+function adres(z: ZdjecieDane): string {
+  return z.src ?? `/hero/${z.plik}.jpg`;
+}
 
 /**
  * Zdjęcia z poprzednich edycji. Z pierwszego zestawu (`public/hero/hero-1..10`)
@@ -108,7 +118,16 @@ function Strzalka({ kierunek, onClick }: { kierunek: "lewo" | "prawo"; onClick: 
   );
 }
 
-export function Galeria() {
+export function Galeria({
+  zdjecia = ZDJECIA,
+  etykieta = "Galeria zdjęć z poprzednich edycji",
+  ciemna = false,
+}: {
+  zdjecia?: ZdjecieDane[];
+  etykieta?: string;
+  /** Wersja na ciemne tło apki (zaślepka po wyjeździe) - inny przycisk „Pokaż więcej”. */
+  ciemna?: boolean;
+} = {}) {
   const [rozwinieta, setRozwinieta] = useState(false);
   const [otwarteIndeks, setOtwarteIndeks] = useState<number | null>(null);
   const [przesuniecie, setPrzesuniecie] = useState(0);
@@ -119,8 +138,8 @@ export function Galeria() {
   const obejrzaneRef = useRef<Set<number>>(new Set());
   const dotykRef = useRef<{ x: number; y: number; poziomo: boolean | null } | null>(null);
 
-  const widoczne = rozwinieta ? ZDJECIA : ZDJECIA.slice(0, WIDOCZNE_NA_START);
-  const ile = ZDJECIA.length;
+  const widoczne = rozwinieta ? zdjecia : zdjecia.slice(0, WIDOCZNE_NA_START);
+  const ile = zdjecia.length;
 
   useEffect(() => {
     if (otwarteIndeks === null) return;
@@ -204,13 +223,13 @@ export function Galeria() {
     else setPrzesuniecie(0);
   }
 
-  const aktywne = otwarteIndeks !== null ? ZDJECIA[otwarteIndeks] : null;
+  const aktywne = otwarteIndeks !== null ? zdjecia[otwarteIndeks] : null;
 
   return (
     <div>
       <div
         role="group"
-        aria-label="Galeria zdjęć z poprzednich edycji"
+        aria-label={etykieta}
         className="columns-2 gap-3 min-[850px]:columns-3 min-[1200px]:columns-4"
       >
         {widoczne.map((zdjecie, i) => (
@@ -230,7 +249,8 @@ export function Galeria() {
               style={{ aspectRatio: `${zdjecie.szerokosc} / ${zdjecie.wysokosc}` }}
             >
               <Image
-                src={`/hero/${zdjecie.plik}.jpg`}
+                src={adres(zdjecie)}
+                unoptimized={adres(zdjecie).startsWith("/app/")}
                 alt=""
                 fill
                 loading={i < 2 ? "eager" : "lazy"}
@@ -242,17 +262,21 @@ export function Galeria() {
         ))}
       </div>
 
-      {ZDJECIA.length > WIDOCZNE_NA_START && (
+      {zdjecia.length > WIDOCZNE_NA_START && (
         <div className="mt-4 flex justify-center">
           <button
             type="button"
             onClick={() => setRozwinieta((r) => !r)}
             aria-expanded={rozwinieta}
-            className="rounded-md border border-jesien-kora/25 bg-jesien-tlo px-5 py-2 text-sm font-bold text-jesien-rdza
+            className={
+              ciemna
+                ? "szklo-plynne min-h-11 rounded-full px-5 py-2 text-sm font-bold text-kosc focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
+                : `rounded-md border border-jesien-kora/25 bg-jesien-tlo px-5 py-2 text-sm font-bold text-jesien-rdza
                        transition hover:bg-jesien-karta focus-visible:outline-2 focus-visible:outline-offset-2
-                       focus-visible:outline-jesien-rdza"
+                       focus-visible:outline-jesien-rdza`
+            }
           >
-            {rozwinieta ? "Pokaż mniej" : `Pokaż więcej zdjęć (+${ZDJECIA.length - WIDOCZNE_NA_START})`}
+            {rozwinieta ? "Pokaż mniej" : `Pokaż więcej zdjęć (+${zdjecia.length - WIDOCZNE_NA_START})`}
           </button>
         </div>
       )}
@@ -299,7 +323,8 @@ export function Galeria() {
 
             <Image
               key={aktywne.plik}
-              src={`/hero/${aktywne.plik}.jpg`}
+              src={adres(aktywne)}
+              unoptimized={adres(aktywne).startsWith("/app/")}
               alt=""
               width={aktywne.szerokosc}
               height={aktywne.wysokosc}

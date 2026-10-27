@@ -1,9 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Jedyna trasa dostępna osobie czekającej na akceptację.
-const POCZEKALNIA = "/app/rejestracja";
-// Dokąd trafia zaakceptowany: ranking.
+// Po wyjeździe: zaślepka z podziękowaniem (dawniej ranking).
 const DOM = "/app";
 
 function zaczynaSie(sciezka: string, prefiksy: string[]) {
@@ -53,17 +51,20 @@ export async function updateSession(request: NextRequest) {
 
   const status = profile?.status ?? "pending";
 
-  if (status !== "approved") {
-    if (sciezka === POCZEKALNIA) return response;
-    return przekieruj(request, POCZEKALNIA, response);
+  // Po wyjeździe (2026-10-27, „wygaś wszystko”): apka jest zamknięta, każdy
+  // trafia na zaślepkę z podziękowaniem pod /app. Zostają tylko panel admina
+  // (dla Organizatorów) i trasa zdjęć, z której zaślepka bierze galerię.
+  // Strona główna (poza /app) zostaje bez zmian - decyzja Mikołaja.
+  if (sciezka !== DOM && !zaczynaSie(sciezka, ["/app/admin", "/app/feed/zdjecie"])) {
+    return przekieruj(request, DOM, response);
   }
 
-  // Admini (Kadra) nie przechodzą formularza - decyzja Mikołaja 2026-10-11:
-  // mają konta od razu i wchodzą prosto do apki. Wcześniej bramka kierowała
-  // admina bez zgłoszenia na formularz przy otwartej turze; ich miejsca nie
-  // liczą się do puli Działaczy (30 + organizatorzy).
-  // Zaakceptowany na /app/rejestracja - formularz ma już za sobą.
-  if (sciezka === POCZEKALNIA) return przekieruj(request, DOM, response);
+  // Bez akceptacji: tylko sama zaślepka, bez zdjęć i panelu. Dawna poczekalnia
+  // (/app/rejestracja) jest zamknięta razem z resztą apki.
+  if (status !== "approved") {
+    if (sciezka === DOM) return response;
+    return przekieruj(request, DOM, response);
+  }
 
   if (zaczynaSie(sciezka, ["/app/admin"]) && profile?.role !== "admin") {
     return przekieruj(request, DOM, response);

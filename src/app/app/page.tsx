@@ -1,61 +1,65 @@
-import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Ekran } from "@/components/Ekran";
-import { RankingNaZywo, type Czlonek } from "./RankingNaZywo";
-import { KartaDruzyny } from "./KartaDruzyny";
-import type { StanGlosowania } from "@/lib/druzyna";
-import type { TeamScore } from "@/types/db";
+import { Galeria } from "@/app/landing/Galeria";
+import { ZDJECIA_JWK26 } from "@/app/landing/zdjeciaJwk26";
 
-export default async function Home() {
+/**
+ * Zaślepka apki po wyjeździe (2026-10-27, „wygaś wszystko”). Wszystkie ekrany
+ * apki poza panelem admina przekierowują tutaj (`gate.ts`); strona główna
+ * zostaje bez zmian. Zdjęcia widzi tylko przyjęty uczestnik - lecą
+ * z prywatnego bucketu trasą feedu z sesją. Dawny ranking: historia gita.
+ */
+export default async function Podziekowanie() {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  // Bramka nie wpuści tu niezalogowanego, ale token może wygasnąć między jej
-  // sprawdzeniem a tym renderem. Lepsze przekierowanie niż 500.
-  if (!user) redirect("/wejscie");
-
-  const [{ data }, { data: czlonkowie }, { data: stan }, { data: druzyny }] = await Promise.all([
-    supabase.from("team_scores").select("*").eq("ukryta", false).order("score", { ascending: false }),
-    // Skład drużyn do rozwinięcia wiersza - widok liczy punkty każdej osoby.
-    supabase
-      .from("user_scores")
-      .select("user_id, display_name, team_id, score")
-      .not("team_id", "is", null)
-      .order("display_name"),
-    supabase.rpc("stan_glosowania"),
-    supabase.from("teams").select("id, captain_id"),
-  ]);
-  const stanGlosowania = stan as StanGlosowania | null;
-  const kapitanowie = Object.fromEntries(
-    ((druzyny ?? []) as { id: string; captain_id: string | null }[])
-      .filter((d) => d.captain_id)
-      .map((d) => [d.id, d.captain_id as string]),
-  );
-  const sklad = ((czlonkowie ?? []) as Czlonek[]).filter((c) => c.team_id === stanGlosowania?.team_id);
+  const { data: profil } = user
+    ? await supabase.from("profiles").select("status, role").eq("id", user.id).maybeSingle()
+    : { data: null };
+  const uczestnik = profil?.status === "approved";
+  const admin = profil?.role === "admin";
 
   return (
-    <Ekran tytul="Ranking Sekt" podtytul="Punkty ruszą razem z bingo">
-      {/* Odczyt przy wejściu zostaje niezależnie od subskrypcji - przy słabym
-          zasięgu websocket może nie dojść, a ranking musi się pokazać. */}
-      {/* Key po etapie i głosie - gdy serwer zmieni stan (np. admin przełączy etap
-          albo zmieni kapitana), karta montuje się od nowa i nie trzyma starego `wybrany`. */}
-      {stanGlosowania && (
-        <KartaDruzyny
-          key={`${stanGlosowania.etap}-${stanGlosowania.moj_glos ?? "brak"}`}
-          stan={stanGlosowania}
-          sklad={sklad}
-          mojeId={user.id}
-        />
+    <main className="mx-auto grid w-full max-w-md gap-8 px-5 pb-12 pt-[max(3.5rem,env(safe-area-inset-top))] min-[850px]:max-w-[1000px]">
+      <header className="text-center">
+        <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-krew-jasna">
+          JWK 2026 · Karpacz · 23-25 października
+        </p>
+        <h1 className="mt-4 font-tytul text-4xl leading-[1.1] text-kosc min-[600px]:text-5xl">
+          Dziękujemy za wspaniały wyjazd!
+        </h1>
+        <p className="mx-auto mt-4 max-w-[44ch] text-sm leading-relaxed text-dym">
+          Wyjazd za nami, a apka przechodzi w stan spoczynku. Dziękujemy za energię, zaliczone pola bingo, nocne
+          questy i każde zdjęcie w feedzie. Do zobaczenia na kolejnym JWK!
+        </p>
+      </header>
+
+      <section className="mx-auto w-full max-w-md rounded-lg border border-dashed border-krew-jasna/40 px-5 py-6 text-center">
+        <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-krew-jasna">Ewaluacja</p>
+        <p className="mt-2 font-tytul text-xl text-kosc">Formularz ewaluacyjny pojawi się tu lada dzień</p>
+        <p className="mt-2 text-sm leading-relaxed text-dym">
+          Zajrzyj tu za kilka dni - Twoja opinia pomoże nam zrobić następny wyjazd jeszcze lepiej.
+        </p>
+      </section>
+
+      {uczestnik && (
+        <section>
+          <h2 className="mb-4 px-1 text-xs uppercase tracking-[0.14em] text-dym">Tak było na JWK 2026</h2>
+          <Galeria zdjecia={ZDJECIA_JWK26} etykieta="Zdjęcia z JWK 2026" ciemna />
+        </section>
       )}
-      <RankingNaZywo
-        poczatkowe={(data ?? []) as TeamScore[]}
-        czlonkowiePoczatkowi={(czlonkowie ?? []) as Czlonek[]}
-        kapitanowie={kapitanowie}
-        mojeId={user.id}
-      />
-    </Ekran>
+
+      <footer className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-dym">
+        {admin && (
+          <Link href="/app/admin" className="underline underline-offset-2">
+            Panel organizatora
+          </Link>
+        )}
+        <Link href="/" className="underline underline-offset-2">
+          Strona JWK
+        </Link>
+      </footer>
+    </main>
   );
 }
