@@ -6,7 +6,7 @@ const DOKUMENTY = [
   {
     href: "/regulamin",
     tytul: "Regulamin",
-    opis: "Zasady uczestnictwa w wyjeździe.",
+    opis: "Zasady uczestnictwa w Wyjeździe.",
   },
   {
     href: "/prywatnosc",

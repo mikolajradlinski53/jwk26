@@ -99,7 +99,7 @@ export function Wejscie({
               <ZabaStala poza="siedzi" skala={1} className="absolute -top-[72px] right-0 z-10" />
               <Licznik
                 docelowa={dataJwk}
-                etykieta="Do wyjazdu"
+                etykieta="Do Wyjazdu"
                 poTerminie="Trwa"
                 poczatkowe={odliczanie(dataJwk, new Date())}
                 rozmiar="duzy"

@@ -25,7 +25,7 @@ const KROKI = [
     numer: "03",
     tytul: "Poczekaj na decyzję",
     opis:
-      "Zgłoszenie sprawdzi organizator. Może zostać ono odrzucone, jeśli czegoś zabraknie lub nie " +
+      "Zgłoszenie sprawdzi Organizator. Może zostać ono odrzucone, jeśli czegoś zabraknie lub nie " +
       "prześlesz potwierdzenia wpłaty. Po weryfikacji decyzję zobaczysz po zalogowaniu w aplikacji - " +
       "a jeśli włączysz powiadomienia, to również je dostaniesz.",
   },
@@ -65,7 +65,7 @@ export function Zapisy({ zapisy, dataSwiezakow }: { zapisy: OdslonaWidok; dataSw
             </p>
             <Licznik
               docelowa={dataSwiezakow}
-              etykieta="Do przyjęcia świeżaków"
+              etykieta="Do przyjęcia Świeżaków"
               poTerminie="Przyjęcie za nami"
               poczatkowe={odliczanie(dataSwiezakow, new Date())}
             />
@@ -82,7 +82,7 @@ export function Zapisy({ zapisy, dataSwiezakow }: { zapisy: OdslonaWidok; dataSw
         <p className="mt-5 text-sm leading-relaxed text-jesien-kora">
           Każda tura dotyczy określonej liczby miejsc. Gdy się zapełni - możesz zapisać się na listę
           rezerwową. <strong className="text-jesien-atrament">Na tym etapie za nic jeszcze nie płacisz!</strong>{" "}
-          Jeśli pojawi się wolne miejsce, organizator poinformuje Cię o tym oraz poprosi o wpłatę.
+          Jeśli pojawi się wolne miejsce, Organizator poinformuje Cię o tym oraz poprosi o wpłatę.
         </p>
 
         <h3 className="mt-10 font-tytul text-xl text-jesien-atrament">Jak się zapisać?</h3>

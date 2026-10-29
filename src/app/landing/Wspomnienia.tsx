@@ -15,7 +15,7 @@ export function Wspomnienia() {
         <SekcjaNaglowek
           numer="06"
           nadtytul="Wspomnienia"
-          tytul="Wróćmy na chwilę do poprzednich wyjazdów!"
+          tytul="Wróćmy na chwilę do poprzednich Wyjazdów!"
           zaba={<ZabaStala poza="mysli" skala={1} />}
         />
         <Galeria />

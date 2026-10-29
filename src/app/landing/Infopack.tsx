@@ -44,7 +44,7 @@ export function Infopack({ odslona }: { odslona: OdslonaWidok }) {
         {INFOPACK ? (
           <div className="grid justify-items-start gap-4">
             <p className="text-sm leading-relaxed text-jesien-kora">
-              Wszystko, co trzeba wiedzieć przed wyjazdem, w jednym miejscu.
+              Wszystko, co trzeba wiedzieć przed Wyjazdem, w jednym miejscu.
             </p>
             <a
               href={INFOPACK}

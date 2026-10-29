@@ -116,7 +116,7 @@ export function Stopka({ zapisy, social, maPlan }: { zapisy: OdslonaWidok; socia
           <p className="text-[10.5px] text-jesien-kora">© 2026 Samorząd Studentów UE we Wrocławiu</p>
           <div className="flex flex-wrap gap-x-5">
             <a href="/regulamin" target="_blank" rel="noopener" className={KLASA_LINKU_DOLNEGO}>
-              Regulamin wyjazdu
+              Regulamin Wyjazdu
             </a>
             <a href="/prywatnosc" target="_blank" rel="noopener" className={KLASA_LINKU_DOLNEGO}>
               Polityka prywatności

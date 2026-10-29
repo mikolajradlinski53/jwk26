@@ -21,7 +21,7 @@ export function CenaIWplata({ odslona, przelew }: { odslona: OdslonaWidok; przel
         id="cena-i-wplata"
         numer="05"
         nadtytul="Cena"
-        tytul="Koszt wyjazdu"
+        tytul="Koszt Wyjazdu"
         tlo={TLO}
         ksztalt="cena"
         odslona={odslona}
@@ -36,7 +36,7 @@ export function CenaIWplata({ odslona, przelew }: { odslona: OdslonaWidok; przel
         <SekcjaNaglowek
           numer="05"
           nadtytul="Cena"
-          tytul={przelew ? `Koszt wyjazdu to ${przelew.kwota} zł` : "Kwotę podamy wkrótce"}
+          tytul={przelew ? `Koszt Wyjazdu to ${przelew.kwota} zł` : "Kwotę podamy wkrótce"}
           zaba={<ZabaStala poza="skarbonka" skala={1} />}
         />
         <DanePrzelewu

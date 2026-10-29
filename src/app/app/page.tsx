@@ -3,6 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { Galeria } from "@/app/landing/Galeria";
 import { ZDJECIA_JWK26 } from "@/app/landing/zdjeciaJwk26";
 
+/** Formularz ewaluacyjny (Google Forms), deadline 01.11.2026 23:59 - od Mikołaja 29.10. */
+const FORMULARZ = "https://forms.gle/X8Ru9Z7jr2YEtg488";
+
 /**
  * Zaślepka apki po wyjeździe (2026-10-27, „wygaś wszystko”). Wszystkie ekrany
  * apki poza panelem admina przekierowują tutaj (`gate.ts`); strona główna
@@ -35,12 +38,21 @@ export default async function Podziekowanie() {
         </p>
       </header>
 
-      <section className="mx-auto w-full max-w-md rounded-lg border border-dashed border-krew-jasna/40 px-5 py-6 text-center">
+      <section className="szklo mx-auto grid w-full max-w-md gap-3 rounded-lg px-5 py-6 text-center">
         <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-krew-jasna">Ewaluacja</p>
-        <p className="mt-2 font-tytul text-xl text-kosc">Formularz ewaluacyjny pojawi się tu lada dzień</p>
-        <p className="mt-2 text-sm leading-relaxed text-dym">
-          Zajrzyj tu za kilka dni - Twoja opinia pomoże nam zrobić następny wyjazd jeszcze lepiej.
+        <p className="font-tytul text-xl text-kosc">Wypełnij formularz ewaluacyjny</p>
+        <p className="text-sm leading-relaxed text-dym">
+          Kilka minut, a bardzo nam pomoże zrobić następny Wyjazd jeszcze lepiej.{" "}
+          <strong className="text-kosc">Masz czas do 1 listopada, 23:59.</strong>
         </p>
+        <a
+          href={FORMULARZ}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="szklo-plynne szklo-plynne-krew mt-1 flex min-h-12 w-full items-center justify-center rounded-full px-5 text-sm font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-krew"
+        >
+          Otwórz formularz
+        </a>
       </section>
 
       {uczestnik && (

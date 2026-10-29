@@ -15,16 +15,16 @@ const POZOSTALI = [
 
 export function Partner() {
   return (
-    <section aria-label="Partnerzy wyjazdu" className="bg-jesien-tlo px-4 pb-8 pt-2">
+    <section aria-label="Partnerzy Wyjazdu" className="bg-jesien-tlo px-4 pb-8 pt-2">
       <div className="mx-auto grid max-w-md justify-items-center gap-4">
-        <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-jesien-rdza">Partnerzy wyjazdu</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-jesien-rdza">Partnerzy Wyjazdu</p>
         <a
           href="https://eveline.pl/"
           target="_blank"
           rel="noopener sponsored"
           data-zdarzenie="partner"
           data-miejsce="eveline"
-          aria-label="Eveline Cosmetics - strona partnera (nowa karta)"
+          aria-label="Eveline Cosmetics - strona Partnera (nowa karta)"
           className="rounded-sm transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-jesien-rdza"
         >
           {/* eslint-disable-next-line @next/next/no-img-element -- statyczny plik z public, bez optymalizacji */}
@@ -41,7 +41,7 @@ export function Partner() {
                 rel="noopener sponsored"
                 data-zdarzenie="partner"
                 data-miejsce={p.klucz}
-                aria-label={`${p.nazwa} - strona partnera (nowa karta)`}
+                aria-label={`${p.nazwa} - strona Partnera (nowa karta)`}
                 className="flex h-full items-center rounded-sm transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-jesien-rdza"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element -- statyczny plik z public, bez optymalizacji */}
